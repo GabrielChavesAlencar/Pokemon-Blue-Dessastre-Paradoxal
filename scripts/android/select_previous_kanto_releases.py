@@ -1,15 +1,20 @@
 """Select previous Kanto Android releases from all GitHub API pages.
 
-Input: JSON written by gh api --paginate --slurp .../releases?per_page=100
+Input: --fetch-github loads authenticated GitHub Releases from Python HTTP;
+       stdin JSON remains available for deterministic offline tests.
 Output: verified release tags, one per line, newest four plus oldest baseline.
 The query must fail closed when older Kanto releases exist but none are selected.
 Do not access or change user games/saves, and never download game sources.
 """
 from __future__ import annotations
 
+import argparse
 import json
+import os
 import re
 import sys
+import urllib.error
+import urllib.request
 
 MANIFEST = "Blue-Android-Kanto-Piloto.update.json"
 TAG = re.compile(r"^kanto-android-[0-9]+-[a-f0-9]{7,40}$")
@@ -64,10 +69,53 @@ def select_releases(payload: object) -> tuple[list[str], int, int]:
     return tags, len(pages), len(matches)
 
 
-def main() -> int:
+def fetch_release_pages(repo: str, token: str, *,
+                        opener=None, max_pages: int = 100) -> list[list[dict]]:
+    """Query complete GitHub release history without a PowerShell native pipe.
+
+    Windows gh-to-python pipeline supplied zero bytes to stdin in the actual
+    Kanto release run. Use Python HTTP directly and refuse incomplete data.
+    """
+    if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repo or ""):
+        raise ValueError("Invalid GitHub repository")
+    if not token:
+        raise ValueError("GH_TOKEN missing; release discovery refused")
+    if opener is None:
+        opener = urllib.request.urlopen
+    pages: list[list[dict]] = []
+    for page in range(1, max_pages + 1):
+        url = (f"https://api.github.com/repos/{repo}/releases"
+               f"?per_page=100&page={page}")
+        request = urllib.request.Request(url, headers={
+            "Accept": "application/vnd.github+json",
+            "Authorization": "Bearer " + token,
+            "User-Agent": "Blue-Kanto-Android-Release-Selector",
+            "X-GitHub-Api-Version": "2022-11-28",
+        })
+        with opener(request, timeout=45) as response:
+            items = json.load(response)
+        if not isinstance(items, list) or len(items) > 100 or not all(
+                isinstance(entry, dict) for entry in items):
+            raise ValueError(f"GitHub release page {page} is malformed")
+        pages.append(items)
+        if len(items) < 100:
+            return pages
+    raise ValueError("GitHub release history exceeded pagination limit; refused")
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = argparse.ArgumentParser(description="Select verified Kanto Android baselines")
+    args.add_argument("--fetch-github", action="store_true",
+                      help="Fetch every release page via authenticated Python HTTP")
+    options = args.parse_args(argv)
     try:
-        tags, page_count, candidate_count = select_releases(json.load(sys.stdin))
-    except (ValueError, TypeError, json.JSONDecodeError) as error:
+        if options.fetch_github:
+            pages = fetch_release_pages(os.environ.get("GITHUB_REPOSITORY", ""),
+                                        os.environ.get("GH_TOKEN", ""))
+        else:
+            pages = json.load(sys.stdin)
+        tags, page_count, candidate_count = select_releases(pages)
+    except (ValueError, TypeError, OSError, urllib.error.URLError) as error:
         print("Kanto Android baseline selection blocked: " + str(error), file=sys.stderr)
         return 1
     # Keep stdout pure: one tag per line for the Windows PowerShell array.
