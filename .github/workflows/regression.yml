@@ -10,6 +10,9 @@ jobs:
   python-and-contract:
     name: PBS + contratos UI + syntax JS
     runs-on: ubuntu-latest
+    # Keep repository imports visible to offline Ruby CI tests.
+    env:
+      RUBYLIB: .
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

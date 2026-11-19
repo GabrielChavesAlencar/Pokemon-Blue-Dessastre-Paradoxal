@@ -32,10 +32,49 @@ jobs:
           $ProgressPreference='SilentlyContinue'
           $source=New-Item -ItemType Directory -Force '.blue-work/frlg-source'
           $archive=Join-Path $source.FullName 'FRLG.rar'
-          $url='https://drive.usercontent.google.com/download?id=1dsqD8lEJCz-lioEruRqQycWJLCUVxVtI&export=download&confirm=t'
-          Invoke-WebRequest -UseBasicParsing $url -OutFile $archive
+          # All retries use the author's original Drive file ID.
+          # A source must match the pinned hash before it can be extracted.
           $manifest=Get-Content data/regions/kanto-source.json -Raw | ConvertFrom-Json
-          if((Get-FileHash $archive -Algorithm SHA256).Hash.ToLower() -ne $manifest.sha256){throw 'FRLG archive hash differs'}
+          $expected=[string]$manifest.sha256
+          if($expected -cnotmatch '^[0-9a-f]{64}$'){throw 'FRLG manifest SHA-256 invalid'}
+          $urls=@(
+            'https://drive.usercontent.google.com/download?id=1dsqD8lEJCz-lioEruRqQycWJLCUVxVtI&export=download&confirm=t',
+            'https://drive.google.com/uc?export=download&confirm=t&id=1dsqD8lEJCz-lioEruRqQycWJLCUVxVtI',
+            'https://drive.usercontent.google.com/download?id=1dsqD8lEJCz-lioEruRqQycWJLCUVxVtI&export=download&confirm=t'
+          )
+          $verified=$false
+          for($attempt=0;$attempt -lt $urls.Count;$attempt++){
+            Remove-Item -LiteralPath $archive -Force -ErrorAction SilentlyContinue
+            try { Invoke-WebRequest -UseBasicParsing -Uri $urls[$attempt] -OutFile $archive -MaximumRedirection 10 -TimeoutSec 240 -ErrorAction Stop }
+            catch { Write-Warning "FRLG fetch attempt $($attempt+1) failed"; continue }
+            if(-not (Test-Path -LiteralPath $archive)){continue}
+            $hash=(Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant()
+            if($hash -ceq $expected){$verified=$true;break}
+            Write-Warning "FRLG source mismatch attempt $($attempt+1): SHA-256 $hash; source blocked"
+          }
+          # Large Drive files can require confirmation cookies not supported
+          # by Invoke-WebRequest. gdown handles those redirects, but the
+          # SAME historical pinned digest still gates all extraction.
+          if(-not $verified){
+            Remove-Item -LiteralPath $archive -Force -ErrorAction SilentlyContinue
+            python -m pip install --disable-pip-version-check gdown==5.2.0
+            if($LASTEXITCODE -eq 0){
+              python -m gdown --fuzzy 'https://drive.google.com/file/d/1dsqD8lEJCz-lioEruRqQycWJLCUVxVtI/view' -O $archive
+              if($LASTEXITCODE -eq 0 -and (Test-Path -LiteralPath $archive)){
+                $hash=(Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant()
+                if($hash -ceq $expected){
+                  Write-Host 'FRLG source verified from Drive by gdown and pinned SHA-256'
+                  $verified=$true
+                } else {
+                  Write-Warning "gdown returned FRLG content with mismatched SHA-256 $hash; not accepted"
+                }
+              }
+            }
+          }
+          if(-not $verified){
+            Remove-Item -LiteralPath $archive -Force -ErrorAction SilentlyContinue
+            throw 'FRLG archive hash differs from pinned manifest; no pilot can be built'
+          }
           $list=Join-Path $source.FullName 'files.txt'
           $entries=@(tar -tf $archive | Where-Object { $_ -match '^Essentials FRLG/(Data/(Map[0-9]+|MapInfos|Tilesets|System)\.rxdata|PBS/(encounters|trainers|map_connections|map_metadata)\.txt|Graphics/(Characters|Tilesets|Autotiles)/[^/]+\.png)$' })
           if($LASTEXITCODE -ne 0 -or $entries.Count -lt 200){throw 'FRLG archive listing failed'}

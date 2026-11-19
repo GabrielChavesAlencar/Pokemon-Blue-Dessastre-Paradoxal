@@ -9,30 +9,78 @@ module KantoIntegratedCheck
     File.write("Data/blue-kanto-integrated-stage.txt", label)
   end
 
-  # Headless native CI cannot click the screen. Its transport fixture only
-  # impersonates the event after finding the actual NPC in a valid origin
-  # town; production authorization remains unchanged and is tested below.
-  def self.travel_from_verified_agent(target)
+
+  # Exercise the production NPC travel entry point with only its menus replaced
+  # by deterministic responses in the disposable headless Windows CI copy.
+  # The real map, agent event, permissions, and perform() checks stay active.
+  def self.travel_from_real_agent!(destination)
     state = BlueRegions.snapshot
-    require!(BlueRegionTravel.at_departure_town?(state),
-             "Regional test attempted travel outside the departure town")
-    name = case state["current"]
-           when "KANTO" then BlueRegionTravel::KANTO_AGENT_NAME
-           when "DECADES" then BlueRegionTravel::DECADES_AGENT_NAME
-           else raise "Unsupported native CI departure region"
-           end
-    npc = $game_map.events.values.find { |event| event.name == name }
-    require!(npc && npc.list.any? { |op|
-      op.code == 355 && op.parameters.first.to_s == "BlueRegionTravel.agent(true)"
-    }, "Native origin map has no interactable verified regional agent")
-    require!(!BlueRegionTravel.travel(target, true),
-             "Direct regional travel bypassed the NPC event")
-    BlueRegionTravel.instance_variable_set(:@npc_event_context, true)
-    begin
-      BlueRegionTravel.perform(state, target)
-    ensure
-      BlueRegionTravel.instance_variable_set(:@npc_event_context, false)
+    require!(state && state["current"] != destination, "Invalid regional agent destination")
+    point = case state["current"]
+            when "KANTO" then BlueRegionTravel.kanto_town_point
+            when "DECADES" then BlueRegionTravel.decades_town_point
+            end
+    require!(point && point[0].is_a?(Integer), "No verified initial-town departure map")
+    $map_factory.setup(point[0])
+    $game_player.moveto(point[1], point[2])
+    require!(BlueRegionTravel.at_departure_town?(state), "Regional departure town not verified")
+    # Native reproduction caught duplicate agent( true ) events under IDs
+    # 9 ("Agente Regional") and 14 ("Agente Regional Kanto").
+    # The production runtime should now reuse the authenticated source NPC.
+    candidates = $game_map.events.values.select do |event|
+      event.list && event.list.any? { |op|
+        op.code == 355 && op.parameters.first.to_s.include?("BlueRegionTravel.agent")
+      }
     end
+    agents = candidates.select do |event|
+      event.list.any? { |op|
+        op.code == 355 && op.parameters.first.to_s.include?("BlueRegionTravel.agent(true)")
+      }
+    end
+    summary = candidates.map { |event|
+      [event.id, event.name.to_s, event.list.select { |op|
+        op.code == 355 && op.parameters.first.to_s.include?("BlueRegionTravel.agent")
+      }.map { |op| op.parameters.first.to_s.include?("agent(true)") }]
+    }
+    require!(agents.length == 1,
+             "Exactly one authenticated regional NPC required: map=#{$game_map.map_id}, candidates=#{summary.inspect}")
+    require!(!BlueRegionTravel.travel(destination, true),
+             "Travel bypassed the physical NPC interaction gate")
+
+    keys = BlueRegions.circuit + ["HISUI"]
+    choice = keys.index(destination)
+    require!(!choice.nil?, "Destination is absent from regional NPC menu")
+    singleton = BlueRegionTravel.singleton_class
+    require!(!singleton.instance_methods(false).include?(:pbMessage) &&
+             !singleton.instance_methods(false).include?(:pbConfirmMessage),
+             "CI would overwrite an existing NPC method")
+    menu_calls = 0
+    confirmations = 0
+    singleton.send(:define_method, :pbMessage) do |_text, *args|
+      if args.length == 2 && args[0].is_a?(Array) && args[1] == -1
+        menu_calls += 1
+        raise "Regional NPC menu repeated after failed travel" unless menu_calls == 1
+        choice
+      else
+        nil # arrival notice only; no actual UI in headless CI
+      end
+    end
+    singleton.send(:define_method, :pbConfirmMessage) do |*_args|
+      confirmations += 1
+      true
+    end
+    begin
+      BlueRegionTravel.agent(true)
+    ensure
+      singleton.send(:remove_method, :pbMessage)
+      singleton.send(:remove_method, :pbConfirmMessage)
+    end
+    require!(menu_calls == 1 && confirmations == 1,
+             "Regional NPC dialog/confirmation was not exercised")
+    require!($PokemonGlobal.blue_regions["current"] == destination,
+             "Regional NPC did not complete the real transfer")
+    require!(!BlueRegionTravel.instance_variable_get(:@npc_event_context),
+             "NPC authorization leaked beyond the event")
   end
 
   def self.run
@@ -145,13 +193,13 @@ module KantoIntegratedCheck
     $PokemonGlobal.blue_regions = current_state
     require!(BlueRegions.award(current_state, "KANTO", "BOULDER"), "Boulder badge not awarded")
     require!(!BlueRegions.award(current_state, "KANTO", "BOULDER"), "Boulder was counted twice")
-    # The Boulder Badge unlocks only the BADGE gate.  FRLG HM05 must still
-    # be obtained and an able, compatible party Pokemon must be present.
-    # A fresh Kanto New Game must not be handed Flash by CI or by the badge.
-    require!(!BlueRegionalPolicy.hm_owned?(:FLASH),
-             "Fresh Kanto unexpectedly owns HM05 before the field pickup")
+    # Boulder removes only the local badge restriction. Flash still requires
+    # HM05/HMFLASH in the Bag and an eligible party Pokemon (tested end-to-end
+    # by tests/kanto_hm_gate_runtime.rb). Do not bypass either requirement.
+    require!(BlueRegions.field_access(current_state, "KANTO", "FLASH", false) == :tool,
+             "Boulder did not clear the Flash badge gate")
     require!(BlueRegionalPolicy.field_result(:FLASH) == :hm,
-             "Boulder did not advance Flash to its required HM05 gate")
+             "Flash was allowed without the HM after Boulder")
     require!(BlueRegionalPolicy.field_result(:SURF) == :badge, "Surf unlocked without Soul Badge")
     base_total = $player.badge_count
     require!(BlueRegions.crystal_total(current_state, base_total) == base_total + 1,
@@ -196,20 +244,16 @@ module KantoIntegratedCheck
     original_bag = Marshal.dump($bag)
     original_pc = Marshal.dump($PokemonStorage)
     original_dex = Marshal.dump($player.pokedex)
-    # The Pallet agent, not the upstairs bedroom, is the entry point.
-    # Reject old saves' Decades intro coordinates as a travel destination.
-    $map_factory.setup(town_map)
-    $game_player.moveto(18, 8)
-    decades_destination = BlueRegionTravel.destination(BlueRegions.snapshot, "DECADES")
-    require!(decades_destination && decades_destination[0] == BlueRegionTravel.decades_city_map_id &&
-             decades_destination[0] != original[0],
-             "Kanto travel selected Decades introduction instead of Cherryhill")
     stage("travel_kanto_to_decades")
-    require!(travel_from_verified_agent("DECADES"),
-             "Kanto->Decades travel did not complete")
-    require!($game_map.map_id == decades_destination[0] &&
-             [$game_player.x, $game_player.y] == decades_destination[1, 2],
-             "Kanto->Decades travel missed the verified Cherryhill arrival")
+    travel_from_real_agent!("DECADES")
+    # The native original[] is the Decades introduction, NOT a safe inter-
+    # regional destination. A legacy decades_return pointing to that intro
+    # must be ignored by RegionTravel.destination; arrive in Cherryhill.
+    decades_arrival = BlueRegionTravel.decades_town_point
+    require!(decades_arrival &&
+             $game_map.map_id == decades_arrival[0] &&
+             [$game_player.x, $game_player.y] == decades_arrival[1, 2],
+             "Kanto to Decades did not arrive at verified Cherryhill town")
     require!($PokemonGlobal.blue_regions["current"] == "DECADES", "Travel state was not committed")
     # Town NPC belongs in the first Decades city (Cherryhill Map077).
     # Dynamic on-map insertion does not mutate native Map077.rxdata.
@@ -224,6 +268,9 @@ module KantoIntegratedCheck
     require!(agents[0].list.any? { |op|
       op.code == 355 && op.parameters[0] == "BlueRegionTravel.agent(true)"
     }, "Decades city NPC cannot open regional travel")
+    $map_factory.setup(original[0])
+    $game_player.moveto(original[1], original[2])
+
     require!($PokemonGlobal.blue_regions["initial"] == "KANTO", "Travel changed the initial region")
     require!($player.party.first.equal?(pokemon), "Travel replaced the party Pokémon")
 
@@ -241,8 +288,7 @@ module KantoIntegratedCheck
     reserved = reservations.first.last
     require!(BlueRegionTravel.special?(special), "Mewtwo not classified as Legendary")
     stage("travel_decades_to_kanto")
-    require!(travel_from_verified_agent("KANTO"),
-             "Decades->Kanto travel did not complete")
+    travel_from_real_agent!("KANTO")
     # Returning visitors arrive outdoors in Pallet beside the regional NPC;
     # only a NEW GAME spawns in the player's upstairs bedroom.
     pallet_point = BlueRegionTravel.kanto_town_point

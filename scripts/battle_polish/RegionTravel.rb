@@ -640,7 +640,20 @@ module BlueRegionTravel
                   state["current"] == "KANTO"
     town = kanto_town_point
     return unless town && map.map_id == town[0]
-    return if map.events.values.any? { |event| event.name == KANTO_AGENT_NAME }
+    # The installer may have already inserted a fully functional source-map
+    # travel NPC under the generic name "Agente Regional". Prefer that actor
+    # over creating an extra agent. Match the actual authorized event command,
+    # not its display name, and never treat agent(false) as trusted.
+    return if map.events.values.any? do |event|
+      next true if event.name == KANTO_AGENT_NAME
+      next false unless event.respond_to?(:list)
+      commands = event.list
+      commands.is_a?(Array) && commands.any? do |op|
+        op.respond_to?(:code) && op.code == 355 &&
+          op.respond_to?(:parameters) && op.parameters.is_a?(Array) &&
+          op.parameters.first.to_s.strip == "BlueRegionTravel.agent(true)"
+      end
+    end
     return unless defined?(RPG::Event) && defined?(RPG::EventCommand) && defined?(Game_Event)
     occupied = map.events.values.map { |event| [event.x,event.y] }
     # Use only real passable tiles near the audited Pallet arrival and do not

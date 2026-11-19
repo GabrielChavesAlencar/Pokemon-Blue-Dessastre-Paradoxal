@@ -6,12 +6,16 @@ on:
       - 'scripts/regions/KantoPilot.rb'
       - 'scripts/regions/pilot.py'
       - 'tests/test_kanto_player_scale.py'
+      - 'tests/test_kanto_source_pinning.py'
+      - '.github/workflows/kanto-pilot-check.yml'
       - '.github/workflows/kanto-player-scale.yml'
   pull_request:
     paths:
       - 'scripts/regions/KantoPilot.rb'
       - 'scripts/regions/pilot.py'
       - 'tests/test_kanto_player_scale.py'
+      - 'tests/test_kanto_source_pinning.py'
+      - '.github/workflows/kanto-pilot-check.yml'
       - '.github/workflows/kanto-player-scale.yml'
   workflow_dispatch:
 permissions:
@@ -31,3 +35,5 @@ jobs:
         run: ruby -c scripts/regions/KantoPilot.rb
       - name: Player scale regression
         run: python -m unittest discover -s tests -p test_kanto_player_scale.py -v
+      - name: Verified FRLG source pin guard (offline, no archive)
+        run: python -m unittest discover -s tests -p test_kanto_source_pinning.py -v
