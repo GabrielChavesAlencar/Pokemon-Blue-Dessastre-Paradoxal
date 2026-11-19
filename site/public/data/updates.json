@@ -2,6 +2,42 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ba020a57052e2952de308dbb4166aad760b1e72c",
+      "date": "2026-11-18T22:01:34-03:00",
+      "title": "Merge pull request #254: Android Kanto paginated updates [android-kanto-release]",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "0669ee37865043db5d98c4736949a53bb15df0bc",
+      "date": "2026-11-18T21:47:33-03:00",
+      "title": "test(android): use Kanto channel asset names in fourth-page release fixture",
+      "category": "Testes"
+    },
+    {
+      "sha": "f483bf9a8024a16a3693920de473075d49bf2762",
+      "date": "2026-11-18T21:47:03-03:00",
+      "title": "test(android): find fourth-page Kanto release and fail closed at pagination limit",
+      "category": "Testes"
+    },
+    {
+      "sha": "bc6ff479800067102802d6ecd082293f125766f5",
+      "date": "2026-11-18T21:46:42-03:00",
+      "title": "fix(android): scan beyond three release pages and reject truncated release history",
+      "category": "Correções"
+    },
+    {
+      "sha": "349c0a0c43d787be554fa4b6723a7f53a2790f4d",
+      "date": "2026-11-18T21:43:39-03:00",
+      "title": "test(android): enforce paginated Kanto release history for incremental updates",
+      "category": "Testes"
+    },
+    {
+      "sha": "aa46d5b72ca2028ea9515f3bbbc59ca8e93cf8e1",
+      "date": "2026-11-18T21:43:24-03:00",
+      "title": "fix(android): paginate release history before selecting Kanto incremental baselines",
+      "category": "Correções"
+    },
+    {
       "sha": "547a8393db64dc9a83754e540f7d2d6efd0a619a",
       "date": "2026-11-18T21:40:56-03:00",
       "title": "feat(kanto): Cerulean north Route 24/25, Gary, Nugget Bridge and Bill",
