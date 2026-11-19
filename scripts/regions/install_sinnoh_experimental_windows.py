@@ -351,9 +351,13 @@ module BlueSinnohExperimental
         $PokemonGlobal.respond_to?(:blue_regions=) && BlueRegions.respond_to?(:new_state)
       raise "Sinnoh QA: dados de inicio ausentes" unless defined?($data_system) &&
         $data_system && $data_system.respond_to?(:start_map_id=)
-      raise "Sinnoh QA: compile o PBS de Barry antes de Novo Jogo" unless
-        File.file?("Data/sinnoh-experimental-compiled.txt") &&
-        !File.file?("Data/sinnoh-experimental-compile-request.txt")
+      # Walking the nine QA maps does not depend on Barry's trainer PBS.
+      # Never start an unverified map, however: the title plugin checks the
+      # private namespace and SHA-256 for all nine RXDATA + MapInfos/Tilesets.
+      raise "Sinnoh QA: mapas ou perfil privado invalidos" unless
+        defined?(BlueKantoTitle) &&
+        BlueKantoTitle.respond_to?(:sinnoh_experimental_maps_ready?) &&
+        BlueKantoTitle.sinnoh_experimental_maps_ready?
       raise "Sinnoh QA: save de outra regiao nao pode ser herdado" if
         $PokemonGlobal.respond_to?(:blue_regions) &&
         $PokemonGlobal.blue_regions &&
