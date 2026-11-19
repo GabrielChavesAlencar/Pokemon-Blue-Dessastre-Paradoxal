@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "efdaec950ab8a0a218514458c770a67e2530175a",
+      "date": "2026-11-19T17:06:51-03:00",
+      "title": "fix(android): gerar deltas multirregionais de todas as releases antigas",
+      "category": "Correções"
+    },
+    {
       "sha": "b27697521611e6ad199fae40034de17f141ef228",
       "date": "2026-11-19T16:51:20-03:00",
       "title": "fix(android): liberar compilação multirregional Cerulean no CI [android-kanto-release]",
