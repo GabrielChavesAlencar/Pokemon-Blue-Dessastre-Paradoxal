@@ -2,6 +2,36 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "985f1ece277d7061dca822ed446c21e227bd33a3",
+      "date": "2026-11-18T23:22:03-03:00",
+      "title": "Merge PR #257: fix Kanto Android release API pagination [android-kanto-release]",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "6912f7519b1115e68d9fbc09f786a65e71e56049",
+      "date": "2026-11-18T23:14:12-03:00",
+      "title": "fix(test): reject dot-segment repo names before HTTP requests",
+      "category": "Correções"
+    },
+    {
+      "sha": "254b64a02eb5ad292325f6f092351c64b9179e18",
+      "date": "2026-11-18T23:11:49-03:00",
+      "title": "test(android): regress authenticated API pagination and reject partial histories",
+      "category": "Testes"
+    },
+    {
+      "sha": "f3aa23c05bc3de78000f7a5c00ff6f1a132f3d99",
+      "date": "2026-11-18T23:11:18-03:00",
+      "title": "fix(ci): select Android patch baselines without native Windows pipeline",
+      "category": "Correções"
+    },
+    {
+      "sha": "9bd55d773d648ed9f07631caf591d85b54786002",
+      "date": "2026-11-18T23:10:58-03:00",
+      "title": "fix(android): discover Kanto baselines without Windows PowerShell native pipe",
+      "category": "Correções"
+    },
+    {
       "sha": "2b30f06ee5863039eb784fa3f70b90e3284ea66d",
       "date": "2026-11-18T22:30:57-03:00",
       "title": "Merge PR #256: publish real Kanto Android incremental deltas [android-kanto-release]",
