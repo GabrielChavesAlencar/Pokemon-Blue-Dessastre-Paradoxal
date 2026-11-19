@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "87d0e17761ea1bf2f3531188ebd4e5897d000100",
+      "date": "2026-11-19T14:35:44-03:00",
+      "title": "feat(Blue-Story): automatically recover and relaunch same isolated Sinnoh QA copy",
+      "category": "Novidades"
+    },
+    {
       "sha": "520fcab0b87b0e635f140a72a9cd14c206e7d4d3",
       "date": "2026-11-19T14:03:38-03:00",
       "title": "fix(Sinnoh QA): recover only preverified Tilesets after native compiler rewrite",
