@@ -49,7 +49,9 @@ def assert_delivery(path: Path, channel: str) -> dict:
         if (any(type(value) is not int or value <= 0 for value in all_ids)
                 or len(set(all_ids)) != len(all_ids)):
             raise ValueError("Kanto destination map IDs are invalid or collide")
-        for source in SOURCE_MAP_IDS:
+        # Every registered map must actually reach the ZIP. Checking only
+        # Cerulean allowed an unrelated missing Kanto map to pass this gate.
+        for source in mapping:
             destination = mapping[source]
             native = root + f"Data/Map{destination:03d}.rxdata"
             if native not in files or archive.getinfo(native).file_size < 128:
