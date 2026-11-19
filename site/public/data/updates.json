@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "520fcab0b87b0e635f140a72a9cd14c206e7d4d3",
+      "date": "2026-11-19T14:03:38-03:00",
+      "title": "fix(Sinnoh QA): recover only preverified Tilesets after native compiler rewrite",
+      "category": "Correções"
+    },
+    {
       "sha": "f39a8a98da290e9368d2c989160e9a97e55f1815",
       "date": "2026-11-19T12:12:11-03:00",
       "title": "fix(sinnoh QA): validar JSON e SHA256 sem gems ausentes no Game.exe",
