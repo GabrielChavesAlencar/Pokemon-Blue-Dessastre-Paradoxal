@@ -89,6 +89,19 @@ def assert_delivery(path: Path, channel: str) -> dict:
             raise ValueError("Luis name-collision guard missing from Android source")
         cache = archive.read(root + "Data/PluginScripts.rxdata")
         compiled_region(cache, "Journey.rb", source)
+        if channel == "multiregion":
+            # The former inline PowerShell python -c lost embedded quoting
+            # on Windows and failed with SyntaxError after native compilation.
+            # Keep BOTH checks in this regular Python module, fail-closed:
+            # accelerated map dispatcher present and the runtime cache exact.
+            travel_path = (root +
+                           "Plugins/ZZZZ Blue Story and Presentation/RegionTravel.rb")
+            if travel_path not in files:
+                raise ValueError("Optimized regional map dispatcher missing")
+            travel = archive.read(travel_path)
+            if b"def self.agent_map_id(region)" not in travel:
+                raise ValueError("Optimized regional map dispatcher was removed")
+            compiled_region(cache, "RegionTravel.rb", travel)
         music = root + "Data/blue-kanto-music.txt"
         if music not in files:
             raise ValueError("Kanto map music manifest missing")
