@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "de89a71a25793f323ea42a61081e9f994968a310",
+      "date": "2026-11-19T18:58:53-03:00",
+      "title": "fix(kanto): verificar todos os mapas Android e auditar lacunas da fonte",
+      "category": "Correções"
+    },
+    {
       "sha": "efdaec950ab8a0a218514458c770a67e2530175a",
       "date": "2026-11-19T17:06:51-03:00",
       "title": "fix(android): gerar deltas multirregionais de todas as releases antigas",
