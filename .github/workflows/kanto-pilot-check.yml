@@ -44,6 +44,8 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'FRLG extraction failed'}
           python scripts/regions/audit_next_segment.py
           if($LASTEXITCODE -ne 0){throw 'Kanto phase 07 source audit failed'}
+          ruby tests/kanto_journey_trainer_runtime.rb scripts/battle_polish/Journey.rb
+          if($LASTEXITCODE -ne 0){throw 'JoiPlay Cerulean trainer identity regression failed'}
           python tests/test_kanto_cerulean_north.py
           if($LASTEXITCODE -ne 0){throw 'Kanto Cerulean north source/MapID audit failed'}
           python tests/test_kanto_release_pagination.py
@@ -332,6 +334,8 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Kanto mobile archive build failed'}
           python scripts/android/package_kanto.py --verify --revision '${{ github.sha }}'
           if($LASTEXITCODE -ne 0){throw 'Kanto mobile archive verification failed'}
+          python scripts/android/verify_kanto_cerulean.py --channel kanto --archive dist/Blue-Android-Kanto-Piloto.zip
+          if($LASTEXITCODE -ne 0){throw 'Rotas 24/25 ou Luis/Diana nao chegaram ao Android Kanto'}
       - name: Gerar manifesto e atualização incremental de Kanto
         if: github.event_name == 'push' && contains(github.event.head_commit.message, '[android-kanto-release]')
         shell: powershell
