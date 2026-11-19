@@ -2,6 +2,36 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2b30f06ee5863039eb784fa3f70b90e3284ea66d",
+      "date": "2026-11-18T22:30:57-03:00",
+      "title": "Merge PR #256: publish real Kanto Android incremental deltas [android-kanto-release]",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "e39debbad82e0f32b93167cff5bb939d633ec6f4",
+      "date": "2026-11-18T22:21:53-03:00",
+      "title": "fix(ci): avoid native stderr in Windows PowerShell release selector",
+      "category": "Correções"
+    },
+    {
+      "sha": "122e19da8255083d3ae888522de3443d127115c0",
+      "date": "2026-11-18T22:19:47-03:00",
+      "title": "test(android): fail closed on empty nested pagination and missing release delta",
+      "category": "Testes"
+    },
+    {
+      "sha": "44317ab1303c5090a511cf5dd7f11923ce972ea7",
+      "date": "2026-11-18T22:19:17-03:00",
+      "title": "fix(ci): select real Kanto baselines from all pages; require delta before release",
+      "category": "Correções"
+    },
+    {
+      "sha": "257ba658ba180c318f102c0bab8575a6a1cf3003",
+      "date": "2026-11-18T22:18:36-03:00",
+      "title": "fix(android): parse nested release pages and fail closed without prior Kanto baseline",
+      "category": "Correções"
+    },
+    {
       "sha": "ba020a57052e2952de308dbb4166aad760b1e72c",
       "date": "2026-11-18T22:01:34-03:00",
       "title": "Merge pull request #254: Android Kanto paginated updates [android-kanto-release]",
