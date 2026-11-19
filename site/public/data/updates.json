@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f39a8a98da290e9368d2c989160e9a97e55f1815",
+      "date": "2026-11-19T12:12:11-03:00",
+      "title": "fix(sinnoh QA): validar JSON e SHA256 sem gems ausentes no Game.exe",
+      "category": "Correções"
+    },
+    {
       "sha": "425787edeb5d8a93672536864874ab2d943697f4",
       "date": "2026-11-19T11:23:31-03:00",
       "title": "fix(sinnoh QA): liberar exploracao dos nove mapas sem PBS Barry compilado",
