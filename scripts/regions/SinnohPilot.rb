@@ -308,7 +308,21 @@ module BlueSinnohPilot
     qa_test_only = defined?(BlueSinnohQAStart) &&
                    BlueSinnohQAStart.respond_to?(:barry_test_authorized?) &&
                    BlueSinnohQAStart.barry_test_authorized?
-    unless (ready_for_release || qa_test_only) && compiled_rival_valid? &&
+    # J12-E: the exploratory QA may WALK without compiled Barry, but never
+    # battle without its real 3-team GameData compilation and private proof.
+    # This only affects the J12-E experimental copy, not shared campaign QA.
+    experimental_test = defined?(BlueSinnohExperimental) &&
+                        defined?(BlueKantoTitle) &&
+                        BlueKantoTitle.respond_to?(:sinnoh_experimental_maps_ready?) &&
+                        BlueKantoTitle.sinnoh_experimental_maps_ready? &&
+                        BlueKantoTitle.sinnoh_experimental_barry_compiled?
+    if defined?(BlueSinnohExperimental)
+      # The J12-E sandbox must NEVER inherit an older release/QA marker
+      # for Barry from a copied game. Only this copy's compilation proof counts.
+      ready_for_release = false
+      qa_test_only = false
+    end
+    unless (ready_for_release || qa_test_only || experimental_test) && compiled_rival_valid? &&
            all_rival_versions_valid? && defined?(TrainerBattle) && TrainerBattle.respond_to?(:start)
       pbMessage(_INTL("Barry: Nossa primeira batalha estará disponível no piloto de Sinnoh."))
       return false

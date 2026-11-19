@@ -302,5 +302,42 @@ class J12EInstallerTests(unittest.TestCase):
         self.assertIn('QA_TITLE_PLUGIN="Plugins/ZZZZ Blue Story and Presentation/TitleKanto.rb"',script)
         self.assertIn('QA_TITLE_PLUGIN_OVERRIDE_NOT_TRUSTED',script)
 
+    def test_43_map_only_bootstrap_never_uses_barry_marker_to_authorize_new_game(self):
+        script=exp.experiment_plugin([442,10,8],"abc123abc123").decode()
+        self.assertIn('BlueKantoTitle.sinnoh_experimental_maps_ready?',script)
+        self.assertNotIn('raise "Sinnoh QA: compile o PBS de Barry antes de Novo Jogo"',script)
+        self.assertIn('raise "Sinnoh QA: mapas ou perfil privado invalidos"',script)
+
+    def test_44_barry_battle_remains_separately_restricted(self):
+        src=(ROOT/"scripts/regions/SinnohPilot.rb").read_text("utf-8")
+        self.assertIn('BlueKantoTitle.sinnoh_experimental_barry_compiled?',src)
+        self.assertIn('BlueKantoTitle.sinnoh_experimental_maps_ready?',src)
+        self.assertIn('all_rival_versions_valid?',src)
+        self.assertIn('compiled_rival_valid?',src)
+
+    def test_45_private_launcher_does_not_block_map_testing_when_barry_missing(self):
+        root=self.root/"qa-bat-test"
+        game=root/"game"
+        project=root
+        game.mkdir(parents=True)
+        (game/"Game.exe").write_bytes(b"synthetic Game.exe")
+        (game/"Game.ini").write_text("Title=synthetic game\n")
+        (game/"mkxp.json").write_text('{"windowTitle":"synthetic"}')
+        (game/"Data").mkdir()
+        (game/"Data/MapInfos.rxdata").write_bytes(b"original")
+        for fname in ("Tilesets.rxdata","Scripts.rxdata","System.rxdata"):
+            (game/"Data"/fname).write_bytes(b"synthetic")
+        (game/"Data/Map002.rxdata").write_bytes(b"main map")
+        report={"profile_token":"abc123abc123","mapids":{},
+                "save_profile":{},"file_sha256":{}}
+        qa=exp.install_copy(game,{},report,project)
+        launcher=(qa/"INICIAR_SINNOH_EXPERIMENTAL.bat").read_text("utf-8")
+        self.assertIn("Apenas EXPLORACAO dos 9 mapas QA.",launcher)
+        self.assertIn("Batalha contra Barry bloqueada",launcher)
+        self.assertNotIn("nao iniciar Novo Jogo",launcher)
+        self.assertNotIn("pause",launcher.lower())
+        self.assertNotIn("exit /b 2",launcher)
+        self.assertEqual((game/"Data/MapInfos.rxdata").read_bytes(),b"original")
+
 if __name__=="__main__":
     unittest.main()

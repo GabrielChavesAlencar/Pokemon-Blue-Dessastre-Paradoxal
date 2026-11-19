@@ -27,6 +27,16 @@ O instalador atualiza o arquivo `TitleKanto.rb` **exclusivamente na cópia nova*
 
 **Limites:** abrir a tela inicial com os mapas não é prova de que Barry, portais, colisões e save/load passaram no Game.exe. Permanecem R07/R08/R09 pendentes, 0/9 instalados na campanha principal e 0/44 QA nativa aprovada.
 
+## Correção de compilação Barry: exploração independente dos mapas QA
+
+Se a janela **Sinnoh QA** apresentar "a cópia está incompleta ou a compilação nativa de Barry ainda não foi confirmada" ao clicar **Testar Sinnoh** ou **New Game**, essa mensagem vinha de um único bloqueio que misturava **integridade dos nove mapas** com **compilação das três equipes PBS do rival**.
+
+No novo modo experimental, `Testar Sinnoh` e `New Game` podem iniciar **somente a exploração inicial** quando todos os nove RXDATA, MapInfos e Tilesets tiverem SHA-256 válido, os MapIDs forem exclusivos na cópia e o namespace de saves QA estiver íntegro. Isso permite testar quarto, movimentação, portais e NPCs, **sem afirmar que a batalha de Barry foi compilada ou aprovada**. Se a compilação nativa ainda estiver pendente, a tela avisa expressamente que Barry está bloqueado. Os eventos do rival também verificam a compilação local das três versões, as espécies e os níveis antes de permitir batalha. Marcadores de outra região, releases antigas ou arquivos da campanha não autorizam Barry dentro da cópia QA.
+
+O launcher BAT gerado deixa de cancelar o jogo inteiro quando encontra erro de compilação de Barry: mostra a restrição e permite somente explorar mapas. **Não cria marcadores falsos de compilação e não altera hashes ou arquivos da campanha principal.**
+
+Se a verificação de mapa, perfil ou SHA-256 falhar, o jogo **continua bloqueado** e apresenta o motivo concreto, por exemplo qual `Data/MapXXX.rxdata` foi alterado. Faça uma **nova cópia QA** pelo botão `Testar piloto Sinnoh` do Blue-Story após a atualização; cópias antigas não são sobrescritas. A possibilidade de exploração é experimental e não altera R07/R08/R09, 0/9 mapas na campanha principal ou 0/44 QA nativa aprovada.
+
 ## Como usar
 
 1. **Atualize seu Blue-Story.exe**, baixando o binário da release [Blue-Story Windows](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/releases/tag/blue-story-windows) **depois da publicação do PR**. A autoatualização do código não substitui por si só um EXE Windows antigo, por isso este download é importante.
