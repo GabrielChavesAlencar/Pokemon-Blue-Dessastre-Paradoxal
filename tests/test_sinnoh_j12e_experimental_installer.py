@@ -325,6 +325,8 @@ class J12EInstallerTests(unittest.TestCase):
         (game/"mkxp.json").write_text('{"windowTitle":"synthetic"}')
         (game/"Data").mkdir()
         (game/"Data/MapInfos.rxdata").write_bytes(b"original")
+        for fname in ("Tilesets.rxdata","Scripts.rxdata","System.rxdata"):
+            (game/"Data"/fname).write_bytes(b"synthetic")
         (game/"Data/Map002.rxdata").write_bytes(b"main map")
         report={"profile_token":"abc123abc123","mapids":{},
                 "save_profile":{},"file_sha256":{}}
