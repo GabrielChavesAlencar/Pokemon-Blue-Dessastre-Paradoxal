@@ -158,7 +158,13 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Rotas 24/25 ou Luis/Diana ausentes do ZIP Android integrado'}
           python scripts/android/publish_updates.py @args
           if($LASTEXITCODE -ne 0){throw 'Manifesto do canal multirregional falhou.'}
+          # A release with no delta from the newest published install is NOT
+          # an update for the player, even when the full ZIP is valid.
+          $currentPrevious = Join-Path (Join-Path 'dist/previous' $selected[0]) 'Blue-Android-Decades-Kanto-Hoenn.update.json'
+          $oldManifest = Get-Content $currentPrevious -Raw | ConvertFrom-Json
           $manifest = Get-Content 'dist/Blue-Android-Decades-Kanto-Hoenn.update.json' -Raw | ConvertFrom-Json
+          $latestDelta = @($manifest.patches | Where-Object { $_.from_revision -eq $oldManifest.revision })
+          if($latestDelta.Count -eq 0){throw "Delta incremental para a ultima versao multirregional nao foi publicado: $($selected[0])"}
           $delta = @($manifest.patches | Where-Object { $_.from_revision -eq '02e8e5addc7a7f2c4a9f71195fcae7f49631ed54' })
           if($delta.Count -eq 0){throw 'Delta da preview para a main nao gerado'}
           Write-Host 'PASS: preview-to-main incremental patch'
