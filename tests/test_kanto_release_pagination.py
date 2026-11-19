@@ -1,11 +1,14 @@
 """Regression of GitHub Releases pagination for Kanto Android deltas."""
 from pathlib import Path
+import io
+import json
 import sys
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from scripts.android.select_previous_kanto_releases import select_releases
+from scripts.android.select_previous_kanto_releases import (select_releases,
+                                                            fetch_release_pages)
 
 WORKFLOW = ROOT / ".github/workflows/kanto-pilot-check.yml"
 MANIFEST = "Blue-Android-Kanto-Piloto.update.json"
@@ -69,13 +72,55 @@ class KantoReleaseHistoryTests(unittest.TestCase):
         self.assertEqual(tags, ["kanto-android-3-1234abc",
                                 "kanto-android-1-1234abc"])
 
+    def test_python_http_fetches_all_pages_without_native_pipe(self):
+        calls = []
+        base = {"tag_name": "battle-hub-1", "draft": False}
+        pages = [[base] * 100,
+                 [release(12, "2026-11-12T12:00:00Z"),
+                  release(13, "2026-11-13T12:00:00Z")]]
+        def opener(request, timeout):
+            calls.append((request.full_url, request.get_header("Authorization"), timeout))
+            index = len(calls) - 1
+            return io.BytesIO(json.dumps(pages[index]).encode("utf-8"))
+        received = fetch_release_pages(
+            "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
+            "fake-token", opener=opener)
+        tags, pages_count, matches = select_releases(received)
+        self.assertEqual(pages_count, 2)
+        self.assertEqual(matches, 2)
+        self.assertEqual(tags, ["kanto-android-13-1234abc",
+                                "kanto-android-12-1234abc"])
+        self.assertEqual(len(calls), 2)
+        self.assertTrue(calls[0][0].endswith("per_page=100&page=1"))
+        self.assertTrue(calls[1][0].endswith("per_page=100&page=2"))
+        self.assertEqual(calls[0][1], "Bearer fake-token")
+        self.assertEqual(calls[0][2], 45)
+
+    def test_api_http_blocks_missing_token_invalid_shape_and_truncated_history(self):
+        repo = "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal"
+        with self.assertRaisesRegex(ValueError, "GH_TOKEN"):
+            fetch_release_pages(repo, "", opener=lambda *_a, **_kw: None)
+        with self.assertRaisesRegex(ValueError, "Invalid GitHub repository"):
+            fetch_release_pages("../bad", "fake", opener=lambda *_a, **_kw: None)
+        for invalid in ({}, None, [{"x": 1}] * 101, [False]):
+            with self.subTest(invalid=invalid):
+                def opener(*_args, **_kwargs):
+                    return io.BytesIO(json.dumps(invalid).encode("utf-8"))
+                with self.assertRaises(ValueError):
+                    fetch_release_pages(repo, "fake", opener=opener)
+        def never_ends(*_args, **_kwargs):
+            return io.BytesIO(json.dumps([{"tag_name": "battle-hub-1"}] * 100).encode("utf-8"))
+        with self.assertRaisesRegex(ValueError, "pagination limit"):
+            fetch_release_pages(repo, "fake", opener=never_ends, max_pages=2)
+
     def test_workflow_requires_real_parsed_baselines_and_delta_zip(self):
         text = WORKFLOW.read_text(encoding="utf-8")
         marker = "- name: Gerar manifesto e atualização incremental de Kanto"
         self.assertEqual(text.count(marker), 1)
         block = text.split(marker, 1)[1].split(
             "- name: Guardar ZIP de testes de Kanto", 1)[0]
-        self.assertIn("gh api --paginate --slurp", block)
+        self.assertIn("python scripts/android/select_previous_kanto_releases.py --fetch-github", block)
+        self.assertNotIn("gh api --paginate --slurp", block)
         self.assertIn("python scripts/android/select_previous_kanto_releases.py", block)
         self.assertIn("$selected.Count -eq 0", block)
         self.assertIn("gh release download $tag", block)

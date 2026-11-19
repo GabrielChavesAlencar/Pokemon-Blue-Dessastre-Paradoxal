@@ -338,9 +338,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          # --slurp yields an array of page arrays. Parse as JSON in Python,
-          # never filter PowerShell's accidentally nested objects to zero.
-          $selected=@(gh api --paginate --slurp "repos/$env:GITHUB_REPOSITORY/releases?per_page=100" | python scripts/android/select_previous_kanto_releases.py)
+          # Windows PowerShell 5.1 can pass empty native stdout between
+          # gh.exe and python.exe. Read every page directly with Python HTTPS
+          # so an empty or partial API response aborts before publishing.
+          $selected=@(python scripts/android/select_previous_kanto_releases.py --fetch-github)
           if($LASTEXITCODE -ne 0 -or $selected.Count -eq 0){throw 'Cannot select verified previous Kanto releases; refusing full-only release'}
           $args=@('--channel','kanto','--full-zip','dist/Blue-Android-Kanto-Piloto.zip')
           foreach($tag in $selected){
