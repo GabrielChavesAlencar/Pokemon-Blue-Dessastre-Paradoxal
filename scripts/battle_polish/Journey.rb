@@ -49,6 +49,15 @@ module BlueJourney
   module TrainerStart
     def start_core(*args)
       if BlueCampaign.active?
+        # The legacy 2v2 gym adapter keys off a trainer's displayed name.
+        # Luis is also a completely different FRLG Swimmer in Cerulean.
+        # All BLUE_KANTO_* teams have exact, compiled PBS identities; never
+        # rewrite them to the legacy " (2v2 Full Power)" alias or force doubles.
+        kanto_team = args.flatten.any? do |value|
+          (value.is_a?(String) || value.is_a?(Symbol)) &&
+            value.to_s.start_with?("BLUE_KANTO_")
+        end
+        return super(*args) if kanto_team
         # TrainerBattle accepts flattened triples and nested trainer descriptors.
         convert=proc do |value|
           if value.is_a?(Array)
