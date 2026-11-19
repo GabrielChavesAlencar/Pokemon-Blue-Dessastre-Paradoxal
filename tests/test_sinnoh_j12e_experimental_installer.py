@@ -339,5 +339,22 @@ class J12EInstallerTests(unittest.TestCase):
         self.assertNotIn("exit /b 2",launcher)
         self.assertEqual((game/"Data/MapInfos.rxdata").read_bytes(),b"original")
 
+    def test_46_pristine_tilesets_are_included_in_manifest_hashes(self):
+        # No system game or native map/saves are needed for this contract.
+        source=Path(exp.__file__).read_text("utf-8")
+        self.assertIn('final["Data/sinnoh-experimental-tilesets-pristine.bin"]=final["Data/Tilesets.rxdata"]',source)
+        self.assertIn('sha(content) for path,content in final.items()',source)
+        self.assertIn('File.delete("Data/sinnoh-experimental-compile-request.txt")',source)
+        content=b"RPG Tilesets synthetic fixture, exact byte preservation"
+        report={"profile_token":"abc123abc123","mapids":{},
+                "save_profile":{},"file_sha256":{}}
+        outputs={"Data/Tilesets.rxdata":content,
+                 "Data/sinnoh-experimental-tilesets-pristine.bin":content}
+        qa=exp.install_copy(self.base,outputs,report,self.proj)
+        self.assertEqual((qa/"Data/Tilesets.rxdata").read_bytes(),content)
+        self.assertEqual((qa/"Data/sinnoh-experimental-tilesets-pristine.bin").read_bytes(),content)
+        self.assertNotEqual((qa/"Data/Tilesets.rxdata").stat().st_ino,
+                            (qa/"Data/sinnoh-experimental-tilesets-pristine.bin").stat().st_ino)
+
 if __name__=="__main__":
     unittest.main()
