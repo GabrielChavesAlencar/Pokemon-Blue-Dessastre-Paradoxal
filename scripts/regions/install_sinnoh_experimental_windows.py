@@ -476,8 +476,15 @@ def install_copy(base:Path,outputs:dict,report:dict,project:Path=ROOT):
     project=safe_path(project)
     base=safe_path(base)
     work=safe_path(project/REPO_OUTPUT)
-    if project==base or project.is_relative_to(base) or base.is_relative_to(project):
+    # The Blue-Story managed layout is ROOT/game beside ROOT/.blue-work.
+    # This overlap is EXPECTED: only the private .blue-work copy is writable.
+    # Reject all other nested layouts and any project contained by game.
+    managed_game = project / "game"
+    if (project == base or project.is_relative_to(base) or
+        (base.is_relative_to(project) and base != managed_game)):
         fail("INSTALLER_SOURCE_AND_GAME_OVERLAP")
+    if work.is_relative_to(base) or work == base:
+        fail("QA_OUTPUT_MUST_BE_OUTSIDE_GAME")
     dest=work/(QA_DIR+"-"+report["profile_token"])
     if dest.exists() or dest.is_symlink() or work.is_symlink():
         fail("OUTPUT_EXISTS_OR_UNSAFE")
