@@ -336,7 +336,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $recent=@(gh api "repos/$env:GITHUB_REPOSITORY/releases?per_page=100" | ConvertFrom-Json |
+          $recent=@(gh api --paginate --slurp "repos/$env:GITHUB_REPOSITORY/releases?per_page=100" | ConvertFrom-Json | ForEach-Object { $_ } |
             Where-Object { $_.tag_name -like 'kanto-android-*' -and -not $_.draft -and
               @($_.assets | Where-Object { $_.name -eq 'Blue-Android-Kanto-Piloto.update.json' }).Count -gt 0 } |
             Sort-Object published_at -Descending)

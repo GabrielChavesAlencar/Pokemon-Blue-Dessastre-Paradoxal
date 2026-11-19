@@ -415,6 +415,46 @@ class AndroidUpdatesTest(unittest.TestCase):
             best = release_for("multiregion")
         self.assertEqual(best["tag_name"], "android-multiregion-15-125155e")
 
+    def test_kanto_release_on_fourth_page_is_discovered(self):
+        def kanto(tag, published):
+            row = self._release(tag, published)
+            for asset in row["assets"]:
+                asset["name"] = asset["name"].replace(
+                    "Blue-Android-Decades-Kanto-Hoenn", "Blue-Android-Kanto-Piloto")
+                asset["browser_download_url"] = asset["browser_download_url"].replace(
+                    "Blue-Android-Decades-Kanto-Hoenn", "Blue-Android-Kanto-Piloto")
+            return row
+
+        older = kanto("kanto-android-1205-old", "2026-11-12T12:00:00Z")
+        latest = kanto("kanto-android-1206-latest", "2026-11-18T23:00:00Z")
+        unrelated = [self._release(f"battle-hub-{i}",
+                                   "2026-11-18T20:00:00Z")
+                     for i in range(100)]
+        visited = []
+
+        def fake(url):
+            visited.append(url)
+            if "page=4" in url:
+                return [older, latest]
+            if "page=2" in url or "page=3" in url or "per_page=100" in url:
+                return unrelated
+            return []
+
+        with patch("scripts.android.update_client.get_json", side_effect=fake):
+            found = release_for("kanto")
+        self.assertEqual(found["tag_name"], "kanto-android-1206-latest")
+        self.assertTrue(any("page=4" in url for url in visited))
+
+    def test_release_history_exhaustion_fails_closed(self):
+        unrelated = [self._release(f"battle-hub-{i}",
+                                   "2026-11-18T20:00:00Z")
+                     for i in range(100)]
+        with patch("scripts.android.update_client.get_json",
+                   return_value=unrelated) as request:
+            with self.assertRaisesRegex(ValueError, "safe scan limit"):
+                release_for("kanto")
+        self.assertEqual(request.call_count, 100)
+
     def test_release_selector_ignores_drafts_and_missing_manifest(self):
         releases = [
             self._release("android-multiregion-20-draft",

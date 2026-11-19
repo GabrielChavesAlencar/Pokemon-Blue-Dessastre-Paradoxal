@@ -90,7 +90,10 @@ def release_for(channel):
     # multiregion-15 and the previous client downgraded the installed game.
     # Examine every retrieved page and choose the newest *published* release.
     candidates = []
-    for page in range(1, 4):
+    # The archive can be pushed to page four or later by unrelated releases.
+    # Continue until GitHub returns a short page; never silently accept a
+    # partial history when the scan limit is reached.
+    for page in range(1, 101):
         url = API + "/releases?per_page=100" + ("&page=" + str(page) if page > 1 else "")
         entries = get_json(url)
         if not isinstance(entries, list):
@@ -103,6 +106,8 @@ def release_for(channel):
                 candidates.append(release)
         if len(entries) < 100:
             break
+    else:
+        raise ValueError("GitHub release history exceeds the safe scan limit; update refused.")
     if not candidates:
         raise ValueError("No verified Android release found for channel: " + channel)
     # published_at is authoritative: tag numbers and GitHub result order are not.
