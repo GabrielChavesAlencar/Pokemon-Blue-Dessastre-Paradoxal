@@ -6,6 +6,8 @@ on:
       - 'scripts/android/publish_updates.py'
       - 'scripts/android/verify_kanto_cerulean.py'
       - 'tests/test_android_updates.py'
+      - 'tests/test_multiregion_release_pagination.py'
+      - 'scripts/android/select_previous_multiregion_releases.py'
       - 'tests/fixtures/android_updater_launcher_20261117.py'
       - '.github/workflows/android-multiregion.yml'
       - '.github/workflows/android-updater-regression.yml'
@@ -16,6 +18,8 @@ on:
       - 'scripts/android/publish_updates.py'
       - 'scripts/android/verify_kanto_cerulean.py'
       - 'tests/test_android_updates.py'
+      - 'tests/test_multiregion_release_pagination.py'
+      - 'scripts/android/select_previous_multiregion_releases.py'
       - '.github/workflows/android-multiregion.yml'
       - '.github/workflows/android-updater-regression.yml'
 permissions:
@@ -39,3 +43,4 @@ jobs:
           set -euo pipefail
           python -m py_compile scripts/android/update_client.py scripts/android/publish_updates.py scripts/android/verify_kanto_cerulean.py
           python -m unittest discover -s tests -p test_android_updates.py -v
+          python -m unittest discover -s tests -p test_multiregion_release_pagination.py -v
