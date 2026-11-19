@@ -65,7 +65,12 @@ internal static class Bootstrap {
                     form.Shown+=async delegate {
                         bool experimentalSelected=false;
                         try {
-                            await Task.Run((Action)Prepare);
+                            // The Sinnoh QA choice MUST be available before the
+                            // Kanto/Hoenn/Johto main-game installer runs. A partially
+                            // installed Kanto (e.g. 142/145 maps) must not hide the
+                            // isolated Sinnoh test option or cause map overwrites.
+                            if(Hub)await Task.Run((Action)Prepare);
+                            else await Task.Run((Action)PrepareSourceOnly);
                             if(!Hub) {
                                 title.Text="Escolha como deseja jogar";
                                 info.Text="Campanha principal: Decades/Kanto/Hoenn/Johto.\n"+
@@ -93,6 +98,13 @@ internal static class Bootstrap {
                                     await Task.Run(delegate { experimental.WaitForExit(); });
                                     form.Close();return;
                                 }
+                                // Only the main campaign runs full installation and
+                                // regional Kanto checks. Sinnoh above uses a read-only
+                                // baseline and its own isolated QA directory.
+                                title.Text="Verificando a instalacao da campanha...";
+                                info.Text="Conferindo Kanto, Hoenn e Johto na instalacao principal.\n"+
+                                    "Em caso de mapa incompleto, a campanha sera bloqueada sem sobrescrever arquivos.";
+                                await Task.Run((Action)Prepare);
                             }
                             if(!Hub && !JohtoReady() && JohtoFilesPresent()) {
                                 title.Text="Johto encontrada, mas precisa de reparo";
@@ -425,7 +437,9 @@ internal static class Bootstrap {
         Say("[JOHTO] ZIP privado encontrado ao lado do Blue-Story.exe; preparado automaticamente antes do Game.exe.");
     }
 
-    static void Prepare() {
+    static void PrepareSourceOnly() { Prepare(true); }
+    static void Prepare() { Prepare(false); }
+    static void Prepare(bool sourceOnly) {
         foreach(var p in Process.GetProcessesByName("Game"))try { if(String.Equals(p.MainModule.FileName,Path.Combine(Root,"game","Game.exe"),StringComparison.OrdinalIgnoreCase))throw new Exception("Feche o jogo antes de atualizar a instalacao."); }catch(System.ComponentModel.Win32Exception){}
         string marker=Path.Combine(Root,".blue-work","launcher-revision.txt");
         Say("Conferindo a ultima versao da main...");string revision;
@@ -447,6 +461,13 @@ internal static class Bootstrap {
             string cache=Path.GetFullPath(Path.Combine(Root,".blue-work"))+Path.DirectorySeparatorChar;
             if(Path.GetFullPath(stage).StartsWith(cache,StringComparison.OrdinalIgnoreCase) && Path.GetFileName(stage)=="source-"+revision)Directory.Delete(stage,true);
             if(Path.GetFullPath(zip).StartsWith(cache,StringComparison.OrdinalIgnoreCase) && Path.GetFileName(zip)=="source-"+revision+".zip")File.Delete(zip);
+        }
+        if(sourceOnly) {
+            // Download public source only. Running install_game.py here would
+            // check/repair Kanto before the user can select the Sinnoh pilot.
+            // Do NOT touch game/Data, plugins, Game.exe or saves.
+            Say("[MENU] Codigo pronto; escolha campanha ou piloto Sinnoh isolado.");
+            return;
         }
         StageEmbeddedJohto();
         StageAdjacentJohto();

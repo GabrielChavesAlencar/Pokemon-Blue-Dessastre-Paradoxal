@@ -7,6 +7,14 @@ O Blue-Story.exe passa a apresentar **dois botões** após preparar a instalaç�
 
 Também há **Fechar**, que encerra o Blue-Story sem iniciar o jogo.
 
+## Correção de inicialização: Kanto 142/145 não bloqueia o menu
+
+A partir desta revisão, o Blue-Story atualiza **somente o código público antes de apresentar a escolha**. As verificações e atualizações de Kanto, Hoenn e Johto ocorrem **apenas quando o jogador seleciona "Jogar campanha"**. Portanto, um Kanto antigo que registre 142 mapas dos 145 previstos **não impede** clicar em **"Testar piloto Sinnoh"**. O piloto continua usando cópia privada QA do jogo existente e não modifica a instalação Kanto parcialmente verificada.
+
+A validação de Kanto **não foi removida ou falsificada**. Ao selecionar a campanha, o instalador ainda exige integridade regional e continua bloqueando a execução quando houver incompatibilidade real (como 142/145). O reparo dos três mapas ausentes depende de fonte original/manifestos apropriados e não pode sobrescrever os MapIDs ou saves existentes automaticamente. Consulte `.blue-work/kanto-install-status.json` e `.blue-work/kanto-install.log` na sua máquina para identificar o Kanto instalado e planejar uma correção segura.
+
+O novo fluxo é: **sincronizar fontes → exibir menu → escolher campanha ou Sinnoh → só instalar/verificar Kanto para a campanha**. Isso evita obrigar o piloto de Sinnoh a passar por uma correção potencialmente arriscada de Kanto.
+
 ## Como usar
 
 1. **Atualize seu Blue-Story.exe**, baixando o binário da release [Blue-Story Windows](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/releases/tag/blue-story-windows) **depois da publicação do PR**. A autoatualização do código não substitui por si só um EXE Windows antigo, por isso este download é importante.
