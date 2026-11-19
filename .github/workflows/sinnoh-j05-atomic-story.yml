@@ -181,7 +181,7 @@ jobs:
           if (Test-Path ".blue-work/game-sinnoh-qa-abcdef123456") { throw "J06 QA fixture escaped temp directory" }
 
   j07-private-qa-linux:
-    name: J07 / Linux 50 synthetic G12 cases: 43 Windows + 1 Android pending
+    name: "J07 / Linux 50 synthetic G12 cases: 43 Windows + 1 Android pending"
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:

@@ -28,7 +28,7 @@ permissions:
   contents: read
 jobs:
   j06-private-qa-linux:
-    name: J06 / 42 synthetic checks: hashes, rights, MapIDs, rollback & foreign saves
+    name: "J06 / 42 synthetic checks: hashes, rights, MapIDs, rollback & foreign saves"
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
