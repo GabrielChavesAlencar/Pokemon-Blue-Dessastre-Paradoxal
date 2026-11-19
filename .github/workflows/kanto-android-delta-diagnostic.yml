@@ -1,0 +1,102 @@
+name: Kanto Android - diagnostico somente leitura de deltas
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/kanto-android-delta-diagnostic.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Baixar apenas manifestos publicados de Kanto
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for tag in kanto-android-2659-ba020a5 kanto-android-1205-f4b574e kanto-android-696-5eda49e kanto-android-690-6c78aa4 kanto-android-676-b2c2aeb kanto-android-670-20089a5; do
+            mkdir -p ".blue-work/kanto-delta/$tag"
+            gh release download "$tag" --pattern 'Blue-Android-Kanto-Piloto.update.json' --dir ".blue-work/kanto-delta/$tag"
+          done
+      - name: Identificar bloqueio real dos deltas sem acessar arquivos do jogo
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          base = Path('.blue-work/kanto-delta')
+          tags = (
+              'kanto-android-1205-f4b574e',
+              'kanto-android-696-5eda49e',
+              'kanto-android-690-6c78aa4',
+              'kanto-android-676-b2c2aeb',
+              'kanto-android-670-20089a5',
+          )
+          asset = 'Blue-Android-Kanto-Piloto.update.json'
+          def read(tag):
+              data = json.loads((base / tag / asset).read_text(encoding='utf-8'))
+              if (data.get('schema') != 1 or data.get('channel') != 'kanto'
+                  or not isinstance(data.get('immutable'), dict)
+                  or not isinstance(data.get('files'), dict)):
+                  raise ValueError('Manifesto incompatível de ' + tag)
+              return data
+
+          new = read('kanto-android-2659-ba020a5')
+          output = []
+          for tag in tags:
+              old = read(tag)
+              earlier = dict(old['immutable'])
+              current = dict(new['immutable'])
+              earlier.pop('ATUALIZAR-ANDROID.py', None)
+              current.pop('ATUALIZAR-ANDROID.py', None)
+              changed_immutable = []
+              for name in sorted(set(earlier) | set(current)):
+                  if earlier.get(name) != current.get(name):
+                      changed_immutable.append({
+                          'name': name,
+                          'old_size': (earlier.get(name) or {}).get('size'),
+                          'new_size': (current.get(name) or {}).get('size'),
+                          'old_sha12': str((earlier.get(name) or {}).get('sha256',''))[:12],
+                          'new_sha12': str((current.get(name) or {}).get('sha256',''))[:12],
+                      })
+              old_files = old['files']
+              new_files = new['files']
+              changed = {name: meta for name, meta in new_files.items() if old_files.get(name) != meta}
+              output.append({
+                  'baseline': tag, 'old_revision': old['revision'],
+                  'new_revision': new['revision'],
+                  'immutable_compatible': not changed_immutable,
+                  'changed_immutable': changed_immutable,
+                  'changed_file_count': len(changed),
+                  'changed_file_total_bytes': sum(m['size'] for m in changed.values()),
+                  'removed_file_count': len(set(old_files) - set(new_files)),
+                  'top_changed_files': [
+                      {'name': name, 'new_size': meta['size']}
+                      for name, meta in sorted(changed.items(), key=lambda x: x[1]['size'], reverse=True)[:8]
+                  ],
+              })
+          report = {'release': 'kanto-android-2659-ba020a5', 'published_patch_count':len(new.get('patches',[])),
+                    'full_zip_size':(new.get('full') or {}).get('size'), 'baselines':output}
+          rendered = json.dumps(report, ensure_ascii=False, indent=2)
+          print(rendered)
+          Path('.blue-work/kanto-delta/report.json').write_text(rendered+'\n',encoding='utf8')
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a',encoding='utf8') as f:
+              f.write('## Kanto Android - bloqueios do delta\n')
+              f.write('Diagnostico somente leitura de manifests publicados; nao altera nem valida saves.\n\n')
+              for row in output:
+                  f.write('- `'+row['baseline']+'`: imutaveis compativeis = `'+str(row['immutable_compatible'])+'`; arquivos protegidos divergentes = `'+str(len(row['changed_immutable']))+'`; arquivos alterados = `'+str(row['changed_file_count'])+'`.\n')
+          PY
+      - name: Preservar evidencia de compatibilidade somente leitura
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-android-delta-diagnostic
+          path: .blue-work/kanto-delta/report.json
+          if-no-files-found: error
+          retention-days: 14
