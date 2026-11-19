@@ -175,4 +175,15 @@ class BlueStorySinnohMenuTests(unittest.TestCase):
         self.assertIn('main_game_modified',self.csharp)
         self.assertIn('native_qa_cases_approved',self.csharp)
 
+    def test_29_show_actual_python_code2_failure_in_dialog(self):
+        self.assertIn('var tail=new Queue<string>();',self.csharp)
+        self.assertIn('if(process.ExitCode!=0) {',self.csharp)
+        self.assertIn('Motivo: ',self.csharp)
+        self.assertIn('while(tail.Count>5)tail.Dequeue();',self.csharp)
+
+    def test_30_repair_must_not_bypass_native_kanto_gate(self):
+        self.assertIn('if(!Hub && !experimentalSelected)',self.csharp)
+        self.assertIn('if(sourceOnly) {',self.csharp)
+        self.assertIn('Run(python,install.ToArray(),pathExtra);',self.csharp)
+
 if __name__=="__main__":unittest.main()

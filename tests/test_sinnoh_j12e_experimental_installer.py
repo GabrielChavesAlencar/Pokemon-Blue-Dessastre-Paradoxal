@@ -220,5 +220,49 @@ class J12EInstallerTests(unittest.TestCase):
         self.assertEqual(x["native_windows_cases_executed"]+x["native_android_cases_executed"],0)
         self.assertFalse(x["main_game_modified"])
 
+    def test_37_blues_story_managed_game_subfolder_can_make_private_qa_copy(self):
+        # Real Blue-Story layout: project/game is the read-only input;
+        # project/.blue-work is the ONLY destination. Old overlap guard
+        # incorrectly rejected every user installation in this layout.
+        project=self.root/"managed-BlueStory"
+        game=project/"game"
+        game.mkdir(parents=True)
+        for relative in ("Game.exe","Game.ini","mkxp.json","Data/MapInfos.rxdata",
+                         "Data/Tilesets.rxdata","Data/Scripts.rxdata","Data/System.rxdata"):
+            dst=game/relative
+            dst.parent.mkdir(parents=True,exist_ok=True)
+            dst.write_bytes(b"synthetic original - never changed")
+        saves=game/"Saves"/"File A.rxdata"
+        saves.parent.mkdir()
+        saves.write_bytes(b"private synthetic save")
+        data={"Data/Map442.rxdata":b"synthetic QA map",
+              "Data/MapInfos.rxdata":b"synthetic QA infos",
+              "mkxp.json":b'{"dataPathApp":"SinnohQA"}'}
+        report={"profile_token":"a1b2c3d4e5f6","mapids":{"QA":442},
+                "save_profile":{"dataPathApp":"SinnohQA"},
+                "file_sha256":{k:exp.sha(v) for k,v in data.items()}}
+        out=exp.install_copy(game,data,report,project)
+        self.assertTrue((out/"INICIAR_SINNOH_EXPERIMENTAL.bat").is_file())
+        self.assertTrue(out.is_relative_to(project/".blue-work"))
+        self.assertEqual((game/"Data/MapInfos.rxdata").read_bytes(),
+                         b"synthetic original - never changed")
+        self.assertEqual(saves.read_bytes(),b"private synthetic save")
+        self.assertFalse((out/"Saves").exists())
+        self.assertEqual((out/"Data/Map442.rxdata").read_bytes(),b"synthetic QA map")
+
+    def test_38_reject_any_other_nested_game_directory(self):
+        project=self.root/"managed-BlueStory"
+        game=project/"other-game"
+        game.mkdir(parents=True)
+        self.reject(lambda:exp.install_copy(game,{},{"profile_token":"aaa"},project))
+
+    def test_39_reject_qa_workdir_inside_game_source(self):
+        project=self.root/"custom-root"
+        game=project/"game"
+        game.mkdir(parents=True)
+        # Even if a future layout points at the game's own directory,
+        # direct copies into the source tree must never be accepted.
+        self.reject(lambda:exp.install_copy(game,{},{"profile_token":"aaa"},game))
+
 if __name__=="__main__":
     unittest.main()
