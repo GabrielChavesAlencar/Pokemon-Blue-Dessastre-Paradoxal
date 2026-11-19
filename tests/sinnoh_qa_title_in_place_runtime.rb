@@ -68,6 +68,10 @@ def setup_copy(folder)
     File.write(File.join(folder, filename), content)
     hashes[filename] = Digest::SHA256.hexdigest(content)
   end
+  pristine = "Data/sinnoh-experimental-tilesets-pristine.bin"
+  File.binwrite(File.join(folder,pristine),
+                File.binread(File.join(folder,"Data/Tilesets.rxdata")))
+  hashes[pristine] = hashes["Data/Tilesets.rxdata"]
   proof = "a" * 64
   File.write(File.join(folder, "Data/sinnoh-experimental-compiled.txt"), proof)
   manifest = {
@@ -135,6 +139,33 @@ Dir.mktmpdir("blue-sinnoh-qa-title-") do |home|
     assert(!BlueKantoTitle.sinnoh_experimental_ready?,
            "invalid Barry compilation token must block new game")
     File.write(file, "a" * 64)
+    # First-run native compiler may rewrite Tilesets after the signed-in-copy
+    # SHA snapshot. Never silently accept/rebaseline the compiler output.
+    tile_path = "Data/Tilesets.rxdata"
+    pristine_path = "Data/sinnoh-experimental-tilesets-pristine.bin"
+    pristine_bytes = File.binread(pristine_path)
+    File.binwrite(tile_path, "compiler-generated different tilesets")
+    assert(!BlueKantoTitle.sinnoh_experimental_maps_ready?,
+           "first compiler rewrite must block until a fresh process")
+    assert(BlueKantoTitle.sinnoh_qa_last_error.include?("Tilesets QA restaurado"),
+           "QA explains trusted restore and restart without approving gameplay")
+    assert(File.binread(tile_path) == pristine_bytes,
+           "restored bytes must exactly match preverified original")
+    assert(BlueKantoTitle.sinnoh_experimental_maps_ready?,
+           "a fresh validation of restored exact bytes must succeed")
+
+    # Missing or altered backup must NEVER authorize repair/bypass.
+    File.binwrite(tile_path, "compiler-generated different tilesets")
+    File.binwrite(pristine_path, "tampered backup")
+    assert(!BlueKantoTitle.sinnoh_experimental_maps_ready?,
+           "corrupt pristine backup must fail closed")
+    assert(BlueKantoTitle.sinnoh_qa_last_error.include?(tile_path),
+           "corrupt backup must be diagnosed as a real checksum mismatch")
+    assert(File.binread(tile_path) == "compiler-generated different tilesets",
+           "invalid backup must not overwrite the QA tilesets")
+    File.binwrite(pristine_path, pristine_bytes)
+    File.binwrite(tile_path, pristine_bytes)
+
     File.write("Data/Map443.rxdata", "corrupted map")
     assert(!BlueKantoTitle.sinnoh_experimental_maps_ready?,
            "edited/corrupted map cannot pass map-only gate")

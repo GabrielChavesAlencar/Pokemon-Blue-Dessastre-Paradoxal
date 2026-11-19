@@ -328,6 +328,9 @@ def patch_bootstrap(raw:bytes,token:str):
         File.delete("Data/sinnoh-experimental-compile-request.txt")
       rescue StandardError => error
         File.write("Data/sinnoh-experimental-compile-error.txt", error.full_message)
+        # Stop retriggering the compiler forever on an invalid Barry candidate.
+        # Barry stays blocked: do NOT create the compiled marker on failure.
+        File.delete("Data/sinnoh-experimental-compile-request.txt")
       end
       exit
     end
@@ -434,6 +437,10 @@ def build_files(base:Path,project:Path=ROOT):
     sysdata.attrs.update({"@start_map_id":mapping["SINNOH_PLAYER_BEDROOM"],
                           "@start_x":start[0],"@start_y":start[1]})
     final["Data/System.rxdata"]=serialize(sysdata,SYSTEM_CLASSES)
+    # A native first-run compiler may regenerate Tilesets.rxdata. The title
+    # may restore only these exact preverified bytes, never accept a new hash.
+    # This is inside the isolated QA copy, never the user's main installation.
+    final["Data/sinnoh-experimental-tilesets-pristine.bin"]=final["Data/Tilesets.rxdata"]
     proof=sha(("SinnohExperimental:"+token+sha(final["Data/MapInfos.rxdata"])).encode())
     final["Data/sinnoh-experimental-compile-request.txt"]=proof.encode("ascii")
     # These hashes do not claim human rights approval, or native gameplay acceptance.

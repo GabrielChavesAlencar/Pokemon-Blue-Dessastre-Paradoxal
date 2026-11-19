@@ -76,6 +76,29 @@ module BlueSinnohQA
     state.pack("N8").unpack("H*").first
   end
 
+  # Restore a first-boot compiler rewrite ONLY from an exact preverified copy.
+  # This never changes the manifest, trusts a newly calculated hash, or
+  # approves maps/Bary. Caller must require a new Game.exe process because
+  # the current Ruby runtime may already have loaded the changed tilesets.
+  def self.restore_pristine_tilesets(path, expected, hashes)
+    original = "Data/sinnoh-experimental-tilesets-pristine.bin"
+    return false unless path == "Data/Tilesets.rxdata" &&
+      hashes.is_a?(Hash) && hashes[original] == expected &&
+      File.file?(original) && !File.symlink?(original) &&
+      File.file?(path) && !File.symlink?(path) &&
+      sha256_file(original) == expected
+    File.open(original,"rb") do |src|
+      File.open(path,"wb") do |dst|
+        while (chunk = src.read(32768))
+          dst.write(chunk)
+        end
+      end
+    end
+    sha256_file(path) == expected
+  rescue StandardError
+    false
+  end
+
   class JSONReader
     def initialize(text)
       raise ArgumentError, "QA_JSON_TOO_LARGE" if text.bytesize > 2*1024*1024
@@ -309,8 +332,13 @@ module BlueKantoTitle
           hash.is_a?(String) && hash.match?(/\A[a-f0-9]{64}\z/)
         return sinnoh_qa_block("Mapa ou indice ausente ou inseguro: " + file) unless
           File.file?(file) && !File.symlink?(file)
-        return sinnoh_qa_block("Mapa ou indice alterado (SHA-256): " + file) unless
-          BlueSinnohQA.sha256_file(file) == hash
+        if BlueSinnohQA.sha256_file(file) != hash
+          if file == "Data/Tilesets.rxdata" &&
+             BlueSinnohQA.restore_pristine_tilesets(file, hash, files)
+            return sinnoh_qa_block("Tilesets QA restaurado de copia original verificada. Feche esta janela e reabra a copia Sinnoh QA para carregar os tilesets corretos.")
+          end
+          return sinnoh_qa_block("Mapa ou indice alterado (SHA-256): " + file)
+        end
       end
       true
     rescue StandardError, LoadError => error
