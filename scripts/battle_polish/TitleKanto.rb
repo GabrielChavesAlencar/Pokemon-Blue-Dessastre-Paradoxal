@@ -24,7 +24,7 @@ module BlueKantoTitle
                         BlueSinnohExperimental.const_defined?(:TOKEN, false) &&
                         BlueSinnohExperimental.const_defined?(:START, false)
     token = BlueSinnohExperimental::TOKEN
-    return false unless token.is_a?(String) && token.match?(/\\A[a-f0-9]{12}\\z/)
+    return false unless token.is_a?(String) && token.match?(/\A[a-f0-9]{12}\z/)
     File.basename(Dir.pwd) == "game-sinnoh-experimental-" + token
   rescue IOError, SystemCallError, ArgumentError
     false
@@ -69,7 +69,7 @@ module BlueKantoTitle
                           !File.exist?("Data/sinnoh-experimental-compile-error.txt")
       proof = data["compile_token"]
       return false unless proof.is_a?(String) &&
-                          proof.match?(/\\A[a-f0-9]{64}\\z/) &&
+                          proof.match?(/\A[a-f0-9]{64}\z/) &&
                           File.read(marker).strip == proof
       ids = data["mapids"]
       files = data["file_sha256"]
@@ -86,7 +86,7 @@ module BlueKantoTitle
                  ids.values.map { |id| sprintf("Data/Map%03d.rxdata", id) }
       return false unless required.all? { |file|
         hash = files[file]
-        hash.is_a?(String) && hash.match?(/\\A[a-f0-9]{64}\\z/) &&
+        hash.is_a?(String) && hash.match?(/\A[a-f0-9]{64}\z/) &&
           File.file?(file) && !File.symlink?(file) &&
           Digest::SHA256.file(file).hexdigest == hash
       }
