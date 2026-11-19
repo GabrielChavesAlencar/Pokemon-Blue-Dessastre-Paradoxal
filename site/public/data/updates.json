@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b27697521611e6ad199fae40034de17f141ef228",
+      "date": "2026-11-19T16:51:20-03:00",
+      "title": "fix(android): liberar compilação multirregional Cerulean no CI [android-kanto-release]",
+      "category": "Correções"
+    },
+    {
       "sha": "87d0e17761ea1bf2f3531188ebd4e5897d000100",
       "date": "2026-11-19T14:35:44-03:00",
       "title": "feat(Blue-Story): automatically recover and relaunch same isolated Sinnoh QA copy",
