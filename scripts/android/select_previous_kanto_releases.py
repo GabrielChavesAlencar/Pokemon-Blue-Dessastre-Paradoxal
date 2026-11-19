@@ -76,7 +76,8 @@ def fetch_release_pages(repo: str, token: str, *,
     Windows gh-to-python pipeline supplied zero bytes to stdin in the actual
     Kanto release run. Use Python HTTP directly and refuse incomplete data.
     """
-    if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repo or ""):
+    if (not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repo or "")
+            or any(part in (".", "..") for part in repo.split("/"))):
         raise ValueError("Invalid GitHub repository")
     if not token:
         raise ValueError("GH_TOKEN missing; release discovery refused")
