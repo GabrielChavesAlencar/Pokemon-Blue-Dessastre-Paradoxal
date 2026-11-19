@@ -70,6 +70,14 @@ class CeruleanNorthContract(unittest.TestCase):
         self.assertNotIn("pbSetSelfSwitch(31", builder)
         self.assertNotIn("TrainerBattle.start(:RIVAL1", builder)
 
+    def test_04_android_ready_gate_accepts_only_verified_old_and_new_registry(self):
+        source = (ROOT / "scripts/battle_polish/RegionStart.rb").read_text("utf-8")
+        self.assertIn('["142", "145"].include?(fields[1])', source)
+        self.assertIn('pairs.length == expected_count', source)
+        self.assertIn('maps.values.uniq.length == expected_count', source)
+        self.assertIn('["53", "54", "55"].all?', source)
+        self.assertIn('pbRgssExists?(sprintf("Data/Map%03d.rxdata", id))', source)
+
     @unittest.skipUnless((SOURCE / "Data/MapInfos.rxdata").is_file(),
                          "Original pinned FRLG source unavailable in fixture CI")
     def test_04_real_source_coordinates_and_event_id(self):
