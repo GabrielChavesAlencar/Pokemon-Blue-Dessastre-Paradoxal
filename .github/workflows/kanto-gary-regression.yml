@@ -11,6 +11,8 @@ on:
       - 'scripts/regions/auto_integrate_kanto.py'
       - 'tests/kanto_gary_battle_runtime.rb'
       - 'tests/kanto_cerulean_android_runtime.rb'
+      - 'tests/kanto_journey_trainer_runtime.rb'
+      - 'scripts/battle_polish/Journey.rb'
       - 'scripts/regions/pilot.py'
       - 'scripts/regions/verify_pilot.py'
       - 'tests/kanto_blackout_runtime.rb'
@@ -22,6 +24,8 @@ on:
       - 'scripts/regions/pilot.py'
       - 'scripts/regions/verify_pilot.py'
       - 'tests/kanto_cerulean_android_runtime.rb'
+      - 'tests/kanto_journey_trainer_runtime.rb'
+      - 'scripts/battle_polish/Journey.rb'
       - '.github/workflows/kanto-gary-regression.yml'
   workflow_dispatch:
 permissions:
@@ -43,6 +47,8 @@ jobs:
         run: ruby tests/kanto_gary_battle_runtime.rb scripts/regions/KantoPilot.rb
       - name: JoiPlay - Luis/Diana, erros e revanches
         run: ruby tests/kanto_cerulean_android_runtime.rb scripts/regions/KantoPilot.rb
+      - name: JoiPlay - nome do Luis preservado no PBS Kanto
+        run: ruby tests/kanto_journey_trainer_runtime.rb scripts/battle_polish/Journey.rb
       - name: Blackout e preservacao de progresso
         run: ruby tests/kanto_blackout_runtime.rb scripts/regions/KantoPilot.rb
       - name: Atualizador de PBS Kanto
