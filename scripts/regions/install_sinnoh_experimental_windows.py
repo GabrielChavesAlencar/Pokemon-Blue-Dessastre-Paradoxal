@@ -297,7 +297,7 @@ def runtime_config(base:Path,token:str):
     if count!=1:fail("GAME_INI_TITLE_NOT_UNIQUE")
     return (json.dumps(config,ensure_ascii=False,indent=2)+"\n").encode(),result.encode(),profile
 
-def patch_bootstrap(raw:bytes,token:str):
+def patch_bootstrap(raw:bytes,token:str,map_ids=()):
     """Require real Essentials Compiler and all three Barry PBS data; no fake success."""
     rows=Marshal(raw).read()
     matches=[row for row in rows if isinstance(row,list) and len(row)>=3 and row[1]==b"Main"]
@@ -309,7 +309,13 @@ def patch_bootstrap(raw:bytes,token:str):
     if code.count(anchor)!=1 or code.count(compiler)!=1 or code.index(anchor)>=code.index(compiler):
         fail("ESSENTIALS_MAIN_BOOTSTRAP_NOT_RECOGNIZED")
     if "sinnoh-experimental-compile-request" in code:fail("QA_ALREADY_PATCHED")
-    hook="""    if File.file?("sinnoh-experimental-qa.json") && File.file?("Data/sinnoh-experimental-compile-request.txt")
+    if not re.fullmatch(r"[a-f0-9]{12}",token):fail("INVALID_QA_TOKEN")
+    if map_ids and (len(map_ids)!=9 or len(set(map_ids))!=9 or
+                    any(type(n) is not int or not 442<=n<=517 for n in map_ids)):
+        fail("INVALID_QA_COMPILE_MAP_IDS")
+    scope='File.basename(Dir.pwd) == "game-sinnoh-experimental-'+token+'" && '
+    scope+='File.file?("sinnoh-experimental-qa.json") && File.file?("Data/sinnoh-experimental-compile-request.txt")'
+    hook="""    if __QA_SCOPE__
       $DEBUG = true
       %w[PluginScripts.rxdata trainers.dat].each do |name|
         path = "Data/#{name}"
@@ -317,7 +323,7 @@ def patch_bootstrap(raw:bytes,token:str):
       end
     end
 """
-    verify="""    if File.file?("sinnoh-experimental-qa.json") && File.file?("Data/sinnoh-experimental-compile-request.txt")
+    verify="""    if __QA_SCOPE__
       begin
         GameData::Trainer.load
         unless (0..2).all? { |v| GameData::Trainer.exists?(:BLUE_SINNOH_RIVAL, "Barry", v) }
@@ -335,7 +341,33 @@ def patch_bootstrap(raw:bytes,token:str):
       exit
     end
 """
-    code=code.replace(anchor,hook+anchor).replace(compiler,compiler+"\n"+verify)
+    # Essentials normalizes transfer events (door SFX/fades) during PBS
+    # compilation and rewrites their maps. These authored QA files are pinned
+    # byte-for-byte by the title/supervisor. Preserve their verified input bytes
+    # only across this compiler call, without accepting new hashes or touching
+    # other maps, trainer output, the source game or a later gameplay session.
+    protected=[f"Data/Map{mid:03d}.rxdata" for mid in map_ids]
+    protected += ["Data/MapInfos.rxdata","Data/Tilesets.rxdata"] if map_ids else []
+    guarded="""    blue_sinnoh_native_sources = nil
+    if __QA_SCOPE__
+      blue_sinnoh_native_sources = {}
+      %w[__QA_PROTECTED__].each do |path|
+        blue_sinnoh_native_sources[path] = File.binread(path)
+      end
+    end
+    begin
+      Compiler.main
+    ensure
+      if blue_sinnoh_native_sources
+        blue_sinnoh_native_sources.each do |path, original|
+          File.binwrite(path, original) if File.binread(path) != original
+        end
+      end
+    end
+"""
+    guarded=guarded.replace("__QA_PROTECTED__"," ".join(protected))
+    code=code.replace(anchor,hook+anchor).replace(compiler,guarded+verify)
+    code=code.replace("__QA_SCOPE__",scope)
     main[2]=RubyString(zlib.compress(code.encode("utf-8")))
     return b"\x04\x08"+dump(rows)
 
@@ -418,7 +450,7 @@ def build_files(base:Path,project:Path=ROOT):
         "Graphics/Characters/SNQA_NPC.png":sprite_png("NPC"),
         "Graphics/Characters/SNQA_BALL.png":sprite_png("BALL"),
         "Data/System.rxdata":None,
-        "Data/Scripts.rxdata":patch_bootstrap((base/"Data/Scripts.rxdata").read_bytes(),token),
+        "Data/Scripts.rxdata":patch_bootstrap((base/"Data/Scripts.rxdata").read_bytes(),token,ids),
         "mkxp.json":config,"Game.ini":game_ini,
         # Only inside the NEW private QA copy. Blue-Story source-only sync
         # cannot update the installed main-game title when Kanto is 142/145.

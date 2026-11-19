@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - scripts/windows/**
+      - scripts/regions/install_sinnoh_experimental_windows.py
+      - tests/test_blue_story_sinnoh_compile_guard.py
       - scripts/regions/auto_integrate_johto.py
       - scripts/regions/johto_main_preview.py
       - scripts/install_game.py
@@ -24,6 +26,7 @@ on:
       - scripts/regions/install_sinnoh_experimental_windows.py
       - scripts/regions/generate_sinnoh_four_exteriors_j11b.py
       - tests/test_blue_story_sinnoh_menu.py
+      - tests/test_blue_story_sinnoh_compile_guard.py
       - .github/workflows/blue-story-windows.yml
   workflow_dispatch:
 
@@ -56,6 +59,8 @@ jobs:
         run: python -m unittest discover -s tests -p test_sinnoh_j12e_experimental_installer.py -v
       - name: Validar reinicio automatico e integridade da copia QA Sinnoh
         run: python -m unittest discover -s tests -p test_blue_story_sinnoh_supervisor.py -v
+      - name: Preservar mapas autorais durante compilacao nativa de eventos
+        run: python -m unittest discover -s tests -p test_blue_story_sinnoh_compile_guard.py -v
       - name: Compilar e executar self-test do Blue-Story
         run: python scripts/windows/build.py
       - name: Verificar o executável Windows
