@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4ad3a74638d8ca75510786e0dd5c36a4d018e189",
+      "date": "2026-11-24T13:32:39-03:00",
+      "title": "Sinnoh F01: private QA teleport and full-region expansion catalog",
+      "category": "Melhorias"
+    },
+    {
       "sha": "70f30819d2db5360b23f7b7881ffc5b194bafb34",
       "date": "2026-11-24T13:09:35-03:00",
       "title": "Sinnoh: cover early pilot encounters and Route 202 trainers",
