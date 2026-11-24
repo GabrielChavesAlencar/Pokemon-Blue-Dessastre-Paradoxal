@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "217ada280faf603e7d1d38f1886e41a7431f3664",
+      "date": "2026-11-24T11:18:07-03:00",
+      "title": "Sinnoh: native map continuity and original local BGM",
+      "category": "Melhorias"
+    },
+    {
       "sha": "e5656e0df720ef14f06b7c7ba48ccf3121657440",
       "date": "2026-11-24T10:55:04-03:00",
       "title": "Sinnoh: auto-download original archives from the existing launcher",
