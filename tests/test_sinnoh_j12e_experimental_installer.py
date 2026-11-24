@@ -115,6 +115,10 @@ class J12EInstallerTests(unittest.TestCase):
         self.assertEqual(set(pv.SPRITES),{"MOTHER","BARRY","ROWAN"})
         self.assertIn("pbChangePlayer(9)",exp.experiment_plugin([442,10,8],"abc123abc123",True).decode())
         self.assertNotIn("pbChangePlayer(9)",exp.experiment_plugin([442,10,8],"abc123abc123").decode())
+        dual=exp.experiment_plugin([442,10,8],"abc123abc123",True,True).decode()
+        self.assertIn('["Lucas", "Dawn"]',dual)
+        self.assertIn("pbChangePlayer(choice == 1 ? 10 : 9)",dual)
+        self.assertIn("pbChangePlayer(10)",exp.experiment_plugin([442,10,8],"abc123abc123",False,True).decode())
 
     def test_private_map_component_rejects_blocked_seed_and_disconnected_tiles(self):
         pv=exp.private_visual
