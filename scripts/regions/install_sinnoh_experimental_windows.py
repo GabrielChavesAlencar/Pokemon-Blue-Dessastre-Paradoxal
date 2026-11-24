@@ -374,7 +374,7 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False):
     ensure
       if blue_sinnoh_native_sources
         blue_sinnoh_native_sources.each do |path, original|
-          File.binwrite(path, original) if File.binread(path) != original
+          File.binwrite(path, original) if !File.file?(path) || File.binread(path) != original
         end
       end
     end
