@@ -273,6 +273,61 @@ class J12EInstallerTests(unittest.TestCase):
         self.assertEqual(len(read_marshal(out["Data/map_connections.dat"],"LIVE_CONNECTIONS")),3)
         print("SINNOH_REAL_SOURCE_3_SEAMS_7_BGM_9_MAPS_OK",flush=True)
 
+    @unittest.skipUnless(os.environ.get("BLUE_SINNOH_PRIVATE_SOURCE"),"Requires explicitly supplied private archives")
+    def test_live_private_continuity_and_audio_lakefront_story(self):
+        pv=exp.private_visual
+        source=Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"])
+        mapping={**self.mapping,pv.LAKEFRONT:451}
+        (self.base/"Data/map_connections.dat").write_bytes(serialize([]))
+        (self.base/"PBS/map_connections.txt").write_bytes(b"# Synthetic isolated baseline\n")
+        (self.base/"PBS/map_metadata.txt").write_bytes(b"[002]\nName = Synthetic\n")
+        maps=exp.visual.upgrade(self.ready,self.mapping,self.meta["tileset_ids"],self.events,self.start)
+        maps,components,imported=pv.apply_maps(maps,mapping,source)
+        self.assertEqual(len(imported),10)
+        self.assertEqual(imported[pv.LAKEFRONT]["source_id"],195)
+        self.assertEqual(len(components[pv.LAKEFRONT]),103)
+        maps,events,start=exp.compile_events(maps,mapping,components,{**pv.ANCHORS,**pv.INTERIOR_ANCHORS})
+        out,report=pv.bind_audio_and_connections(maps,mapping,components,source,self.base)
+        self.assertEqual([p["reachable_seam_tiles"] for p in report["connections"]],[8,5,6,4,0,0])
+        self.assertEqual(len(report["audio_files"]),7)
+        out,story=pv.extend_lake_story(out,mapping,components)
+        self.assertEqual(story["portal_pairs"],2)
+        self.assertEqual(story["autoruns"],5)
+        self.assertEqual(len(read_marshal(out["Data/map_connections.dat"],"LIVE_CONNECTIONS")),6)
+        infos=read_marshal(out["Data/MapInfos.rxdata"],"LIVE_INFOS")
+        self.assertEqual(infos[451].attrs["@name"],b"Verity Lakefront")
+        count=0;autoruns=[]
+        for sym,mid in mapping.items():
+            m=read_marshal(out["Data/Map%03d.rxdata"%mid],"LIVE_MAP")
+            es=m.attrs["@events"];count+=len(es)
+            for event in es.values():
+                xy=(event.attrs["@x"],event.attrs["@y"])
+                self.assertIn(xy,components[sym])
+                pages=event.attrs["@pages"]
+                if pages[0].attrs["@trigger"]==3:
+                    self.assertEqual(len(pages),2)
+                    self.assertTrue(pages[1].attrs["@condition"].attrs["@self_switch_valid"])
+                    autoruns.append(event.attrs["@name"])
+            if sym==pv.LAKEFRONT:
+                self.assertEqual({(e.attrs["@x"],e.attrs["@y"]) for e in es.values()},{(10,2),(11,2)})
+                for e in es.values():
+                    ops=e.attrs["@pages"][0].attrs["@list"]
+                    self.assertEqual(ops[0].attrs["@code"],111)
+                    self.assertEqual(ops[1].attrs["@parameters"][1],mapping["SINNOH_LAKE_VERITY"])
+        self.assertEqual(count,32)
+        self.assertEqual(len(autoruns),5)
+        self.assertIn(b"SN_PROFILE_SETUP",autoruns)
+        print("SINNOH_REAL_10_MAPS_4_WALK_SEAMS_2_VISUAL_2_PORTALS_32_EVENTS_OK",flush=True)
+
+    def test_expanded_profile_only_runs_after_map_initialization(self):
+        code=exp.experiment_plugin([442,10,8],"abc123abc123",True,True,story_profile=True).decode()
+        self.assertNotIn("pbChangePlayer(",code)
+        self.assertIn("bedroom autorun",code)
+        source=(ROOT/"scripts/regions/SinnohPilot.rb").read_text("utf-8")
+        self.assertIn("pbTrainerName",source)
+        self.assertIn('state["sinnoh_profile_complete"] = true',source)
+        self.assertIn('["Lucas", "Dawn"]',source)
+
     def test_private_connection_plan_rejects_missing_duplicate_and_blocked_edges(self):
         pv=exp.private_visual
         raw=b"194,N,2,193,S,0\n193,E,0,192,W,4\n192,N,0,191,S,6\n"
