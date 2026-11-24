@@ -194,8 +194,8 @@ internal static class Bootstrap {
     static string PrepareSinnohTestCopy() {
         if(Hub)throw new Exception("Sinnoh experimental so pode ser iniciada pelo Blue-Story.");
         string game=Path.Combine(Root,"game");
-        if(!File.Exists(Path.Combine(game,"Game.exe")))
-            throw new Exception("Game.exe principal nao encontrado; prepare a base primeiro.");
+        // The Python Sinnoh entrypoint provisions a fresh managed base only
+        // after explicit selection; an existing installation remains read-only.
         string python=Runtime("python","python.exe");
         string git=Runtime("git",Path.Combine("cmd","git.exe"));
         string receipt=Path.Combine(Root,".blue-work","blue-story-sinnoh-launch.json");
