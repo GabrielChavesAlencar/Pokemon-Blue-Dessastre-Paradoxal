@@ -80,6 +80,14 @@ def city_atlases(raw,sets):
 
 def append(blobs,mapping,components,path,occupied,root=ROOT):
     expanded=allocate(mapping,occupied,root)
+    return append_exteriors(blobs,mapping,components,path,expanded,rows(root),"F04")
+
+def append_exteriors(blobs,mapping,components,path,expanded,source_rows,phase):
+    # Appending only; existing tileset indices and map bytes are immutable.
+    if not all(expanded.get(k)==v for k,v in mapping.items()) or len(set(expanded.values()))!=len(expanded):
+        fail("INVALID_APPEND_MAPPING")
+    if set(expanded)-set(mapping)!={r["symbol"] for r in source_rows}:
+        fail("INVALID_APPEND_ROWS")
     out=dict(blobs);comps=dict(components);report={}
     infos=read_marshal(out["Data/MapInfos.rxdata"],"F04_TARGET_INFOS")
     tiles=read_marshal(out["Data/Tilesets.rxdata"],"F04_TARGET_TILES")
@@ -95,10 +103,10 @@ def append(blobs,mapping,components,path,occupied,root=ROOT):
         if source.attrs["@tileset_name"]!=b"outdoors":fail("SOURCE_TILESET")
         tables={k:pv.table(source.attrs[k],7880) for k in ("@passages","@priorities","@terrain_tags")}
         sets={};source_cells={}
-        for row in rows(root):
+        for row in source_rows:
             sym,mid=row["symbol"],row["source_id"]
             info=donor_infos[mid].attrs
-            if info["@name"]!=row["label"].encode("ascii") or info["@parent_id"]!=0:fail("SOURCE_CITY_NOT_EXTERIOR")
+            if info["@name"]!=row.get("source_name",row["label"]).encode("ascii") or info["@parent_id"]!=row.get("parent_id",0):fail("SOURCE_EXTERIOR_IDENTITY")
             raw=pv.member(z,pv.MAP_ROOT+"Data/Map%03d.rxdata"%mid)
             if hashlib.sha256(raw).hexdigest()!=row["sha256"]:fail("SOURCE_MAP_HASH")
             w,h=row["width"],row["height"]
@@ -118,12 +126,12 @@ def append(blobs,mapping,components,path,occupied,root=ROOT):
                 raise ValueError("F04_CITY:"+sym+":"+str(exc)) from exc
         atlases=city_atlases(pv.member(z,pv.MAP_ROOT+"Graphics/Tilesets/outdoors.png"),sets)
     order=max(v.attrs["@order"] for v in infos.values())
-    for row in rows(root):
+    for row in source_rows:
         sym=row["symbol"];mid=expanded[sym];w,h=row["width"],row["height"];n=w*h*3
         atlas,remap=atlases[sym];tid=len(tiles)
         if tid>=5000:fail("TILESET_CAPACITY")
         tile=copy.deepcopy(source);a=tile.attrs
-        name="SNQA_F04_%03d"%row["source_id"]
+        name="SNQA_%s_%03d"%(phase,row["source_id"])
         a.update({"@id":tid,"@name":name.encode("ascii"),"@tileset_name":name.encode("ascii"),
                   "@autotile_names":copy.deepcopy(tiles[existing_tile].attrs["@autotile_names"])})
         total=384+((len(remap)+7)//8)*8
@@ -146,7 +154,7 @@ def append(blobs,mapping,components,path,occupied,root=ROOT):
         info=copy.deepcopy(infos[mapping["SINNOH_SANDGEM_TOWN"]]);order+=1
         info.attrs.update({"@name":row["label"].encode("ascii"),"@parent_id":0,"@order":order})
         infos[mid]=info
-        pbs+=("\n# F04 private exterior\n[%03d]\nName = %s\nOutdoor = true\nShowArea = true\nBicycle = true\nSnapEdges = true\n"%(mid,row["label"])).encode("ascii")
+        pbs+=("\n# %s private exterior\n[%03d]\nName = %s\nOutdoor = true\nShowArea = true\nBicycle = true\nSnapEdges = true\n"%(phase,mid,row["label"])).encode("ascii")
         report[sym]={"source_id":row["source_id"],"target_id":mid,"width":w,"height":h,
                      "source_sha256":row["sha256"],"source_tileset_id":24,"target_tileset_id":tid,
                      "safe_spawn":[mid,x,y],"model_connected_cells":len(comps[sym]),
