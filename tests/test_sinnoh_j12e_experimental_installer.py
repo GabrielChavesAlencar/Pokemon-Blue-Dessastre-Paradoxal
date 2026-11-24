@@ -741,6 +741,15 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
             mid,x,y=portal["from"];dst,dx,dy=portal["to"]
             self.assertEqual(f07_masks[mid][y][x],".")
             self.assertEqual(f07_masks[dst][dy][dx],".")
+            if portal["approach_witness"] is not None:
+                self.assertEqual(connection.distance(portal["from"][1:],portal["original_from"][1:]),1)
+                self.assertEqual(portal["trigger"],0)
+                witnesses=[p for p in cr["portals"] if p["source_id"]==portal["target_source_id"]
+                    and p["source_event_id"]==portal["approach_witness"] and p["target_source_id"]==portal["source_id"]]
+                self.assertEqual(len(witnesses),1)
+                self.assertEqual(witnesses[0]["to"],portal["from"])
+            if any(p["to"]==portal["from"] for p in cr["portals"]):
+                self.assertEqual(portal["trigger"],0)
         self.assertEqual(f08_maps["Data/Tilesets.rxdata"],f07_maps["Data/Tilesets.rxdata"])
         self.assertEqual(f08_maps["Data/MapInfos.rxdata"],f07_maps["Data/MapInfos.rxdata"])
         self.assertEqual(exp.qa_teleport.build(f08_maps,f07_ids,f07_components),f07_entries)
@@ -1246,6 +1255,26 @@ raise "duplicate battle" unless $calls==4
         fade_out.attrs["@parameters"]=[tone,8]
         page.attrs["@condition"].attrs["@switch1_valid"]=True
         self.assertEqual(c.classify_transfer(event),(None,"page_conditions"))
+
+    def test_f08_reciprocal_door_approach_and_loop_guard(self):
+        c=exp.connection_expansion
+        # Real Oreburgh pair from job 138799290004: the center exit is
+        # blocked at (15,16), its incoming landing is (15,15).
+        entry={"source_id":22,"source_event_id":13,"target_source_id":43,
+            "from":[443,50,18],"to":[533,15,15],"trigger":1,"approach_witness":None}
+        exit={"source_id":43,"source_event_id":4,"target_source_id":22,
+            "from":[533,15,16],"to":[443,50,18],"trigger":1}
+        self.assertEqual(c.portal_approach(exit,[entry,exit],{(15,15),(15,14)}),((15,15),13))
+        self.assertEqual(c.portal_approach(exit,[exit],{(15,15)}),(None,None))
+        self.assertEqual(c.portal_approach(exit,[entry,exit],{(15,14)}),(None,None))
+        self.assertEqual(c.portal_approach(exit,[entry,{**entry,"source_event_id":14},exit],{(15,15)}),(None,None))
+        adjusted={**exit,"from":[533,15,15],"approach_witness":13}
+        selected=c.select_portals([entry,adjusted])
+        self.assertEqual(len(selected),2)
+        self.assertTrue(all(r["trigger"]==0 for r in selected))
+        self.assertEqual(c.select_portals([adjusted]),[])
+        self.assertEqual(c.select_portals([entry,adjusted,{**entry,"source_event_id":14}]),[])
+        self.assertEqual(c.select_portals([{**entry,"source_event_id":14},adjusted]),[])
 
     def test_f07_capacity_and_save_namespace_append_only(self):
         city=exp.city_expansion

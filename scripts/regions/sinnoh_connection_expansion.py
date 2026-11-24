@@ -120,6 +120,42 @@ def safe_cells(world,tiles,symbol):
         (stack:=[cells[z*w*h+y*w+x] for z in range(3) if cells[z*w*h+y*w+x]])
         and all(i<len(p) and i<len(t) and not p[i]&15 and t[i] in allowed for i in stack)}
 
+def distance(a,b):
+    return abs(a[0]-b[0])+abs(a[1]-b[1])
+
+def portal_approach(record,raw,safe):
+    """Use only a unique adjacent landing from an actual reciprocal event.
+    Never change passage bits, guess a nearest tile, or change the destination.
+    """
+    origin=tuple(record["from"][1:])
+    if origin in safe:return origin,None
+    matches=[r for r in raw if r["source_id"]==record["target_source_id"]
+        and r["target_source_id"]==record["source_id"]
+        and distance(r["from"][1:],record["to"][1:])<=1
+        and distance(r["to"][1:],origin)==1 and tuple(r["to"][1:]) in safe]
+    if len(matches)!=1:return None,None
+    return tuple(matches[0]["to"][1:]),matches[0]["source_event_id"]
+
+def select_portals(candidates):
+    """No ambiguous positions; action portals at shared arrival tiles.
+    Require a surviving exact reciprocal witness for adjusted approach tiles.
+    """
+    positions=Counter(tuple(r["from"]) for r in candidates)
+    pool=[dict(r) for r in candidates if positions[tuple(r["from"])]==1]
+    while True:
+        keys={(r["source_id"],r["source_event_id"],r["target_source_id"]) for r in pool}
+        edges={(r["source_id"],r["target_source_id"]) for r in pool}
+        kept=[r for r in pool if (r["target_source_id"],r["source_id"]) in edges
+            and (r["approach_witness"] is None or
+                 (r["target_source_id"],r["approach_witness"],r["source_id"]) in keys)]
+        if len(kept)==len(pool):break
+        pool=kept
+    landings={tuple(r["to"]) for r in pool}
+    for r in pool:
+        if r["approach_witness"] is not None or tuple(r["from"]) in landings:
+            r["trigger"]=0
+    return pool
+
 def append(blobs,mapping,components,path,root=ROOT):
     if set(mapping)!=interior.ALL or len(set(mapping.values()))!=127:raise ValueError("F08_MAPIDS")
     source,directed,reciprocal=graph(root)
@@ -130,7 +166,7 @@ def append(blobs,mapping,components,path,root=ROOT):
     occupied={s:{(e.attrs["@x"],e.attrs["@y"]) for e in m.attrs["@events"].values()} for s,m in worlds.items()}
     entries=city.teleport.build(blobs,mapping,components,root)
     arrivals={r[0]:tuple(r[3][1:]) for r in entries if r[3]}
-    candidates=[];rejected=Counter();shapes=Counter();diagnostics=[]
+    raw_candidates=[];candidates=[];rejected=Counter();shapes=Counter();diagnostics=[]
     with pv.verified_archive(path,"maps") as z:
         for a,row in source.items():
             raw=pv.member(z,pv.MAP_ROOT+"Data/Map%03d.rxdata"%a)
@@ -155,32 +191,46 @@ def append(blobs,mapping,components,path,root=ROOT):
                 if (a,b) not in reciprocal_dirs:reject("outside_or_nonreciprocal");continue
                 dest=source[b]["symbol"]
                 if sym in city.OLD or dest in city.OLD:reject("protected_opening");continue
-                if (x,y) not in safe[sym]:reject("source_cell_not_safe");continue
-                if (dx,dy) not in safe[dest]:reject("destination_cell_not_safe");continue
-                if not any(n in safe[sym] for n in city.teleport.neighbours(x,y)):reject("source_no_safe_neighbour");continue
-                if not any(n in safe[dest] for n in city.teleport.neighbours(dx,dy)):reject("destination_no_safe_neighbour");continue
-                if (x,y) in occupied[sym] or (dx,dy) in occupied[dest]:reject("existing_event_collision");continue
-                if abs(x-arrivals[sym][0])+abs(y-arrivals[sym][1])<=1:reject("qa_arrival_reserved");continue
-                candidates.append({"source_id":a,"source_event_id":eid,"target_source_id":b,"symbol":sym,
+                wa,wb=worlds[sym].attrs,worlds[dest].attrs
+                if not (0<=x<wa["@width"] and 0<=y<wa["@height"] and 0<=dx<wb["@width"] and 0<=dy<wb["@height"]):
+                    reject("coordinate_out_of_bounds");continue
+                raw_candidates.append({"source_id":a,"source_event_id":eid,"target_source_id":b,"symbol":sym,
                     "from":[mapping[sym],x,y],"to":[mapping[dest],dx,dy],"direction":direction,"fade":fade,"trigger":event.attrs["@pages"][0].attrs["@trigger"]})
         donor_seams=pv.parse_connections(pv.member(z,pv.MAP_ROOT+"PBS/map_connections.txt"))
+    for r in raw_candidates:
+        sym=r["symbol"];dest=source[r["target_source_id"]]["symbol"]
+        mid,x,y=r["from"];dst,dx,dy=r["to"]
+        def reject_geometry(reason):
+            rejected[reason]+=1
+            diagnostics.append({"source_id":r["source_id"],"event_id":r["source_event_id"],"reason":reason,
+                "targets":[r["target_source_id"]],"from_xy":[x,y],"to_xy":[dx,dy]})
+        if (dx,dy) not in safe[dest]:reject_geometry("destination_cell_not_safe");continue
+        if (x,y) in occupied[sym] or (dx,dy) in occupied[dest]:reject_geometry("existing_event_collision");continue
+        approach,witness=portal_approach(r,raw_candidates,safe[sym])
+        if approach is None:reject_geometry("source_cell_not_safe");continue
+        if approach in occupied[sym]:reject_geometry("existing_event_collision");continue
+        if not any(n in safe[sym] for n in city.teleport.neighbours(*approach)):reject_geometry("source_no_safe_neighbour");continue
+        if not any(n in safe[dest] for n in city.teleport.neighbours(dx,dy)):reject_geometry("destination_no_safe_neighbour");continue
+        if distance(approach,arrivals[sym])<=1:reject_geometry("qa_arrival_reserved");continue
+        candidates.append({**r,"original_from":r["from"],"from":[mid,*approach],"approach_witness":witness})
+    kept=select_portals(candidates)
+    keys={(r["source_id"],r["source_event_id"]) for r in kept}
     positions=Counter(tuple(r["from"]) for r in candidates)
-    portals=[r for r in candidates if positions[tuple(r["from"])]==1 and tuple(r["to"]) not in positions]
-    rejected["ambiguous_or_loop_arrival"]+=len(candidates)-len(portals)
-    edges={(r["source_id"],r["target_source_id"]) for r in portals}
-    kept=[r for r in portals if (r["target_source_id"],r["source_id"]) in edges]
-    rejected["no_safe_reverse"]+=len(portals)-len(kept)
-    for group,reason in (([r for r in candidates if r not in portals],"ambiguous_or_loop_arrival"),
-                         ([r for r in portals if r not in kept],"no_safe_reverse")):
-        for r in group:
-            diagnostics.append({"source_id":r["source_id"],"event_id":r["source_event_id"],
-                "reason":reason,"targets":[r["target_source_id"]],"from_xy":r["from"][1:],"to_xy":r["to"][1:]})
+    for r in candidates:
+        if (r["source_id"],r["source_event_id"]) in keys:continue
+        reason="ambiguous_position" if positions[tuple(r["from"])]>1 else "no_safe_reverse"
+        rejected[reason]+=1
+        diagnostics.append({"source_id":r["source_id"],"event_id":r["source_event_id"],"reason":reason,
+            "targets":[r["target_source_id"]],"from_xy":r["from"][1:],"to_xy":r["to"][1:]})
     out=dict(blobs);changed=set()
     for r in kept:
         sym=r["symbol"];mid,x,y=r["from"];dest,dx,dy=r["to"]
         events=worlds[sym].attrs["@events"];eid=max(events,default=0)+1
         page=event_page(warp=(dest,dx,dy),touch=r["trigger"]!=0)
         page.attrs["@trigger"]=r["trigger"]
+        # Action on the safe approach tile must allow walking through it.
+        # The original blocked door/wall remains unchanged.
+        page.attrs["@through"]=True
         # An action-button portal must not become an automatic touch warp.
         page.attrs["@list"][0].attrs["@parameters"][4:6]=[r["direction"],r["fade"]]
         events[eid]=ruby("RPG::Event",id=eid,name=("SN_F08_PORTAL_%d_%d"%(r["source_id"],r["source_event_id"])).encode("ascii"),x=x,y=y,pages=[page])
@@ -216,6 +266,8 @@ def append(blobs,mapping,components,path,root=ROOT):
     report={"source_maps":123,"directed_candidates":145,"reciprocal_candidates":69,"portals":kept,"seams":seams,
         "portal_directed_accepted":len(accepted),"portal_directed_pending":len(directed-accepted),"rejected":dict(rejected),
         "maps_with_new_events":len(changed),"native_verified":False,"all_connections_approved":False,
-        "portal_pairs_accepted":sum(a<b and (b,a) in accepted for a,b in accepted)}
+        "portal_pairs_accepted":sum(a<b and (b,a) in accepted for a,b in accepted),
+        "approach_portals":sum(r["approach_witness"] is not None for r in kept),
+        "action_portals":sum(r["trigger"]==0 for r in kept)}
     print("SINNOH_F08_CONNECTION_REPORT "+json.dumps(report,sort_keys=True),flush=True)
     return out,report
