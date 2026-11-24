@@ -2,9 +2,33 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "805f9253951216e4987d427362579d3916cad2ad",
+      "date": "2026-11-24T20:53:38-03:00",
+      "title": "Merge pull request #297 from GabrielChavesAlencar/sinnoh-full-expansion-f10b4-double-battles",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "5ecba8c1f7800df567e3a0aae098aa8b8ff98976",
+      "date": "2026-11-24T20:41:50-03:00",
+      "title": "Fix stale single-trainer regression fixture and record real F10B4 evidence",
+      "category": "Melhorias"
+    },
+    {
       "sha": "f28ad9e06e02cf45133b63bc60fdcc169f064d5c",
       "date": "2026-11-24T20:41:12-03:00",
       "title": "Merge pull request #296 from GabrielChavesAlencar/sinnoh-full-expansion-f10b3-trainer-variants",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "f43e93b885c45a32b313f9806517e9bd80db143d",
+      "date": "2026-11-24T20:35:54-03:00",
+      "title": "Keep single-trainer fixture separate from reserved double-battle keys",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "ea5b8eea7ea816210da7ce3afb3988efafcb18f8",
+      "date": "2026-11-24T20:35:43-03:00",
+      "title": "Sinnoh F10B4: atomic double trainers, scoped Master offsets and safe stationary candidate",
       "category": "Melhorias"
     },
     {
