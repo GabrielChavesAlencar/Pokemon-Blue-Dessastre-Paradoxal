@@ -35,6 +35,7 @@ import prepare_sinnoh_nine_original_j11c as j11c
 import sinnoh_visual_qa as visual
 import sinnoh_private_visual as private_visual
 import sinnoh_qa_teleport as qa_teleport
+import sinnoh_forest_edge as forest_edge
 from audit_sinnoh_rxdata import read_marshal
 from audit_sinnoh_twinleaf_events import MAPS,HANDLERS as CH06_HANDLERS,BALLS as CH06_BALLS
 from build_sinnoh_twinleaf_events import HANDLERS as SCRIPT_HANDLERS
@@ -401,7 +402,7 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile
     guarded=guarded.replace("__QA_PROTECTED__"," ".join(protected))
     late = ""
     if story_profile:
-        late = '\n    if File.basename(Dir.pwd) == "game-sinnoh-experimental-'+token+'" && File.file?("sinnoh-experimental-qa.json")\n      BlueSinnohExperimental.install_fresh_hooks!\n      BlueSinnohSafeMovement.install!\n      BlueSinnohQATeleport.install!\n      if defined?(EventHandlers)\n        EventHandlers.add(:on_enter_map, :blue_sinnoh_hide_starter_balls, proc { |*args| BlueSinnohPilot.hide_starter_balls; BlueSinnohPilot.sync_route_trainers })\n      end\n    end'
+        late = '\n    if File.basename(Dir.pwd) == "game-sinnoh-experimental-'+token+'" && File.file?("sinnoh-experimental-qa.json")\n      BlueSinnohExperimental.install_fresh_hooks!\n      BlueSinnohSafeMovement.install!\n      BlueSinnohQATeleport.install!\n      BlueSinnohForestEdge.install!\n      if defined?(EventHandlers)\n        EventHandlers.add(:on_enter_map, :blue_sinnoh_hide_starter_balls, proc { |*args| BlueSinnohPilot.hide_starter_balls; BlueSinnohPilot.sync_route_trainers })\n      end\n    end'
     if save_token is not None:
         if not re.fullmatch(r"[a-f0-9]{12}",save_token):fail("INVALID_SAVE_PROFILE_TOKEN")
         # The original Auto Multi Save plugin falls back to "." if the
@@ -673,6 +674,8 @@ def build_files(base:Path,project:Path=ROOT):
     movement=b""
     teleport=b""
     teleport_entries=[]
+    forest_code=b""
+    forest_report={}
     encounter_coverage={}
     route_trainers=[]
     if "maps" in sources:
@@ -694,6 +697,8 @@ def build_files(base:Path,project:Path=ROOT):
             maps["Graphics/Characters/SNQA_"+role+".png"]=sprite_png("NPC")
         teleport_entries=qa_teleport.build(maps,mapping,components,project)
         teleport=qa_teleport.plugin(teleport_entries,project)
+        forest_png,forest_code,forest_report=forest_edge.build(maps,mapping,project)
+        maps[forest_edge.TEXTURE]=forest_png
         story["grass_guard"]=True
         story["visual_only_connections_omitted"]=2
         ids=list(mapping.values())
@@ -723,7 +728,7 @@ def build_files(base:Path,project:Path=ROOT):
         f"{INTRO_PLUGIN}/SinnohPilot.rb":(project/"scripts/regions/SinnohPilot.rb").read_bytes(),
         f"{INTRO_PLUGIN}/meta.txt":b"Name = Blue Sinnoh Intro\nVersion = 0.1\nEssentials = 21.1\nScripts = SinnohPilot.rb\n",
         f"{EXPERIMENT_PLUGIN}/SinnohExperimentalStart.rb":experiment_plugin(
-                  [mapping["SINNOH_PLAYER_BEDROOM"],*start],token,platinum_player,platinum_dawn,story_profile=bool(story))+b"\n"+movement+b"\n"+teleport,
+                  [mapping["SINNOH_PLAYER_BEDROOM"],*start],token,platinum_player,platinum_dawn,story_profile=bool(story))+b"\n"+movement+b"\n"+teleport+b"\n"+forest_code,
         f"{EXPERIMENT_PLUGIN}/meta.txt":b"Name = Blue Sinnoh Experimental\nVersion = 0.1\nEssentials = 21.1\nRequires = Blue Sinnoh Intro\nScripts = SinnohExperimentalStart.rb\n",
     })
     sysdata=read_marshal((base/"Data/System.rxdata").read_bytes(),"BASE_SYSTEM")
@@ -756,6 +761,7 @@ def build_files(base:Path,project:Path=ROOT):
         "visual_revision":"SINNOH_ORIGINAL_PIXEL_ART_V2",
         "private_continuity":continuity,
         "private_lake_story":story,
+        "forest_edge":forest_report,
         "qa_teleport":{"catalog_count":len(teleport_entries),"available_count":sum(row[3] is not None for row in teleport_entries),"destinations":teleport_entries,"native_verified":False},
         "encounter_coverage":encounter_coverage,"route202_trainers":route_trainers,
         "visual_native_reviewed":False,

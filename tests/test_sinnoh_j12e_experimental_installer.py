@@ -41,6 +41,87 @@ class J12EInstallerTests(unittest.TestCase):
             cls.infos,cls.tiles,cls.ids,occupied={2},protected=set(),
             synthetic_fixture=True)
         cls.ready,cls.events,cls.start=exp.compile_events(cls.empty,cls.mapping)
+    @unittest.skipUnless(shutil.which("ruby"),"Requires Ruby runtime")
+    def test_f02_forest_only_fills_void_respects_maps_and_disposes(self):
+        script=(exp.ROOT/"scripts/regions/SinnohForestEdge.rb").read_text("utf-8").replace("__F02_MAP_IDS__","[442,443]")
+        fixture=r'''
+module BlueSinnohExperimental
+  def self.private_copy?; $private; end
+end
+Map=Struct.new(:map_id)
+Tile=Struct.new(:tile_id)
+class Bitmap
+  attr_reader :disposed
+  def initialize(path); raise "wrong art" unless path.end_with?("SNQA_ForestEdge.png"); end
+  def disposed?; !!@disposed; end
+  def dispose; @disposed=true; end
+end
+class Rect
+  attr_reader :args
+  def set(*args); @args=args; end
+end
+class Sprite
+  attr_accessor :bitmap,:z,:zoom_x,:zoom_y,:x,:y,:tone,:color,:visible
+  attr_reader :src_rect
+  def initialize(viewport); @src_rect=Rect.new; end
+  def disposed?; !!@disposed; end
+  def dispose; @disposed=true; end
+end
+class TilemapRenderer
+  DISPLAY_TILE_WIDTH=32;DISPLAY_TILE_HEIGHT=32;ZOOM_X=1;ZOOM_Y=1
+  attr_reader :tiles
+  def initialize
+    @viewport=Object.new
+    @tiles=[[[Tile.new(0),Tile.new(0),Tile.new(0)],
+             [Tile.new(400),Tile.new(0),Tile.new(0)]],
+            [[Tile.new(0),Tile.new(49),Tile.new(0)],
+             [Tile.new(0),Tile.new(0),Tile.new(0)]]]
+    @pixel_offset_x=5;@pixel_offset_y=7
+    @tile_offset_x=1;@tile_offset_y=2
+    @tone=:night;@color=:flash
+  end
+  def update; :native_result; end
+  def dispose; @native_disposed=true; end
+end
+load ARGV[0]
+$private=false;$game_map=Map.new(442)
+BlueSinnohForestEdge.install!
+raise "global hook" if TilemapRenderer.ancestors.include?(BlueSinnohForestEdge::Renderer)
+$private=true
+BlueSinnohForestEdge.install!
+BlueSinnohForestEdge.install!
+r=TilemapRenderer.new
+raise "native update return" unless r.update==:native_result
+sprites=r.instance_variable_get(:@blue_sinnoh_forest_sprites)
+raise "painted real tiles" unless sprites.keys.sort==[[0,0],[1,1]]
+s=sprites[[0,0]]
+raise "wrong position" unless [s.x,s.y,s.z,s.src_rect.args]==[-5,-7,-1000,[32,0,32,32]]
+raise "wrong tone" unless s.tone==:night && s.color==:flash
+r.tiles[0][0][0].tile_id=401
+r.update
+raise "seam overwritten" if s.visible
+r.tiles[0][0][0].tile_id=0
+r.update
+raise "lost background" unless s.visible && sprites[[0,0]].equal?(s)
+$game_map.map_id=999
+r.update
+raise "foreign map affected" if sprites.values.any?(&:visible)
+$game_map.map_id=443
+r.update
+raise "connected map lost" unless s.visible
+$private=false
+r.update
+raise "outside QA affected" if sprites.values.any?(&:visible)
+bitmap=s.bitmap
+r.dispose
+raise "resource leak" unless bitmap.disposed? && s.disposed? && sprites.empty?
+raise "native dispose skipped" unless r.instance_variable_get(:@native_disposed)
+'''
+        with tempfile.TemporaryDirectory() as tmp:
+            rb=Path(tmp)/"edge.rb";rb.write_text(script,encoding="utf-8")
+            result=subprocess.run([shutil.which("ruby"),"-e",fixture,str(rb)],capture_output=True,text=True,timeout=30)
+        self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+
     def test_f01_catalog_has_all_cities_routes_and_no_unverified_ids(self):
         rows=exp.qa_teleport.catalog()
         self.assertEqual(len({r["symbol"] for r in rows}),len(rows))
@@ -481,6 +562,35 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
             proc=subprocess.run([shutil.which("ruby"),"-c"],input=exp.qa_teleport.plugin(entries),capture_output=True,timeout=30)
             self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
         print("SINNOH_REAL_10_SAFE_QA_TELEPORT_DESTINATIONS_OK",flush=True)
+        before=dict(expanded)
+        tex,code,forest=exp.forest_edge.build(expanded,mapping)
+        self.assertEqual(before,expanded)
+        self.assertEqual(forest["map_ids"],sorted(mapping[sym] for sym in pv.donor_maps(mapping)))
+        self.assertEqual(len(forest["map_ids"]),6)
+        self.assertFalse(forest["geometry_changed"])
+        self.assertEqual(exp.qa_teleport.build(expanded,mapping,components),entries)
+        self.assertEqual(pv.movement_masks(expanded,mapping),masks)
+        width,height,rgba=exp.forest_edge.atlas_pixels(
+            pv.png(256,64,b"\xff"*(256*64*4)))
+        self.assertEqual((width,height),(256,64))
+        self.assertEqual(pv.dims(tex),(64,64))
+        self.assertIn(forest["art"],("local_repeated_green_blocked_donor_patch","original_tree_fallback"))
+        # Validate the generated texture is opaque, and syntax of runtime hook.
+        import zlib,struct
+        pos=8;parts=[]
+        while pos+12<=len(tex):
+            n=struct.unpack_from(">I",tex,pos)[0]
+            if tex[pos+4:pos+8]==b"IDAT":parts.append(tex[pos+8:pos+8+n])
+            pos+=n+12
+        scan=zlib.decompress(b"".join(parts))
+        self.assertEqual(len(scan),64*(64*4+1))
+        self.assertTrue(all(scan[y*257+4+x*4]==255 for y in range(64) for x in range(64)))
+        if shutil.which("ruby"):
+            result=subprocess.run([shutil.which("ruby"),"-c"],input=code,capture_output=True,timeout=30)
+            self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+        print("SINNOH_REAL_6_FOREST_EDGES_10_MAPS_35_EVENTS_UNCHANGED_OK",flush=True)
+        print("SINNOH_F02_TEXTURE_SOURCE "+forest["art"],flush=True)
+
 
 
         print("SINNOH_REAL_10_MAPS_4_WALK_SEAMS_2_VISUAL_2_PORTALS_32_EVENTS_OK",flush=True)
