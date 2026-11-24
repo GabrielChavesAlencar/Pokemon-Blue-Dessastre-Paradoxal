@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "902ad2be9517d85ee2df787c5c14565dcab10705",
+      "date": "2026-11-24T19:56:59-03:00",
+      "title": "Merge pull request #292 from GabrielChavesAlencar/sinnoh-full-expansion-f09d-relative-tables",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "9da7f1cfb5a770809375d0262aba207c9133fc7e",
+      "date": "2026-11-24T19:47:30-03:00",
+      "title": "feat(Sinnoh F09D): preserve original relative encounter weights and verify compiled slots",
+      "category": "Novidades"
+    },
+    {
       "sha": "cc6dba50e99c4535a75f24983f677f84f60d84d2",
       "date": "2026-11-24T19:46:28-03:00",
       "title": "Merge pull request #291 from GabrielChavesAlencar/sinnoh-full-expansion-f09c-relative-weights",
