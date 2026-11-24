@@ -2,10 +2,10 @@
   "schema": 1,
   "region": "SINNOH",
   "reference": "Platinum",
-  "status": "F01_F02_F03_F04_F05_F06_MERGED_F07_IMPLEMENTED_PENDING_CI",
+  "status": "F01_F02_F03_F04_F05_F06_F07_MERGED_F08_SAFE_SUBSET_PENDING_CI",
   "catalog": "data/regions/sinnoh-expansion-destinations.json",
   "prepared_pilot": {
-    "maps": 91,
+    "maps": 127,
     "routes": [
       "SINNOH_ROUTE_201",
       "SINNOH_ROUTE_202",
@@ -124,14 +124,20 @@
     {
       "id": "F07",
       "title": "Importação dos interiores e edifícios",
-      "status": "implemented_pending_ci",
+      "status": "merged_ci_passed",
       "target_maps": 127,
-      "planned_new_interior_maps": 36
+      "planned_new_interior_maps": 36,
+      "pr": 285,
+      "merge_commit": "2770a91f790a2ae904caff83bd92f6f2595b35f2",
+      "prepared_maps": 127
     },
     {
       "id": "F08",
       "title": "Conexões entre mapas e colisões",
-      "status": "pending"
+      "status": "implemented_pending_ci",
+      "target_maps": 127,
+      "directed_candidates": 145,
+      "reciprocal_candidates": 69
     },
     {
       "id": "F09",
@@ -200,12 +206,21 @@
     "prepared_maps": 91
   },
   "f07": {
-    "status": "implemented_pending_ci",
+    "status": "merged_ci_passed",
     "target_maps": 127,
     "source_maps": 36,
     "source_tileset_id": 25,
     "destination_ids_allocated": 0,
     "private_max": 599,
-    "shared_reservation": false
+    "shared_reservation": false,
+    "prepared_maps": 127
+  },
+  "f08": {
+    "status": "implemented_pending_ci",
+    "source_maps": 123,
+    "directed_candidates": 145,
+    "reciprocal_candidates": 69,
+    "all_connections_approved": false,
+    "native_verified": false
   }
 }

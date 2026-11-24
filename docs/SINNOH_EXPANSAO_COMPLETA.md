@@ -4,8 +4,8 @@ Referência Platinum. Progresso de preparação (não aprovação nativa):
 
 - Rotas: **30/30**, Rota 201–230 e seis segmentos adicionais.
 - Cidades: **14/14**, todas preparadas na F04.
-- Piloto privado: **91 mapas preparados**.
-- Fases novas: **6/15 concluídas**, F01/F02/F04/F05/F06 integradas (11/11 cada), F03 integrada (9/9); F07 implementada, aguarda CI.
+- Piloto privado: **127 mapas preparados**.
+- Fases novas: **7/15 concluídas**, F01/F02/F04/F05/F06/F07 integradas (11/11 cada), F03 integrada (9/9); F08 subconjunto seguro implementado, aguarda CI.
 
 ## Progresso das cidades
 
@@ -38,8 +38,8 @@ Referência Platinum. Progresso de preparação (não aprovação nativa):
 - [x] F04 — Importação de todas as cidades e vilarejos (PR #282, 11/11; 22 mapas preparados)
 - [x] F05 — Importação de todas as rotas 201–230 (PR #283, 11/11; 56 mapas preparados)
 - [x] F06 — Importação de florestas, lagos e cavernas (PR #284, 11/11; 91 mapas preparados)
-- [ ] F07 — Importação dos interiores e edifícios (36 mapas candidatos, aguardando CI)
-- [ ] F08 — Conexões entre mapas e colisões
+- [x] F07 — Importação dos interiores e edifícios (PR #285, 11/11; 127 mapas preparados)
+- [ ] F08 — Conexões entre mapas e colisões (subconjunto seguro, aguarda CI)
 - [ ] F09 — Pokémon selvagens de todas as áreas
 - [ ] F10 — Todos os treinadores e NPCs
 - [ ] F11 — Oito ginásios e insígnias
@@ -114,3 +114,24 @@ PR #284 integrado em b33d57d2ee199b404ad7e53424ee573b83d1bf56; 11/11 workflows e
 ### F07 — diagnóstico de identidade do mapa 148
 
 O rerun do job 138765931080 baixou e verificou os dois ZIPs, reconfirmou os marcadores F05/F06 e encontrou componentes transitáveis nos primeiros 24 interiores. Falhou em SOURCE_EXTERIOR_IDENTITY antes de emitir o diagnóstico de terreno do próximo mapa (148). O inventário F03 usa strip() nos nomes; F07 passa a comparar somente com esse ajuste de espaços externos. Parent ID, hash do mapa, hash do ZIP, dimensões e tileset continuam obrigatórios; fases anteriores mantêm comparação literal. A hipótese de espaços externos precisa ser confirmada pelo novo job real; não há marcador F07 aprovado nesta execução.
+
+
+## F07 — aceite CI
+
+PR #285 integrado em 2770a91f790a2ae904caff83bd92f6f2595b35f2; 11/11 workflows, 26/26 checks. Marcador SINNOH_REAL_F07_36_INTERIORS_127_TELEPORTS_35_EVENTS_64_EXTERIORS_OK confirmado no job 138773135299. Mapa 148 -> 557 (10,7), 53 células. 36 interiores, 91 mapas anteriores preservados.
+
+## F08 — conexões privadas, subconjunto seguro
+
+Catálogo de 123 mapas físicos e 145 relações dirigidas distintas, 69 pares recíprocos, extraídos do inventário F03. Reabre o ZIP pinado local, verifica hashes e alvos estáticos, analisa páginas e coordenadas sem executar ou copiar scripts. Reconstrói somente transferências simples recíprocas sem condições, com origem/destino transitáveis, sem conflitos de eventos ou teleporte QA. Anexa eventos autorais mínimos apenas nos mapas novos, sem mudar os 35 eventos anteriores, geometria, MapIDs, atlas ou máscaras. Conexões seamless apenas exteriores com lados únicos e eixo transitável. Preserva abertura autoral, bloqueia conexões ambíguas, destinos ausentes e páginas condicionais. Reutiliza namespace apenas com hashes completos da geração F07 anterior ou F08 atual; nenhum save aberto. Saves nativos ainda não testados; mapas salvos podem precisar ser recarregados para receber novos eventos. O marcador F08 confirma um subconjunto seguro, não aprovação dos 145 vínculos nem QA nativa; vínculos rejeitados ficam pendentes para implementação específica. Sem distribuição de assets.
+
+### F08 — primeiro resultado real e refinamento dos portais
+
+HEAD fd964ee865f5daeef9222ad8e3ccf496bdf89957: 11/11 workflows e 26/26 checks; job 138779035163 confirmou marcador SAFE_SUBSET_OK, sete seams (79–77,84–104,91–90,110–96,151–150,157–159,214–206), zero portais; 353 eventos classificados genericamente como complexos/condicionais. Nenhum dos 145 vínculos estáticos aceito como portal. Não avançar F09 com esse resultado. O refinamento distingue motivos e registra formas sanitizadas de páginas/comandos, sem scripts ou texto. Aceita exclusivamente comandos cosméticos limitados (espera, efeito sonoro, transição e comentários) e botão de ação original, mantém bloqueios de movimento, scripts, condições, variáveis, diálogos, páginas múltiplas, coordenadas e reciprocidade. As animações descartadas não são importadas. A ampliação é conservadora e ainda precisa ser confirmada pelo ZIP real; se zero portais persistir, usar as formas do novo log para corrigir casos específicos, sem afrouxar colisões.
+
+### F08 — transições de tonalidade identificadas
+
+HEAD 8f82b9e48fd8d3080b9a308b0e4021b3959de897: 11/11 workflows, 26/26 checks, marcadores F07/F08 confirmados no job 138794303660. Sete seams preservados, zero portais; 242 unsupported_commands, 102 multiple_pages, 8 nested_commands e 1 page_conditions. 188 eventos apresentam exatamente [250,223,106,201,223,0] (som, alteração de tonalidade, espera, transferência, alteração de tonalidade, fim); 105 relações dirigidas internas e 45 pares recíprocos candidatos nesse grupo, antes da validação geométrica. Refinamento: aceita apenas Tone inerte de 32 bytes com quatro doubles finitos em limites RMXP e duração inteira 0–120, substitui tonalidade por fade nativo, não executa comandos originais. Registra rejeições geométricas individualmente e forma/tipos dos parâmetros cosméticos; mantém scripts, variáveis e condições bloqueados. Testes negativos de Tone e regressão das sete seams. Ainda sem evidência real de portais aceitos nesta nova HEAD; não avançar F09 até validar.
+
+### F08 — recuperação de portas com coordenadas recíprocas
+
+HEAD ea919135abb7cac490af1dbf0fa2b75266d16274, job 138799290004: 11/11 workflows, 26/26 checks, marcadores F07/F08, 7 seams, 0 portais. 188 sequências de tonalidade agora classificadas como aceitas, mas rejeições geométricas: 71 origens não seguras, 8 destinos não seguros, 26 sem retorno seguro, 4 loops/ambiguidade, 75 fora do grafo recíproco, 4 abertura protegida, 102 páginas múltiplas, 8 comandos aninhados, 1 condição de página, 54 comandos não suportados. Evidência concreta: Oreburgh 22 evento 13 (50,18) -> 43 (15,15); 43 evento 4 (15,16) -> 22 (50,18). A saída original está bloqueada, o ponto de chegada recíproco é transitável e adjacente. Há 34 pares de eventos no log com posições recíprocas a distância <=1, incluindo dois protegidos da abertura e casos com destino bloqueado; não são aprovações. Nova reconstrução admite somente aproximação adjacente única provada pelo retorno original, ainda exigindo componente seguro, destino original seguro, ausência de eventos/QA spawn e testemunha recíproca sobrevivente. Converte aproximações e posições compartilhadas com chegada em interação por botão (evento transparente e atravessável), sem teleporte automático circular, sem alterar colisões, geometrias ou scripts. Destinos bloqueados continuam rejeitados. Preserva sete seams e 127 mapas, 35 eventos anteriores, hashes de namespace e teleportes; teste real ainda necessário. Não declarar portais recuperados antes do CI.

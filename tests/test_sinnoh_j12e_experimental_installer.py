@@ -731,6 +731,39 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                 run=subprocess.run([shutil.which("ruby"),"-c"],input=script,capture_output=True,timeout=30)
                 self.assertEqual(run.returncode,0,run.stdout+run.stderr)
         print("SINNOH_REAL_F07_36_INTERIORS_127_TELEPORTS_35_EVENTS_64_EXTERIORS_OK",flush=True)
+        connection=exp.connection_expansion
+        f08_maps,cr=connection.append(f07_maps,f07_ids,f07_components,source)
+        self.assertEqual((cr["directed_candidates"],cr["reciprocal_candidates"]),(145,69))
+        self.assertGreater(len(cr["portals"])+len(cr["seams"]),0)
+        self.assertTrue({(79,77),(84,104),(91,90),(110,96),(151,150),(157,159),(214,206)}<={tuple(r["source_ids"]) for r in cr["seams"]})
+        self.assertEqual(cr["portal_directed_accepted"]+cr["portal_directed_pending"],145)
+        for portal in cr["portals"]:
+            mid,x,y=portal["from"];dst,dx,dy=portal["to"]
+            self.assertEqual(f07_masks[mid][y][x],".")
+            self.assertEqual(f07_masks[dst][dy][dx],".")
+            if portal["approach_witness"] is not None:
+                self.assertEqual(connection.distance(portal["from"][1:],portal["original_from"][1:]),1)
+                self.assertEqual(portal["trigger"],0)
+                witnesses=[p for p in cr["portals"] if p["source_id"]==portal["target_source_id"]
+                    and p["source_event_id"]==portal["approach_witness"] and p["target_source_id"]==portal["source_id"]]
+                self.assertEqual(len(witnesses),1)
+                self.assertEqual(witnesses[0]["to"],portal["from"])
+            if any(p["to"]==portal["from"] for p in cr["portals"]):
+                self.assertEqual(portal["trigger"],0)
+        self.assertEqual(f08_maps["Data/Tilesets.rxdata"],f07_maps["Data/Tilesets.rxdata"])
+        self.assertEqual(f08_maps["Data/MapInfos.rxdata"],f07_maps["Data/MapInfos.rxdata"])
+        self.assertEqual(exp.qa_teleport.build(f08_maps,f07_ids,f07_components),f07_entries)
+        self.assertEqual(pv.movement_masks(f08_maps,f07_ids,extra_symbols=city.CITIES|routes.ROUTES|natural.NATURAL|interior.INTERIORS),f07_masks)
+        for sym,mid in f07_ids.items():
+            rel="Data/Map%03d.rxdata"%mid
+            old=read_marshal(f07_maps[rel],"F08_OLD");new=read_marshal(f08_maps[rel],"F08_NEW")
+            if sym in city.OLD:self.assertEqual(f08_maps[rel],f07_maps[rel])
+            previous=old.attrs.pop("@events");current=new.attrs.pop("@events")
+            self.assertEqual(serialize(old,connection.EVENT_CLASSES),serialize(new,connection.EVENT_CLASSES))
+            for eid,event in previous.items():
+                self.assertEqual(serialize(event,connection.EVENT_CLASSES),serialize(current[eid],connection.EVENT_CLASSES))
+        self.assertTrue(f08_maps["PBS/map_connections.txt"].startswith(f07_maps["PBS/map_connections.txt"]))
+        print("SINNOH_REAL_F08_145_DIRECTED_69_RECIPROCAL_CANDIDATES_127_MAPS_SAFE_SUBSET_OK",flush=True)
 
 
 
@@ -1163,6 +1196,85 @@ raise "duplicate battle" unless $calls==4
                 city.source_identity({"@name":actual,"@parent_id":actual_parent},row,"F07")
         with self.assertRaisesRegex(ValueError,"SOURCE_EXTERIOR_IDENTITY"):
             city.source_identity({"@name":name+b" ","@parent_id":parent},row,"F06")
+
+    def test_f08_graph_and_portal_fail_closed(self):
+        c=exp.connection_expansion
+        source,directed,reciprocal=c.graph()
+        self.assertEqual((len(source),len(directed),len(reciprocal)),(123,145,69))
+        page=c.event_page(warp=(555,4,5),touch=True)
+        event=c.ruby("RPG::Event",id=1,name=b"test",x=2,y=3,pages=[page])
+        self.assertEqual(c.simple_transfer(event),(2,3,555,4,5,2,0))
+        page.attrs["@condition"].attrs["@switch1_valid"]=True
+        self.assertIsNone(c.simple_transfer(event))
+        page.attrs["@condition"].attrs["@switch1_valid"]=False
+        page.attrs["@trigger"]=3
+        self.assertIsNone(c.simple_transfer(event))
+        page.attrs["@trigger"]=1
+        page.attrs["@list"][0].attrs["@parameters"][0]=1
+        self.assertIsNone(c.simple_transfer(event))
+        page.attrs["@list"][0].attrs["@parameters"][0]=0
+        page.attrs["@list"].insert(0,c.ruby("RPG::EventCommand",code=355,indent=0,parameters=[b"never run"]))
+        self.assertIsNone(c.simple_transfer(event))
+
+    def test_f08_classify_cosmetics_and_action_without_bypassing_conditions(self):
+        c=exp.connection_expansion
+        page=c.event_page(warp=(555,4,5),touch=False)
+        event=c.ruby("RPG::Event",id=1,name=b"test",x=2,y=3,pages=[page])
+        ops=page.attrs["@list"]
+        ops.insert(0,c.ruby("RPG::EventCommand",code=106,indent=0,parameters=[8]))
+        ops.insert(0,c.ruby("RPG::EventCommand",code=250,indent=0,parameters=[c.ruby("RPG::AudioFile",name=b"Door",volume=80,pitch=100)]))
+        self.assertEqual(c.classify_transfer(event),((2,3,555,4,5,2,0),"accepted"))
+        self.assertEqual(c.event_shape(event)[0]["codes"],[250,106,201,0])
+        for code in (101,111,121,122,209,355,655):
+            ops.insert(0,c.ruby("RPG::EventCommand",code=code,indent=0,parameters=[]))
+            self.assertEqual(c.classify_transfer(event),(None,"unsupported_commands"))
+            ops.pop(0)
+        page.attrs["@condition"].attrs["@self_switch_valid"]=True
+        self.assertEqual(c.classify_transfer(event),(None,"page_conditions"))
+        page.attrs["@condition"].attrs["@self_switch_valid"]=False
+        event.attrs["@pages"].append(page)
+        self.assertEqual(c.classify_transfer(event),(None,"multiple_pages"))
+
+    def test_f08_tone_portal_uses_native_fade_and_rejects_invalid_tone(self):
+        import struct
+        c=exp.connection_expansion
+        page=c.event_page(warp=(555,4,5),touch=True)
+        event=c.ruby("RPG::Event",id=1,name=b"test",x=2,y=3,pages=[page])
+        tone=c.RubyData("Tone",struct.pack("<4d",-255,-255,-255,0))
+        fade_out=c.ruby("RPG::EventCommand",code=223,indent=0,parameters=[tone,8])
+        fade_in=c.ruby("RPG::EventCommand",code=223,indent=0,parameters=[c.RubyData("Tone",struct.pack("<4d",0,0,0,0)),8])
+        page.attrs["@list"][0].attrs["@parameters"][5]=1
+        page.attrs["@list"].insert(0,fade_out)
+        page.attrs["@list"].insert(-1,fade_in)
+        self.assertEqual(c.classify_transfer(event),((2,3,555,4,5,2,0),"accepted"))
+        for bad in (c.RubyData("Color",tone.data),c.RubyData("Tone",b"bad"),c.RubyData("Tone",struct.pack("<4d",float("nan"),0,0,0)),c.RubyData("Tone",struct.pack("<4d",256,0,0,0))):
+            fade_out.attrs["@parameters"][0]=bad
+            self.assertEqual(c.classify_transfer(event),(None,"unsupported_commands"))
+        fade_out.attrs["@parameters"]=[tone,121]
+        self.assertEqual(c.classify_transfer(event),(None,"unsupported_commands"))
+        fade_out.attrs["@parameters"]=[tone,8]
+        page.attrs["@condition"].attrs["@switch1_valid"]=True
+        self.assertEqual(c.classify_transfer(event),(None,"page_conditions"))
+
+    def test_f08_reciprocal_door_approach_and_loop_guard(self):
+        c=exp.connection_expansion
+        # Real Oreburgh pair from job 138799290004: the center exit is
+        # blocked at (15,16), its incoming landing is (15,15).
+        entry={"source_id":22,"source_event_id":13,"target_source_id":43,
+            "from":[443,50,18],"to":[533,15,15],"trigger":1,"approach_witness":None}
+        exit={"source_id":43,"source_event_id":4,"target_source_id":22,
+            "from":[533,15,16],"to":[443,50,18],"trigger":1}
+        self.assertEqual(c.portal_approach(exit,[entry,exit],{(15,15),(15,14)}),((15,15),13))
+        self.assertEqual(c.portal_approach(exit,[exit],{(15,15)}),(None,None))
+        self.assertEqual(c.portal_approach(exit,[entry,exit],{(15,14)}),(None,None))
+        self.assertEqual(c.portal_approach(exit,[entry,{**entry,"source_event_id":14},exit],{(15,15)}),(None,None))
+        adjusted={**exit,"from":[533,15,15],"approach_witness":13}
+        selected=c.select_portals([entry,adjusted])
+        self.assertEqual(len(selected),2)
+        self.assertTrue(all(r["trigger"]==0 for r in selected))
+        self.assertEqual(c.select_portals([adjusted]),[])
+        self.assertEqual(c.select_portals([entry,adjusted,{**entry,"source_event_id":14}]),[])
+        self.assertEqual(c.select_portals([{**entry,"source_event_id":14},adjusted]),[])
 
     def test_f07_capacity_and_save_namespace_append_only(self):
         city=exp.city_expansion

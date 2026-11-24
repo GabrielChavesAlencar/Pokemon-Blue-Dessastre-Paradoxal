@@ -40,6 +40,7 @@ import sinnoh_city_expansion as city_expansion
 import sinnoh_route_expansion as route_expansion
 import sinnoh_natural_expansion as natural_expansion
 import sinnoh_interior_expansion as interior_expansion
+import sinnoh_connection_expansion as connection_expansion
 from audit_sinnoh_rxdata import read_marshal
 from audit_sinnoh_twinleaf_events import MAPS,HANDLERS as CH06_HANDLERS,BALLS as CH06_BALLS
 from build_sinnoh_twinleaf_events import HANDLERS as SCRIPT_HANDLERS
@@ -619,7 +620,7 @@ end
     code=code.replace("__PLATINUM_PLAYER__",player_code)
     return code.encode("utf-8")
 
-def compatible_save_token(project,mapping,base_hash,generated_maps=None):
+def compatible_save_token(project,mapping,base_hash,generated_maps=None,previous_maps=None):
     # Read manifests/config only; never enumerate or open save files.
     work=safe_path(project/REPO_OUTPUT)
     candidates=[]
@@ -649,7 +650,10 @@ def compatible_save_token(project,mapping,base_hash,generated_maps=None):
                         all(mapping.get(k)==v for k,v in prior.items())):continue
                 hashes=data.get("file_sha256",{})
                 if not isinstance(hashes,dict):continue
-                if any(hashes.get(f"Data/Map{mid:03d}.rxdata")!=sha(generated_maps.get(f"Data/Map{mid:03d}.rxdata",b"")) for mid in prior.values()):continue
+                if not any(all(hashes.get(f"Data/Map{mid:03d}.rxdata")==sha(candidate.get(f"Data/Map{mid:03d}.rxdata",b"")) for mid in prior.values()) for candidate in (generated_maps,previous_maps) if candidate):continue
+            elif set(mapping)==interior_expansion.ALL:
+                hashes=data.get("file_sha256",{})
+                if not isinstance(hashes,dict) or not any(all(hashes.get(f"Data/Map{mid:03d}.rxdata")==sha(candidate.get(f"Data/Map{mid:03d}.rxdata",b"")) for mid in mapping.values()) for candidate in (generated_maps,previous_maps) if candidate):continue
             config_path=folder/"mkxp.json";regular(config_path)
             conf=jsonc(config_path.read_text("utf-8-sig"))
             profile=namespace(token)
@@ -697,6 +701,8 @@ def build_files(base:Path,project:Path=ROOT):
     route_report={}
     natural_report={}
     interior_report={}
+    connection_report={}
+    previous_maps=None
     encounter_coverage={}
     route_trainers=[]
     if "maps" in sources:
@@ -720,6 +726,8 @@ def build_files(base:Path,project:Path=ROOT):
         maps,mapping,components,route_report=route_expansion.append(maps,mapping,components,sources["maps"],occupied,project)
         maps,mapping,components,natural_report=natural_expansion.append(maps,mapping,components,sources["maps"],occupied,project)
         maps,mapping,components,interior_report=interior_expansion.append(maps,mapping,components,sources["maps"],occupied,project)
+        previous_maps=maps
+        maps,connection_report=connection_expansion.append(maps,mapping,components,sources["maps"],project)
         masks=private_visual.movement_masks(maps,mapping,extra_symbols=city_expansion.CITIES|route_expansion.ROUTES|natural_expansion.NATURAL|interior_expansion.INTERIORS)
         movement=private_visual.movement_plugin(masks,mapping["SINNOH_ROUTE_202"])
         teleport_entries=qa_teleport.build(maps,mapping,components,project)
@@ -736,7 +744,7 @@ def build_files(base:Path,project:Path=ROOT):
     platinum_dawn=private_visual.has_platinum_player(base,10)
     token=secrets.token_hex(6)
     base_hash=sha((base/"Data/MapInfos.rxdata").read_bytes())
-    save_token=compatible_save_token(project,mapping,base_hash,maps) or token
+    save_token=compatible_save_token(project,mapping,base_hash,maps,previous_maps) or token
     config,game_ini,profile=runtime_config(base,save_token)
     # This is an isolated copy, never the installed game:
     final=dict(maps)
@@ -772,8 +780,8 @@ def build_files(base:Path,project:Path=ROOT):
     final["Data/sinnoh-experimental-compile-request.txt"]=proof.encode("ascii")
     # These hashes do not claim human rights approval, or native gameplay acceptance.
     report={"schema":1,"region":"SINNOH","mode":MODE,
-        "maps_prepared":len(mapping),"static_events_placed":len(events)+story.get("extra_event_count",0)+len(route_trainers),
-        "static_warps":16-len(continuity.get("retired_warp_keys",[]))+(3 if story else 0),"native_seam_pairs":sum(not p.get("visual_only") for p in continuity.get("connections",[])),"static_handlers":5,"static_starter_balls":3,
+        "maps_prepared":len(mapping),"static_events_placed":len(events)+story.get("extra_event_count",0)+len(route_trainers)+len(connection_report.get("portals",[])),
+        "static_warps":16-len(continuity.get("retired_warp_keys",[]))+(3 if story else 0)+len(connection_report.get("portals",[])),"native_seam_pairs":sum(not p.get("visual_only") for p in continuity.get("connections",[]))+len(connection_report.get("seams",[])),"static_handlers":5,"static_starter_balls":3,
         "local_reserved_qa_only":True,"independent_r07_approved":False,
         "independent_r08_approved":False,"r09_native_qa_executed":0,
         "game_exe_executed":False,"runtime_playable_verified":False,
@@ -793,6 +801,7 @@ def build_files(base:Path,project:Path=ROOT):
         "route_expansion":route_report,
         "natural_expansion":natural_report,
         "interior_expansion":interior_report,
+        "connection_expansion":connection_report,
         "qa_teleport":{"catalog_count":len(teleport_entries),"available_count":sum(row[3] is not None for row in teleport_entries),"destinations":teleport_entries,"native_verified":False},
         "encounter_coverage":encounter_coverage,"route202_trainers":route_trainers,
         "visual_native_reviewed":False,

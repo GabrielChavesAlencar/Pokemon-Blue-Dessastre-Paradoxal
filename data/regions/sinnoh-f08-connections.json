@@ -1,0 +1,1888 @@
+{
+  "schema": 1,
+  "scope": "PRIVATE_QA_ONLY",
+  "inventory_job": 138719583390,
+  "source_maps": [
+    {
+      "symbol": "SINNOH_OREBURGH_CITY",
+      "source_id": 22,
+      "sha256": "fab6f204b93464225c98655ef87360cdde8be228ad4fb1901773129dfa1736ec",
+      "targets": [
+        32,
+        33,
+        43,
+        48,
+        76
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_032",
+      "source_id": 32,
+      "sha256": "73d1d6d6b61401e5e1f38f6dd8bc0b221b9e1ad598603ac2209d3546f1f1d33d",
+      "targets": [
+        22
+      ]
+    },
+    {
+      "symbol": "SINNOH_OREBURGH_MINE",
+      "source_id": 33,
+      "sha256": "68c960d10600ee9f4ec94be72ce599d318bfb145510a0bb75a314ab1d7c7c90c",
+      "targets": [
+        22,
+        33
+      ]
+    },
+    {
+      "symbol": "SINNOH_ROUTE_207",
+      "source_id": 42,
+      "sha256": "32a259578f221639dd3b34c8bd87a8ee6d0aced5fe1e7c684ed95fd2bf0ecfb4",
+      "targets": [
+        121,
+        174
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_043",
+      "source_id": 43,
+      "sha256": "556cb85f58e27b44ac323f5255dce5a8eb26e756b38b7e929b02fabdac81beee",
+      "targets": [
+        22
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_048",
+      "source_id": 48,
+      "sha256": "eb68976c7e6faf04738df76fb811b66630327e36161418e9e21ffa79f5617ac8",
+      "targets": [
+        22
+      ]
+    },
+    {
+      "symbol": "SINNOH_OREBURGH_GATE",
+      "source_id": 76,
+      "sha256": "0f9035d5af65d9e2e0ef609f92eac205db40aa84451107c8c77ab829d4b33557",
+      "targets": [
+        22,
+        76,
+        105
+      ]
+    },
+    {
+      "symbol": "SINNOH_CELESTIC_TOWN",
+      "source_id": 77,
+      "sha256": "f28abb90942cf08054758234d0c174f8c2167c192f6394cb7d49d571dcc1c87a",
+      "targets": [
+        78,
+        81,
+        86
+      ]
+    },
+    {
+      "symbol": "SINNOH_ROUTE_211",
+      "source_id": 79,
+      "sha256": "54436c2f8143e520e897a60839aa18ee386a76c58002b20f38e378af00a85907",
+      "targets": [
+        82
+      ]
+    },
+    {
+      "symbol": "SINNOH_ROUTE_210",
+      "source_id": 80,
+      "sha256": "b80337a98cfdeb0d02a431cb55ff95566b8647b9d602a3a2fcbdbd39a71da293",
+      "targets": []
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_081",
+      "source_id": 81,
+      "sha256": "ece732be94022de464c7607efb45620af5b6eacc5373352a1e82e1613f6f9061",
+      "targets": [
+        77
+      ]
+    },
+    {
+      "symbol": "SINNOH_MT_CORONET_WEST_APPROACH",
+      "source_id": 82,
+      "sha256": "03ac5ef6ac130859ae1e6908994a38dccd564126a15a74f826122bc63138df8d",
+      "targets": [
+        79,
+        82,
+        83,
+        117,
+        156,
+        182
+      ]
+    },
+    {
+      "symbol": "SINNOH_SOLACEON_TOWN",
+      "source_id": 84,
+      "sha256": "cdd3489dc608be5582573c2a07228619c6832bec9068bff334ae4bc732250dcd",
+      "targets": [
+        22,
+        27,
+        87,
+        88,
+        89
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_086",
+      "source_id": 86,
+      "sha256": "dc0e1c6fb1a189bcfdc612d44ba79f2f35c7e2ba4d041d48d719eee06df8f08e",
+      "targets": [
+        77
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_087",
+      "source_id": 87,
+      "sha256": "c757c83761a934d9c6b856f4bbf450de2b1de16ac72606e354ab8baec01620cd",
+      "targets": [
+        84
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_088",
+      "source_id": 88,
+      "sha256": "6d8fc43e9827294cf095573634f81df60df79262e5019bb747968dd58269faf3",
+      "targets": [
+        84
+      ]
+    },
+    {
+      "symbol": "SINNOH_SOLACEON_RUINS",
+      "source_id": 89,
+      "sha256": "06c8577cef19d9d5cd484de56036ca02815dd30b37052941ea0d44e83f8be191",
+      "targets": [
+        84,
+        89,
+        207
+      ]
+    },
+    {
+      "symbol": "SINNOH_ETERNA_CITY",
+      "source_id": 90,
+      "sha256": "b28d2a456cc4cb4218fa1c4387cd3159ed84ef8b945585597ee98ac10be4139e",
+      "targets": [
+        119,
+        129,
+        130,
+        149
+      ]
+    },
+    {
+      "symbol": "SINNOH_ROUTE_205",
+      "source_id": 91,
+      "sha256": "dc05139df997cdbbb2d77ab13d844c5fb7865bbe94e4b873c47540cc2cc5ec04",
+      "targets": [
+        93
+      ]
+    },
+    {
+      "symbol": "SINNOH_ETERNA_FOREST",
+      "source_id": 92,
+      "sha256": "db26166ab4015b2cbe788a00c92d40ce496d15e410f4f9eff7975fce16de863b",
+      "targets": []
+    },
+    {
+      "symbol": "SINNOH_ETERNA_FOREST_SOURCE_093",
+      "source_id": 93,
+      "sha256": "930331e7daf39780bf56782fd34765f7fcdc1bc0879acf5130285985fe316946",
+      "targets": [
+        91,
+        94
+      ]
+    },
+    {
+      "symbol": "SINNOH_ROUTE_205_SEGMENT_2",
+      "source_id": 94,
+      "sha256": "0624b353d4b1e0817b8b735714e314aa778a234c3dfe011b2ef60473543d9b2a",
+      "targets": [
+        93
+      ]
+    },
+    {
+      "symbol": "SINNOH_FLOAROMA_TOWN",
+      "source_id": 96,
+      "sha256": "d2c2c8dcf61a987908dd390a596766f814dee726aacb17e8b9aea4d9bb1bfabf",
+      "targets": [
+        97,
+        98,
+        131,
+        132
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_097",
+      "source_id": 97,
+      "sha256": "ac60dd82f30f029671ad4e30d0314d1b3f29d9137c5333c41999013ce8a54daf",
+      "targets": [
+        96
+      ]
+    },
+    {
+      "symbol": "SINNOH_FLOAROMA_MEADOW",
+      "source_id": 98,
+      "sha256": "42d4f8d816a6060826d267f88370634d487e3b7404f302ba661b02ce2e9d96ee",
+      "targets": [
+        96
+      ]
+    },
+    {
+      "symbol": "SINNOH_ROUTE_209",
+      "source_id": 104,
+      "sha256": "cb15bd64af6656e807d130c63ac99ae47e9b56669fd458af370192dfeaaae768",
+      "targets": [
+        125
+      ]
+    },
+    {
+      "symbol": "SINNOH_ROUTE_203",
+      "source_id": 105,
+      "sha256": "808dad3a3e9744af303a47b21412595123891228b6009dc7b7ed6ea2622a9a2e",
+      "targets": [
+        76
+      ]
+    },
+    {
+      "symbol": "SINNOH_JUBILIFE_CITY",
+      "source_id": 106,
+      "sha256": "27ea714a8d79414b47eb4f57cc247d7605fe99f1c90864bd1a868929f32b20e5",
+      "targets": [
+        107,
+        133,
+        134
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_107",
+      "source_id": 107,
+      "sha256": "d11cffa7e744c3f8b8db533de860a516aba2ca24e31659ad7e53bbd19fe5db69",
+      "targets": [
+        106,
+        108
+      ]
+    },
+    {
+      "symbol": "SINNOH_ROUTE_218",
+      "source_id": 108,
+      "sha256": "f14a17875ee1e4f07a22ad9563f266ad25e21f8bd4ecc68adc100c5c10be6157",
+      "targets": [
+        107,
+        115
+      ]
+    },
+    {
+      "symbol": "SINNOH_CANALAVE_CITY",
+      "source_id": 109,
+      "sha256": "050a24cd517beb9083abeff74be497826a42b475e33724307b53c9d6a8f50ccb",
+      "targets": [
+        109,
+        112,
+        115,
+        135,
+        136
+      ]
+    },
+    {
+      "symbol": "SINNOH_ROUTE_204",
+      "source_id": 110,
+      "sha256": "bee76b7f40fba13deff741cbaa9ca10389383308337c38fa183855251cf28bb4",
+      "targets": [
+        145
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_115",
+      "source_id": 115,
+      "sha256": "87bcf85cb6f8471e9d89c942e94a6904de46bffcb537e757a89dcf38133dec0d",
+      "targets": [
+        108,
+        109
+      ]
+    },
+    {
+      "symbol": "SINNOH_ROUTE_210_SEGMENT_2",
+      "source_id": 116,
+      "sha256": "0415779012d672d9018800ac09ddd48ed7650648188cf94b97f9242e4112584d",
+      "targets": []
+    },
+    {
+      "symbol": "SINNOH_MT_CORONET_SOURCE_117",
+      "source_id": 117,
+      "sha256": "38b3ce03d66460f82f1b36a71fd374d17f7aded95629ab9b7a2719c662b56cbc",
+      "targets": [
+        82
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_120",
+      "source_id": 120,
+      "sha256": "28a84a31280eb44e745c22cb55ac0d4873c20f1d32e78397b0affe702bf6b00d",
+      "targets": [
+        112
+      ]
+    },
+    {
+      "symbol": "SINNOH_MT_CORONET_INTERIOR_ROUTES",
+      "source_id": 121,
+      "sha256": "de2c91787d65d8303ab523d332a37a33c39bcc42914db65642c4d7041b93f90a",
+      "targets": [
+        42,
+        122,
+        174
+      ]
+    },
+    {
+      "symbol": "SINNOH_ROUTE_208",
+      "source_id": 122,
+      "sha256": "4044b39b33ed1fc7f506ce0b992cde707c8670d7ea6b2019d98478f255d64f38",
+      "targets": [
+        121,
+        124
+      ]
+    },
+    {
+      "symbol": "SINNOH_HEARTHOME_CITY",
+      "source_id": 123,
+      "sha256": "0021443f7724f7768ff3366eccf7cb5bd58b9a2acd2018376aa9b6fb56ae4d71",
+      "targets": [
+        124,
+        125,
+        137,
+        138
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_124",
+      "source_id": 124,
+      "sha256": "df298a6cf96f85bd89eb8b2797a48833fda07216c71740415c4bc6807188186a",
+      "targets": [
+        122,
+        123
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_125",
+      "source_id": 125,
+      "sha256": "926a8479851539bcfa937aee1330b1bcdebf82f754af72b3d609a258c7a89722",
+      "targets": [
+        104,
+        123
+      ]
+    },
+    {
+      "symbol": "SINNOH_ROUTE_215",
+      "source_id": 126,
+      "sha256": "829b630f803b3de9b92bb005b69066d3586f461e1de8b21cf323cbbb54707806",
+      "targets": []
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_129",
+      "source_id": 129,
+      "sha256": "b2564e4673412bf6a293d8477eecc1d72c62e206e4d2c9dbf7b6a4b5747b0904",
+      "targets": [
+        90
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_130",
+      "source_id": 130,
+      "sha256": "0aafc22b21f025ca53c8a57f1fc68a0001aab632ee9a5c2bb8e3674003b813ca",
+      "targets": [
+        90
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_131",
+      "source_id": 131,
+      "sha256": "961f2f98e5c4764380181cb89b53169b30bf12d05ed336b7fd577dd5547ae895",
+      "targets": [
+        96
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_132",
+      "source_id": 132,
+      "sha256": "8cda4315a6c5cda8a1591f950a0b3616a1bacd75bee95748e264bccb1ac41f36",
+      "targets": [
+        96
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_133",
+      "source_id": 133,
+      "sha256": "1ac0a395c6aa4e8560da32e25f5e2e015784cad1357445983665d054289e607e",
+      "targets": [
+        106
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_134",
+      "source_id": 134,
+      "sha256": "17350a3aa250e8c9d15c6b8eaa1dd2286c60411f0a491b46c2fb8014b8696ac0",
+      "targets": [
+        106
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_135",
+      "source_id": 135,
+      "sha256": "d2ad4c048737524426d6168fea31a54e96b12ef23df46e56f27820419fe556a9",
+      "targets": [
+        109
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_136",
+      "source_id": 136,
+      "sha256": "78153d9fb0a5bc3d243ebfd8730c63800de90bf247d3a2a5e2cafa9bce4a49d5",
+      "targets": [
+        109
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_137",
+      "source_id": 137,
+      "sha256": "993cf32dc2ceca85bcc8922fcd9000a088e4833fbfd7468f253fd5f256bcf4f6",
+      "targets": [
+        123
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_138",
+      "source_id": 138,
+      "sha256": "b81ab65f6fcfa8abde056197eb2b4047a7676380378b4258b458c11e1f02c2be",
+      "targets": [
+        123
+      ]
+    },
+    {
+      "symbol": "SINNOH_ROUTE_229",
+      "source_id": 140,
+      "sha256": "9e5d1902f5cebe56a2cb1db0e0013d1b7c8a13e59461cc509cfabd3310a50f61",
+      "targets": []
+    },
+    {
+      "symbol": "SINNOH_ROUTE_228",
+      "source_id": 141,
+      "sha256": "29cd4e7b653eaad48228d851e3adbe6519de7a282a783aaac19c437c1c62f528",
+      "targets": [
+        142,
+        144,
+        187
+      ]
+    },
+    {
+      "symbol": "SINNOH_ROUTE_228_SEGMENT_2",
+      "source_id": 142,
+      "sha256": "d50e317ed1f40d1d1f578b581acc32bfce0f033a5a07ca5fdec103e9b07be2e6",
+      "targets": [
+        141
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_143",
+      "source_id": 143,
+      "sha256": "5c00b233f8c7d89d75eb07610f9c9e837c5a0473a415a7716558fb47dc0e9937",
+      "targets": [
+        139
+      ]
+    },
+    {
+      "symbol": "SINNOH_RAVAGED_PATH",
+      "source_id": 145,
+      "sha256": "83a9b03b4bbf2c6dc632c0a750ca3b494c7d1e586acd7a0ed887b43b85449468",
+      "targets": [
+        110
+      ]
+    },
+    {
+      "symbol": "SINNOH_ROUTE_206",
+      "source_id": 146,
+      "sha256": "7d13927ce5bd2311df52e4ca1bd9ce9a33b168eab195740ac52b4258408e1be9",
+      "targets": [
+        148,
+        189
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_148",
+      "source_id": 148,
+      "sha256": "7ceeb42bebf448f2d17e4da3c99829423c195fe3ae12e8d6b339e27ef7a0cec0",
+      "targets": [
+        146,
+        147
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_149",
+      "source_id": 149,
+      "sha256": "20d9ac9ede0248d873f40066bf2890ab3f65fef86bec77facd246f74ba66a61e",
+      "targets": [
+        90,
+        147
+      ]
+    },
+    {
+      "symbol": "SINNOH_ROUTE_226",
+      "source_id": 150,
+      "sha256": "7fd3f2d1b2f31637b7e69be92b1293bdf616b3c4a0381fd767b8246528e7271b",
+      "targets": [
+        187
+      ]
+    },
+    {
+      "symbol": "SINNOH_ROUTE_227",
+      "source_id": 151,
+      "sha256": "420776aa80925317a5cfaa507c9ea5fe915a08157a6f325067931d7f7718db8b",
+      "targets": []
+    },
+    {
+      "symbol": "SINNOH_STARK_MOUNTAIN",
+      "source_id": 152,
+      "sha256": "4531dd8c1f7f7657c4a52e96c05d4298c7e8523c810d6117db5bf8a8e0a54f45",
+      "targets": [
+        153
+      ]
+    },
+    {
+      "symbol": "SINNOH_STARK_MOUNTAIN_SOURCE_153",
+      "source_id": 153,
+      "sha256": "28205fb6d124495803133bb4c04910d0305f17383a7438694bfff1cf4e645042",
+      "targets": [
+        152,
+        153
+      ]
+    },
+    {
+      "symbol": "SINNOH_ROUTE_230",
+      "source_id": 155,
+      "sha256": "fb8b773eab9f727623616acfaa78d3f4e8a7c697f6a57421586c911fcc80ad97",
+      "targets": []
+    },
+    {
+      "symbol": "SINNOH_ROUTE_216",
+      "source_id": 156,
+      "sha256": "1752ba265bd9620939807584b3cf910b076b4134446ba8ec48284f4e75253772",
+      "targets": [
+        82,
+        158
+      ]
+    },
+    {
+      "symbol": "SINNOH_ROUTE_217",
+      "source_id": 157,
+      "sha256": "db89cea3494814739078d26cdf0509975d5cfb6123b51860141975d0c2a67ab7",
+      "targets": []
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_158",
+      "source_id": 158,
+      "sha256": "690ac8770c57d179bbdac3238b97ab84bb45ab321647f7f56c33ea7e1c4f3135",
+      "targets": [
+        156
+      ]
+    },
+    {
+      "symbol": "SINNOH_ACUITY_LAKEFRONT",
+      "source_id": 159,
+      "sha256": "d17c808810cce798c232e429de295ca63f1fd1f4cc6fa9fae8dea8d25f3b5ed0",
+      "targets": [
+        161
+      ]
+    },
+    {
+      "symbol": "SINNOH_SNOWPOINT_CITY",
+      "source_id": 160,
+      "sha256": "c60ca3907f4e79a80454a53f0b3332408abde2d5111f426a9a0b7e10cef2ebce",
+      "targets": [
+        166,
+        167,
+        170,
+        173
+      ]
+    },
+    {
+      "symbol": "SINNOH_LAKE_ACUITY",
+      "source_id": 161,
+      "sha256": "52a99d22be85cc5783433eab28ec5e051025654727c585fcd739183a2b217e72",
+      "targets": [
+        159,
+        162
+      ]
+    },
+    {
+      "symbol": "SINNOH_ACUITY_CAVERN",
+      "source_id": 162,
+      "sha256": "ac542e068e01812b48a4458bab15e546b6d295522e8612c1d96bfa53db08961a",
+      "targets": [
+        161
+      ]
+    },
+    {
+      "symbol": "SINNOH_ROUTE_225",
+      "source_id": 164,
+      "sha256": "77c4ee44bd0c516276dfcec7c5c7e29e9113af5f55317e438062339fac227af1",
+      "targets": [
+        188
+      ]
+    },
+    {
+      "symbol": "SINNOH_ROUTE_225_SEGMENT_2",
+      "source_id": 165,
+      "sha256": "2c8c1d8ee94185317d3adde90dee25aeaca72570cb14951a5361fb8c860bf27f",
+      "targets": []
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_167",
+      "source_id": 167,
+      "sha256": "a5956c83b3028cbf51cb265a66abcfcbe9c094ca300f49e68a2995345c5c2997",
+      "targets": [
+        160
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_168",
+      "source_id": 168,
+      "sha256": "be9700fe302358321e83bf19001984f5be4698d4a22a853d512d630937a7b55d",
+      "targets": [
+        163
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_169",
+      "source_id": 169,
+      "sha256": "bc7342f735b481ab166213556cab8765e73eb7a5a84d368ef4af380a6fad5861",
+      "targets": [
+        166
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_170",
+      "source_id": 170,
+      "sha256": "3f743748b6128d04a7e659227e2ed1ae6ffe09cd921be9b64b48c7647eecdad3",
+      "targets": [
+        160
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_171",
+      "source_id": 171,
+      "sha256": "5be4dbcb61360b06b07344a8e38ca4ddc9ce20108005ca91f5e9535ecd00b807",
+      "targets": [
+        163
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_172",
+      "source_id": 172,
+      "sha256": "46b39c572e0446d26c5cc88839ec972205bc49019c2e7876a3d894c8fa5aab00",
+      "targets": [
+        166
+      ]
+    },
+    {
+      "symbol": "SINNOH_SNOWPOINT_TEMPLE",
+      "source_id": 173,
+      "sha256": "e2afc8f5c5cfb78a455f492493b8b44bf45436ca06dd3cb5b4cb841acfbd6e76",
+      "targets": [
+        160,
+        173
+      ]
+    },
+    {
+      "symbol": "SINNOH_MT_CORONET_SOURCE_174",
+      "source_id": 174,
+      "sha256": "9d31f1c50d797ecdc185749a40e5d82257140d2c76b06e354bbd3149dd98bce3",
+      "targets": [
+        42,
+        121,
+        174,
+        182
+      ]
+    },
+    {
+      "symbol": "SINNOH_MT_CORONET_SOURCE_182",
+      "source_id": 182,
+      "sha256": "40dcad3805b6bdf87868bce89e6fad3970903118e206dd3b9ab865f28c6cac94",
+      "targets": [
+        82,
+        174,
+        183
+      ]
+    },
+    {
+      "symbol": "SINNOH_MT_CORONET_SOURCE_183",
+      "source_id": 183,
+      "sha256": "030019ee922ca2993cdfdf34cc37e5b3ce7af779bb9f5042e7da2d90197b49df",
+      "targets": [
+        182,
+        184
+      ]
+    },
+    {
+      "symbol": "SINNOH_MT_CORONET_SOURCE_184",
+      "source_id": 184,
+      "sha256": "caa1d676342be4baa41c719fcd9158b8677e5f6698faa7f91a92be1300b37b62",
+      "targets": [
+        183,
+        184,
+        185
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_187",
+      "source_id": 187,
+      "sha256": "4f1ff33c2a3d49465ab9812ddaeeffb184e5f48da762399e9c20ddb50da6bd06",
+      "targets": [
+        141,
+        150
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_188",
+      "source_id": 188,
+      "sha256": "a15e4ffea581c1a0ecbdc0e5974f1124ef330c3a9943032d39527e9cbfdbd9db",
+      "targets": [
+        164,
+        166
+      ]
+    },
+    {
+      "symbol": "SINNOH_WAYWARD_CAVE",
+      "source_id": 189,
+      "sha256": "792b2717fd1451ca1cce21cf47a3673e84402e4d84955ae7586d87804026353c",
+      "targets": [
+        146,
+        190
+      ]
+    },
+    {
+      "symbol": "SINNOH_WAYWARD_CAVE_SOURCE_190",
+      "source_id": 190,
+      "sha256": "df183d7b5e308f37b0afcda54144f33ee3b577ca2f1394bff15255d2c738a895",
+      "targets": [
+        189
+      ]
+    },
+    {
+      "symbol": "SINNOH_ROUTE_202",
+      "source_id": 191,
+      "sha256": "8cab3b8e402c807d8876ab635c2199ee32c27a65d8820133878648b4ab43319c",
+      "targets": []
+    },
+    {
+      "symbol": "SINNOH_SANDGEM_TOWN",
+      "source_id": 192,
+      "sha256": "cc4ecaee79091159df119d664622b86345a46549b80673b4a51eed586b35a583",
+      "targets": []
+    },
+    {
+      "symbol": "SINNOH_ROUTE_201",
+      "source_id": 193,
+      "sha256": "255e033e14119ee9378f94f92c432889934480d544be9ff0321ae74fb7ae743a",
+      "targets": []
+    },
+    {
+      "symbol": "SINNOH_TWINLEAF_TOWN",
+      "source_id": 194,
+      "sha256": "5695f26eaf18df1f16c75b981537d25d0a4184cdd80b66e0f2bd4b91e9e9deb4",
+      "targets": []
+    },
+    {
+      "symbol": "SINNOH_VERITY_LAKEFRONT",
+      "source_id": 195,
+      "sha256": "f677575ba686dd0dfb002d01d1bbd093c39f6d7a2df6f7cc20b8808a7efd7c58",
+      "targets": [
+        196
+      ]
+    },
+    {
+      "symbol": "SINNOH_LAKE_VERITY",
+      "source_id": 196,
+      "sha256": "a084dd2254ee2df4ee37a09248681f76bc19b96f7698667bfe44461d6fe317fd",
+      "targets": [
+        9,
+        195
+      ]
+    },
+    {
+      "symbol": "SINNOH_VERITY_CAVERN",
+      "source_id": 197,
+      "sha256": "293aa4ff4b61557ea7b87f9adacaad0315f236d30d7dec7e602cc05b00a807aa",
+      "targets": [
+        196
+      ]
+    },
+    {
+      "symbol": "SINNOH_ROUTE_219",
+      "source_id": 198,
+      "sha256": "df085702136c6f4d8bddff5efb723b119b4829d2fdae30cc0ed5966928308013",
+      "targets": []
+    },
+    {
+      "symbol": "SINNOH_ROUTE_220",
+      "source_id": 199,
+      "sha256": "e01834a4260b2ba490e45bde2f3145cd3818081652ec239d978767f71c4ab759",
+      "targets": []
+    },
+    {
+      "symbol": "SINNOH_ROUTE_221",
+      "source_id": 200,
+      "sha256": "203903a33f5df5b2dc639579e47ea4e74fecc200c59f5746f7d56145365d4950",
+      "targets": []
+    },
+    {
+      "symbol": "SINNOH_VEILSTONE_CITY",
+      "source_id": 205,
+      "sha256": "26dc8faefce3476c85fb675fb8f6b14e1df598424a5d16a8913f6d8fb0909c10",
+      "targets": []
+    },
+    {
+      "symbol": "SINNOH_ROUTE_214",
+      "source_id": 206,
+      "sha256": "71351bbe73f30492c788d1f72787e74cf1169d4b83d614dab266e18dfade5745",
+      "targets": [
+        207
+      ]
+    },
+    {
+      "symbol": "SINNOH_MANIAC_TUNNEL",
+      "source_id": 207,
+      "sha256": "649bf1438e51baeddd81f26a4d6ba82b5ab2e75803dfba33c46d3708cc6b1a87",
+      "targets": [
+        16,
+        89,
+        206
+      ]
+    },
+    {
+      "symbol": "SINNOH_SPRING_PATH",
+      "source_id": 208,
+      "sha256": "17a75c442488c18527800315dae71ee7c7d5c3dc13ce68cdf478c2703c573028",
+      "targets": [
+        209
+      ]
+    },
+    {
+      "symbol": "SINNOH_SENDOFF_SPRING",
+      "source_id": 209,
+      "sha256": "a3badd1e0ab587167dd5ec9f03dab8a18a05a6bf8da52bf1ac29adc3285c8973",
+      "targets": [
+        208,
+        210
+      ]
+    },
+    {
+      "symbol": "SINNOH_TURNBACK_CAVE",
+      "source_id": 210,
+      "sha256": "2acf74bb1f5fb59efe93ec6e8840d1ca8250661431fe4e87ccb3f8313a3e5347",
+      "targets": [
+        210,
+        211,
+        212
+      ]
+    },
+    {
+      "symbol": "SINNOH_TURNBACK_CAVE_SOURCE_211",
+      "source_id": 211,
+      "sha256": "1e0cb7add95b9932f7921923820e235b9dda83717f41f0b6b1eb52628510a31c",
+      "targets": [
+        210,
+        211,
+        212
+      ]
+    },
+    {
+      "symbol": "SINNOH_TURNBACK_CAVE_SOURCE_212",
+      "source_id": 212,
+      "sha256": "4a00f668794d9c053b3c4541afe4a9ae8161f362ab12687f1538bb185937f038",
+      "targets": [
+        210,
+        212,
+        213
+      ]
+    },
+    {
+      "symbol": "SINNOH_TURNBACK_CAVE_SOURCE_213",
+      "source_id": 213,
+      "sha256": "3eb030774f773a9af31f630ee3e9bd09a0a0d43b928e1de9e5c99af19da55978",
+      "targets": [
+        210,
+        213
+      ]
+    },
+    {
+      "symbol": "SINNOH_VALOR_LAKEFRONT",
+      "source_id": 214,
+      "sha256": "01dd1e09fc9228d1ed5077a87cd79fa53234948451d06c6a732356bace5dfc32",
+      "targets": [
+        26
+      ]
+    },
+    {
+      "symbol": "SINNOH_LAKE_VALOR",
+      "source_id": 215,
+      "sha256": "c5189c0c594f163ef92d60d730eb4e08c9537067c1454ca19827f2851e2c8267",
+      "targets": [
+        25,
+        217
+      ]
+    },
+    {
+      "symbol": "SINNOH_LAKE_VALOR_SOURCE_216",
+      "source_id": 216,
+      "sha256": "0e82ea100c2a4dc1921b040e418d53cf67710966cb34ba4ad27edcaa50d52a7c",
+      "targets": [
+        25,
+        217
+      ]
+    },
+    {
+      "symbol": "SINNOH_VALOR_CAVERN",
+      "source_id": 217,
+      "sha256": "e7d80aa507ee7112ccf301d5cc441ad8184a50054a7cca5dcc027dd544cc35b6",
+      "targets": [
+        215
+      ]
+    },
+    {
+      "symbol": "SINNOH_ROUTE_213",
+      "source_id": 218,
+      "sha256": "bb14b09bddbcd5ec96b33c897406e08579de9b61652a7a87d9d7567d81614ac3",
+      "targets": []
+    },
+    {
+      "symbol": "SINNOH_PASTORIA_CITY",
+      "source_id": 219,
+      "sha256": "7aa39abbf594db53c1e95a87707132b3c7b1282a62ba91b6f0958062ca8dcd41",
+      "targets": [
+        220
+      ]
+    },
+    {
+      "symbol": "SINNOH_F07_INTERIOR_220",
+      "source_id": 220,
+      "sha256": "d56fec7ac55569e1dfee8028c3331c7943d2a5dc213300716bf35adb1659508c",
+      "targets": [
+        219,
+        220,
+        221
+      ]
+    },
+    {
+      "symbol": "SINNOH_GREAT_MARSH",
+      "source_id": 221,
+      "sha256": "22b8ba9661bffca4e8ef9a05b2dc51f5eb57e2f1615a765f6e1bf39554de4457",
+      "targets": [
+        220
+      ]
+    },
+    {
+      "symbol": "SINNOH_ROUTE_212",
+      "source_id": 222,
+      "sha256": "963620aa4dfa4d64540c3fd6bae1e5fc5a34d74a13ce0046b2e8ef1a7bcdfeee",
+      "targets": []
+    },
+    {
+      "symbol": "SINNOH_ROUTE_212_SEGMENT_2",
+      "source_id": 223,
+      "sha256": "7cd59c840952214511b41d4936e76a20a8d9b95824aef3978ee39490e2924ba9",
+      "targets": []
+    },
+    {
+      "symbol": "SINNOH_ROUTE_222",
+      "source_id": 224,
+      "sha256": "0dd65be59e6b512e8c32f95275930f2c96127c7687ff8dff08467dffc51e33eb",
+      "targets": []
+    },
+    {
+      "symbol": "SINNOH_SUNYSHORE_CITY",
+      "source_id": 225,
+      "sha256": "b53a53281ef5ba114e204a8681869b4deedc182c9e92772fc83bb6227380340c",
+      "targets": []
+    },
+    {
+      "symbol": "SINNOH_ROUTE_223",
+      "source_id": 226,
+      "sha256": "b48a163d1cd177fdb292aaa61c7f15b1a252aff0025c9ae4b43a90af9635ab92",
+      "targets": []
+    },
+    {
+      "symbol": "SINNOH_ROUTE_224",
+      "source_id": 233,
+      "sha256": "13d8ce64fc6a4907d897d1bb59f6c99b0aae33055e31d6928e719afb09b83842",
+      "targets": [
+        231
+      ]
+    },
+    {
+      "symbol": "SINNOH_ROUTE_224_SEGMENT_2",
+      "source_id": 234,
+      "sha256": "ebb79ebb95bcaaa476d0d8b63cf9d762ccefcc6b7a7a58c30777404357dc50b5",
+      "targets": [
+        231
+      ]
+    }
+  ],
+  "directed_candidates": [
+    [
+      22,
+      32
+    ],
+    [
+      22,
+      33
+    ],
+    [
+      22,
+      43
+    ],
+    [
+      22,
+      48
+    ],
+    [
+      22,
+      76
+    ],
+    [
+      32,
+      22
+    ],
+    [
+      33,
+      22
+    ],
+    [
+      42,
+      121
+    ],
+    [
+      42,
+      174
+    ],
+    [
+      43,
+      22
+    ],
+    [
+      48,
+      22
+    ],
+    [
+      76,
+      22
+    ],
+    [
+      76,
+      105
+    ],
+    [
+      77,
+      81
+    ],
+    [
+      77,
+      86
+    ],
+    [
+      79,
+      82
+    ],
+    [
+      81,
+      77
+    ],
+    [
+      82,
+      79
+    ],
+    [
+      82,
+      117
+    ],
+    [
+      82,
+      156
+    ],
+    [
+      82,
+      182
+    ],
+    [
+      84,
+      22
+    ],
+    [
+      84,
+      87
+    ],
+    [
+      84,
+      88
+    ],
+    [
+      84,
+      89
+    ],
+    [
+      86,
+      77
+    ],
+    [
+      87,
+      84
+    ],
+    [
+      88,
+      84
+    ],
+    [
+      89,
+      84
+    ],
+    [
+      89,
+      207
+    ],
+    [
+      90,
+      129
+    ],
+    [
+      90,
+      130
+    ],
+    [
+      90,
+      149
+    ],
+    [
+      91,
+      93
+    ],
+    [
+      93,
+      91
+    ],
+    [
+      93,
+      94
+    ],
+    [
+      94,
+      93
+    ],
+    [
+      96,
+      97
+    ],
+    [
+      96,
+      98
+    ],
+    [
+      96,
+      131
+    ],
+    [
+      96,
+      132
+    ],
+    [
+      97,
+      96
+    ],
+    [
+      98,
+      96
+    ],
+    [
+      104,
+      125
+    ],
+    [
+      105,
+      76
+    ],
+    [
+      106,
+      107
+    ],
+    [
+      106,
+      133
+    ],
+    [
+      106,
+      134
+    ],
+    [
+      107,
+      106
+    ],
+    [
+      107,
+      108
+    ],
+    [
+      108,
+      107
+    ],
+    [
+      108,
+      115
+    ],
+    [
+      109,
+      115
+    ],
+    [
+      109,
+      135
+    ],
+    [
+      109,
+      136
+    ],
+    [
+      110,
+      145
+    ],
+    [
+      115,
+      108
+    ],
+    [
+      115,
+      109
+    ],
+    [
+      117,
+      82
+    ],
+    [
+      121,
+      42
+    ],
+    [
+      121,
+      122
+    ],
+    [
+      121,
+      174
+    ],
+    [
+      122,
+      121
+    ],
+    [
+      122,
+      124
+    ],
+    [
+      123,
+      124
+    ],
+    [
+      123,
+      125
+    ],
+    [
+      123,
+      137
+    ],
+    [
+      123,
+      138
+    ],
+    [
+      124,
+      122
+    ],
+    [
+      124,
+      123
+    ],
+    [
+      125,
+      104
+    ],
+    [
+      125,
+      123
+    ],
+    [
+      129,
+      90
+    ],
+    [
+      130,
+      90
+    ],
+    [
+      131,
+      96
+    ],
+    [
+      132,
+      96
+    ],
+    [
+      133,
+      106
+    ],
+    [
+      134,
+      106
+    ],
+    [
+      135,
+      109
+    ],
+    [
+      136,
+      109
+    ],
+    [
+      137,
+      123
+    ],
+    [
+      138,
+      123
+    ],
+    [
+      141,
+      142
+    ],
+    [
+      141,
+      187
+    ],
+    [
+      142,
+      141
+    ],
+    [
+      145,
+      110
+    ],
+    [
+      146,
+      148
+    ],
+    [
+      146,
+      189
+    ],
+    [
+      148,
+      146
+    ],
+    [
+      149,
+      90
+    ],
+    [
+      150,
+      187
+    ],
+    [
+      152,
+      153
+    ],
+    [
+      153,
+      152
+    ],
+    [
+      156,
+      82
+    ],
+    [
+      156,
+      158
+    ],
+    [
+      158,
+      156
+    ],
+    [
+      159,
+      161
+    ],
+    [
+      160,
+      167
+    ],
+    [
+      160,
+      170
+    ],
+    [
+      160,
+      173
+    ],
+    [
+      161,
+      159
+    ],
+    [
+      161,
+      162
+    ],
+    [
+      162,
+      161
+    ],
+    [
+      164,
+      188
+    ],
+    [
+      167,
+      160
+    ],
+    [
+      170,
+      160
+    ],
+    [
+      173,
+      160
+    ],
+    [
+      174,
+      42
+    ],
+    [
+      174,
+      121
+    ],
+    [
+      174,
+      182
+    ],
+    [
+      182,
+      82
+    ],
+    [
+      182,
+      174
+    ],
+    [
+      182,
+      183
+    ],
+    [
+      183,
+      182
+    ],
+    [
+      183,
+      184
+    ],
+    [
+      184,
+      183
+    ],
+    [
+      187,
+      141
+    ],
+    [
+      187,
+      150
+    ],
+    [
+      188,
+      164
+    ],
+    [
+      189,
+      146
+    ],
+    [
+      189,
+      190
+    ],
+    [
+      190,
+      189
+    ],
+    [
+      195,
+      196
+    ],
+    [
+      196,
+      195
+    ],
+    [
+      197,
+      196
+    ],
+    [
+      206,
+      207
+    ],
+    [
+      207,
+      89
+    ],
+    [
+      207,
+      206
+    ],
+    [
+      208,
+      209
+    ],
+    [
+      209,
+      208
+    ],
+    [
+      209,
+      210
+    ],
+    [
+      210,
+      211
+    ],
+    [
+      210,
+      212
+    ],
+    [
+      211,
+      210
+    ],
+    [
+      211,
+      212
+    ],
+    [
+      212,
+      210
+    ],
+    [
+      212,
+      213
+    ],
+    [
+      213,
+      210
+    ],
+    [
+      215,
+      217
+    ],
+    [
+      216,
+      217
+    ],
+    [
+      217,
+      215
+    ],
+    [
+      219,
+      220
+    ],
+    [
+      220,
+      219
+    ],
+    [
+      220,
+      221
+    ],
+    [
+      221,
+      220
+    ]
+  ],
+  "reciprocal_candidates": [
+    [
+      22,
+      32
+    ],
+    [
+      22,
+      33
+    ],
+    [
+      22,
+      43
+    ],
+    [
+      22,
+      48
+    ],
+    [
+      22,
+      76
+    ],
+    [
+      42,
+      121
+    ],
+    [
+      42,
+      174
+    ],
+    [
+      76,
+      105
+    ],
+    [
+      77,
+      81
+    ],
+    [
+      77,
+      86
+    ],
+    [
+      79,
+      82
+    ],
+    [
+      82,
+      117
+    ],
+    [
+      82,
+      156
+    ],
+    [
+      82,
+      182
+    ],
+    [
+      84,
+      87
+    ],
+    [
+      84,
+      88
+    ],
+    [
+      84,
+      89
+    ],
+    [
+      89,
+      207
+    ],
+    [
+      90,
+      129
+    ],
+    [
+      90,
+      130
+    ],
+    [
+      90,
+      149
+    ],
+    [
+      91,
+      93
+    ],
+    [
+      93,
+      94
+    ],
+    [
+      96,
+      97
+    ],
+    [
+      96,
+      98
+    ],
+    [
+      96,
+      131
+    ],
+    [
+      96,
+      132
+    ],
+    [
+      104,
+      125
+    ],
+    [
+      106,
+      107
+    ],
+    [
+      106,
+      133
+    ],
+    [
+      106,
+      134
+    ],
+    [
+      107,
+      108
+    ],
+    [
+      108,
+      115
+    ],
+    [
+      109,
+      115
+    ],
+    [
+      109,
+      135
+    ],
+    [
+      109,
+      136
+    ],
+    [
+      110,
+      145
+    ],
+    [
+      121,
+      122
+    ],
+    [
+      121,
+      174
+    ],
+    [
+      122,
+      124
+    ],
+    [
+      123,
+      124
+    ],
+    [
+      123,
+      125
+    ],
+    [
+      123,
+      137
+    ],
+    [
+      123,
+      138
+    ],
+    [
+      141,
+      142
+    ],
+    [
+      141,
+      187
+    ],
+    [
+      146,
+      148
+    ],
+    [
+      146,
+      189
+    ],
+    [
+      150,
+      187
+    ],
+    [
+      152,
+      153
+    ],
+    [
+      156,
+      158
+    ],
+    [
+      159,
+      161
+    ],
+    [
+      160,
+      167
+    ],
+    [
+      160,
+      170
+    ],
+    [
+      160,
+      173
+    ],
+    [
+      161,
+      162
+    ],
+    [
+      164,
+      188
+    ],
+    [
+      174,
+      182
+    ],
+    [
+      182,
+      183
+    ],
+    [
+      183,
+      184
+    ],
+    [
+      189,
+      190
+    ],
+    [
+      195,
+      196
+    ],
+    [
+      206,
+      207
+    ],
+    [
+      208,
+      209
+    ],
+    [
+      210,
+      211
+    ],
+    [
+      210,
+      212
+    ],
+    [
+      215,
+      217
+    ],
+    [
+      219,
+      220
+    ],
+    [
+      220,
+      221
+    ]
+  ]
+}
