@@ -799,7 +799,19 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
         self.assertEqual(f08c_maps["Data/map_connections.dat"],f08b_maps["Data/map_connections.dat"])
         self.assertEqual(f08c_maps["PBS/map_connections.txt"],f08b_maps["PBS/map_connections.txt"])
         entries=exp.qa_teleport.build(f08c_maps,f08c_ids,f08c_components)
-        self.assertEqual({r[0]:r for r in entries if r[0] not in f08c.EXTERIORS},{r[0]:r for r in f07_entries})
+        self.assertEqual(len(entries),len(f07_entries))
+        self.assertEqual(len({r[0] for r in entries}),len(entries))
+        self.assertEqual([r[:3] for r in entries],[r[:3] for r in f07_entries])
+        self.assertEqual({r[0]:r for r in entries if r[0] not in f08c.EXTERIORS},
+                         {r[0]:r for r in f07_entries if r[0] not in f08c.EXTERIORS})
+        for sym in f08c.EXTERIORS:
+            previous=next(r for r in f07_entries if r[0]==sym)
+            current=next(r for r in entries if r[0]==sym)
+            self.assertIsNone(previous[3])
+            self.assertEqual(current[3],extra["maps"][sym]["safe_spawn"])
+        self.assertGreaterEqual(extra["new_portals"],10)
+        self.assertTrue({(163,168),(168,163),(163,171),(171,163),(166,169),(169,166),(166,172),(172,166),(166,188),(188,166)}
+                        <={(p["source_id"],p["target_source_id"]) for p in extra["portals"]})
         masks=pv.movement_masks(f08c_maps,f08c_ids,extra_symbols=city.CITIES|routes.ROUTES|natural.NATURAL|interior.INTERIORS|f08c.EXTERIORS)
         self.assertEqual({mid:masks[mid] for mid in f07_masks},f07_masks)
         for mid in f07_ids.values():
@@ -1335,6 +1347,13 @@ raise "duplicate battle" unless $calls==4
         self.assertIsNone(c.diagonal_approach((0,23),(1,22),{(1,22)}))
         self.assertIsNone(c.diagonal_approach((0,23),(1,22),{(1,23)}))
         self.assertIsNone(c.diagonal_approach((0,23),(2,22),{(2,22),(1,23)}))
+
+    def test_f08c_catalog_already_contains_planned_destinations_and_connected_ground(self):
+        c=exp.f08c_expansion
+        rows=exp.qa_teleport.catalog()
+        self.assertEqual({r["symbol"] for r in rows}&c.EXTERIORS,c.EXTERIORS)
+        self.assertEqual(c.connected_ground({(1,1),(2,1),(3,1),(8,8)},(1,1)),{(1,1),(2,1),(3,1)})
+        self.assertEqual(c.connected_ground({(1,1)},(2,1)),set())
 
     def test_f08c_append_only_capacity(self):
         c=exp.f08c_expansion

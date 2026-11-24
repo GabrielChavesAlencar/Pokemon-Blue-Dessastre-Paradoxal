@@ -104,9 +104,10 @@ def build(blobs,mapping,components,root=ROOT):
     if len(mapping)>91:
         from sinnoh_interior_expansion import extra_destinations as interior_destinations
         rows += interior_destinations(root)
-    if len(mapping)>127:
-        from sinnoh_f08c_expansion import extra_destinations as f08c_destinations
-        rows += f08c_destinations(root)
+    # F08C destinations already exist as planned rows in the F01 catalog.
+    # Populate them in place, retaining their labels, categories and order.
+    if len(rows)!=len({r["symbol"] for r in rows}):
+        raise ValueError("SINNOH_F01_DUPLICATE_DESTINATIONS")
     if not set(mapping)<={r["symbol"] for r in rows}:
         raise ValueError("SINNOH_F01_UNCATALOGUED_MAP")
     if len(set(mapping.values()))!=len(mapping):

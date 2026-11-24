@@ -1,6 +1,7 @@
 """F08C: four verified original exteriors and append-only reciprocal doors."""
 import hashlib
 import json
+from collections import deque
 from pathlib import Path
 import sinnoh_city_expansion as city
 import sinnoh_interior_expansion as interior
@@ -32,6 +33,15 @@ def allocate(mapping,occupied,root=ROOT):
 def extra_destinations(root=ROOT):
     return [{k:r[k] for k in ("symbol","label","category")} for r in rows(root)]
 
+def connected_ground(cells,seed):
+    if seed not in cells:return set()
+    reached={seed};todo=deque([seed])
+    while todo:
+        for q in city.teleport.neighbours(*todo.popleft()):
+            if q in cells and q not in reached:
+                reached.add(q);todo.append(q)
+    return reached
+
 def signature(p):
     return {"source_id":p["source_id"],"source_event_id":p["source_event_id"],"target_source_id":p["target_source_id"],
         "from_xy":p["from"][1:],"to_xy":p["to"][1:],"trigger":p["trigger"],"event_id":p["event_id"]}
@@ -49,7 +59,17 @@ def append(blobs,mapping,components,path,occupied,baseline,root=ROOT):
     relevant={a for a,b in pairs}
     worlds={source[a]["symbol"]:conn.read_marshal(out["Data/Map%03d.rxdata"%expanded[source[a]["symbol"]]],"F08C_MAP") for a in relevant}
     tiles=conn.read_marshal(out["Data/Tilesets.rxdata"],"F08C_TILES")
-    safe={s:conn.safe_cells(m,tiles,s)&comps[s] for s,m in worlds.items()}
+    ordinary={s:conn.safe_cells(m,tiles,s) for s,m in worlds.items()}
+    safe={s:cells&comps[s] for s,cells in ordinary.items()}
+    # Cycling Road (147) has 2442 pure rock-floor passable stacks in the
+    # real F08C terrain report. Tag 4 is rock ground, not a movement mode.
+    # Permit it only for this new map, in the component of the original
+    # QA spawn. No prior map, collision flag, spawn or movement mask changes.
+    cycling="SINNOH_CYCLING_ROAD"
+    if cycling in worlds:
+        allowed=conn.safe_cells(worlds[cycling],tiles,cycling,allowed={0,4})
+        safe[cycling]=connected_ground(allowed,arrivals[cycling])
+        if not safe[cycling]:raise ValueError("F08C_CYCLING_COMPONENT_EMPTY")
     used={s:{(e.attrs["@x"],e.attrs["@y"]) for e in m.attrs["@events"].values()} for s,m in worlds.items()}
     raw=[];rejected=[]
     with conn.pv.verified_archive(path,"maps") as z:
@@ -74,7 +94,7 @@ def append(blobs,mapping,components,path,occupied,baseline,root=ROOT):
     # Lock all 63 existing portal positions and their landing tiles. New pairs
     # cannot trigger an old automatic portal or place a new event on a landing.
     old=baseline["portals"];reserved={tuple(p["to"]) for p in old};old_touch={tuple(p["from"]) for p in old if p["trigger"]!=0}
-    claimed=set();added=[]
+    claimed=set();added=[];geometry=[]
     for r in raw:
         key=(r["source_id"],r["source_event_id"])
         if key in claimed:continue
@@ -89,12 +109,32 @@ def append(blobs,mapping,components,path,occupied,baseline,root=ROOT):
         for e,other in ((r,w),(w,r)):
             sym=e["symbol"];dest=source[e["target_source_id"]]["symbol"]
             mid,x,y=e["from"];dst,dx,dy=e["to"];origin=(x,y);landing=tuple(other["to"][1:])
-            if (dx,dy) not in safe[dest] or (dx,dy) in used[dest] or tuple(e["to"]) in old_touch or origin in used[sym]:break
+            approach=None
             if origin in safe[sym]:approach=origin
             elif conn.distance(origin,landing)==1 and landing in safe[sym]:approach=landing
             else:approach=conn.diagonal_approach(origin,landing,safe[sym])
-            if approach is None or approach in used[sym] or (mid,*approach) in reserved or conn.distance(approach,arrivals[sym])<=1:break
-            if not any(n in safe[sym] for n in city.teleport.neighbours(*approach)) or not any(n in safe[dest] for n in city.teleport.neighbours(dx,dy)):break
+            reasons=[]
+            if (dx,dy) not in safe[dest]:reasons.append("destination_not_safe")
+            if (dx,dy) in used[dest]:reasons.append("destination_event")
+            if tuple(e["to"]) in old_touch:reasons.append("old_touch_destination")
+            if origin in used[sym]:reasons.append("source_event")
+            if approach is None:reasons.append("no_safe_approach")
+            else:
+                if approach in used[sym]:reasons.append("approach_event")
+                if (mid,*approach) in reserved:reasons.append("old_landing_reserved")
+                if conn.distance(approach,arrivals[sym])<=1:reasons.append("qa_spawn_reserved")
+                if not any(n in safe[sym] for n in city.teleport.neighbours(*approach)):reasons.append("source_isolated")
+            if not any(n in safe[dest] for n in city.teleport.neighbours(dx,dy)):reasons.append("destination_isolated")
+            if reasons:
+                geometry.append({"source_id":e["source_id"],"event_id":e["source_event_id"],
+                    "target_source_id":e["target_source_id"],"reasons":reasons,
+                    "source_in_ordinary":origin in ordinary[sym],"source_in_component":origin in comps[sym],
+                    "return_landing_in_safe":landing in safe[sym],
+                    "destination_in_ordinary":(dx,dy) in ordinary[dest],"destination_in_component":(dx,dy) in comps[dest],
+                    "from":e["from"],"to":e["to"],"approach":approach,
+                    "source_neighbours":[list(n) for n in city.teleport.neighbours(*origin) if n in safe[sym]],
+                    "destination_neighbours":[list(n) for n in city.teleport.neighbours(dx,dy) if n in safe[dest]]})
+                continue
             pair.append({**e,"original_from":e["from"],"from":[mid,*approach]})
         if len(pair)!=2:continue
         for e in pair:
@@ -112,6 +152,6 @@ def append(blobs,mapping,components,path,occupied,baseline,root=ROOT):
     for e in raw:
         if (e["source_id"],e["source_event_id"]) not in claimed:rejected.append({"source_id":e["source_id"],"event_id":e["source_event_id"],"reason":"reciprocal_geometry_or_collision","targets":[e["target_source_id"]],"from":e["from"],"to":e["to"]})
     links={(e["source_id"],e["target_source_id"]) for e in added}
-    stats={"maps":report,"portals":added,"new_portals":len(added),"new_directed":len(links),"new_pairs":sum(a<b and (b,a) in links for a,b in links),"eligible_directed":len(pairs),"rejected":rejected,"native_verified":False}
+    stats={"maps":report,"portals":added,"new_portals":len(added),"new_directed":len(links),"new_pairs":sum(a<b and (b,a) in links for a,b in links),"eligible_directed":len(pairs),"rejected":rejected,"geometry":geometry,"cycling_ground_cells":len(safe.get(cycling,())),"native_verified":False}
     print("SINNOH_F08C_REPORT "+json.dumps(stats,sort_keys=True),flush=True)
     return out,expanded,comps,stats

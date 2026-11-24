@@ -110,12 +110,12 @@ def event_shape(event):
                 for c in ops if c.get("@code")==209 and len(c.get("@parameters",[]))==2]})
     return pages
 
-def safe_cells(world,tiles,symbol):
+def safe_cells(world,tiles,symbol,allowed=None):
     a=world.attrs;w,h=a["@width"],a["@height"];ts=tiles[a["@tileset_id"]].attrs
     p=ts["@passages"].data[20:];t=ts["@terrain_tags"].data[20:]
     p=struct.unpack("<%dH"%(len(p)//2),p);t=struct.unpack("<%dH"%(len(t)//2),t)
     cells=struct.unpack_from("<%dH"%(w*h*3),a["@data"].data,20)
-    allowed=city.teleport.arrival_policy(symbol)[0]
+    if allowed is None:allowed=city.teleport.arrival_policy(symbol)[0]
     return {(x,y) for y in range(h) for x in range(w) if
         (stack:=[cells[z*w*h+y*w+x] for z in range(3) if cells[z*w*h+y*w+x]])
         and all(i<len(p) and i<len(t) and not p[i]&15 and t[i] in allowed for i in stack)}
