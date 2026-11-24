@@ -71,6 +71,9 @@ def build(blobs,mapping,components,root=ROOT):
     if any("_SEGMENT_" in sym for sym in mapping):
         from sinnoh_route_expansion import extra_destinations
         rows += extra_destinations(root)
+    if len(mapping)>56:
+        from sinnoh_natural_expansion import extra_destinations as natural_destinations
+        rows += natural_destinations(root)
     if not set(mapping)<={r["symbol"] for r in rows}:
         raise ValueError("SINNOH_F01_UNCATALOGUED_MAP")
     if len(set(mapping.values()))!=len(mapping):

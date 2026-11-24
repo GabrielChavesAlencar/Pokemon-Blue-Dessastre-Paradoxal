@@ -110,10 +110,18 @@ def load_qa(project: Path, qa: Path) -> dict:
                 any(k not in maps or not isinstance(routes[k],dict) or routes[k].get("target_id")!=maps[k] for k in route_keys)):
             block("INVALID_F05_ROUTE_MANIFEST")
         count=56
+    natural=data.get("natural_expansion",{})
+    natural_keys=set(["SINNOH_OREBURGH_MINE","SINNOH_OREBURGH_GATE","SINNOH_MT_CORONET_WEST_APPROACH","SINNOH_SOLACEON_RUINS","SINNOH_ETERNA_FOREST","SINNOH_ETERNA_FOREST_SOURCE_093","SINNOH_FLOAROMA_MEADOW","SINNOH_MT_CORONET_SOURCE_117","SINNOH_MT_CORONET_INTERIOR_ROUTES","SINNOH_RAVAGED_PATH","SINNOH_STARK_MOUNTAIN","SINNOH_STARK_MOUNTAIN_SOURCE_153","SINNOH_ACUITY_LAKEFRONT","SINNOH_LAKE_ACUITY","SINNOH_ACUITY_CAVERN","SINNOH_SNOWPOINT_TEMPLE","SINNOH_MT_CORONET_SOURCE_174","SINNOH_MT_CORONET_SOURCE_182","SINNOH_MT_CORONET_SOURCE_183","SINNOH_MT_CORONET_SOURCE_184","SINNOH_WAYWARD_CAVE","SINNOH_WAYWARD_CAVE_SOURCE_190","SINNOH_VERITY_CAVERN","SINNOH_MANIAC_TUNNEL","SINNOH_SPRING_PATH","SINNOH_SENDOFF_SPRING","SINNOH_TURNBACK_CAVE","SINNOH_TURNBACK_CAVE_SOURCE_211","SINNOH_TURNBACK_CAVE_SOURCE_212","SINNOH_TURNBACK_CAVE_SOURCE_213","SINNOH_VALOR_LAKEFRONT","SINNOH_LAKE_VALOR","SINNOH_LAKE_VALOR_SOURCE_216","SINNOH_VALOR_CAVERN","SINNOH_GREAT_MARSH"])
+    if natural:
+        if (count!=56 or not isinstance(natural,dict) or set(natural)!=natural_keys or
+                any(k not in maps or not isinstance(natural[k],dict) or natural[k].get("target_id")!=maps[k] for k in natural_keys) or
+                any(type(n) is not int or not 442<=n<=517 for k,n in maps.items() if k not in natural_keys)):
+            block("INVALID_F06_NATURAL_MANIFEST")
+        count=91
     if (not isinstance(maps, dict) or len(maps) != count or
             (count>=10 and "SINNOH_VERITY_LAKEFRONT" not in maps) or
             len(set(maps.values())) != count or
-            not all(type(n) is int and 442 <= n <= 517 for n in maps.values())):
+            not all(type(n) is int and 442 <= n <= (599 if count==91 else 517) for n in maps.values())):
         block("INVALID_NINE_QA_MAPIDS")
     start = data.get("start")
     if (not isinstance(start, list) or len(start) != 3 or
@@ -185,6 +193,11 @@ def audit_maps(qa: Path, data: dict, *, allow_tile_recovery: bool):
         source_ids={row["source_id"] for row in routes.values()}
         if source_ids!={42,79,80,91,94,104,105,108,110,116,122,126,140,141,142,146,150,151,155,156,157,164,165,198,199,200,206,218,222,223,224,226,233,234}:block("INVALID_F05_SOURCE_IDS")
         files += ["Graphics/Tilesets/SNQA_F05_%03d.png"%mid for mid in sorted(source_ids)]
+    natural=data.get("natural_expansion",{})
+    if natural:
+        source_ids={row["source_id"] for row in natural.values()}
+        if source_ids!={33,76,82,89,92,93,98,117,121,145,152,153,159,161,162,173,174,182,183,184,189,190,197,207,208,209,210,211,212,213,214,215,216,217,221}:block("INVALID_F06_SOURCE_IDS")
+        files += ["Graphics/Tilesets/SNQA_F06_%03d.png"%mid for mid in sorted(source_ids)]
     continuity=data.get("private_continuity",{})
     if continuity:
         if not isinstance(continuity,dict) or len(continuity.get("connections",[]))!=(6 if data.get("private_lake_story") else 3):

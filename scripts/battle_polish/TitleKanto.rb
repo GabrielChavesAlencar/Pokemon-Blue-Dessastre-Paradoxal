@@ -330,10 +330,16 @@ module BlueKantoTitle
         return sinnoh_qa_block("Manifesto F05 de rotas invalido.") unless expected_count == 22 && ids.is_a?(Hash) && route_report.keys.sort == route_keys.sort && route_keys.all? { |k| ids.key?(k) && route_report[k].is_a?(Hash) && route_report[k]["target_id"] == ids[k] }
         expected_count = 56
       end
+      natural_report = data["natural_expansion"]
+      if natural_report.is_a?(Hash) && !natural_report.empty?
+        natural_keys = %w[SINNOH_OREBURGH_MINE SINNOH_OREBURGH_GATE SINNOH_MT_CORONET_WEST_APPROACH SINNOH_SOLACEON_RUINS SINNOH_ETERNA_FOREST SINNOH_ETERNA_FOREST_SOURCE_093 SINNOH_FLOAROMA_MEADOW SINNOH_MT_CORONET_SOURCE_117 SINNOH_MT_CORONET_INTERIOR_ROUTES SINNOH_RAVAGED_PATH SINNOH_STARK_MOUNTAIN SINNOH_STARK_MOUNTAIN_SOURCE_153 SINNOH_ACUITY_LAKEFRONT SINNOH_LAKE_ACUITY SINNOH_ACUITY_CAVERN SINNOH_SNOWPOINT_TEMPLE SINNOH_MT_CORONET_SOURCE_174 SINNOH_MT_CORONET_SOURCE_182 SINNOH_MT_CORONET_SOURCE_183 SINNOH_MT_CORONET_SOURCE_184 SINNOH_WAYWARD_CAVE SINNOH_WAYWARD_CAVE_SOURCE_190 SINNOH_VERITY_CAVERN SINNOH_MANIAC_TUNNEL SINNOH_SPRING_PATH SINNOH_SENDOFF_SPRING SINNOH_TURNBACK_CAVE SINNOH_TURNBACK_CAVE_SOURCE_211 SINNOH_TURNBACK_CAVE_SOURCE_212 SINNOH_TURNBACK_CAVE_SOURCE_213 SINNOH_VALOR_LAKEFRONT SINNOH_LAKE_VALOR SINNOH_LAKE_VALOR_SOURCE_216 SINNOH_VALOR_CAVERN SINNOH_GREAT_MARSH]
+        return sinnoh_qa_block("Manifesto F06 invalido.") unless expected_count == 56 && ids.is_a?(Hash) && natural_report.keys.sort == natural_keys.sort && natural_keys.all? { |k| ids.key?(k) && natural_report[k].is_a?(Hash) && natural_report[k]["target_id"] == ids[k] } && ids.all? { |k,n| natural_keys.include?(k) || (n.is_a?(Integer) && n.between?(442,517)) }
+        expected_count = 91
+      end
       return sinnoh_qa_block("MapIDs QA invalidos ou colisao entre mapas.") unless
         ids.is_a?(Hash) && ids.length == expected_count &&
         (expected_count == 9 || ids.key?("SINNOH_VERITY_LAKEFRONT")) &&
-        ids.values.all? { |value| value.is_a?(Integer) && value.between?(442,517) } &&
+        ids.values.all? { |value| value.is_a?(Integer) && value.between?(442,expected_count == 91 ? 599 : 517) } &&
         ids.values.uniq.length == expected_count && files.is_a?(Hash)
       start = data["start"]
       return sinnoh_qa_block("Quarto inicial nao corresponde aos MapIDs QA.") unless
@@ -348,10 +354,15 @@ module BlueKantoTitle
         return sinnoh_qa_block("Fontes das cidades F04 invalidas.") unless source_ids.all? { |id| id.is_a?(Integer) } && source_ids.sort == [22,77,84,90,96,106,109,123,160,205,219,225]
         required += source_ids.map { |id| sprintf("Graphics/Tilesets/SNQA_F04_%03d.png",id) }
       end
-      if expected_count == 56
+      if expected_count >= 56
         source_ids = route_report.values.map { |r| r["source_id"] }
         return sinnoh_qa_block("Fontes F05 invalidas.") unless source_ids.all? { |id| id.is_a?(Integer) } && source_ids.sort == [42,79,80,91,94,104,105,108,110,116,122,126,140,141,142,146,150,151,155,156,157,164,165,198,199,200,206,218,222,223,224,226,233,234]
         required += source_ids.map { |id| sprintf("Graphics/Tilesets/SNQA_F05_%03d.png",id) }
+      end
+      if expected_count == 91
+        source_ids = natural_report.values.map { |r| r["source_id"] }
+        return sinnoh_qa_block("Fontes F06 invalidas.") unless source_ids.all? { |id| id.is_a?(Integer) } && source_ids.sort == [33,76,82,89,92,93,98,117,121,145,152,153,159,161,162,173,174,182,183,184,189,190,197,207,208,209,210,211,212,213,214,215,216,217,221]
+        required += source_ids.map { |id| sprintf("Graphics/Tilesets/SNQA_F06_%03d.png",id) }
       end
       required.each do |file|
         hash = files[file]

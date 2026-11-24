@@ -146,8 +146,8 @@ def append_exteriors(blobs,mapping,components,path,expanded,source_rows,phase):
                 comps[sym]=component(cells,w,h,tables["@passages"],tables["@terrain_tags"],sym if phase=="F05" else None)
             except ValueError as exc:
                 component_failures.append({"symbol":sym,"source_id":mid,"error":str(exc)})
-            if phase=="F05":
-                print("SINNOH_F05_TERRAIN "+json.dumps({"symbol":sym,"source_id":mid,
+            if phase in ("F05","F06"):
+                print("SINNOH_"+phase+"_TERRAIN "+json.dumps({"symbol":sym,"source_id":mid,
                       **terrain_diagnostics(cells,w,h,tables["@passages"],tables["@terrain_tags"]),
                       "policy_ground_cells":len(teleport.arrival_ground(cells,w,h,tables["@passages"],tables["@terrain_tags"],sym)),
                       "policy_component_cells":len(comps.get(sym,()))},sort_keys=True),flush=True)
@@ -182,17 +182,22 @@ def append_exteriors(blobs,mapping,components,path,expanded,source_rows,phase):
             x,y=teleport.safe_spawn(out[rel],tiles,comps[sym],sym if phase=="F05" else None)
         except ValueError as exc:
             raise ValueError("F04_CITY:"+sym+":"+str(exc)) from exc
-        if phase=="F05":
-            print("SINNOH_F05_ARRIVAL "+json.dumps({"symbol":sym,"source_id":row["source_id"],
+        if phase in ("F05","F06"):
+            print("SINNOH_"+phase+"_ARRIVAL "+json.dumps({"symbol":sym,"source_id":row["source_id"],
                   "target_id":mid,"x":x,"y":y,"component_cells":len(comps[sym])},sort_keys=True),flush=True)
         info=copy.deepcopy(infos[mapping["SINNOH_SANDGEM_TOWN"]]);order+=1
         info.attrs.update({"@name":row["label"].encode("ascii"),"@parent_id":0,"@order":order})
         infos[mid]=info
-        pbs+=("\n# %s private exterior\n[%03d]\nName = %s\nOutdoor = true\nShowArea = true\nBicycle = true\nSnapEdges = true\n"%(phase,mid,row["label"])).encode("ascii")
+        outdoor=row.get("outdoor",True)
+        if outdoor:
+            pbs+=("\n# %s private exterior\n[%03d]\nName = %s\nOutdoor = true\nShowArea = true\nBicycle = true\nSnapEdges = true\n"%(phase,mid,row["label"])).encode("ascii")
+        else:
+            pbs+=("\n# %s private natural interior\n[%03d]\nName = %s\nOutdoor = false\nShowArea = true\nBicycle = false\nSnapEdges = true\n"%(phase,mid,row["label"])).encode("ascii")
         report[sym]={"source_id":row["source_id"],"target_id":mid,"width":w,"height":h,
                      "source_sha256":row["sha256"],"source_tileset_id":24,"target_tileset_id":tid,
                      "safe_spawn":[mid,x,y],"model_connected_cells":len(comps[sym]),
                      "donor_events_copied":0,"native_verified":False}
+        if phase=="F06":report[sym]["outdoor"]=outdoor
     out["Data/MapInfos.rxdata"]=serialize(infos)
     out["Data/Tilesets.rxdata"]=serialize(tiles)
     out["PBS/map_metadata.txt"]=pbs
