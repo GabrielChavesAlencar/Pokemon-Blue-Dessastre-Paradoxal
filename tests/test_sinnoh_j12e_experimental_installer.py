@@ -41,6 +41,96 @@ class J12EInstallerTests(unittest.TestCase):
             cls.infos,cls.tiles,cls.ids,occupied={2},protected=set(),
             synthetic_fixture=True)
         cls.ready,cls.events,cls.start=exp.compile_events(cls.empty,cls.mapping)
+    def test_f01_catalog_has_all_cities_routes_and_no_unverified_ids(self):
+        rows=exp.qa_teleport.catalog()
+        self.assertEqual(len({r["symbol"] for r in rows}),len(rows))
+        self.assertEqual(sum(r["category"]=="Cidades e vilarejos" for r in rows),14)
+        self.assertEqual({r["symbol"] for r in rows if r["category"]=="Rotas"},
+                         {"SINNOH_ROUTE_"+str(i) for i in range(201,231)})
+        self.assertTrue(all("map_id" not in r for r in rows))
+
+    @unittest.skipUnless(shutil.which("ruby"),"Requires Ruby runtime")
+    def test_f01_teleport_menu_is_private_and_preserves_story(self):
+        rows=[["SINNOH_ROUTE_201","Route 201","Rotas",[442,2,3]],
+              ["SINNOH_ROUTE_202","Route 202","Rotas",[443,4,5]],
+              ["SINNOH_ROUTE_203","Route 203","Rotas",None]]
+        script=r'''
+module BlueSinnohExperimental
+  def self.private_copy?; $private; end
+end
+module BlueKantoTitle
+  def self.sinnoh_experimental_maps_ready?; $ready; end
+end
+module MenuHandlers
+  def self.add(*args); $registered=args; end
+end
+Map=Struct.new(:map_id) do
+  def autoplay; end
+  def refresh; end
+end
+Global=Struct.new(:blue_regions)
+Temp=Struct.new(:in_menu,:player_new_map_id,:player_new_x,:player_new_y,:player_new_direction)
+class Game_Event
+  attr_reader :map_id,:trigger,:name,:calls
+  def initialize(id,trigger,name); @map_id=id;@trigger=trigger;@name=name;@calls=0; end
+  def check_event_trigger_auto; @calls+=1; end
+end
+class Scene
+  def transfer_player; $game_map.map_id=$game_temp.player_new_map_id; end
+end
+class Menu
+  attr_reader :closed
+  def pbHideMenu; end
+  def pbRefresh; end
+  def pbShowMenu; end
+  def pbEndScene; @closed=true; end
+end
+def _INTL(s,*args); s; end
+def pbMessage(*args); args.length>1 ? $choices.shift : nil; end
+def pbConfirmMessage(*args); $confirm; end
+def pbFadeOutIn; yield; end
+def pbDismountBike; end
+load ARGV[0]
+$private=false;$ready=true;$player=Object.new;$game_player=Object.new
+$game_map=Map.new(442);$PokemonGlobal=Global.new({"current"=>"SINNOH","flags"=>{"starter"=>false}})
+$game_temp=Temp.new(true);$scene=Scene.new;$confirm=true
+BlueSinnohQATeleport.install!
+raise "outside QA registered" if $registered
+$private=true
+BlueSinnohQATeleport.install!
+raise "missing menu" unless $registered[1]==:blue_sinnoh_qa_teleport
+before=Marshal.dump($PokemonGlobal.blue_regions)
+$choices=[1,2]
+raise "pending teleport allowed" if BlueSinnohQATeleport.open(Menu.new)
+$choices=[1,1];$confirm=false
+raise "cancel failed" if BlueSinnohQATeleport.open(Menu.new)
+$choices=[1,1];$confirm=true;$ready=false
+raise "hash gate bypass" if BlueSinnohQATeleport.open(Menu.new)
+$choices=[1,1];$ready=true
+raise "transfer failed" unless BlueSinnohQATeleport.open(Menu.new)
+raise "wrong target" unless $game_map.map_id==443 && $game_temp.player_new_x==4 && $game_temp.player_new_y==5
+raise "story changed" unless before==Marshal.dump($PokemonGlobal.blue_regions)
+event=Game_Event.new(443,3,"SN_DEX_SCENE")
+event.check_event_trigger_auto
+raise "autorun fired" unless event.calls==0
+ordinary=Game_Event.new(443,2,"SN_DEX_SCENE")
+ordinary.check_event_trigger_auto
+raise "ordinary event suppressed" unless ordinary.calls==1
+$game_map.map_id=442
+BlueSinnohQATeleport.clear_arrival_if_left
+event.check_event_trigger_auto
+raise "autorun remained suppressed" unless event.calls==1
+$PokemonGlobal.blue_regions["current"]="KANTO"
+raise "foreign region exposed" if BlueSinnohQATeleport.available?
+'''
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)
+            (path/"Data").mkdir()
+            (path/"Data/Map443.rxdata").write_bytes(b"fixture")
+            rb=path/"teleport.rb";rb.write_bytes(exp.qa_teleport.plugin(rows))
+            proc=subprocess.run([shutil.which("ruby"),"-e",script,str(rb)],cwd=path,capture_output=True,text=True,timeout=30)
+        self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
+
     def test_visual_upgrade_all_nine_and_metadata(self):
         visual=exp.visual
         out=visual.upgrade(self.ready,self.mapping,self.meta["tileset_ids"],self.events,self.start)
@@ -374,6 +464,24 @@ class J12EInstallerTests(unittest.TestCase):
             self.assertIn(t["key"].encode(),page["@list"][0].attrs["@parameters"][0])
         self.assertEqual(sum(len(read_marshal(expanded["Data/Map%03d.rxdata"%mid],"COVERAGE_MAP").attrs["@events"]) for mid in mapping.values()),35)
         print("SINNOH_REAL_10_MAP_COVERAGE_3_TRAINERS_35_EVENTS_OK",flush=True)
+        entries=exp.qa_teleport.build(expanded,mapping,components)
+        self.assertEqual(sum(row[3] is not None for row in entries),10)
+        self.assertEqual(sum(row[2]=="Rotas" for row in entries),30)
+        self.assertEqual(sum(row[2]=="Cidades e vilarejos" for row in entries),14)
+        for sym,label,category,dest in entries:
+            if dest is None:
+                self.assertNotIn(sym,mapping)
+                continue
+            mid,x,y=dest
+            self.assertEqual(mid,mapping[sym])
+            self.assertIn((x,y),components[sym])
+            world=read_marshal(expanded["Data/Map%03d.rxdata"%mid],"TELEPORT_MAP")
+            self.assertFalse(any((x,y)==(e.attrs["@x"],e.attrs["@y"]) for e in world.attrs["@events"].values()))
+        if shutil.which("ruby"):
+            proc=subprocess.run([shutil.which("ruby"),"-c"],input=exp.qa_teleport.plugin(entries),capture_output=True,timeout=30)
+            self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
+        print("SINNOH_REAL_10_SAFE_QA_TELEPORT_DESTINATIONS_OK",flush=True)
+
 
         print("SINNOH_REAL_10_MAPS_4_WALK_SEAMS_2_VISUAL_2_PORTALS_32_EVENTS_OK",flush=True)
 

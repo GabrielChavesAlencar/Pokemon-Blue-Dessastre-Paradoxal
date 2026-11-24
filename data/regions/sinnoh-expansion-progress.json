@@ -1,0 +1,97 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "reference": "Platinum",
+  "status": "F01_IMPLEMENTED_PENDING_VALIDATION",
+  "catalog": "data/regions/sinnoh-expansion-destinations.json",
+  "prepared_pilot": {
+    "maps": 10,
+    "routes": [
+      "SINNOH_ROUTE_201",
+      "SINNOH_ROUTE_202"
+    ],
+    "cities": [
+      "SINNOH_TWINLEAF_TOWN",
+      "SINNOH_SANDGEM_TOWN"
+    ],
+    "native_qa_verified": false
+  },
+  "phases": [
+    {
+      "id": "F01",
+      "title": "Menu de teleporte QA no menu de pausa",
+      "status": "implemented_pending_ci"
+    },
+    {
+      "id": "F02",
+      "title": "Correção das bordas pretas com árvores",
+      "status": "pending"
+    },
+    {
+      "id": "F03",
+      "title": "Inventário completo dos mapas, sprites e MapIDs",
+      "status": "pending"
+    },
+    {
+      "id": "F04",
+      "title": "Importação de todas as cidades e vilarejos",
+      "status": "pending"
+    },
+    {
+      "id": "F05",
+      "title": "Importação de todas as rotas 201–230",
+      "status": "pending"
+    },
+    {
+      "id": "F06",
+      "title": "Importação de florestas, lagos e cavernas",
+      "status": "pending"
+    },
+    {
+      "id": "F07",
+      "title": "Importação dos interiores e edifícios",
+      "status": "pending"
+    },
+    {
+      "id": "F08",
+      "title": "Conexões entre mapas e colisões",
+      "status": "pending"
+    },
+    {
+      "id": "F09",
+      "title": "Pokémon selvagens de todas as áreas",
+      "status": "pending"
+    },
+    {
+      "id": "F10",
+      "title": "Todos os treinadores e NPCs",
+      "status": "pending"
+    },
+    {
+      "id": "F11",
+      "title": "Oito ginásios e insígnias",
+      "status": "pending"
+    },
+    {
+      "id": "F12",
+      "title": "História, Equipe Galactic e itens-chave",
+      "status": "pending"
+    },
+    {
+      "id": "F13",
+      "title": "Victory Road, Elite Four e Cynthia",
+      "status": "pending"
+    },
+    {
+      "id": "F14",
+      "title": "Battle Frontier, lendários e pós-jogo",
+      "status": "pending"
+    },
+    {
+      "id": "F15",
+      "title": "Testes de regressão, saves, Windows e Android",
+      "status": "pending"
+    }
+  ],
+  "note": "Fases só contam concluídas após merge e checks. Mapas preparados não representam aprovação nativa."
+}
