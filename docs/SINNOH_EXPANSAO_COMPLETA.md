@@ -4,8 +4,8 @@ Referência Platinum. Progresso de preparação (não aprovação nativa):
 
 - Rotas: **30/30**, Rota 201–230 e seis segmentos adicionais.
 - Cidades: **14/14**, todas preparadas na F04.
-- Piloto privado: **56 mapas preparados**.
-- Fases novas: **5/15 concluídas**, F01/F02/F04/F05 integradas (11/11 cada), F03 integrada (9/9); F06 implementada, aguarda CI.
+- Piloto privado: **91 mapas preparados**.
+- Fases novas: **6/15 concluídas**, F01/F02/F04/F05/F06 integradas (11/11 cada), F03 integrada (9/9); F07 implementada, aguarda CI.
 
 ## Progresso das cidades
 
@@ -37,8 +37,8 @@ Referência Platinum. Progresso de preparação (não aprovação nativa):
 - [x] F03 — Inventário completo dos mapas, sprites e MapIDs (PR #281, 9/9)
 - [x] F04 — Importação de todas as cidades e vilarejos (PR #282, 11/11; 22 mapas preparados)
 - [x] F05 — Importação de todas as rotas 201–230 (PR #283, 11/11; 56 mapas preparados)
-- [ ] F06 — Importação de florestas, lagos e cavernas (35 mapas candidatos, aguardando CI)
-- [ ] F07 — Importação dos interiores e edifícios
+- [x] F06 — Importação de florestas, lagos e cavernas (PR #284, 11/11; 91 mapas preparados)
+- [ ] F07 — Importação dos interiores e edifícios (36 mapas candidatos, aguardando CI)
 - [ ] F08 — Conexões entre mapas e colisões
 - [ ] F09 — Pokémon selvagens de todas as áreas
 - [ ] F10 — Todos os treinadores e NPCs
@@ -101,3 +101,12 @@ PR #283 integrado em 09409e01dd89d57b74b334cb2826077791d5c3c0; 11/11 workflows e
 ### F06 — correção de chegada rochosa
 
 O job 138748423718 confirmou novamente F05 e encontrou 21 interiores naturais sem componente de chegada de terreno 0. Todos os 21 contêm células transitáveis de terreno 4 (Rock). A exceção usa allowlist explícita desses símbolos, mantém todas as camadas desobstruídas, interior dos limites, componente conectado de pelo menos 12 células elegíveis e dois vizinhos elegíveis. Não inclui água, gelo (inclusive Snowpoint Temple), grama, terrenos especiais ou tiles bloqueados. Os outros 14 mapas e os 56 anteriores mantêm sua política de chegada. Nenhuma geometria, tabela de passagens ou tile do doador é alterado. A aprovação continua condicionada ao novo teste real.
+
+
+## F06 — aceite CI
+
+PR #284 integrado em b33d57d2ee199b404ad7e53424ee573b83d1bf56; 11/11 workflows e 26/26 checks. Marcador SINNOH_REAL_F06_35_NATURAL_MAPS_91_TELEPORTS_35_EVENTS_64_EXTERIORS_OK confirmado no job 138751381224. 35 novas chegadas, 56 mapas anteriores e 35 eventos preservados; 64 exteriores. Sem aprovação nativa.
+
+## F07 — interiores originais privados
+
+36 mapas reais do tileset 25 (indoors.png, 256x29984, 7880 entradas, sem autotiles), hashes SHA-256, nomes, dimensões e hierarquia pinados no catálogo data/regions/sinnoh-f07-interior-sources.json a partir do inventário F03 (job 138719583390). 12 Centros Pokémon, dez marts, oito portarias, seis outros interiores; identificadores por MapID de origem evitam inventar funções para nomes ambíguos. Alvo 127 mapas e teleportes QA, 35 eventos antigos e 64 exteriores. Não copiar os 134 eventos externos, scripts, warps ou funcionalidades dos edifícios. Nenhum novo interior recebe árvores F02. Preservar os 91 MapIDs, bytes, atlas, conexões, máscaras e teleportes anteriores. IDs adicionais livres 442–599 após leitura de MapInfos, Data e PBS; abortar se insuficiente, sem reservar IDs compartilhados. Namespace anterior somente se hashes de base e mapas e todos os IDs coincidirem. Nenhum acesso a saves pessoais ou Game.exe. Fonte privada, sem distribuição pública. Salas, ginásios e edifícios não presentes neste conjunto de 36 não são declarados preparados; conexões, cura, compras e história ficam para fases posteriores.
