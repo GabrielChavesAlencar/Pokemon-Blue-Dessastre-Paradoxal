@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "70f30819d2db5360b23f7b7881ffc5b194bafb34",
+      "date": "2026-11-24T13:09:35-03:00",
+      "title": "Sinnoh: cover early pilot encounters and Route 202 trainers",
+      "category": "Melhorias"
+    },
+    {
       "sha": "0b540a2ddb422561161c57bebd446b056f36a318",
       "date": "2026-11-24T12:57:16-03:00",
       "title": "Sinnoh: persistent private saves and early route progression",
