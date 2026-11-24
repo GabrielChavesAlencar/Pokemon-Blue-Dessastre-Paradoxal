@@ -1,4 +1,5 @@
 """F10B: rebuild ordinary route trainer events, never execute donor scripts.
+F10B3 evidence: Justin and Sean accepted in source job 138855505090.
 Historical Platinum teams are independently referenced, not donor PBS.
 Candidates without exact identity, assets or safe placement remain pending.
 """
