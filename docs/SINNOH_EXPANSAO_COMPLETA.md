@@ -204,3 +204,8 @@ A F10B4 real confirmou cinco recuperados (Justin, Sean, Anthony, Lauren, Harry),
 
 
 F10B4 integrada em 805f9253951216e4987d427362579d3916cad2ad (11 workflows/26 checks). F10B5 job 138863348233, HEAD 0962eced89a2306032752756d7de4eee2e7fc109: cinco anteriores preservados, zero novos; Kath tem entrada contínua [72,17], 341 células alcançáveis, falta sprite; Austin/Kevin/Louis sem testemunho de acesso; Helen terreno inadequado; Alexander/Wyatt identidade e progressão pendentes. Dez workflows na base anterior aprovados, novo CI integral na main exigido. Sem aprovação nativa.
+
+
+### F10B6 — arte autoral de Kath, sem alterar acessos
+
+F10B5 comprovou entrada existente [72,17] para Kath, 341 células alcançáveis, sem sprite identificado. F10B6 gera uma folha de arte pixel original do projeto (4 direções, 4 quadros, RGBA transparente), explicitamente marcada PROJECT_AUTHORED_BIRDWATCHER_NOT_DONOR; apenas para evento 79/35, depois da validação de acesso, identidade/equipe e posição, e apenas na ausência de candidato de sprite. Não reaproveita sprite genérico nem afirma originalidade donor. Teste da PNG verifica CRC, dimensões, alpha, animação e direções; auditoria real exige preservação dos cinco treinadores anteriores e recuperação de Kath no fixture. F10B5 continua reproduzível para hashes de perfil. Austin, Kevin, Louis sem acesso; Helen terreno inadequado; Alexander/Wyatt não liberados. F10C aguarda cobertura suficiente, não declara aprovação nativa.

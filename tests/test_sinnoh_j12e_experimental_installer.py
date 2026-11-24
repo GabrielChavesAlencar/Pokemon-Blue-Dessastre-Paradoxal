@@ -1029,6 +1029,34 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
             report5["species_and_types_validation"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
             print("SINNOH_F10B5_TRAINER_REPORT "+json.dumps(report5,sort_keys=True),flush=True)
             print("SINNOH_REAL_F10B5_131_MAPS_7_REMAINING_ACCESS_WITNESSES_AUDITED_OK",flush=True)
+            final6,report6,plugin6=f10b.build(baseline,f08c_ids,masks,f08c_components,source,types|pair_types|{"CRUSHGIRL"},species|pair_species,set(),overworlds=Path(ow),revision=6)
+            by_key6={row["key"]:row for row in report6["accepted"]}
+            self.assertTrue(set(by_key5)<=set(by_key6))
+            self.assertEqual(set(by_key6)-set(by_key5),{"F10B_79_35"})
+            kath=by_key6["F10B_79_35"]
+            self.assertEqual(kath["position"],[57,12])
+            self.assertEqual(kath["sprite_provenance"],"PROJECT_AUTHORED_BIRDWATCHER_NOT_DONOR")
+            self.assertEqual(kath["access_witness"]["kind"],"EXISTING_CONTINUOUS_EDGE")
+            self.assertEqual(report6["f10b6_authored_sprites"],1)
+            for key,row in by_key5.items():
+                for field in ("event_id","map_id","position","type","name","version","team","sprite_sha256"):
+                    self.assertEqual(row[field],by_key6[key][field])
+            for path,raw in final5.items():
+                if path=="PBS/trainers_sinnoh_f10b.txt":continue
+                if path.startswith("Data/Map") and path.endswith(".rxdata") and path!="Data/MapInfos.rxdata":
+                    old=read_marshal(raw,"F10B5_OLD");new=read_marshal(final6[path],"F10B6_NEW")
+                    before=old.attrs.pop("@events");after=new.attrs.pop("@events")
+                    self.assertEqual(serialize(old,connection.EVENT_CLASSES),serialize(new,connection.EVENT_CLASSES))
+                    for eid,event in before.items():
+                        self.assertEqual(serialize(event,connection.EVENT_CLASSES),serialize(after[eid],connection.EVENT_CLASSES))
+                else:self.assertEqual(final6[path],raw)
+            self.assertEqual(exp.qa_teleport.build(final6,f08c_ids,f08c_components),entries)
+            self.assertFalse(report6["native_verified"])
+            self.assertFalse(report6["water_enabled"])
+            report6["species_and_types_validation"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
+            print("SINNOH_F10B6_TRAINER_REPORT "+json.dumps(report6,sort_keys=True),flush=True)
+            print("SINNOH_REAL_F10B6_131_MAPS_KATH_AUTHORED_ART_BASELINE_PRESERVED_OK",flush=True)
+
 
 
 
@@ -1725,6 +1753,37 @@ puts "F10B4_DOUBLE_ATOMIC_VICTORY_OK"
             result=subprocess.run(["ruby","-e",fixture,str(path)],capture_output=True,text=True,encoding="utf-8")
             self.assertEqual(result.returncode,0,result.stdout+result.stderr)
             self.assertIn("F10B4_DOUBLE_ATOMIC_VICTORY_OK",result.stdout)
+
+    def test_f10b6_authored_sheet_png_integrity_and_animation(self):
+        import sinnoh_f10b_trainers as f
+        import zlib
+        raw=f.kath_authored_sprite()
+        self.assertEqual(raw,f.kath_authored_sprite())
+        self.assertEqual(f.pv.dims(raw),(128,128))
+        i=8;idat=b"";tags=[]
+        while i<len(raw):
+            length=struct.unpack_from(">I",raw,i)[0]
+            tag=raw[i+4:i+8];data=raw[i+8:i+8+length]
+            self.assertEqual(struct.unpack_from(">I",raw,i+8+length)[0],zlib.crc32(tag+data)&0xffffffff)
+            tags.append(tag)
+            if tag==b"IDAT":idat+=data
+            i+=12+length
+        self.assertEqual(tags,[b"IHDR",b"IDAT",b"IEND"])
+        decoded=zlib.decompress(idat)
+        self.assertEqual(len(decoded),128*(1+128*4))
+        rows=[decoded[y*513+1:(y+1)*513] for y in range(128)]
+        self.assertTrue(all(decoded[y*513]==0 for y in range(128)))
+        sheets=[]
+        for fy in range(4):
+            frames=[]
+            for fx in range(4):
+                frame=b"".join(row[fx*128:(fx+1)*128] for row in rows[fy*32:(fy+1)*32])
+                self.assertTrue(any(frame[i]==255 for i in range(3,len(frame),4)))
+                self.assertTrue(any(frame[i]==0 for i in range(3,len(frame),4)))
+                frames.append(frame)
+            self.assertGreaterEqual(len(set(frames)),3)
+            sheets.append(frames[0])
+        self.assertEqual(len(set(sheets)),4)
 
     def test_f10b5_access_witness_requires_actual_entry_and_non_cut_cell(self):
         import sinnoh_f10b_trainers as f

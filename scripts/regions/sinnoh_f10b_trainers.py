@@ -219,6 +219,58 @@ def strict_local_art(base,kind):
     if w%4 or h%4 or not (32<=w<=512 and 32<=h<=512):return None,None,labels
     return raw,"CLASS_EQUIVALENT_LOCAL_VERIFIED_FILENAME",labels
 
+def kath_authored_sprite():
+    """Project-authored 4x4 RGBA overworld sheet, not donor artwork.
+    Four directions (down/left/right/up), four distinct walking frames.
+    32x32 frames: birdwatcher with olive cap, teal jacket and binoculars.
+    Deterministic standard-library PNG, transparent surrounding each frame.
+    """
+    import struct
+    import zlib
+    w=h=128
+    pixels=bytearray(w*h*4)
+    ink=(42,49,51);hair=(91,60,43);skin=(225,181,139)
+    cap=(100,123,68);jacket=(48,122,126);light=(88,166,162)
+    pants=(79,74,89);boots=(46,49,53);glass=(126,199,209)
+    for direction in range(4):
+        for frame in range(4):
+            sx=32*frame;sy=32*direction
+            bob=1 if frame in (1,3) else 0
+            def box(x0,y0,x1,y1,color):
+                for y in range(y0,y1):
+                    for x in range(x0,x1):
+                        i=((sy+y)*w+sx+x)*4
+                        pixels[i:i+4]=bytes((*color,255))
+            # Shadow-free frame with bounded silhouette.
+            box(9,5+bob,23,16+bob,ink)
+            box(10,6+bob,22,15+bob,hair)
+            if direction!=3:
+                box(11,8+bob,21,15+bob,skin)
+                if direction==0:
+                    box(12,11+bob,14,13+bob,ink);box(18,11+bob,20,13+bob,ink)
+                elif direction==1:box(11,11+bob,13,13+bob,ink)
+                else:box(19,11+bob,21,13+bob,ink)
+            box(8,3+bob,24,8+bob,ink);box(9,4+bob,23,7+bob,cap)
+            if direction==1:box(6,7+bob,13,9+bob,cap)
+            elif direction==2:box(19,7+bob,26,9+bob,cap)
+            else:box(9,7+bob,23,9+bob,cap)
+            box(9,16+bob,23,26+bob,ink);box(10,17+bob,22,25+bob,jacket)
+            box(10,17+bob,12,24+bob,light)
+            if direction==3:box(13,17+bob,20,23+bob,hair)
+            else:
+                x=12 if direction==0 else 10 if direction==1 else 15
+                box(x,18+bob,x+9,23+bob,ink)
+                box(x+1,19+bob,x+3,21+bob,glass);box(x+6,19+bob,x+8,21+bob,glass)
+            stride=(0,1,0,-1)[frame]
+            for x,dy in ((11,stride),(17,-stride)):
+                box(x,25,x+4,29+dy,pants)
+                box(x-1,28+dy,x+5,30+dy,boots)
+    def chunk(tag,data):
+        return struct.pack(">I",len(data))+tag+data+struct.pack(">I",zlib.crc32(tag+data)&0xffffffff)
+    scan=b"".join(b"\x00"+pixels[y*w*4:(y+1)*w*4] for y in range(h))
+    return (b"\x89PNG\r\n\x1a\n"+chunk(b"IHDR",struct.pack(">IIBBBBB",w,h,8,6,0,0,0))
+            +chunk(b"IDAT",zlib.compress(scan,9))+chunk(b"IEND",b""))
+
 def f10b5_art(maps,ow,event,kind,base,source_key):
     data,provenance,labels=extra_sprite(maps,ow,event,kind,base)
     if data:return data,provenance,labels
@@ -284,8 +336,8 @@ def access_witnesses(blobs,worlds,mapping,components,entries):
                     if xy in ground[dst]-occupied[dst]:anchors[dst].append(("EXISTING_CONTINUOUS_EDGE",xy))
     return ground,{mid:sorted(set(rows),key=lambda r:(r[0],r[1])) for mid,rows in anchors.items()}
 
-def build(blobs,mapping,masks,components,path,types,species,existing,base=None,root=ROOT,overworlds=None,revision=5):
-    if revision not in (2,3,4,5):raise ValueError("F10B_UNSUPPORTED_REVISION")
+def build(blobs,mapping,masks,components,path,types,species,existing,base=None,root=ROOT,overworlds=None,revision=6):
+    if revision not in (2,3,4,5,6):raise ValueError("F10B_UNSUPPORTED_REVISION")
     inventory=f10a.audit(blobs,mapping,masks,components,path,root)
     eligible={(q["source_id"],q["source_event_id"]):q for q in inventory["queue"]
               if q["kind"]=="trainer_candidate" and not q["geometry_blockers"]}
@@ -516,6 +568,13 @@ def build(blobs,mapping,masks,components,path,types,species,existing,base=None,r
                 if witness is None:row["reason"]="no_existing_safe_access_witness";continue
                 data,provenance,labels=f10b5_art(z,ow,donor,kind,base,(sid,eid))
                 row["sprite_candidates"]=labels
+                # No generic substitution: this one explicitly authored class
+                # sheet is restricted to Kath after the existing access check.
+                # If any source/local candidate is ambiguous, keep it blocked.
+                if not data and revision>=6 and (sid,eid)==(79,35) and not labels:
+                    data=kath_authored_sprite()
+                    provenance="PROJECT_AUTHORED_BIRDWATCHER_NOT_DONOR"
+                    row["authored_sprite"]=True
                 if not data:row["reason"]="class_sprite_missing_or_ambiguous";continue
                 # Slots 1..3 are reserved for earlier revisions; exact
                 # deterministic slots leave all previous self-switch IDs intact.
@@ -561,10 +620,11 @@ def build(blobs,mapping,masks,components,path,types,species,existing,base=None,r
             "source_pbs_present":False,"action_only":True,"all_trainer_diagnostics":expanded,
             "all_source_trainer_candidates":len(expanded),"overworld_archive_checked":overworlds is not None,
             "revision":revision,"f10b4_groups":extra_report if revision>=4 else [],
-            "f10b5_access_report":access_report if revision>=5 else []}
+            "f10b5_access_report":access_report if revision>=5 else [],
+            "f10b6_authored_sprites":sum(r["sprite_provenance"]=="PROJECT_AUTHORED_BIRDWATCHER_NOT_DONOR" for r in accepted) if revision>=6 else 0}
     return out,report,plugin
 
-def append(blobs,mapping,masks,components,path,base,root=ROOT,overworlds=None,revision=5):
+def append(blobs,mapping,masks,components,path,base,root=ROOT,overworlds=None,revision=6):
     existing=set()
     for p in (base/"PBS").glob("trainers*.txt"):
         if p.is_symlink():raise ValueError("F10B_UNSAFE_PBS")
@@ -573,5 +633,5 @@ def append(blobs,mapping,masks,components,path,base,root=ROOT,overworlds=None,re
             if len(fields) in (2,3) and (len(fields)==2 or fields[2].isdigit()):
                 existing.add((fields[0],fields[1],int(fields[2]) if len(fields)==3 else 0))
     out,report,plugin=build(blobs,mapping,masks,components,path,catalogue(base,"trainer_types"),catalogue(base,"pokemon"),existing,base,root,overworlds,revision)
-    print(("SINNOH_F10B5_TRAINER_REPORT " if revision>=5 else "SINNOH_F10B4_TRAINER_REPORT " if revision==4 else "SINNOH_F10B3_TRAINER_REPORT " if revision==3 else "SINNOH_F10B2_ASSET_REPORT ")+json.dumps(report,sort_keys=True),flush=True)
+    print(("SINNOH_F10B6_TRAINER_REPORT " if revision>=6 else "SINNOH_F10B5_TRAINER_REPORT " if revision==5 else "SINNOH_F10B4_TRAINER_REPORT " if revision==4 else "SINNOH_F10B3_TRAINER_REPORT " if revision==3 else "SINNOH_F10B2_ASSET_REPORT ")+json.dumps(report,sort_keys=True),flush=True)
     return out,report,plugin
