@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e5656e0df720ef14f06b7c7ba48ccf3121657440",
+      "date": "2026-11-24T10:55:04-03:00",
+      "title": "Sinnoh: auto-download original archives from the existing launcher",
+      "category": "Melhorias"
+    },
+    {
       "sha": "65af839c67f36c3d97b8191b3597e0b039b0504f",
       "date": "2026-11-24T10:36:09-03:00",
       "title": "Sinnoh: local map and character import with nine-map QA",
