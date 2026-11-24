@@ -756,11 +756,11 @@ def route202_trainer_events(blobs,mapping,components):
     return out,positions
 
 
-def movement_masks(blobs,mapping):
+def movement_masks(blobs,mapping,extra_symbols=()):
     """Derive conservative ground collision and tall-grass masks from actual maps."""
     tiles=read_marshal(blobs["Data/Tilesets.rxdata"],"MOVEMENT_TILES")
     result={}
-    for sym in donor_maps(mapping):
+    for sym in sorted(set(donor_maps(mapping))|set(extra_symbols)):
         mid=mapping[sym]
         m=read_marshal(blobs["Data/Map%03d.rxdata"%mid],"MOVEMENT_MAP").attrs
         w,h=m["@width"],m["@height"]
