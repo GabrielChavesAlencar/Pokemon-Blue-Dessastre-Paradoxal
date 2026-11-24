@@ -862,6 +862,18 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
         original_stats["species_validation"]="SYNTHETIC_DONOR_SPECIES_FIXTURE_NOT_LOCAL_DATABASE"
         print("SINNOH_F09B_ORIGINAL_REPORT "+json.dumps(original_stats,sort_keys=True),flush=True)
         print("SINNOH_REAL_F09B_131_MAPS_ORIGINAL_PBS_AUDITED_BASELINE_PRESERVED_OK",flush=True)
+        f09c=exp.f09c_refinement
+        self.assertEqual(len(original_stats["accepted"]),99)
+        final_pbs,final_coverage,refined=f09c.build(expanded_pbs,expanded_coverage,f08c_ids,masks,donor,donor_species,original_stats)
+        self.assertEqual(refined["baseline_original_methods"],99)
+        self.assertEqual(len(refined["weight_totals"]),21)
+        self.assertTrue(all(set(row["methods"])<=set(final_coverage[s]["methods"]) for s,row in expanded_coverage.items()))
+        self.assertFalse(refined["water_access_verified"])
+        aquatic={r["symbol"] for r in original_stats["rejected"] if r["reason"]=="water_access_pending"}
+        refined["aquatic_terrain_evidence"]=f09c.terrain_summary(f08c_maps,f08c_ids,masks,aquatic)
+        refined["species_validation"]="SYNTHETIC_DONOR_SPECIES_FIXTURE_NOT_LOCAL_DATABASE"
+        print("SINNOH_F09C_REFINEMENT_REPORT "+json.dumps(refined,sort_keys=True),flush=True)
+        print("SINNOH_REAL_F09C_131_MAPS_99_ORIGINAL_METHODS_21_WEIGHT_CANDIDATES_AUDITED_OK",flush=True)
 
 
 
@@ -1389,6 +1401,16 @@ raise "duplicate battle" unless $calls==4
         self.assertEqual({r["symbol"] for r in rows}&c.EXTERIORS,c.EXTERIORS)
         self.assertEqual(c.connected_ground({(1,1),(2,1),(3,1),(8,8)},(1,1)),{(1,1),(2,1),(3,1)})
         self.assertEqual(c.connected_ground({(1,1)},(2,1)),set())
+
+    def test_f09c_exact_proportions_no_rounding(self):
+        f=exp.f09c_refinement
+        table={"rate":21,"slots":[(20,"STARLY",2,4),(30,"BIDOOF",2,4)]}
+        self.assertEqual(f.exact_weights(table),{"rate":21,"slots":[(40,"STARLY",2,4),(60,"BIDOOF",2,4)]})
+        self.assertEqual(table["slots"][0][0],20)
+        self.assertIsNone(f.exact_weights({"rate":21,"slots":[(1,"STARLY",2,4),(2,"BIDOOF",2,4)]}))
+        self.assertIsNone(f.exact_weights({"rate":21,"slots":[(0,"STARLY",2,4)]}))
+        self.assertIsNone(f.exact_weights({"rate":21,"slots":[]}))
+        self.assertIsNone(f.exact_weights({"rate":21,"slots":[(101,"STARLY",2,4)]}))
 
     def test_f09b_parser_and_append_preserve_tables(self):
         f=exp.f09b_original
