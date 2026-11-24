@@ -144,6 +144,8 @@ def audit_maps(qa: Path, data: dict, *, allow_tile_recovery: bool):
             "Graphics/Tilesets/SN_J11C_Original_Interior.png",
             "Graphics/Tilesets/SN_J11C_Original_Exterior.png",
             "Graphics/Autotiles/SNQA_WaterV2.png",
+            "Graphics/Autotiles/SNQA_PathV2.png",
+            "Graphics/Autotiles/SNQA_GrassV2.png",
             "Graphics/Characters/SNQA_MOTHER.png",
             "Graphics/Characters/SNQA_BARRY.png",
             "Graphics/Characters/SNQA_ROWAN.png",
