@@ -1566,7 +1566,7 @@ $player=Struct.new(:party).new([Mon.new(10)])
 $game_map=Struct.new(:map_id).new(469)
 $private=true;$compiled=true;$scaled=true;$level=17;$calls=0;$result=false;$state={}
 load ARGV[0]
-key="F10B_42_29"
+key="F10B_42_33"
 raise "compile proof" unless BlueSinnohF10B.verify_compiled!
 raise "defeat accepted" if BlueSinnohF10B.battle(key)
 raise "defeat persisted" if $state.key?("sinnoh_f10b_victories")

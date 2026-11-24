@@ -243,13 +243,27 @@
         "Sean"
       ],
       "f10b3_local_compiled_verified": false,
-      "f10b3_main_ci_pending": true,
+      "f10b3_main_ci_pending": false,
       "f10b3_pr": 296,
       "f10b4_double_pair": [
         "Anthony",
         "Lauren"
       ],
-      "f10b4_stationary_candidate": "Harry"
+      "f10b4_stationary_candidate": "Harry",
+      "f10b3_merge_commit": "f28ad9e06e02cf45133b63bc60fdcc169f064d5c",
+      "f10b3_ci_workflows": 11,
+      "f10b3_ci_checks": 26,
+      "f10b4_real_head": "f43e93b885c45a32b313f9806517e9bd80db143d",
+      "f10b4_real_job": 138859628175,
+      "f10b4_fixture_recovered": 5,
+      "f10b4_fixture_names": [
+        "Justin",
+        "Sean",
+        "Anthony",
+        "Lauren",
+        "Harry"
+      ],
+      "f10b4_main_ci_pending": true
     },
     {
       "id": "F11",
@@ -424,12 +438,26 @@
       "Sean"
     ],
     "f10b3_local_compiled_verified": false,
-    "f10b3_main_ci_pending": true,
+    "f10b3_main_ci_pending": false,
     "f10b3_pr": 296,
     "f10b4_double_pair": [
       "Anthony",
       "Lauren"
     ],
-    "f10b4_stationary_candidate": "Harry"
+    "f10b4_stationary_candidate": "Harry",
+    "f10b3_merge_commit": "f28ad9e06e02cf45133b63bc60fdcc169f064d5c",
+    "f10b3_ci_workflows": 11,
+    "f10b3_ci_checks": 26,
+    "f10b4_real_head": "f43e93b885c45a32b313f9806517e9bd80db143d",
+    "f10b4_real_job": 138859628175,
+    "f10b4_fixture_recovered": 5,
+    "f10b4_fixture_names": [
+      "Justin",
+      "Sean",
+      "Anthony",
+      "Lauren",
+      "Harry"
+    ],
+    "f10b4_main_ci_pending": true
   }
 }
