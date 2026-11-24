@@ -160,7 +160,7 @@ def audit_maps(qa: Path, data: dict, *, allow_tile_recovery: bool):
         files += ["Graphics/Autotiles/SNQA_Private_Auto_%d.png"%i for i in range(1,8)]
     continuity=data.get("private_continuity",{})
     if continuity:
-        if not isinstance(continuity,dict) or len(continuity.get("connections",[]))!=(4 if data.get("private_lake_story") else 3):
+        if not isinstance(continuity,dict) or len(continuity.get("connections",[]))!=(6 if data.get("private_lake_story") else 3):
             block("INVALID_PRIVATE_CONTINUITY")
         audio=continuity.get("audio_files")
         expected_audio=["Audio/BGM/SNQA_"+name+".ogg" for name in ("Twinleaf","Twinleaf_n","Route201","Route201_n","Lake","Sandgem","Sandgem_n")]
