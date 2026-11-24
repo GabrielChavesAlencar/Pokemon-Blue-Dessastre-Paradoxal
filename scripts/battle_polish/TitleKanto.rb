@@ -324,6 +324,12 @@ module BlueKantoTitle
         return sinnoh_qa_block("Manifesto F04 de cidades invalido.") unless expected_count == 10 && ids.is_a?(Hash) && city_report.keys.sort == city_keys.sort && city_keys.all? { |k| ids.key?(k) && city_report[k].is_a?(Hash) && city_report[k]["target_id"] == ids[k] }
         expected_count = 22
       end
+      route_report = data["route_expansion"]
+      if route_report.is_a?(Hash) && !route_report.empty?
+        route_keys = (203..230).map { |n| "SINNOH_ROUTE_" + n.to_s } + [205,210,212,224,225,228].map { |n| "SINNOH_ROUTE_" + n.to_s + "_SEGMENT_2" }
+        return sinnoh_qa_block("Manifesto F05 de rotas invalido.") unless expected_count == 22 && ids.is_a?(Hash) && route_report.keys.sort == route_keys.sort && route_keys.all? { |k| ids.key?(k) && route_report[k].is_a?(Hash) && route_report[k]["target_id"] == ids[k] }
+        expected_count = 56
+      end
       return sinnoh_qa_block("MapIDs QA invalidos ou colisao entre mapas.") unless
         ids.is_a?(Hash) && ids.length == expected_count &&
         (expected_count == 9 || ids.key?("SINNOH_VERITY_LAKEFRONT")) &&
@@ -337,10 +343,15 @@ module BlueKantoTitle
         start[1] >= 0 && start[2] >= 0
       required = ["Data/MapInfos.rxdata", "Data/Tilesets.rxdata"] +
                  ids.values.map { |id| sprintf("Data/Map%03d.rxdata", id) }
-      if expected_count == 22
+      if expected_count >= 22
         source_ids = city_report.values.map { |r| r["source_id"] }
         return sinnoh_qa_block("Fontes das cidades F04 invalidas.") unless source_ids.all? { |id| id.is_a?(Integer) } && source_ids.sort == [22,77,84,90,96,106,109,123,160,205,219,225]
         required += source_ids.map { |id| sprintf("Graphics/Tilesets/SNQA_F04_%03d.png",id) }
+      end
+      if expected_count == 56
+        source_ids = route_report.values.map { |r| r["source_id"] }
+        return sinnoh_qa_block("Fontes F05 invalidas.") unless source_ids.all? { |id| id.is_a?(Integer) } && source_ids.sort == [42,79,80,91,94,104,105,108,110,116,122,126,140,141,142,146,150,151,155,156,157,164,165,198,199,200,206,218,222,223,224,226,233,234]
+        required += source_ids.map { |id| sprintf("Graphics/Tilesets/SNQA_F05_%03d.png",id) }
       end
       required.each do |file|
         hash = files[file]
