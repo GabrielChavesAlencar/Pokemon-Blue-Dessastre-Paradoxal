@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e05a8aa80b47233ab2687d1ce0b4f7ff5403aa41",
+      "date": "2026-11-24T16:38:08-03:00",
+      "title": "Sinnoh F03: audit complete original packages and prepare city expansion",
+      "category": "Melhorias"
+    },
+    {
       "sha": "1b526539595395a87ca206c6c2c4593febc99fa9",
       "date": "2026-11-24T15:59:54-03:00",
       "title": "Sinnoh F02: preserve map geometry and fill exterior forest edges",
