@@ -1,5 +1,6 @@
 """F10B: rebuild ordinary route trainer events, never execute donor scripts.
 F10B3 evidence: Justin and Sean accepted in source job 138855505090.
+F10B5 evidence: five trainers preserved; Kath access witnessed in source job 138863348233.
 Historical Platinum teams are independently referenced, not donor PBS.
 Candidates without exact identity, assets or safe placement remain pending.
 """

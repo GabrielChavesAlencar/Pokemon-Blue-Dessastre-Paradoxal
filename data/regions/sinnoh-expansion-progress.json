@@ -263,10 +263,19 @@
         "Lauren",
         "Harry"
       ],
-      "f10b4_main_ci_pending": true,
+      "f10b4_main_ci_pending": false,
       "f10b4_pr": 297,
       "f10b5_remaining_candidates": 7,
-      "f10b5_native_verified": false
+      "f10b5_native_verified": false,
+      "f10b4_merge_commit": "805f9253951216e4987d427362579d3916cad2ad",
+      "f10b4_ci_workflows": 11,
+      "f10b4_ci_checks": 26,
+      "f10b5_real_head": "0962eced89a2306032752756d7de4eee2e7fc109",
+      "f10b5_real_job": 138863348233,
+      "f10b5_fixture_recovered": 5,
+      "f10b5_new_fixture_trainers": 0,
+      "f10b5_kath_access_verified": true,
+      "f10b5_main_ci_pending": true
     },
     {
       "id": "F11",
@@ -461,9 +470,18 @@
       "Lauren",
       "Harry"
     ],
-    "f10b4_main_ci_pending": true,
+    "f10b4_main_ci_pending": false,
     "f10b4_pr": 297,
     "f10b5_remaining_candidates": 7,
-    "f10b5_native_verified": false
+    "f10b5_native_verified": false,
+    "f10b4_merge_commit": "805f9253951216e4987d427362579d3916cad2ad",
+    "f10b4_ci_workflows": 11,
+    "f10b4_ci_checks": 26,
+    "f10b5_real_head": "0962eced89a2306032752756d7de4eee2e7fc109",
+    "f10b5_real_job": 138863348233,
+    "f10b5_fixture_recovered": 5,
+    "f10b5_new_fixture_trainers": 0,
+    "f10b5_kath_access_verified": true,
+    "f10b5_main_ci_pending": true
   }
 }
