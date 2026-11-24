@@ -480,7 +480,8 @@ puts "SINNOH_NATIVE_FRESH_STATE_WITHOUT_LEGACY_HOOK_OK"
         self.assertIn("SINNOH_NATIVE_FRESH_STATE_WITHOUT_LEGACY_HOOK_OK",proc.stdout)
 
     def test_late_fresh_hook_only_in_private_story_bootstrap(self):
-        raw=self.base.joinpath("Data/Scripts.rxdata").read_bytes()
+        main_source=b"def boot\n    PluginManager.runPlugins\n    Compiler.main\nend\n"
+        raw=b"\x04\x08"+exp.dump([[1,exp.RubyString(b"Main"),exp.RubyString(zlib.compress(main_source))]])
         rows=exp.Marshal(exp.patch_bootstrap(raw,"abc123abc123",self.ids,story_profile=True)).read()
         main=zlib.decompress(next(row[2] for row in rows if row[1]==b"Main")).decode()
         self.assertIn("BlueSinnohExperimental.install_fresh_hooks!",main)
