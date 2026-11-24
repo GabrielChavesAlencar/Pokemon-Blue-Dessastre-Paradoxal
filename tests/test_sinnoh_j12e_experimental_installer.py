@@ -251,6 +251,28 @@ class J12EInstallerTests(unittest.TestCase):
                     still_active+=sum(c.attrs["@code"]==201 for c in event.attrs["@pages"][0].attrs["@list"])
         self.assertEqual(still_active,10)
 
+    @unittest.skipUnless(os.environ.get("BLUE_SINNOH_PRIVATE_SOURCE"),"Requires explicitly supplied private archives")
+    def test_live_private_continuity_and_audio(self):
+        pv=exp.private_visual
+        path=Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"])
+        (self.base/"Data/map_connections.dat").write_bytes(serialize([]))
+        (self.base/"PBS/map_connections.txt").write_bytes(b"# Synthetic isolated baseline\n")
+        (self.base/"PBS/map_metadata.txt").write_bytes(b"[002]\nName = Synthetic\n")
+        maps=exp.visual.upgrade(self.ready,self.mapping,self.meta["tileset_ids"],self.events,self.start)
+        maps,components,_=pv.apply_maps(maps,self.mapping,path)
+        maps,events,start=exp.compile_events(maps,self.mapping,components,{**pv.ANCHORS,**pv.INTERIOR_ANCHORS})
+        out,report=pv.bind_audio_and_connections(maps,self.mapping,components,path,self.base)
+        self.assertEqual([p["reachable_seam_tiles"] for p in report["connections"]],[8,5,6])
+        self.assertEqual(len(events),24)
+        self.assertEqual(len(report["audio_files"]),7)
+        with pv.verified_archive(path,"maps") as z:
+            for key,(name,night) in pv.AUDIO.items():
+                for suffix in ("","_n") if night else ("",):
+                    self.assertEqual(out["Audio/BGM/SNQA_"+key+suffix+".ogg"],
+                       pv.member(z,pv.MAP_ROOT+"Audio/BGM/"+name+suffix+".ogg"))
+        self.assertEqual(len(read_marshal(out["Data/map_connections.dat"],"LIVE_CONNECTIONS")),3)
+        print("SINNOH_REAL_SOURCE_3_SEAMS_7_BGM_9_MAPS_OK",flush=True)
+
     def test_private_connection_plan_rejects_missing_duplicate_and_blocked_edges(self):
         pv=exp.private_visual
         raw=b"194,N,2,193,S,0\n193,E,0,192,W,4\n192,N,0,191,S,6\n"
