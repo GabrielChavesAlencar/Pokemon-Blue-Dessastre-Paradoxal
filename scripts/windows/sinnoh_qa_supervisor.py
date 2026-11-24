@@ -72,11 +72,14 @@ def load_qa(project: Path, qa: Path) -> dict:
         data.get("r09_native_qa_executed") != 0 or
         data.get("runtime_playable_verified") is not False):
         block("INVALID_QA_MANIFEST_OR_PROVENANCE")
+    save_token = data.get("save_profile_token", token)
+    if not isinstance(save_token, str) or not re.fullmatch(r"[a-f0-9]{12}", save_token):
+        block("INVALID_SAVE_PROFILE_TOKEN")
     profile = data.get("save_profile")
     if (not isinstance(profile, dict) or
-            profile.get("title") != "Sinnoh QA " + token or
-            profile.get("dataPathApp") != "Sinnoh-QA-" + token or
-            profile.get("dataPathOrg") != "Dessastre-Sinnoh-QA-" + token):
+            profile.get("title") != "Sinnoh QA " + save_token or
+            profile.get("dataPathApp") != "Sinnoh-QA-" + save_token or
+            profile.get("dataPathOrg") != "Dessastre-Sinnoh-QA-" + save_token):
         block("INVALID_PRIVATE_SAVE_NAMESPACE")
     config = json.loads(secure_file(qa / "mkxp.json").read_text("utf-8-sig"))
     if (not isinstance(config, dict) or
