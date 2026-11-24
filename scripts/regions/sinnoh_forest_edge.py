@@ -118,8 +118,8 @@ def tree_texture(blobs,mapping):
         c.paste2(ground,j%2*32,j//2*32)
     return png(SIZE,SIZE,bytes(c.raw)),{"art":"original_tree_fallback"}
 
-def build(blobs,mapping,root=ROOT):
-    ids=sorted(mapping[sym] for sym in donor_maps(mapping))
+def build(blobs,mapping,root=ROOT,extra_symbols=()):
+    ids=sorted(mapping[sym] for sym in set(donor_maps(mapping))|set(extra_symbols))
     if len(ids)!=len(set(ids)) or not ids:raise ValueError("F02_MAP_IDS")
     texture,report=tree_texture(blobs,mapping)
     script=(root/"scripts/regions/SinnohForestEdge.rb").read_text("utf-8")
