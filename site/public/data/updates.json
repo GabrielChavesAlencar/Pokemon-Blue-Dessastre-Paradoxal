@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5f8f20d809653c0cef0b2d6108beb642b77049b3",
+      "date": "2026-11-24T16:55:02-03:00",
+      "title": "Sinnoh F04: expand private QA to all fourteen cities, preserving ten previous maps",
+      "category": "Melhorias"
+    },
+    {
       "sha": "e05a8aa80b47233ab2687d1ce0b4f7ff5403aa41",
       "date": "2026-11-24T16:38:08-03:00",
       "title": "Sinnoh F03: audit complete original packages and prepare city expansion",
