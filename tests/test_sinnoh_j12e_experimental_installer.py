@@ -314,6 +314,10 @@ class J12EInstallerTests(unittest.TestCase):
                     self.assertEqual(len(pages),2)
                     self.assertTrue(pages[1].attrs["@condition"].attrs["@self_switch_valid"])
                     autoruns.append(event.attrs["@name"])
+                    if event.attrs["@name"]==b"SN_PROFILE_SETUP" and shutil.which("ruby"):
+                        script=pages[0].attrs["@list"][0].attrs["@parameters"][0].decode("ascii")
+                        run=subprocess.run([shutil.which("ruby"),"-c"],input=script,text=True,capture_output=True,timeout=15)
+                        self.assertEqual(run.returncode,0,run.stdout+run.stderr)
             if sym==pv.LAKEFRONT:
                 self.assertEqual({(e.attrs["@x"],e.attrs["@y"]) for e in es.values()},{(10,2),(11,2)})
                 for e in es.values():
@@ -329,6 +333,13 @@ class J12EInstallerTests(unittest.TestCase):
     def test_new_profile_dialogue_selects_both_characters_and_names_once(self):
         script=r'''
 load ARGV[0]
+require "tmpdir"
+module BlueSinnohExperimental; TOKEN = "012345abcdef"; end
+module GameData
+  module PlayerMetadata
+    def self.try_get(id); [9,10].include?(id) ? Object.new : nil; end
+  end
+end
 Player = Struct.new(:character_ID,:name)
 Global = Struct.new(:blue_regions)
 class GamePlayer
@@ -370,8 +381,18 @@ $choice=0; $asked=0; $named=0
 $PokemonGlobal=Global.new({"version"=>1,"initial"=>"SINNOH","current"=>"SINNOH"})
 $player=Player.new(1,"Red"); $game_player=GamePlayer.new
 $name_failure=true
-raise "exception escaped" if BlueSinnohPilot.setup_profile
-raise "failure marked complete" if $PokemonGlobal.blue_regions["sinnoh_profile_complete"]
+Dir.mktmpdir do |tmp|
+  qa=File.join(tmp,"game-sinnoh-experimental-012345abcdef")
+  Dir.mkdir(qa)
+  Dir.chdir(qa) do
+    File.write("sinnoh-experimental-qa.json","{}")
+    raise "exception escaped" if BlueSinnohPilot.setup_profile
+    raise "failure marked complete" if $PokemonGlobal.blue_regions["sinnoh_profile_complete"]
+    log=File.read("sinnoh-profile-error.txt")
+    raise "missing real error context" unless log.include?("SINNOH_PROFILE_STAGE=name_entry") &&
+      log.include?("native name entry failed")
+  end
+end
 $name_failure=false; $cancel_name=true
 raise "cancel advanced" if BlueSinnohPilot.setup_profile
 raise "cancel marked complete" if $PokemonGlobal.blue_regions["sinnoh_profile_complete"]
