@@ -418,9 +418,21 @@ puts "SINNOH_PROFILE_NATIVE_FAILURE_CANCEL_RETRY_OK"
         script=r'''
 require "tmpdir"
 load ARGV[0]
+load ARGV[1]
 module BlueKantoTitle
   def self.sinnoh_experimental_maps_ready?; true; end
 end
+module Settings; MAX_PLAYER_NAME_SIZE=12; end
+Player = Struct.new(:character_ID,:name)
+class GamePlayer
+  attr_accessor :transparent
+  def refresh_charset; end
+end
+def _INTL(text,*args); text; end
+def pbMessage(text,*args); args.empty? ? nil : 1; end
+def pbChangePlayer(id); $player.character_ID=id; end
+def pbEnterPlayerName(*args); "Sinnoh"; end
+def pbTrainerName(name); $player.name=name; end
 class Meta
   attr_accessor :blue_regions
 end
@@ -461,6 +473,9 @@ Dir.mktmpdir do |tmp|
     raise "old save changed" unless old.blue_regions["current"]=="KANTO"
     raise "missing Sinnoh state" unless $PokemonGlobal.blue_regions["initial"]=="SINNOH"
     raise "fresh scope leaked" if BlueSinnohExperimental.fresh?
+    $player=Player.new(1,"Red"); $game_player=GamePlayer.new
+    raise "bedroom profile failed after old-base initialization" unless BlueSinnohPilot.setup_profile
+    raise "wrong profile" unless $player.character_ID==10 && $player.name=="Sinnoh"
     $use_old=false; $default=true
     raise "default initial state not replaced" unless Game.start_new==:native_new_game
     raise "default replacement wrong" unless $PokemonGlobal.blue_regions["current"]=="SINNOH"
@@ -475,7 +490,7 @@ puts "SINNOH_NATIVE_FRESH_STATE_WITHOUT_LEGACY_HOOK_OK"
 '''
         with tempfile.TemporaryDirectory() as tmp:
             path=Path(tmp)/"generated.rb";path.write_bytes(generated)
-            proc=subprocess.run([shutil.which("ruby"),"-e",script,str(path)],text=True,capture_output=True,timeout=30)
+            proc=subprocess.run([shutil.which("ruby"),"-e",script,str(path),str(ROOT/"scripts/regions/SinnohPilot.rb")],text=True,capture_output=True,timeout=30)
         self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
         self.assertIn("SINNOH_NATIVE_FRESH_STATE_WITHOUT_LEGACY_HOOK_OK",proc.stdout)
 
