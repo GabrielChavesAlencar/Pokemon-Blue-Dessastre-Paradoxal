@@ -155,6 +155,15 @@ def audit_maps(qa: Path, data: dict, *, allow_tile_recovery: bool):
     if isinstance(private,dict) and private.get("maps"):
         files += ["Graphics/Tilesets/SNQA_Private_Outdoors.png","Graphics/Tilesets/SNQA_Private_Indoors.png"]
         files += ["Graphics/Autotiles/SNQA_Private_Auto_%d.png"%i for i in range(1,8)]
+    continuity=data.get("private_continuity",{})
+    if continuity:
+        if not isinstance(continuity,dict) or len(continuity.get("connections",[]))!=3:
+            block("INVALID_PRIVATE_CONTINUITY")
+        audio=continuity.get("audio_files")
+        expected_audio=["Audio/BGM/SNQA_"+name+".ogg" for name in ("Twinleaf","Twinleaf_n","Route201","Route201_n","Lake","Sandgem","Sandgem_n")]
+        if not isinstance(audio,list) or sorted(audio)!=sorted(expected_audio):
+            block("INVALID_PRIVATE_AUDIO_MANIFEST")
+        files += ["Data/map_connections.dat","PBS/map_connections.txt","PBS/map_metadata.txt"]+expected_audio
     if (not isinstance(hashes.get(PRISTINE), str) or
         hashes.get(PRISTINE) != hashes.get(TILESETS)):
         block("PRISTINE_NOT_PINNED_TO_ORIGINAL_HASH")

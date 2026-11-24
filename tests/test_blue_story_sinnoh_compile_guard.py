@@ -23,6 +23,7 @@ module Compiler
     (442..450).each { |id| File.binwrite("Data/Map%03d.rxdata" % id, "compiler door rewrite") }
     File.binwrite("Data/MapInfos.rxdata", "compiler index rewrite")
     File.binwrite("Data/Tilesets.rxdata", "compiler tile rewrite")
+    File.binwrite("Data/map_connections.dat", "compiler connection rewrite")
     File.binwrite("Data/Map441.rxdata", "unrelated compiler output")
     File.binwrite("Data/trainers.dat", "Barry PBS output")
     raise "synthetic compiler failure" if ENV["GUARD_CASE"] == "failure"
@@ -50,6 +51,8 @@ Dir.chdir(ARGV[1]) do
       (path.include?("MapInfos") ? "index" : path.include?("Tilesets") ? "tile" : "door") + " rewrite"
     raise "protected bytes changed: #{path}" unless File.binread(path) == expected
   end
+  expected_connections = active ? "original:Data/map_connections.dat" : "compiler connection rewrite"
+  raise "connection data changed" unless File.binread("Data/map_connections.dat") == expected_connections
   raise "lost trainer compilation" unless File.binread("Data/trainers.dat") == "Barry PBS output"
   raise "affected unrelated map" unless File.binread("Data/Map441.rxdata") == "unrelated compiler output"
   compiled = File.file?("Data/sinnoh-experimental-compiled.txt")
@@ -74,13 +77,13 @@ class SinnohCompileGuardTests(unittest.TestCase):
                              ("ffffffffffff" if case == "wrong-folder" else TOKEN))
                 (qa / "Data").mkdir(parents=True)
                 paths = [f"Data/Map{mid:03}.rxdata" for mid in IDS]
-                paths += ["Data/MapInfos.rxdata", "Data/Tilesets.rxdata"]
+                paths += ["Data/MapInfos.rxdata", "Data/Tilesets.rxdata", "Data/map_connections.dat"]
                 for path in paths:
                     (qa / path).write_text("original:" + path, encoding="utf8")
                 (qa / "sinnoh-experimental-qa.json").write_text("{}")
                 if case != "no-request":
                     (qa / "Data/sinnoh-experimental-compile-request.txt").write_text("proof")
-                rows = Marshal(patch_bootstrap(RAW, TOKEN, IDS)).read()
+                rows = Marshal(patch_bootstrap(RAW, TOKEN, IDS, connected=True)).read()
                 main = root / "GeneratedMain.rb"
                 main.write_bytes(zlib.decompress(rows[0][2]))
                 harness = root / "harness.rb"

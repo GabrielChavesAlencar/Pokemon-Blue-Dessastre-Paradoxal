@@ -310,7 +310,7 @@ def runtime_config(base:Path,token:str):
     if count!=1:fail("GAME_INI_TITLE_NOT_UNIQUE")
     return (json.dumps(config,ensure_ascii=False,indent=2)+"\n").encode(),result.encode(),profile
 
-def patch_bootstrap(raw:bytes,token:str,map_ids=()):
+def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False):
     """Require real Essentials Compiler and all three Barry PBS data; no fake success."""
     rows=Marshal(raw).read()
     matches=[row for row in rows if isinstance(row,list) and len(row)>=3 and row[1]==b"Main"]
@@ -361,6 +361,7 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=()):
     # other maps, trainer output, the source game or a later gameplay session.
     protected=[f"Data/Map{mid:03d}.rxdata" for mid in map_ids]
     protected += ["Data/MapInfos.rxdata","Data/Tilesets.rxdata"] if map_ids else []
+    if connected:protected.append("Data/map_connections.dat")
     guarded="""    blue_sinnoh_native_sources = nil
     if __QA_SCOPE__
       blue_sinnoh_native_sources = {}
@@ -373,7 +374,7 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=()):
     ensure
       if blue_sinnoh_native_sources
         blue_sinnoh_native_sources.each do |path, original|
-          File.binwrite(path, original) if File.binread(path) != original
+          File.binwrite(path, original) if !File.file?(path) || File.binread(path) != original
         end
       end
     end
@@ -463,10 +464,12 @@ def build_files(base:Path,project:Path=ROOT):
     maps=visual.upgrade(maps,mapping,manifest["tileset_ids"],events,start)
     sources=private_visual.discover(project)
     imported={}
+    continuity={}
     if "maps" in sources:
         print("SINNOH QA: importando cinco exteriores e quatro interiores autorais do ZIP local (sem eventos externos)",flush=True)
         maps,components,imported=private_visual.apply_maps(maps,mapping,sources["maps"])
         maps,events,start=compile_events(maps,mapping,components,{**private_visual.ANCHORS,**private_visual.INTERIOR_ANCHORS})
+        maps,continuity=private_visual.bind_audio_and_connections(maps,mapping,components,sources["maps"],base)
     if "overworlds" in sources:
         print("SINNOH QA: sprites DPPt locais; creditos PurpleZaffre",flush=True)
         maps=private_visual.apply_sprites(maps,sources["overworlds"])
@@ -481,7 +484,7 @@ def build_files(base:Path,project:Path=ROOT):
         "Graphics/Characters/SNQA_NPC.png":sprite_png("NPC"),
         "Graphics/Characters/SNQA_BALL.png":sprite_png("BALL"),
         "Data/System.rxdata":None,
-        "Data/Scripts.rxdata":patch_bootstrap((base/"Data/Scripts.rxdata").read_bytes(),token,ids),
+        "Data/Scripts.rxdata":patch_bootstrap((base/"Data/Scripts.rxdata").read_bytes(),token,ids,connected=bool(continuity)),
         "mkxp.json":config,"Game.ini":game_ini,
         # Only inside the NEW private QA copy. Blue-Story source-only sync
         # cannot update the installed main-game title when Kanto is 142/145.
@@ -509,7 +512,7 @@ def build_files(base:Path,project:Path=ROOT):
     # These hashes do not claim human rights approval, or native gameplay acceptance.
     report={"schema":1,"region":"SINNOH","mode":MODE,
         "maps_prepared":9,"static_events_placed":len(events),
-        "static_warps":16,"static_handlers":5,"static_starter_balls":3,
+        "static_warps":16-len(continuity.get("retired_warp_keys",[])),"native_seam_pairs":len(continuity.get("connections",[])),"static_handlers":5,"static_starter_balls":3,
         "local_reserved_qa_only":True,"independent_r07_approved":False,
         "independent_r08_approved":False,"r09_native_qa_executed":0,
         "game_exe_executed":False,"runtime_playable_verified":False,
@@ -522,6 +525,7 @@ def build_files(base:Path,project:Path=ROOT):
                                  "source_sha256":{k:private_visual.PACKS[k][1] for k in sources},
                                  "native_approved":False,"distribution_approved":False},
         "visual_revision":"SINNOH_ORIGINAL_PIXEL_ART_V2",
+        "private_continuity":continuity,
         "visual_native_reviewed":False,
         "human_positions_reviewed":False,"native_collision_verified":False,
         "compile_token":proof,
@@ -581,6 +585,8 @@ def install_copy(base:Path,outputs:dict,report:dict,project:Path=ROOT):
             fail("UNSAFE_OUTPUT_PATH")
         if rel.startswith("Data/Map") and re.fullmatch(r"Data/Map\d{3}\.rxdata",rel):
             if rel in original:fail("WOULD_OVERWRITE_NATIVE_MAP")
+        if rel.startswith("Audio/BGM/SNQA_") and any(rel.casefold()==x.casefold() for x in original):
+            fail("WOULD_OVERWRITE_EXISTING_AUDIO")
         if rel.startswith(("Plugins/","Graphics/")) and rel in original:
             if rel == QA_TITLE_PLUGIN:
                 # The sole allowlisted replacement is a project-owned Title

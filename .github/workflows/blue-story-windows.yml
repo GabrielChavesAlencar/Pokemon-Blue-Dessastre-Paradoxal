@@ -6,6 +6,7 @@ on:
       - scripts/windows/**
       - scripts/regions/install_sinnoh_experimental_windows.py
       - scripts/regions/sinnoh_source_download.py
+      - scripts/regions/sinnoh_private_visual.py
       - tests/test_blue_story_sinnoh_compile_guard.py
       - scripts/regions/auto_integrate_johto.py
       - scripts/regions/johto_main_preview.py
@@ -26,6 +27,7 @@ on:
       - scripts/windows/**
       - scripts/regions/install_sinnoh_experimental_windows.py
       - scripts/regions/sinnoh_source_download.py
+      - scripts/regions/sinnoh_private_visual.py
       - scripts/regions/generate_sinnoh_four_exteriors_j11b.py
       - tests/test_blue_story_sinnoh_menu.py
       - tests/test_blue_story_sinnoh_compile_guard.py
@@ -90,9 +92,9 @@ jobs:
           if ($LASTEXITCODE -ne 0) {throw "Falha ao atualizar o Blue-Story.exe"}
 
   sinnoh-original-source-live:
-    # Explicit one-time acceptance check for the source-download PR only.
+    # Explicit acceptance checks for the download and continuity PRs only.
     # Never run external downloads on untrusted forks or publish their bytes.
-    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'sinnoh-auto-download-original-sources'
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && (github.head_ref == 'sinnoh-auto-download-original-sources' || github.head_ref == 'sinnoh-connected-maps-and-audio')
     permissions:
       contents: read
     runs-on: windows-2022
@@ -109,6 +111,8 @@ jobs:
         run: |
           @'
           import sys
+          import os
+          import subprocess
           import tempfile
           from pathlib import Path
           sys.path.insert(0, str(Path.cwd() / "scripts" / "regions"))
@@ -127,6 +131,8 @@ jobs:
                   raise AssertionError("unexpected repeated download")
               assert src.ensure_sources(project, fetch=reject_network) == paths
               print("SINNOH_LIVE_DOWNLOADS_2_OF_2_AND_CACHE_OK", flush=True)
+              if os.environ.get("GITHUB_HEAD_REF") == "sinnoh-connected-maps-and-audio":
+                  subprocess.run([sys.executable,"-m","unittest","discover","-s","tests","-p","test_sinnoh_j12e_experimental_installer.py","-k","test_live_private_continuity_and_audio","-v"],env={**os.environ,"BLUE_SINNOH_PRIVATE_SOURCE":str(paths["maps"])},check=True)
           assert not project.exists()
           '@ | python -
           if ($LASTEXITCODE -ne 0) {throw "Falha no download real de Sinnoh; nao autorizar merge"}

@@ -421,3 +421,153 @@ def has_platinum_player(base, player_id=9):
         if dims(path.read_bytes())!=(256,256):
             return False
     return True
+
+
+# Actual connections in the pinned donor PBS. Only the three pairs whose
+# two endpoints are present and have reachable common edge tiles are used.
+# Lake Verity has no walkable shared boundary in this source; retain its
+# authored warp. Jubilife and Verity Lakefront are not in this nine-map QA.
+CONTINUOUS = (
+    ("SINNOH_TWINLEAF_TOWN","N",2,"SINNOH_ROUTE_201","S",0,
+     "SN_TOWN_TO_ROUTE201","SN_ROUTE201_TO_TOWN"),
+    ("SINNOH_ROUTE_201","E",0,"SINNOH_SANDGEM_TOWN","W",4,
+     "SN_ROUTE201_TO_SANDGEM","SN_SANDGEM_TO_ROUTE201"),
+    ("SINNOH_SANDGEM_TOWN","N",0,"SINNOH_ROUTE_202","S",6,
+     "SN_SANDGEM_TO_ROUTE202","SN_ROUTE202_TO_SANDGEM"),
+)
+DIRECTIONS={"N":"N","North":"N","S":"S","South":"S","E":"E","East":"E","W":"W","West":"W"}
+AUDIO = {
+    "Twinleaf":("DPPT 006 Twinleaf Town",True),
+    "Route201":("DPPT 008 Route 201",True),
+    "Lake":("DPPT 009 Lake",False),
+    "Sandgem":("DPPT 016 Sandgem Town",True),
+}
+MAP_MUSIC = {
+    "SINNOH_PLAYER_BEDROOM":"Twinleaf","SINNOH_PLAYER_HOUSE_1F":"Twinleaf",
+    "SINNOH_TWINLEAF_TOWN":"Twinleaf","SINNOH_BARRY_HOUSE":"Twinleaf",
+    "SINNOH_ROUTE_201":"Route201","SINNOH_ROUTE_202":"Route201",
+    "SINNOH_LAKE_VERITY":"Lake","SINNOH_SANDGEM_TOWN":"Sandgem",
+    "SINNOH_PROFESSOR_ROWAN_LABORATORY":"Sandgem",
+}
+
+
+def parse_connections(raw):
+    rows=[]
+    for line in raw.decode("utf-8-sig").splitlines():
+        text=line.split("#",1)[0].strip()
+        if not text:continue
+        cols=[v.strip() for v in text.split(",")]
+        if len(cols)!=6 or cols[1] not in DIRECTIONS or cols[4] not in DIRECTIONS:
+            fail("SOURCE_CONNECTION_FORMAT")
+        rows.append((int(cols[0]),DIRECTIONS[cols[1]],int(cols[2]),
+                     int(cols[3]),DIRECTIONS[cols[4]],int(cols[5])))
+    return rows
+
+
+def edge_axis(points,size,direction,offset):
+    w,h=size
+    if direction=="N":return {x-offset for x,y in points if y==0}
+    if direction=="S":return {x-offset for x,y in points if y==h-1}
+    if direction=="W":return {y-offset for x,y in points if x==0}
+    if direction=="E":return {y-offset for x,y in points if x==w-1}
+    fail("SOURCE_EDGE_DIRECTION")
+
+
+def connection_plan(mapping,components,source_rows):
+    result=[]
+    for a,da,oa,b,db,ob,wa,wb in CONTINUOUS:
+        source=(DONOR[a][0],da,oa,DONOR[b][0],db,ob)
+        reverse=(source[3],db,ob,source[0],da,oa)
+        if source_rows.count(source)+source_rows.count(reverse)!=1:
+            fail("SOURCE_CONNECTION_MISSING_OR_DUPLICATE")
+        shared=edge_axis(components[a],DONOR[a][2],da,oa)&edge_axis(components[b],DONOR[b][2],db,ob)
+        if not shared:fail("SOURCE_CONNECTION_NO_REACHABLE_SEAM")
+        result.append({"record":[mapping[a],da,oa,mapping[b],db,ob],
+                       "source_ids":[source[0],source[3]],"reachable_seam_tiles":len(shared),
+                       "warp_keys":[wa,wb]})
+    return result
+
+
+def merge_connections(base,plans,mapping):
+    # Preserve every baseline compiled record; append only private QA IDs.
+    from install_sinnoh_experimental_windows import regular
+    data_path=base/"Data/map_connections.dat";pbs_path=base/"PBS/map_connections.txt"
+    regular(data_path);regular(pbs_path)
+    original=read_marshal(data_path.read_bytes(),"BASE_CONNECTIONS")
+    if not isinstance(original,list):fail("BASE_CONNECTIONS_NOT_ARRAY")
+    ids=set(mapping.values())
+    for row in original:
+        if (not isinstance(row,list) or len(row)!=6 or
+            any(type(row[i]) is not int for i in (0,2,3,5)) or
+            any(row[i] not in (b"N",b"S",b"E",b"W") for i in (1,4))):
+            fail("BASE_CONNECTION_RECORD_UNSUPPORTED")
+        if row[0] in ids or row[3] in ids:fail("BASE_CONNECTION_ID_COLLISION")
+    pbs=pbs_path.read_bytes()
+    if any(row[0] in ids or row[3] in ids for row in parse_connections(pbs)):
+        fail("BASE_PBS_CONNECTION_ID_COLLISION")
+    records=[p["record"] for p in plans]
+    rows=[[r[0],r[1].encode("ascii"),r[2],r[3],r[4].encode("ascii"),r[5]] for r in records]
+    addition=("\n# Blue Sinnoh private QA - native seamless connections\n"+
+              "\n".join(",".join(map(str,r)) for r in records)+"\n").encode("ascii")
+    return {"Data/map_connections.dat":serialize(original+rows),
+            "PBS/map_connections.txt":pbs+addition}
+
+
+def bind_audio_and_connections(blobs,mapping,components,path,base):
+    """Use actual donor BGM, day/night variants, and verified continuous seams."""
+    from build_johto_events import EVENT_CLASSES,ruby
+    from install_sinnoh_experimental_windows import regular
+    out=dict(blobs)
+    with verified_archive(path,"maps") as z:
+        plans=connection_plan(mapping,components,parse_connections(member(z,MAP_ROOT+"PBS/map_connections.txt")))
+        audio_files=[]
+        for key,(name,night) in AUDIO.items():
+            for suffix in ("","_n") if night else ("",):
+                raw=member(z,MAP_ROOT+"Audio/BGM/"+name+suffix+".ogg")
+                if not raw.startswith(b"OggS") or b"\x01vorbis" not in raw[:4096]:
+                    fail("SOURCE_BGM_NOT_VORBIS:"+key)
+                rel="Audio/BGM/SNQA_"+key+suffix+".ogg"
+                out[rel]=raw;audio_files.append(rel)
+    out.update(merge_connections(base,plans,mapping))
+    # Metadata enables the native map system's outdoor/day/night behavior.
+    # Only unoccupied private map IDs are appended; no other region is changed.
+    pbs_path=base/"PBS/map_metadata.txt";regular(pbs_path)
+    old=pbs_path.read_bytes()
+    existing={int(m) for m in re.findall(rb"(?m)^\s*\[(\d+)\]",old)}
+    if existing & set(mapping.values()):fail("BASE_MAP_METADATA_ID_COLLISION")
+    meta=[]
+    for symbol,mid in mapping.items():
+        outside=symbol in DONOR
+        area_name=DONOR[symbol][1].decode("ascii") if outside else {"SINNOH_PLAYER_BEDROOM":"Twinleaf Town","SINNOH_PLAYER_HOUSE_1F":"Twinleaf Town","SINNOH_BARRY_HOUSE":"Twinleaf Town","SINNOH_PROFESSOR_ROWAN_LABORATORY":"Sandgem Town"}[symbol]
+        lines=["[%03d]"%mid, "Name = "+area_name, "Outdoor = "+("true" if outside else "false"),
+               "ShowArea = "+("true" if outside else "false")]
+        if outside:lines.append("Bicycle = true")
+        if not outside or symbol=="SINNOH_LAKE_VERITY":lines.append("SnapEdges = true")
+        meta.append("\n".join(lines))
+    out["PBS/map_metadata.txt"]=old+b"\n# Blue Sinnoh private QA\n"+("\n#-------------------------------\n".join(meta)+"\n").encode("ascii")
+    obsolete={key for plan in plans for key in plan["warp_keys"]}
+    removed=set()
+    for symbol,mid in mapping.items():
+        rel="Data/Map%03d.rxdata"%mid
+        m=read_marshal(out[rel],"QA_BGM_MAP")
+        a=m.attrs
+        a["@autoplay_bgm"]=True
+        a["@bgm"]=ruby("RPG::AudioFile",name=("SNQA_"+MAP_MUSIC[symbol]).encode("ascii"),volume=100,pitch=100)
+        # Retain the authored event IDs/names, but retire their transfer pages:
+        # otherwise touch warps jump before the seamless map boundary.
+        for event in a["@events"].values():
+            key=event.attrs["@name"].decode("ascii")
+            if key not in obsolete:continue
+            pages=event.attrs["@pages"]
+            if len(pages)!=1 or not any(c.attrs["@code"]==201 for c in pages[0].attrs["@list"]):
+                fail("EXPECTED_SEAM_WARP_NOT_FOUND:"+key)
+            page=pages[0].attrs
+            page["@list"]=[ruby("RPG::EventCommand",code=0,indent=0,parameters=[])]
+            page["@trigger"]=0
+            page["@through"]=True
+            removed.add(key)
+        out[rel]=serialize(m,EVENT_CLASSES)
+    if removed!=obsolete:fail("SEAM_WARP_KEYS_INCOMPLETE")
+    return out,{"connections":plans,"retired_warp_keys":sorted(removed),
+                "audio_files":sorted(audio_files),"map_music":dict(MAP_MUSIC),
+                "native_reviewed":False}
