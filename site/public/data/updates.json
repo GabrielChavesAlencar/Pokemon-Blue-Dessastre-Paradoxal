@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9a261b423c2982f8651edf5779dc77d492727aa9",
+      "date": "2026-11-24T20:21:43-03:00",
+      "title": "Merge pull request #294 from GabrielChavesAlencar/sinnoh-full-expansion-f10b-trainers",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "da117e9de383693731c81ae94d7a43f641e4a6e0",
+      "date": "2026-11-24T20:07:07-03:00",
+      "title": "Test Sinnoh F10B victory persistence, scaling gate and literal identity",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "e4b429da059b7d7da3fcfb6c9fec3098bba048df",
+      "date": "2026-11-24T20:06:45-03:00",
+      "title": "Sinnoh F10B: evidence-gated trainer reconstruction and native battle persistence",
+      "category": "Melhorias"
+    },
+    {
       "sha": "7302bcc3345dbb8e649b8d8a63498524f6cd9cc5",
       "date": "2026-11-24T20:05:14-03:00",
       "title": "Merge pull request #293 from GabrielChavesAlencar/sinnoh-full-expansion-f10a-trainer-npc-audit",
