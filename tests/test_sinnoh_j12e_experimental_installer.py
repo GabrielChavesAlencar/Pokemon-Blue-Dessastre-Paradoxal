@@ -1012,6 +1012,41 @@ raise "duplicate battle" unless $calls==4
         self.assertEqual(result["blocked_stacks"],{"0":1})
         self.assertEqual(result["empty_cells"],13)
 
+    def test_f05_scoped_arrival_policy_keeps_geometry_and_rejects_unsafe_tiles(self):
+        city=exp.city_expansion
+        qa=exp.qa_teleport
+        w,h=7,7
+        cells=[0]*(w*h*3)
+        for x in (2,3,4): cells[x]=1
+        cells[1]=2  # grass
+        cells[5]=3  # water
+        cells[6]=4  # blocked ordinary tile
+        p=[0,0,0,0,15,0]
+        tags=[0,0,2,7,0,4]
+        original=list(cells)
+        narrow="SINNOH_ROUTE_225_SEGMENT_2"
+        self.assertEqual(city.component(cells,w,h,p,tags,narrow),{(2,0),(3,0),(4,0)})
+        self.assertEqual(cells,original)
+        with self.assertRaisesRegex(ValueError,"NO_SAFE_WALKABLE_COMPONENT"):
+            city.component(cells,w,h,p,tags,"SINNOH_ROUTE_225")
+        cells[3]=0
+        with self.assertRaisesRegex(ValueError,"NO_SAFE_WALKABLE_COMPONENT"):
+            city.component(cells,w,h,p,tags,narrow)
+        cells=[0]*(w*h*3)
+        for y in range(1,5):
+            for x in range(1,5): cells[y*w+x]=5
+        cells[w+1]=3
+        cells[2*w+2+w*h]=2  # grass overlay
+        cells[3*w+3+w*h]=4  # blocked overlay
+        rock="SINNOH_ROUTE_228_SEGMENT_2"
+        allowed=qa.arrival_ground(cells,w,h,p,tags,rock)
+        self.assertNotIn((1,1),allowed)
+        self.assertNotIn((2,2),allowed)
+        self.assertNotIn((3,3),allowed)
+        self.assertEqual(len(city.component(cells,w,h,p,tags,rock)),13)
+        with self.assertRaisesRegex(ValueError,"NO_SAFE_WALKABLE_COMPONENT"):
+            city.component(cells,w,h,p,tags,"SINNOH_ROUTE_228")
+
     def test_f05_save_namespace_and_route_segments(self):
         city=exp.city_expansion
         route=exp.route_expansion

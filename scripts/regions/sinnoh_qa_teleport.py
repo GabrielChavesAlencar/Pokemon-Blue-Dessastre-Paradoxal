@@ -21,7 +21,28 @@ def catalog(root=ROOT):
         raise ValueError("SINNOH_F01_CITIES_INCOMPLETE")
     return rows
 
-def safe_spawn(raw,tiles,component):
+def arrival_policy(symbol=None):
+    # Exact F05 exceptions, never applied to prior maps or other routes.
+    # 165: only four fully passable tag-0 cells, all on the map boundary.
+    # 142: Essentials Rock (4) is a battle environment, not a movement mode.
+    # Require a connected ordinary/rock pocket; never admit grass or water.
+    if symbol=="SINNOH_ROUTE_225_SEGMENT_2":
+        return frozenset({0}),True,1,2
+    if symbol=="SINNOH_ROUTE_228_SEGMENT_2":
+        return frozenset({0,4}),False,2,12
+    return frozenset({0}),False,2,12
+
+def arrival_ground(cells,w,h,passages,tags,symbol=None):
+    allowed,edge,_,_=arrival_policy(symbol)
+    return {(x,y) for y in range(h) for x in range(w)
+            if (edge or (0<x<w-1 and 0<y<h-1))
+            and (stack:=[cells[z*w*h+y*w+x] for z in range(3) if cells[z*w*h+y*w+x]])
+            and all(i<len(passages) and i<len(tags) and not passages[i]&15 and tags[i] in allowed for i in stack)}
+
+def neighbours(x,y):
+    return ((x-1,y),(x+1,y),(x,y-1),(x,y+1))
+
+def safe_spawn(raw,tiles,component,symbol=None):
     m=read_marshal(raw,"F01_MAP").attrs
     w,h=m["@width"],m["@height"]
     ts=tiles[m["@tileset_id"]].attrs
@@ -31,20 +52,17 @@ def safe_spawn(raw,tiles,component):
     tags=struct.unpack("<%dH"%(len(t)//2),t)
     cells=struct.unpack_from("<%dH"%(w*h*3),m["@data"].data,20)
     events={(e.attrs["@x"],e.attrs["@y"]) for e in m["@events"].values()}
-    ground=set()
-    for y in range(1,h-1):
-        for x in range(1,w-1):
-            stack=[cells[z*w*h+y*w+x] for z in range(3) if cells[z*w*h+y*w+x]]
-            # Terrain 0 is ordinary ground in the native tileset; exclude
-            # special terrain, including grass, water, ice and ledges.
-            if stack and all(i<len(passages) and i<len(tags) and not passages[i]&15 and tags[i]==0 for i in stack):
-                ground.add((x,y))
+    ground=arrival_ground(cells,w,h,passages,tags,symbol)
+    _,_,min_neighbours,_=arrival_policy(symbol)
     if component is not None: ground.intersection_update(component)
     # Stay away from events/warps and require an unobstructed adjacent tile.
     free=ground-events
     choices=[(x,y) for x,y in free if all(abs(x-a)+abs(y-b)>1 for a,b in events)
-             and sum(q in free for q in ((x-1,y),(x+1,y),(x,y-1),(x,y+1)))>=2]
+             and sum(q in free for q in neighbours(x,y))>=min_neighbours]
     if not choices: raise ValueError("SINNOH_F01_NO_SAFE_SPAWN")
+    # For the narrow boundary strip prefer the greatest number of exits.
+    if symbol=="SINNOH_ROUTE_225_SEGMENT_2":
+        return min(choices,key=lambda q:(-sum(n in free for n in neighbours(*q)),abs(q[0]-w//2)+abs(q[1]-h//2),q[1],q[0]))
     return min(choices,key=lambda q:(abs(q[0]-w//2)+abs(q[1]-h//2),q[1],q[0]))
 
 def build(blobs,mapping,components,root=ROOT):
@@ -64,7 +82,7 @@ def build(blobs,mapping,components,root=ROOT):
         dest=None
         if sym in mapping:
             mid=mapping[sym]
-            x,y=safe_spawn(blobs["Data/Map%03d.rxdata"%mid],tiles,components.get(sym))
+            x,y=safe_spawn(blobs["Data/Map%03d.rxdata"%mid],tiles,components.get(sym),sym)
             dest=[mid,x,y]
         entries.append([sym,row["label"],row["category"],dest])
     return entries

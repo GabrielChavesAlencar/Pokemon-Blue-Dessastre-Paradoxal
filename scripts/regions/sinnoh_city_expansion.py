@@ -35,18 +35,21 @@ def allocate(mapping,occupied,root=ROOT):
     if len(free)<12:fail("INSUFFICIENT_FREE_CITY_MAPIDS")
     return {**mapping,**{r["symbol"]:mid for r,mid in zip(rows(root),free)}}
 
-def component(cells,w,h,p,tags=None):
+def component(cells,w,h,p,tags=None,symbol=None):
     # Choose the largest conservative walking component that contains an
     # ordinary-ground arrival AND two ordinary-ground neighbours, rather
     # than the largest component regardless of terrain.
     free={(x,y) for y in range(h) for x in range(w)
           if (stack:=[cells[z*w*h+y*w+x] for z in range(3) if cells[z*w*h+y*w+x]])
           and all(t<len(p) and not p[t]&15 for t in stack)}
-    ground={q for q in free if 0<q[0]<w-1 and 0<q[1]<h-1 and
-            (tags is None or all(tags[t]==0 for z in range(3)
-            if (t:=cells[z*w*h+q[1]*w+q[0]])))}
-    arrivals={q for q in ground if sum(n in ground for n in
-              ((q[0]-1,q[1]),(q[0]+1,q[1]),(q[0],q[1]-1),(q[0],q[1]+1)))>=2}
+    allowed,edge,min_neighbours,min_component=teleport.arrival_policy(symbol)
+    ground=({q for q in free if 0<q[0]<w-1 and 0<q[1]<h-1}
+            if tags is None else teleport.arrival_ground(cells,w,h,p,tags,symbol))
+    # Exception pockets must be connected without crossing grass, water,
+    # ledges, or any other disallowed terrain. Preserve F04 behavior.
+    if symbol in ("SINNOH_ROUTE_225_SEGMENT_2","SINNOH_ROUTE_228_SEGMENT_2"):
+        free=set(ground)
+    arrivals={q for q in ground if sum(n in ground for n in teleport.neighbours(*q))>=min_neighbours}
     best=set()
     while free:
         seed=min(free,key=lambda q:(q[1],q[0]))
@@ -56,7 +59,7 @@ def component(cells,w,h,p,tags=None):
             for q in ((x-1,y),(x+1,y),(x,y-1),(x,y+1)):
                 if q in free:free.remove(q);part.add(q);todo.append(q)
         if len(part)>len(best) and part & arrivals:best=part
-    if len(best)<12:
+    if len(best)<min_component:
         fail("NO_SAFE_WALKABLE_COMPONENT:ordinary_ground=%d:arrival_candidates=%d"%(len(ground),len(arrivals)))
     return best
 
@@ -140,12 +143,14 @@ def append_exteriors(blobs,mapping,components,path,expanded,source_rows,phase):
             if any(0<t<48 for t in cells):fail("SOURCE_RESERVED_TILE")
             sets[sym]={t for t in cells if t>=384};source_cells[sym]=cells
             try:
-                comps[sym]=component(cells,w,h,tables["@passages"],tables["@terrain_tags"])
+                comps[sym]=component(cells,w,h,tables["@passages"],tables["@terrain_tags"],sym if phase=="F05" else None)
             except ValueError as exc:
                 component_failures.append({"symbol":sym,"source_id":mid,"error":str(exc)})
             if phase=="F05":
                 print("SINNOH_F05_TERRAIN "+json.dumps({"symbol":sym,"source_id":mid,
-                      **terrain_diagnostics(cells,w,h,tables["@passages"],tables["@terrain_tags"])},sort_keys=True),flush=True)
+                      **terrain_diagnostics(cells,w,h,tables["@passages"],tables["@terrain_tags"]),
+                      "policy_ground_cells":len(teleport.arrival_ground(cells,w,h,tables["@passages"],tables["@terrain_tags"],sym)),
+                      "policy_component_cells":len(comps.get(sym,()))},sort_keys=True),flush=True)
         if component_failures:
             # Report ALL blocked routes in the same run, rather than failing
             # at the first one. Do not generate maps or a success marker.
@@ -174,9 +179,12 @@ def append_exteriors(blobs,mapping,components,path,expanded,source_rows,phase):
         rel="Data/Map%03d.rxdata"%mid
         out[rel]=serialize(m,EVENT_CLASSES)
         try:
-            x,y=teleport.safe_spawn(out[rel],tiles,comps[sym])
+            x,y=teleport.safe_spawn(out[rel],tiles,comps[sym],sym if phase=="F05" else None)
         except ValueError as exc:
             raise ValueError("F04_CITY:"+sym+":"+str(exc)) from exc
+        if phase=="F05":
+            print("SINNOH_F05_ARRIVAL "+json.dumps({"symbol":sym,"source_id":row["source_id"],
+                  "target_id":mid,"x":x,"y":y,"component_cells":len(comps[sym])},sort_keys=True),flush=True)
         info=copy.deepcopy(infos[mapping["SINNOH_SANDGEM_TOWN"]]);order+=1
         info.attrs.update({"@name":row["label"].encode("ascii"),"@parent_id":0,"@order":order})
         infos[mid]=info
