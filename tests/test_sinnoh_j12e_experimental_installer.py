@@ -996,6 +996,22 @@ raise "duplicate battle" unless $calls==4
         with self.assertRaisesRegex(ValueError,"NO_SAFE_WALKABLE_COMPONENT"):
             exp.city_expansion.component(cells,w,h,[0,0,0],[0,2,2])
 
+    def test_f05_terrain_diagnostics_distinguishes_blocked_and_special_tiles(self):
+        w,h=5,5
+        cells=[0]*(w*h*3)
+        for y in range(1,4):
+            for x in range(1,4):
+                cells[y*w+x]=1
+        cells[0]=2
+        cells[4]=3
+        cells[5]=4
+        result=exp.city_expansion.terrain_diagnostics(cells,w,h,[0,0,0,15,0],[0,0,2,0,7])
+        self.assertEqual(result["ordinary_ground_cells"],9)
+        self.assertEqual(result["ordinary_arrival_candidates"],9)
+        self.assertEqual(result["walkable_stacks"],{"0":9,"2":1,"7":1})
+        self.assertEqual(result["blocked_stacks"],{"0":1})
+        self.assertEqual(result["empty_cells"],13)
+
     def test_f05_save_namespace_and_route_segments(self):
         city=exp.city_expansion
         route=exp.route_expansion
