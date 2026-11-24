@@ -582,4 +582,60 @@ module BlueSinnohPilot
     end
   end
 
+  ROUTE_TRAINERS = {
+    "TRISTAN"=>[:YOUNGSTER,"Tristan",:STARLY],
+    "NATALIE"=>[:LASS,"Natalie",:BIDOOF],
+    "LOGAN"=>[:YOUNGSTER,"Logan",:BURMY]
+  }.freeze
+  ROUTE_TRAINER_VERSION = 202
+
+  def self.route_trainer(key)
+    state=regional_state
+    spec=ROUTE_TRAINERS[key]
+    return false unless state && spec && route202_allowed? &&
+      defined?(BlueSinnohExperimental) && BlueSinnohExperimental.private_copy?
+    victories=state["sinnoh_route202_victories"]
+    return false unless victories.nil? || (victories.is_a?(Array) &&
+      victories.all? { |k| ROUTE_TRAINERS.key?(k) } && victories.uniq==victories)
+    if victories && victories.include?(key)
+      pbMessage(_INTL("{1}: Boa batalha! Continue treinando.",spec[1]))
+      return true
+    end
+    return false if @route_trainer_in_progress
+    return false unless defined?(BlueKantoTitle) && BlueKantoTitle.sinnoh_experimental_barry_compiled?
+    trainer=GameData::Trainer.get(spec[0],spec[1],ROUTE_TRAINER_VERSION)
+    return false unless trainer && trainer.pokemon.length==1
+    mon=trainer.pokemon.first
+    species=mon.is_a?(Hash) ? (mon[:species] || mon["species"]) : mon.species
+    return false unless species.to_s==spec[2].to_s
+    @route_trainer_in_progress=true
+    begin
+      pbMessage(_INTL("{1}: Vamos batalhar!",spec[1]))
+      return false unless TrainerBattle.start(spec[0],spec[1],ROUTE_TRAINER_VERSION)==true
+      return false unless regional_state.equal?(state)
+      state["sinnoh_route202_victories"]=(victories || [])+[key]
+      sync_route_trainers
+      true
+    ensure
+      @route_trainer_in_progress=false
+    end
+  rescue StandardError => error
+    profile_error("route202_trainer",error)
+    false
+  end
+
+  def self.sync_route_trainers
+    state=regional_state
+    return unless state && state["sinnoh_route202_victories"].is_a?(Array) &&
+      defined?($game_map) && $game_map && defined?($game_self_switches) && $game_self_switches
+    $game_map.events.each do |id,event|
+      next unless event.respond_to?(:name)
+      key=event.name[/\ASN_ROUTE202_(TRISTAN|NATALIE|LOGAN)\z/,1] ||
+          event.name[/\ATrainer\(3\) SN_ROUTE202_(TRISTAN|NATALIE|LOGAN)\z/,1]
+      next unless key && state["sinnoh_route202_victories"].include?(key)
+      $game_self_switches[[$game_map.map_id,id,"A"]]=true
+      event.refresh if event.respond_to?(:refresh)
+    end
+  end
+
 end
