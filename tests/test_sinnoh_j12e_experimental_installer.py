@@ -59,14 +59,36 @@ class J12EInstallerTests(unittest.TestCase):
             for table in ("@passages","@priorities","@terrain_tags"):
                 self.assertEqual(struct.unpack_from("<5I",tile[table].data),(1,448,1,1,448))
             ids=struct.unpack_from("<"+str(a["@width"]*a["@height"]*3)+"H",a["@data"].data,20)
-            self.assertTrue(all(t==0 or t==48 or 384<=t<448 for t in ids))
+            self.assertTrue(all(t==0 or 48<=t<192 or 384<=t<448 for t in ids))
         self.assertEqual(struct.unpack_from(">II",out["Graphics/Autotiles/SNQA_WaterV2.png"],16),(288,128))
+        for kind in ("Path","Grass"):
+            self.assertEqual(struct.unpack_from(">II",out["Graphics/Autotiles/SNQA_"+kind+"V2.png"],16),(96,128))
+        for symbol in ("SINNOH_ROUTE_201","SINNOH_ROUTE_202"):
+            a=read_marshal(out["Data/Map%03d.rxdata"%self.mapping[symbol]],"ROUTE_VISUAL").attrs
+            ids=struct.unpack_from("<"+str(a["@width"]*a["@height"]*3)+"H",a["@data"].data,20)
+            self.assertTrue(any(96<=t<144 for t in ids))
+            self.assertTrue(any(144<=t<192 for t in ids))
+            ts_data=ts[a["@tileset_id"]].attrs
+            self.assertEqual(ts_data["@autotile_names"][:3],[b"SNQA_WaterV2",b"SNQA_PathV2",b"SNQA_GrassV2"])
+            p=struct.unpack_from("<448H",ts_data["@passages"].data,20)
+            tags=struct.unpack_from("<448H",ts_data["@terrain_tags"].data,20)
+            self.assertTrue(all(p[t]==0 and tags[t]==0 for t in range(96,192)))
         for group,(_,name) in j11c.GRAPHIC.items():
             self.assertEqual(struct.unpack_from(">II",out["Graphics/Tilesets/"+name+".png"],16),(256,256))
         sprites=[out["Graphics/Characters/SNQA_"+n+".png"] for n in ("MOTHER","BARRY","ROWAN")]
         self.assertEqual(len(set(sprites)),3)
         self.assertEqual(set(e["sprite"] for e in self.events if e["kind"]=="handler"),
                          {"SNQA_MOTHER","SNQA_BARRY","SNQA_ROWAN"})
+
+    def test_ground_autotile_all_47_topologies(self):
+        shape=exp.visual.autotile_shape
+        self.assertEqual({shape(s,c) for s in range(16) for c in range(16)},set(range(47)))
+        self.assertEqual(shape(0,0),0)
+        self.assertEqual(shape(0,15),15)
+        self.assertEqual(shape(15,15),46)
+        self.assertEqual(shape(10,15),32)
+        self.assertEqual(shape(5,15),33)
+        with self.assertRaises(ValueError):shape(16,0)
 
     def test_visual_reciprocal_portals_land_near_other_end(self):
         for e in self.events:
