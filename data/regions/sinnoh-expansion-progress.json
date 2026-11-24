@@ -2,10 +2,10 @@
   "schema": 1,
   "region": "SINNOH",
   "reference": "Platinum",
-  "status": "F01_F02_F03_F04_F05_MERGED_F06_IMPLEMENTED_PENDING_CI",
+  "status": "F01_F02_F03_F04_F05_F06_MERGED_F07_IMPLEMENTED_PENDING_CI",
   "catalog": "data/regions/sinnoh-expansion-destinations.json",
   "prepared_pilot": {
-    "maps": 56,
+    "maps": 91,
     "routes": [
       "SINNOH_ROUTE_201",
       "SINNOH_ROUTE_202",
@@ -114,14 +114,19 @@
     {
       "id": "F06",
       "title": "Importação de florestas, lagos e cavernas",
-      "status": "implemented_pending_ci",
+      "status": "merged_ci_passed",
       "target_maps": 91,
-      "planned_new_natural_maps": 35
+      "planned_new_natural_maps": 35,
+      "pr": 284,
+      "merge_commit": "b33d57d2ee199b404ad7e53424ee573b83d1bf56",
+      "prepared_maps": 91
     },
     {
       "id": "F07",
       "title": "Importação dos interiores e edifícios",
-      "status": "pending"
+      "status": "implemented_pending_ci",
+      "target_maps": 127,
+      "planned_new_interior_maps": 36
     },
     {
       "id": "F08",
@@ -185,10 +190,20 @@
     "destination_ids_allocated": 0
   },
   "f06": {
-    "status": "implemented_pending_ci",
+    "status": "merged_ci_passed",
     "target_maps": 91,
     "source_maps": 35,
     "outdoor_candidates": 12,
+    "destination_ids_allocated": 0,
+    "private_max": 599,
+    "shared_reservation": false,
+    "prepared_maps": 91
+  },
+  "f07": {
+    "status": "implemented_pending_ci",
+    "target_maps": 127,
+    "source_maps": 36,
+    "source_tileset_id": 25,
     "destination_ids_allocated": 0,
     "private_max": 599,
     "shared_reservation": false
