@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "efd414ed8ec4d2f4ed225aa249de019b6a441967",
+      "date": "2026-11-24T19:25:36-03:00",
+      "title": "Merge pull request #289 from GabrielChavesAlencar/sinnoh-full-expansion-f09-encounters",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "ce0667949bda2557cdea871a03af07eadcdd67e8",
+      "date": "2026-11-24T19:20:35-03:00",
+      "title": "feat(Sinnoh F09A): audit 131 maps and append reference-based authored QA encounters",
+      "category": "Novidades"
+    },
+    {
       "sha": "817ca9df06008650f2fdbe3d173bffa3b83f2a3e",
       "date": "2026-11-24T19:19:10-03:00",
       "title": "Merge pull request #288 from GabrielChavesAlencar/sinnoh-full-expansion-f08c-exteriors",
