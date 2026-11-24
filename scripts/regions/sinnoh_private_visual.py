@@ -8,6 +8,7 @@ from collections import deque
 import copy
 import hashlib
 import os
+import re
 from pathlib import Path
 import struct
 import zipfile
@@ -275,3 +276,31 @@ def apply_sprites(blobs,path):
         # (metadata IDs 9/10). Keep its existing walking/running/bike/Surf/
         # fishing states; these optional sheets are local reference only.
     return out
+
+
+def has_platinum_player(base):
+    """Use the native Platinum player registration, not a global sprite overwrite."""
+    metadata=base/"PBS/metadata.txt"
+    if not metadata.is_file() or metadata.is_symlink():
+        return False
+    raw=metadata.read_text("utf-8-sig")
+    block=re.search(r"(?m)^\[9\]\s*(?:#[^\n]*)?\n([\s\S]*?)(?=^\[\d+\]|\Z)",raw)
+    if not block:
+        return False
+    fields={}
+    for line in block.group(1).splitlines():
+        line=line.split("#",1)[0]
+        if "=" in line:
+            k,v=line.split("=",1);fields[k.strip()]=v.strip()
+    if fields.get("TrainerType")!="PLAYER_TRAINER_PL_Lucas":
+        return False
+    for key in ("WalkCharset","RunCharset","CycleCharset","SurfCharset","FishCharset"):
+        name=fields.get(key,"")
+        if not re.fullmatch(r"[A-Za-z0-9_]+",name):
+            return False
+        path=base/"Graphics/Characters"/(name+".png")
+        if not path.is_file() or path.is_symlink():
+            return False
+        if dims(path.read_bytes())!=(256,256):
+            return False
+    return True
