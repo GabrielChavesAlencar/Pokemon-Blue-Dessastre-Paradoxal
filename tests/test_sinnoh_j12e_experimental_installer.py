@@ -333,6 +333,19 @@ class J12EInstallerTests(unittest.TestCase):
         self.assertEqual(count,32)
         self.assertEqual(len(autoruns),5)
         self.assertIn(b"SN_PROFILE_SETUP",autoruns)
+        lake=read_marshal(out["Data/Map%03d.rxdata"%mapping["SINNOH_LAKE_VERITY"]],"LIVE_BALLS")
+        balls=[e for e in lake.attrs["@events"].values() if e.attrs["@name"].startswith(b"SN_BALL_")]
+        self.assertEqual(len(balls),3)
+        for e in balls:
+            pages=e.attrs["@pages"]
+            self.assertEqual(len(pages),2)
+            self.assertEqual(pages[1].attrs["@condition"].attrs["@self_switch_ch"],b"B")
+            self.assertEqual(pages[1].attrs["@graphic"].attrs["@character_name"],b"")
+            self.assertTrue(pages[1].attrs["@through"])
+        lab=read_marshal(out["Data/Map%03d.rxdata"%mapping["SINNOH_PROFESSOR_ROWAN_LABORATORY"]],"LIVE_LAB")
+        handlers=[c.attrs["@parameters"][0] for e in lab.attrs["@events"].values() for p in e.attrs["@pages"] for c in p.attrs["@list"] if c.attrs["@code"]==355]
+        self.assertEqual(handlers.count(b"BlueSinnohPilot.lab_reward"),2)
+        print("SINNOH_REAL_STARTER_PAGES_AND_LAB_HANDLERS_OK",flush=True)
         print("SINNOH_REAL_10_MAPS_4_WALK_SEAMS_2_VISUAL_2_PORTALS_32_EVENTS_OK",flush=True)
 
     @unittest.skipUnless(shutil.which("ruby"),"Requires Ruby runtime")
@@ -562,6 +575,90 @@ puts "SINNOH_GRASS_AND_FOREST_MOVEMENT_OK"
             proc=subprocess.run([shutil.which("ruby"),"-e",script,str(path)],text=True,capture_output=True,timeout=30)
         self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
         self.assertIn("SINNOH_GRASS_AND_FOREST_MOVEMENT_OK",proc.stdout)
+
+    def test_save_namespace_reused_only_for_compatible_private_manifest(self):
+        token="abc123abc123"
+        work=self.proj/exp.REPO_OUTPUT
+        folder=work/(exp.QA_DIR+"-"+token)
+        folder.mkdir(parents=True)
+        profile=exp.namespace(token)
+        data={"schema":1,"region":"SINNOH","mode":exp.MODE,"profile_token":token,
+              "main_game_modified":False,"personal_saves_copied":False,
+              "mapids":self.mapping,"base_mapinfos_sha256":"a"*64,"save_profile":profile}
+        (folder/"sinnoh-experimental-qa.json").write_text(json.dumps(data))
+        (folder/"mkxp.json").write_text(json.dumps(profile))
+        self.assertEqual(exp.compatible_save_token(self.proj,self.mapping,"a"*64),token)
+        self.assertIsNone(exp.compatible_save_token(self.proj,self.mapping,"b"*64))
+        self.assertIsNone(exp.compatible_save_token(self.proj,{"OTHER":442},"a"*64))
+        (folder/"mkxp.json").write_text(json.dumps({"dataPathApp":"MAIN"}))
+        self.assertIsNone(exp.compatible_save_token(self.proj,self.mapping,"a"*64))
+
+    def test_route201_pbs_uses_allocated_ids_and_preserves_base(self):
+        path=self.base/"PBS/encounters.txt"
+        original=b"[002]\nLand,21\n    100,PIDGEY,5\n"
+        path.write_bytes(original)
+        actual=exp.private_visual.route201_encounters(self.base,self.mapping)
+        self.assertTrue(actual.startswith(original))
+        self.assertIn(("[%03d] # Route 201"%self.mapping["SINNOH_ROUTE_201"]).encode(),actual)
+        self.assertIn(b"50,STARLY,2,3",actual)
+        self.assertIn(b"50,BIDOOF,2,3",actual)
+        self.assertEqual(path.read_bytes(),original)
+        path.write_bytes(("[%03d,1]\n"%self.mapping["SINNOH_ROUTE_201"]).encode())
+        with self.assertRaisesRegex(ValueError,"BASE_ENCOUNTER_ID_COLLISION"):
+            exp.private_visual.route201_encounters(self.base,self.mapping)
+
+    @unittest.skipUnless(shutil.which("ruby"),"Requires Ruby runtime")
+    def test_lab_reward_once_and_starter_visibility_persist(self):
+        script=r'''
+load ARGV[0]
+def _INTL(s,*args); s; end
+def pbMessage(*args); end
+Global=Struct.new(:blue_regions)
+Player=Struct.new(:has_pokedex)
+Map=Struct.new(:map_id,:events)
+Event=Struct.new(:name,:hidden) do
+  def refresh; self.hidden=true; end
+  def erase; self.hidden=true; end
+end
+class Bag
+  attr_accessor :capacity,:count
+  def initialize; @capacity=true; @count=2; end
+  def quantity(item); @count; end
+  def can_add?(item,n); @capacity; end
+  def add(item,n); @count+=n; true; end
+  def remove(item,n); @count-=n; true; end
+end
+flags={"mother_intro"=>true,"barry_intro"=>true,"rowan_briefcase_seen"=>true,
+       "starter_received"=>true,"starter"=>"TURTWIG","rival_fought"=>true}
+state={"version"=>1,"initial"=>"SINNOH","current"=>"SINNOH","sinnoh_pilot"=>flags}
+$PokemonGlobal=Global.new(state);$player=Player.new(false);$bag=Bag.new
+$game_map=Map.new(442,{1=>Event.new("SN_BALL_TURTWIG",false),
+  2=>Event.new("SN_BALL_CHIMCHAR",false),3=>Event.new("SN_BALL_PIPLUP",false),
+  4=>Event.new("SN_NPC_ROWAN_BRIEFCASE",false)})
+$game_self_switches={}
+raise "gate open too soon" if BlueSinnohPilot.route202_allowed?
+raise "hide failed" unless BlueSinnohPilot.hide_starter_balls
+raise "wrong events hidden" unless $game_self_switches.keys.sort==[[442,1,"B"],[442,2,"B"],[442,3,"B"]] && !$game_map.events[4].hidden
+$bag.capacity=false
+raise "reward granted with full bag" if BlueSinnohPilot.lab_reward
+raise "failed grant advanced story" if $player.has_pokedex || BlueSinnohPilot.route202_allowed? || $bag.count!=2
+$bag.capacity=true
+raise "reward failed" unless BlueSinnohPilot.lab_reward && $bag.count==7 && $player.has_pokedex
+raise "gate remains locked" unless BlueSinnohPilot.route202_allowed?
+BlueSinnohPilot.lab_reward
+raise "duplicate reward" unless $bag.count==7
+# Serialized regional flags retain entitlement even after spending the balls.
+$PokemonGlobal=Marshal.load(Marshal.dump($PokemonGlobal))
+$bag.count=0
+raise "gate relocked after spending items" unless BlueSinnohPilot.route202_allowed?
+BlueSinnohPilot.lab_reward
+raise "duplicate after reload" unless $bag.count==0
+puts "SINNOH_LAB_REWARD_AND_STARTER_HIDE_OK"
+'''
+        proc=subprocess.run([shutil.which("ruby"),"-e",script,str(ROOT/"scripts/regions/SinnohPilot.rb")],
+                            text=True,capture_output=True,timeout=30)
+        self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
+        self.assertIn("SINNOH_LAB_REWARD_AND_STARTER_HIDE_OK",proc.stdout)
 
     def test_expanded_profile_only_runs_after_map_initialization(self):
         code=exp.experiment_plugin([442,10,8],"abc123abc123",True,True,story_profile=True).decode()
