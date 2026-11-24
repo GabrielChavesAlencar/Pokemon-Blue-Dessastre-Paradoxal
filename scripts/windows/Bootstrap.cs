@@ -200,6 +200,8 @@ internal static class Bootstrap {
         string git=Runtime("git",Path.Combine("cmd","git.exe"));
         string receipt=Path.Combine(Root,".blue-work","blue-story-sinnoh-launch.json");
         if(File.Exists(receipt))File.Delete(receipt); // Only our own stale receipt.
+        Environment.SetEnvironmentVariable("BLUE_STORY_LAUNCHER_DIR",AppDomain.CurrentDomain.BaseDirectory);
+        Say("[SINNOH QA] Procurando ZIPs de Sinnoh junto ao Blue-Story, em Downloads e no cache privado.");
         Say("[SINNOH QA] Criando nova copia experimental. Original e saves intactos.");
         Run(python,new[]{"scripts/windows/launch_sinnoh_pilot.py",
             "--project-root",Root,"--game-dir",game,"--receipt",receipt},

@@ -151,6 +151,10 @@ def audit_maps(qa: Path, data: dict, *, allow_tile_recovery: bool):
             "Graphics/Characters/SNQA_ROWAN.png",
             "Graphics/Characters/SNQA_BALL.png",
         ]
+    private=data.get("private_visual_import",{})
+    if isinstance(private,dict) and private.get("maps"):
+        files += ["Graphics/Tilesets/SNQA_Private_Outdoors.png","Graphics/Tilesets/SNQA_Private_Indoors.png"]
+        files += ["Graphics/Autotiles/SNQA_Private_Auto_%d.png"%i for i in range(1,8)]
     if (not isinstance(hashes.get(PRISTINE), str) or
         hashes.get(PRISTINE) != hashes.get(TILESETS)):
         block("PRISTINE_NOT_PINNED_TO_ORIGINAL_HASH")

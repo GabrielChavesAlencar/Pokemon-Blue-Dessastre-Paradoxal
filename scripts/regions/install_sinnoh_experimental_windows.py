@@ -33,6 +33,7 @@ import generate_sinnoh_original_j10a as five
 import generate_sinnoh_four_exteriors_j11b as four
 import prepare_sinnoh_nine_original_j11c as j11c
 import sinnoh_visual_qa as visual
+import sinnoh_private_visual as private_visual
 from audit_sinnoh_rxdata import read_marshal
 from audit_sinnoh_twinleaf_events import MAPS,HANDLERS as CH06_HANDLERS,BALLS as CH06_BALLS
 from build_sinnoh_twinleaf_events import HANDLERS as SCRIPT_HANDLERS
@@ -142,7 +143,7 @@ def choose_point(reachable,anchor,used):
     if not choices:fail("NO_FREE_EVENT_POSITION")
     return min(choices,key=lambda p:(abs(p[0]-anchor[0])+abs(p[1]-anchor[1]),abs(p[1]-anchor[1]),p[1],p[0]))
 
-def plan_events(blobs:dict,mapping:dict):
+def plan_events(blobs:dict,mapping:dict,private_components=None,private_anchors=None):
     """Model-verified coordinates. NEVER claim human or native verification."""
     scenes=all_scenes()
     draft=json.loads((ROOT/"data/regions/sinnoh-twinleaf-events.json").read_text("utf-8"))
@@ -151,6 +152,9 @@ def plan_events(blobs:dict,mapping:dict):
     chars={}
     for symbol,scene in scenes.items():
         chars[symbol]=component(scene)
+    chars.update(private_components or {})
+    anchors=dict(ANCHORS)
+    anchors.update(private_anchors or {})
     positions={}
     local_used={}
     all_keys=set()
@@ -159,7 +163,7 @@ def plan_events(blobs:dict,mapping:dict):
         world=read_marshal(blobs["Data/Map%03d.rxdata"%mapping[symbol]],"QA_MAP")
         tiles=read_marshal(blobs["Data/Tilesets.rxdata"],"QA_TILES")
         for event in row["events"]:
-            key=event["key"];anchor=ANCHORS.get(key)
+            key=event["key"];anchor=anchors.get(key)
             if anchor is None or key in all_keys:fail("UNKNOWN_OR_DUPLICATE_CH06_KEY")
             all_keys.add(key)
             point=choose_point(chars[symbol],anchor,used)
@@ -213,8 +217,8 @@ def plan_events(blobs:dict,mapping:dict):
         fail("CH06_WRONG_EVENT_COUNTS")
     return details,start
 
-def compile_events(blobs,mapping):
-    records,start=plan_events(blobs,mapping)
+def compile_events(blobs,mapping,private_components=None,private_anchors=None):
+    records,start=plan_events(blobs,mapping,private_components,private_anchors)
     grouped={s:[] for s in MAPS}
     for row in records:grouped[row["map"]].append(row)
     compiled=dict(blobs)
@@ -380,7 +384,7 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=()):
     main[2]=RubyString(zlib.compress(code.encode("utf-8")))
     return b"\x04\x08"+dump(rows)
 
-def experiment_plugin(start,token):
+def experiment_plugin(start,token,platinum_player=False,platinum_dawn=False):
     code="""# Only for one isolated experimental copy; no main-game hooks.
 module BlueSinnohExperimental
   START = [__START__].freeze
@@ -412,6 +416,7 @@ module BlueSinnohExperimental
       BlueCampaign.begin_journey(false) if defined?(BlueCampaign)
       $PokemonGlobal.blue_traditional_starters = true
       $PokemonGlobal.blue_campaign_departure = false
+      __PLATINUM_PLAYER__
       $data_system.start_map_id = START[0]
       $data_system.start_x = START[1]
       $data_system.start_y = START[2]
@@ -424,6 +429,11 @@ module BlueSinnohExperimental
 end
 """
     code=code.replace("__START__",",".join(str(x) for x in start)).replace("__TOKEN__",token)
+    player_code = 'if $game_player && defined?(pbChangePlayer); pbChangePlayer(9); $game_player.refresh_charset; $game_player.transparent = false; end' if platinum_player else '# native player unchanged for original QA'
+    if platinum_dawn:
+        choose = 'choice = pbMessage("Escolha seu protagonista de Sinnoh:", ["Lucas", "Dawn"], 1); pbChangePlayer(choice == 1 ? 10 : 9)' if platinum_player else 'pbChangePlayer(10)'
+        player_code = 'if $game_player && defined?(pbChangePlayer); ' + choose + '; $game_player.refresh_charset; $game_player.transparent = false; end'
+    code=code.replace("__PLATINUM_PLAYER__",player_code)
     return code.encode("utf-8")
 
 def build_files(base:Path,project:Path=ROOT):
@@ -451,6 +461,17 @@ def build_files(base:Path,project:Path=ROOT):
                        "tilesets":sha((base/"Data/Tilesets.rxdata").read_bytes())})
     maps,events,start=compile_events(empty,mapping)
     maps=visual.upgrade(maps,mapping,manifest["tileset_ids"],events,start)
+    sources=private_visual.discover(project)
+    imported={}
+    if "maps" in sources:
+        print("SINNOH QA: importando cinco exteriores e quatro interiores autorais do ZIP local (sem eventos externos)",flush=True)
+        maps,components,imported=private_visual.apply_maps(maps,mapping,sources["maps"])
+        maps,events,start=compile_events(maps,mapping,components,{**private_visual.ANCHORS,**private_visual.INTERIOR_ANCHORS})
+    if "overworlds" in sources:
+        print("SINNOH QA: sprites DPPt locais; creditos PurpleZaffre",flush=True)
+        maps=private_visual.apply_sprites(maps,sources["overworlds"])
+    platinum_player=private_visual.has_platinum_player(base)
+    platinum_dawn=private_visual.has_platinum_player(base,10)
     token=secrets.token_hex(6)
     config,game_ini,profile=runtime_config(base,token)
     # This is an isolated copy, never the installed game:
@@ -470,7 +491,7 @@ def build_files(base:Path,project:Path=ROOT):
         f"{INTRO_PLUGIN}/SinnohPilot.rb":(project/"scripts/regions/SinnohPilot.rb").read_bytes(),
         f"{INTRO_PLUGIN}/meta.txt":b"Name = Blue Sinnoh Intro\nVersion = 0.1\nEssentials = 21.1\nScripts = SinnohPilot.rb\n",
         f"{EXPERIMENT_PLUGIN}/SinnohExperimentalStart.rb":experiment_plugin(
-                  [mapping["SINNOH_PLAYER_BEDROOM"],*start],token),
+                  [mapping["SINNOH_PLAYER_BEDROOM"],*start],token,platinum_player,platinum_dawn),
         f"{EXPERIMENT_PLUGIN}/meta.txt":b"Name = Blue Sinnoh Experimental\nVersion = 0.1\nEssentials = 21.1\nRequires = Blue Sinnoh Intro\nScripts = SinnohExperimentalStart.rb\n",
     })
     sysdata=read_marshal((base/"Data/System.rxdata").read_bytes(),"BASE_SYSTEM")
@@ -495,7 +516,11 @@ def build_files(base:Path,project:Path=ROOT):
         "main_game_modified":False,"personal_saves_copied":False,
         "save_profile":profile,"profile_token":token,
         "mapids":mapping,"start":[mapping["SINNOH_PLAYER_BEDROOM"],*start],
-        "coordinates_provenance":"ORIGINAL_GENERATED_GEOMETRY_AND_MODEL_PASSABILITY_ONLY",
+        "coordinates_provenance":"PRIVATE_DONOR_GEOMETRY_AND_MODEL_PASSABILITY_ONLY" if imported else "ORIGINAL_GENERATED_GEOMETRY_AND_MODEL_PASSABILITY_ONLY",
+        "private_visual_import":{"maps":imported,"overworlds":"overworlds" in sources,
+                                 "platinum_player":platinum_player,"platinum_dawn":platinum_dawn,"credits":private_visual.CREDITS if sources else "",
+                                 "source_sha256":{k:private_visual.PACKS[k][1] for k in sources},
+                                 "native_approved":False,"distribution_approved":False},
         "visual_revision":"SINNOH_ORIGINAL_PIXEL_ART_V2",
         "visual_native_reviewed":False,
         "human_positions_reviewed":False,"native_collision_verified":False,

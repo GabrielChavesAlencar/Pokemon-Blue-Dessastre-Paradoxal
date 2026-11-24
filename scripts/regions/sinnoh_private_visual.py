@@ -1,0 +1,423 @@
+"""VIS01–VIS07: optional, hash-pinned local map/overworld import for Sinnoh QA.
+
+Only data from the two user-supplied archives is read. No archive extraction,
+network, Ruby execution, redistribution, donor events or campaign writes.
+"""
+from __future__ import annotations
+from collections import deque
+import copy
+import hashlib
+import io
+import os
+import re
+from pathlib import Path
+import struct
+import zipfile
+import zlib
+from audit_sinnoh_rxdata import read_marshal
+from server.ruby_marshal import RubyData
+from stage import serialize
+from prepare_sinnoh_nine_original_j11c import table1
+from sinnoh_visual_qa import png
+
+PACKS = {
+    "maps": ("Sinnoh Maps.zip", "79a7a4e4d176039daa9d3a2866540ced4daad4c9043a9a82378dae45a60e9e26"),
+    "overworlds": ("Ultimate Gen 4 Overworlds Pack.zip", "e9d240918b62460c76d56ec9e5d4067a4ee853979d16a6657c05917d9bfd2b99"),
+}
+DONOR = {
+    "SINNOH_TWINLEAF_TOWN": (194, b"Twinleaf Town", (36,36)),
+    "SINNOH_ROUTE_201": (193, b"Route 201", (64,30)),
+    "SINNOH_SANDGEM_TOWN": (192, b"Sandgem Town", (38,32)),
+    "SINNOH_ROUTE_202": (191, b"Route 202", (46,31)),
+    "SINNOH_LAKE_VERITY": (196, b"Lake Verity", (62,50)),
+}
+# Candidate anchors from the supplied map geometry, not Nintendo coordinates
+# or native QA. Lakefront (195) is not in the existing nine-map pilot.
+ANCHORS = {
+    "SN_TOWN_TO_HOME": (13,22), "SN_TOWN_TO_BARRY_HOME": (23,12),
+    "SN_TOWN_TO_ROUTE201": (18,1), "SN_ROUTE201_TO_TOWN": (16,28),
+    "SN_ROUTE201_TO_LAKE": (1,17), "SN_ROUTE201_TO_SANDGEM": (62,8),
+    "SN_LAKE_TO_ROUTE201": (44,43), "SN_NPC_ROWAN_BRIEFCASE": (45,40),
+    "SN_BALL_TURTWIG": (44,38), "SN_BALL_CHIMCHAR": (45,38),
+    "SN_BALL_PIPLUP": (46,38), "SN_NPC_BARRY_BATTLE": (47,35),
+    "SN_SANDGEM_TO_ROUTE201": (1,13), "SN_SANDGEM_TO_ROWAN_LAB": (9,10),
+    "SN_SANDGEM_TO_ROUTE202": (26,1), "SN_ROUTE202_TO_SANDGEM": (31,29),
+}
+SEEDS = {
+    "SINNOH_TWINLEAF_TOWN": (18,1), "SINNOH_ROUTE_201": (16,28),
+    "SINNOH_SANDGEM_TOWN": (1,13), "SINNOH_ROUTE_202": (31,29),
+    "SINNOH_LAKE_VERITY": (44,43),
+}
+SPRITES = {"MOTHER": "NPC_126_Mom", "BARRY": "NPC_140_Barry", "ROWAN": "NPC_138_Prof_Rowan"}
+PLAYER = {"LUCAS": "NPC_199_Lucas", "DAWN": "NPC_202_Dawn"}
+MAP_ROOT = "Sinnoh Maps/"
+OW_ROOT = "Ultimate Gen 4 Overworlds Pack/All Official Overworlds/"
+TILESET = "SNQA_Private_Outdoors"
+CREDITS = "PhantomFae; Game Freak; original map/tileset contributors; PurpleZaffre (overworlds). Local use only; R08 not approved."
+
+
+def fail(reason):
+    raise ValueError("SINNOH_PRIVATE_VISUAL:" + reason)
+
+
+def discover(project):
+    # The archive stays in the user's folder, outside source control.
+    dirs = [project / ".blue-work" / "sinnoh-private-input", project]
+    launcher = os.environ.get("BLUE_STORY_LAUNCHER_DIR")
+    if launcher:
+        dirs.append(Path(launcher))
+    dirs.append(Path.home() / "Downloads")
+    found = {}
+    for kind, (name, expected) in PACKS.items():
+        for folder in dirs:
+            path = folder / name
+            if not path.exists():
+                continue
+            if path.is_symlink() or not path.is_file() or path.stat().st_size > 120_000_000:
+                fail("UNSAFE_ARCHIVE:" + name)
+            with path.open("rb") as f:
+                actual = hashlib.file_digest(f, "sha256").hexdigest()
+            if actual != expected:
+                fail("ARCHIVE_SHA256_MISMATCH:" + name)
+            found[kind] = path
+            break
+    return found
+
+
+def verified_archive(path, kind):
+    """Read the exact approved input bytes, then open them inertly in memory."""
+    path=Path(path)
+    if path.is_symlink() or not path.is_file() or path.stat().st_size>120_000_000:
+        fail("UNSAFE_ARCHIVE:"+kind)
+    with path.open("rb") as f:
+        raw=f.read(120_000_001)
+    if len(raw)>120_000_000 or hashlib.sha256(raw).hexdigest()!=PACKS[kind][1]:
+        fail("ARCHIVE_SHA256_MISMATCH:"+kind)
+    return zipfile.ZipFile(io.BytesIO(raw))
+
+
+def member(archive, name, max_bytes=32_000_000):
+    matches = [i for i in archive.infolist() if i.filename.casefold() == name.casefold()]
+    if len(matches) != 1 or matches[0].filename != name or matches[0].is_dir():
+        fail("MISSING_OR_DUPLICATE_MEMBER:" + name)
+    info = matches[0]
+    if info.file_size > max_bytes or ((info.external_attr >> 16) & 0o170000) == 0o120000:
+        fail("UNSAFE_MEMBER:" + name)
+    with archive.open(info) as f:
+        raw = f.read(max_bytes + 1)
+    if len(raw) != info.file_size:
+        fail("MEMBER_SIZE:" + name)
+    return raw
+
+
+def dims(raw):
+    if len(raw) < 33 or raw[:8] != b"\x89PNG\r\n\x1a\n" or raw[12:16] != b"IHDR":
+        fail("PNG_HEADER")
+    return struct.unpack_from(">II", raw, 16)
+
+
+def rgba_rows(raw):
+    # The pinned outdoors sheet is non-interlaced 8-bit RGBA.
+    w,h=dims(raw)
+    if (w,h)!=(256,29984) or raw[24:29]!=bytes((8,6,0,0,0)):
+        fail("OUTDOOR_PNG_FORMAT")
+    off=8;chunks=[];end=False
+    while off+12<=len(raw):
+        n=struct.unpack_from(">I",raw,off)[0]
+        if off+12+n>len(raw):
+            fail("PNG_CHUNK_LENGTH")
+        tag=raw[off+4:off+8];body=raw[off+8:off+8+n]
+        if zlib.crc32(tag+body)&0xffffffff!=struct.unpack_from(">I",raw,off+8+n)[0]:
+            fail("PNG_CRC")
+        if tag==b"IDAT":chunks.append(body)
+        off+=12+n
+        if tag==b"IEND":end=True;break
+    if not end or off!=len(raw):
+        fail("PNG_TRAILING_DATA")
+    stride=w*4;limit=h*(stride+1)
+    dec=zlib.decompressobj()
+    data=dec.decompress(b"".join(chunks),limit+1)
+    if len(data)!=limit or not dec.eof or dec.unused_data:
+        fail("PNG_DECOMPRESSED_LENGTH")
+    previous=bytearray(stride)
+    for y in range(h):
+        i=y*(stride+1);mode=data[i];row=bytearray(data[i+1:i+1+stride])
+        if mode==1:
+            for x in range(4,stride):row[x]=(row[x]+row[x-4])&255
+        elif mode==2:
+            row=bytearray((a+b)&255 for a,b in zip(row,previous))
+        elif mode==3:
+            for x in range(stride):
+                a=row[x-4] if x>=4 else 0
+                row[x]=(row[x]+((a+previous[x])//2))&255
+        elif mode==4:
+            for x in range(stride):
+                a=row[x-4] if x>=4 else 0;b=previous[x];c=previous[x-4] if x>=4 else 0
+                p=a+b-c;pa=abs(p-a);pb=abs(p-b);pc=abs(p-c)
+                row[x]=(row[x]+(a if pa<=pb and pa<=pc else b if pb<=pc else c))&255
+        elif mode!=0:fail("PNG_FILTER")
+        yield row
+        previous=row
+
+
+def compact_atlas(raw, ids):
+    if not ids or any(t<384 or t>=7880 for t in ids):
+        fail("TILE_OUT_OF_SOURCE_RANGE")
+    remap={t:384+i for i,t in enumerate(sorted(ids))}
+    height=((len(ids)+7)//8)*32
+    if height>4096:
+        fail("COMPACT_ATLAS_TOO_TALL")
+    result=bytearray(256*height*4)
+    groups={}
+    for src,dst in remap.items():
+        old=src-384;new=dst-384
+        groups.setdefault(old//8,[]).append((old%8,new%8,new//8))
+    for y,row in enumerate(rgba_rows(raw)):
+        for x,nx,ny in groups.get(y//32,()):
+            pos=((ny*32+y%32)*256+nx*32)*4
+            result[pos:pos+128]=row[x*128:x*128+128]
+    return png(256,height,bytes(result)),remap
+
+
+def table(raw, expected):
+    if not isinstance(raw,RubyData) or raw.name!="Table" or len(raw.data)!=20+2*expected:
+        fail("INVALID_SOURCE_TABLE")
+    if struct.unpack_from("<5I",raw.data)!=(1,expected,1,1,expected):
+        fail("INVALID_SOURCE_TABLE_HEADER")
+    return struct.unpack_from("<%dH"%expected,raw.data,20)
+
+
+def map_cells(map_obj, size):
+    a=map_obj.attrs;w,h=size
+    if (a["@width"],a["@height"],a["@tileset_id"])!=(w,h,24):
+        fail("SOURCE_MAP_DIMENSIONS_OR_TILESET")
+    raw=a["@data"];n=w*h*3
+    if not isinstance(raw,RubyData) or raw.name!="Table" or len(raw.data)!=20+2*n:
+        fail("SOURCE_MAP_TABLE")
+    if struct.unpack_from("<5I",raw.data)!=(3,w,h,3,n):
+        fail("SOURCE_MAP_TABLE_HEADER")
+    cells=struct.unpack_from("<%dH"%n,raw.data,20)
+    if any(t and not 384<=t<7880 for t in cells):
+        fail("SOURCE_MAP_TILE_RANGE")
+    return cells
+
+
+def connected(cells,w,h,passages,seed):
+    free=set()
+    for y in range(h):
+        for x in range(w):
+            i=y*w+x;ts=[cells[i+l*w*h] for l in range(3) if cells[i+l*w*h]]
+            if ts and all(not (passages[t]&15) for t in ts):free.add((x,y))
+    if seed not in free:fail("DONOR_SEED_BLOCKED")
+    seen={seed};queue=deque([seed])
+    while queue:
+        x,y=queue.popleft()
+        for q in ((x-1,y),(x+1,y),(x,y-1),(x,y+1)):
+            if q in free and q not in seen:
+                seen.add(q);queue.append(q)
+    return seen
+
+
+
+# Authored four-room geometry using actual donor interior tiles (not copied
+# maps). Source slot 25 was inspected; no specific Sinnoh interiors exist.
+INTERIOR_SIZES={"SINNOH_PLAYER_BEDROOM":(12,10),"SINNOH_PLAYER_HOUSE_1F":(16,12),
+                "SINNOH_BARRY_HOUSE":(14,12),"SINNOH_PROFESSOR_ROWAN_LABORATORY":(18,13)}
+INTERIOR_ANCHORS={"SN_BEDROOM_TO_1F":(10,8),"SN_1F_TO_BEDROOM":(13,3),
+                  "SN_1F_TO_TWINLEAF":(8,11),"SN_NPC_MOTHER":(8,7),
+                  "SN_BARRY_HOME_TO_TOWN":(7,11),"SN_NPC_BARRY_INTRO":(7,7),
+                  "SN_ROWAN_LAB_TO_TOWN":(9,12),"SN_NPC_ROWAN_POKEDEX":(9,5)}
+INTERIOR_TILESET="SNQA_Private_Indoors"
+
+
+def interior_cells(symbol):
+    w,h=INTERIOR_SIZES[symbol]
+    lab=symbol.endswith("LABORATORY");bedroom=symbol.endswith("BEDROOM")
+    area=w*h;cells=[0]*(area*3)
+    def put(x,y,t,z=1):
+        if not (0<=x<w and 0<=y<h):fail("INTERIOR_COORDINATE")
+        cells[z*area+y*w+x]=t
+    def patch(x,y,rows,z=1):
+        for dy,row in enumerate(rows):
+            for dx,t in enumerate(row):
+                if t:put(x+dx,y+dy,t,z)
+    for y in range(h):
+        for x in range(w):
+            put(x,y,(1795,1796,1797)[x%3] if lab else (1355,1356,1357)[(x+y)%3],0)
+    for x in range(w):
+        put(x,0,1608 if lab else 1371);put(x,1,1616 if lab else 1379)
+    for y in range(2,h):
+        put(0,y,1617 if lab else 1378);put(w-1,y,1617 if lab else 1380)
+    for x in range(1,w-1):
+        if bedroom or x!=w//2:put(x,h-1,1616 if lab else 1379)
+    def rug(x,y,width,height,top,mid,bottom):
+        for yy in range(height):
+            row=top if yy==0 else bottom if yy==height-1 else mid
+            for xx in range(width):
+                put(x+xx,y+yy,row[0 if xx==0 else 2 if xx==width-1 else 1],0)
+    def shelf(x,y):
+        patch(x,y,[[1464,1465,1466],[1472,1473,1474],[1480,1481,1482]])
+    def plant(x,y):
+        put(x,y,1084,2);put(x,y+1,1092)
+    if bedroom:
+        patch(1,2,[[1288,1289],[1296,1297]])
+        patch(7,2,[[1504,1505,1506],[1512,1513,1514],[1520,1521,1522]])
+        put(8,2,1488,2);shelf(1,5);plant(10,2)
+        rug(4,4,4,3,[1096,1097,1098],[1104,1105,1106],[1112,1113,1114])
+        put(10,8,1637,0)
+    elif lab:
+        for x in (2,12):
+            patch(x,2,[[1144,1145,1146,1145],[1152,1153,1154,1153],[1160,1161,1162,1161]])
+            put(x+1,3,1488,2);put(x+2,3,1489,2)
+        patch(2,7,[[1564,1565,1566],[1572,1573,1574]])
+        patch(13,7,[[1309,1310,1311],[1317,1318,1319]])
+        shelf(7,2);plant(16,9)
+        rug(7,7,4,4,[1771,1772,1773],[1779,1780,1781],[1787,1788,1789])
+    else:
+        shelf(1,2);plant(w-2,2)
+        patch(5,2,[[1256,1257,1258],[1264,1265,1266]])
+        rug(4,5,5,4,[1099,1100,1101],[1107,1108,1109],[1115,1116,1117])
+        if w>=16:
+            patch(11,5,[[1504,1505,1506],[1512,1513,1514],[1520,1521,1522]])
+            put(13,3,1638,0)
+        else:
+            patch(10,5,[[1504,1505],[1512,1513],[1520,1521]])
+    return cells
+
+
+def apply_interiors(out,mapping,archive,components,imported):
+    source=read_marshal(member(archive,MAP_ROOT+"Data/Tilesets.rxdata"),"PRIVATE_INTERIOR_TILESETS")[25]
+    if source.attrs["@tileset_name"]!=b"indoors" or any(source.attrs["@autotile_names"]):
+        fail("INTERIOR_SOURCE_TILESET")
+    tables={k:table(source.attrs[k],7880) for k in ("@passages","@priorities","@terrain_tags")}
+    layers={symbol:interior_cells(symbol) for symbol in INTERIOR_SIZES}
+    used={t for cells in layers.values() for t in cells if t}
+    atlas,remap=compact_atlas(member(archive,MAP_ROOT+"Graphics/Tilesets/indoors.png"),used)
+    tiles=read_marshal(out["Data/Tilesets.rxdata"],"QA_INTERIOR_TILESETS")
+    tid=len(tiles)
+    if tid>=5000:fail("QA_INTERIOR_TILESET_CAPACITY")
+    candidate=copy.deepcopy(source);a=candidate.attrs
+    a.update({"@id":tid,"@name":b"Sinnoh private interiors QA","@tileset_name":INTERIOR_TILESET.encode()})
+    total=384+((len(remap)+7)//8)*8
+    for key,values in tables.items():
+        entries=list(values[:384])+[15 if key=="@passages" else 0]*(total-384)
+        for old,new in remap.items():entries[new]=values[old]
+        a[key]=table1(entries)
+    tiles.append(candidate);out["Data/Tilesets.rxdata"]=serialize(tiles)
+    out["Graphics/Tilesets/"+INTERIOR_TILESET+".png"]=atlas
+    for symbol,(w,h) in INTERIOR_SIZES.items():
+        cells=layers[symbol];n=w*h*3
+        components[symbol]=connected(cells,w,h,tables["@passages"],(w//2,h-2))
+        target="Data/Map%03d.rxdata"%mapping[symbol]
+        m=read_marshal(out[target],"QA_INTERIOR_MAP")
+        m.attrs.update({"@width":w,"@height":h,"@tileset_id":tid,"@events":{},
+                        "@data":RubyData("Table",struct.pack("<5I",3,w,h,3,n)+
+                              struct.pack("<%dH"%n,*(remap[t] if t else 0 for t in cells)))})
+        out[target]=serialize(m)
+        imported[symbol]={"source_id":None,"target_id":mapping[symbol],"source_tileset_id":25,
+                          "target_tileset_id":tid,"width":w,"height":h,"authored_layout":True,
+                          "model_connected_cells":len(components[symbol])}
+
+
+def apply_maps(blobs,mapping,path):
+    out=dict(blobs);components={};imported={}
+    with verified_archive(path,"maps") as z:
+        infos=read_marshal(member(z,MAP_ROOT+"Data/MapInfos.rxdata"),"PRIVATE_INFOS")
+        source=read_marshal(member(z,MAP_ROOT+"Data/Tilesets.rxdata"),"PRIVATE_TILESETS")[24]
+        if source.attrs["@tileset_name"]!=b"outdoors":fail("SOURCE_TILESET_NAME")
+        tables={k:table(source.attrs[k],7880) for k in ("@passages","@priorities","@terrain_tags")}
+        used=set();source_cells={}
+        for symbol,(mid,name,size) in DONOR.items():
+            if infos[mid].attrs["@name"]!=name:fail("SOURCE_MAP_NAME:"+symbol)
+            m=read_marshal(member(z,MAP_ROOT+"Data/Map%03d.rxdata"%mid),"PRIVATE_MAP")
+            cells=map_cells(m,size)
+            source_cells[symbol]=cells;used.update(t for t in cells if t)
+            components[symbol]=connected(cells,*size,tables["@passages"],SEEDS[symbol])
+        atlas,remap=compact_atlas(member(z,MAP_ROOT+"Graphics/Tilesets/outdoors.png"),used)
+        tiles=read_marshal(out["Data/Tilesets.rxdata"],"QA_TILESETS")
+        tid=len(tiles)
+        if tid>=5000:fail("QA_TILESET_CAPACITY")
+        candidate=copy.deepcopy(source)
+        a=candidate.attrs;a["@id"]=tid;a["@name"]=b"Sinnoh private outdoors QA";a["@tileset_name"]=TILESET.encode()
+        # These five source maps contain zero autotile IDs. Preserve all seven
+        # slots and referenced sheets anyway, with collision-free names.
+        names=[]
+        for i,name in enumerate(a["@autotile_names"]):
+            if not name:names.append(b"");continue
+            target="SNQA_Private_Auto_%d"%(i+1)
+            raw=member(z,MAP_ROOT+"Graphics/Autotiles/"+name.decode("ascii")+".png")
+            dims(raw);out["Graphics/Autotiles/"+target+".png"]=raw;names.append(target.encode())
+        a["@autotile_names"]=names
+        total=384+((len(remap)+7)//8)*8
+        for key,values in tables.items():
+            entries=list(values[:384])+[0]*(total-384)
+            if key=="@passages":
+                entries[384:]=[15]*(total-384)
+            for old,new in remap.items():entries[new]=values[old]
+            a[key]=table1(entries)
+        tiles.append(candidate)
+        out["Data/Tilesets.rxdata"]=serialize(tiles)
+        out["Graphics/Tilesets/"+TILESET+".png"]=atlas
+        for symbol,(mid,name,size) in DONOR.items():
+            target="Data/Map%03d.rxdata"%mapping[symbol]
+            m=read_marshal(out[target],"QA_DONOR_DESTINATION");w,h=size;n=w*h*3
+            cells=source_cells[symbol]
+            m.attrs.update({"@width":w,"@height":h,"@tileset_id":tid,"@events":{},
+                            "@data":RubyData("Table",struct.pack("<5I",3,w,h,3,n)+
+                                  struct.pack("<%dH"%n,*(remap[t] if t else 0 for t in cells)))})
+            out[target]=serialize(m)
+            imported[symbol]={"source_id":mid,"target_id":mapping[symbol],"source_tileset_id":24,
+                              "target_tileset_id":tid,"width":w,"height":h,
+                              "model_connected_cells":len(components[symbol])}
+        apply_interiors(out,mapping,z,components,imported)
+    # Only the pilot's generated events are rebuilt. No donor event or global
+    # source file is ever copied into the destination.
+    for symbol in mapping:
+        target="Data/Map%03d.rxdata"%mapping[symbol]
+        m=read_marshal(out[target],"QA_RESET_EVENTS")
+        m.attrs["@events"]={}
+        out[target]=serialize(m)
+    return out,components,imported
+
+
+def apply_sprites(blobs,path):
+    out=dict(blobs)
+    with verified_archive(path,"overworlds") as z:
+        for role,name in SPRITES.items():
+            raw=member(z,OW_ROOT+name+".png",1_000_000)
+            if dims(raw)!=(256,256):fail("SPRITE_DIMENSIONS:"+role)
+            out["Graphics/Characters/SNQA_"+role+".png"]=raw
+        # The native Decades database already includes Platinum Lucas/Dawn
+        # (metadata IDs 9/10). Keep its existing walking/running/bike/Surf/
+        # fishing states; these optional sheets are local reference only.
+    return out
+
+
+def has_platinum_player(base, player_id=9):
+    """Use the native Platinum player registration, not a global sprite overwrite."""
+    names={9:"PLAYER_TRAINER_PL_Lucas",10:"PLAYER_TRAINER_PL_Dawn"}
+    if player_id not in names:fail("INVALID_PLATINUM_PLAYER_ID")
+    metadata=base/"PBS/metadata.txt"
+    if not metadata.is_file() or metadata.is_symlink():
+        return False
+    raw=metadata.read_text("utf-8-sig")
+    block=re.search(r"(?m)^\["+str(player_id)+r"\][ \t]*(?:#[^\n]*)?\n([\s\S]*?)(?=^\[\d+\]|\Z)",raw)
+    if not block:
+        return False
+    fields={}
+    for line in block.group(1).splitlines():
+        line=line.split("#",1)[0]
+        if "=" in line:
+            k,v=line.split("=",1);fields[k.strip()]=v.strip()
+    if fields.get("TrainerType")!=names[player_id]:
+        return False
+    for key in ("WalkCharset","RunCharset","CycleCharset","SurfCharset","FishCharset"):
+        name=fields.get(key,"")
+        if not re.fullmatch(r"[A-Za-z0-9_]+",name):
+            return False
+        path=base/"Graphics/Characters"/(name+".png")
+        if not path.is_file() or path.is_symlink():
+            return False
+        if dims(path.read_bytes())!=(256,256):
+            return False
+    return True
