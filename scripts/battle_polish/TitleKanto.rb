@@ -337,6 +337,11 @@ module BlueKantoTitle
         start[1] >= 0 && start[2] >= 0
       required = ["Data/MapInfos.rxdata", "Data/Tilesets.rxdata"] +
                  ids.values.map { |id| sprintf("Data/Map%03d.rxdata", id) }
+      if expected_count == 22
+        source_ids = city_report.values.map { |r| r["source_id"] }
+        return sinnoh_qa_block("Fontes das cidades F04 invalidas.") unless source_ids.all? { |id| id.is_a?(Integer) } && source_ids.sort == [22,77,84,90,96,106,109,123,160,205,219,225]
+        required += source_ids.map { |id| sprintf("Graphics/Tilesets/SNQA_F04_%03d.png",id) }
+      end
       required.each do |file|
         hash = files[file]
         return sinnoh_qa_block("Manifesto SHA-256 incompleto: " + file) unless
