@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1b526539595395a87ca206c6c2c4593febc99fa9",
+      "date": "2026-11-24T15:59:54-03:00",
+      "title": "Sinnoh F02: preserve map geometry and fill exterior forest edges",
+      "category": "Melhorias"
+    },
+    {
       "sha": "4ad3a74638d8ca75510786e0dd5c36a4d018e189",
       "date": "2026-11-24T13:32:39-03:00",
       "title": "Sinnoh F01: private QA teleport and full-region expansion catalog",
