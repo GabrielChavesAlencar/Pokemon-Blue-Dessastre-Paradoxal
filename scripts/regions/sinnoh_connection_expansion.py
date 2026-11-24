@@ -1,7 +1,9 @@
 """F08 safe subset of original transfers and seamless borders; isolated QA only."""
 import hashlib
 import json
+import math
 import struct
+from server.ruby_marshal import RubyData
 from collections import Counter
 from pathlib import Path
 import sinnoh_private_visual as pv
@@ -50,6 +52,14 @@ def visual_only(command):
         return (len(args)==1 and getattr(args[0],"name",None)=="RPG::AudioFile"
                 and isinstance(args[0].attrs.get("@name"),bytes)
                 and all(type(args[0].attrs.get(k)) is int and 0<=args[0].attrs[k]<=150 for k in ("@volume","@pitch")))
+    if code==223:
+        # RMXP Change Screen Color Tone: inert Tone user-data and frame count.
+        # Never serialize the source Tone; replace its fade sequence with a
+        # normal native transfer fade, preserving destination and direction.
+        if len(args)!=2 or not isinstance(args[0],RubyData) or args[0].name!="Tone" or len(args[0].data)!=32:return False
+        if type(args[1]) is not int or not 0<=args[1]<=120:return False
+        red,green,blue,gray=struct.unpack("<4d",args[0].data)
+        return all(math.isfinite(n) and -255<=n<=255 for n in (red,green,blue)) and math.isfinite(gray) and 0<=gray<=255
     if code==221:return not args
     if code==222:return len(args)==1 and isinstance(args[0],bytes)
     return False
@@ -69,7 +79,10 @@ def classify_transfer(event):
     args=core[0].get("@parameters",[])
     if len(args)!=6 or any(type(x) is not int for x in args) or args[0]!=0 or args[4] not in (0,2,4,6,8) or args[5] not in (0,1):return None,"transfer_parameters"
     if any(type(event.attrs.get(k)) is not int for k in ("@x","@y")):return None,"event_coordinates"
-    return (event.attrs["@x"],event.attrs["@y"],*args[1:]),"accepted"
+    # 1 means no native fade in RMXP because the donor applies its own
+    # screen tone. Do not leave the new portal without a transition.
+    fade=0 if any(c.get("@code")==223 for c in ops) else args[5]
+    return (event.attrs["@x"],event.attrs["@y"],*args[1:5],fade),"accepted"
 
 def simple_transfer(event):
     return classify_transfer(event)[0]
@@ -88,6 +101,10 @@ def event_shape(event):
                 "direction":c["@parameters"][4] if len(c.get("@parameters",[]))>4 and type(c["@parameters"][4]) is int else None,
                 "fade":c["@parameters"][5] if len(c.get("@parameters",[]))>5 and type(c["@parameters"][5]) is int else None}
                 for c in ops if c.get("@code")==201],
+            "cosmetic_parameters":[{"code":c.get("@code"),"types":[getattr(arg,"name",type(arg).__name__) for arg in c.get("@parameters",[])],
+                "tone_bytes":len(c["@parameters"][0].data) if c.get("@code")==223 and c.get("@parameters") and isinstance(c["@parameters"][0],RubyData) else None,
+                "duration":c["@parameters"][1] if c.get("@code")==223 and len(c.get("@parameters",[]))==2 and type(c["@parameters"][1]) is int else None,
+                "accepted":visual_only(c)} for c in ops if c.get("@code") in (106,223,250)],
             "move_routes":[{"target":c["@parameters"][0] if c.get("@parameters") and type(c["@parameters"][0]) is int else None,
                 "codes":[m.attrs.get("@code") for m in getattr(c["@parameters"][1],"attrs",{}).get("@list",[])]}
                 for c in ops if c.get("@code")==209 and len(c.get("@parameters",[]))==2]})
@@ -131,15 +148,19 @@ def append(blobs,mapping,components,path,root=ROOT):
                     diagnostics.append({"source_id":a,"event_id":eid,"reason":reason,"targets":sorted(static_targets({eid:event})),"pages":shape})
                     continue
                 x,y,b,dx,dy,direction,fade=result
-                if (a,b) not in reciprocal_dirs:rejected["outside_or_nonreciprocal"]+=1;continue
+                def reject(reason):
+                    rejected[reason]+=1
+                    diagnostics.append({"source_id":a,"event_id":eid,"reason":reason,
+                        "targets":[b],"from_xy":[x,y],"to_xy":[dx,dy]})
+                if (a,b) not in reciprocal_dirs:reject("outside_or_nonreciprocal");continue
                 dest=source[b]["symbol"]
-                if sym in city.OLD or dest in city.OLD:rejected["protected_opening"]+=1;continue
-                if ((x,y) not in safe[sym] or (dx,dy) not in safe[dest]
-                    or not any(n in safe[sym] for n in city.teleport.neighbours(x,y))
-                    or not any(n in safe[dest] for n in city.teleport.neighbours(dx,dy))
-                    or (x,y) in occupied[sym] or (dx,dy) in occupied[dest]):
-                    rejected["unsafe_coordinates"]+=1;continue
-                if abs(x-arrivals[sym][0])+abs(y-arrivals[sym][1])<=1:rejected["qa_arrival_reserved"]+=1;continue
+                if sym in city.OLD or dest in city.OLD:reject("protected_opening");continue
+                if (x,y) not in safe[sym]:reject("source_cell_not_safe");continue
+                if (dx,dy) not in safe[dest]:reject("destination_cell_not_safe");continue
+                if not any(n in safe[sym] for n in city.teleport.neighbours(x,y)):reject("source_no_safe_neighbour");continue
+                if not any(n in safe[dest] for n in city.teleport.neighbours(dx,dy)):reject("destination_no_safe_neighbour");continue
+                if (x,y) in occupied[sym] or (dx,dy) in occupied[dest]:reject("existing_event_collision");continue
+                if abs(x-arrivals[sym][0])+abs(y-arrivals[sym][1])<=1:reject("qa_arrival_reserved");continue
                 candidates.append({"source_id":a,"source_event_id":eid,"target_source_id":b,"symbol":sym,
                     "from":[mapping[sym],x,y],"to":[mapping[dest],dx,dy],"direction":direction,"fade":fade,"trigger":event.attrs["@pages"][0].attrs["@trigger"]})
         donor_seams=pv.parse_connections(pv.member(z,pv.MAP_ROOT+"PBS/map_connections.txt"))
@@ -149,6 +170,11 @@ def append(blobs,mapping,components,path,root=ROOT):
     edges={(r["source_id"],r["target_source_id"]) for r in portals}
     kept=[r for r in portals if (r["target_source_id"],r["source_id"]) in edges]
     rejected["no_safe_reverse"]+=len(portals)-len(kept)
+    for group,reason in (([r for r in candidates if r not in portals],"ambiguous_or_loop_arrival"),
+                         ([r for r in portals if r not in kept],"no_safe_reverse")):
+        for r in group:
+            diagnostics.append({"source_id":r["source_id"],"event_id":r["source_event_id"],
+                "reason":reason,"targets":[r["target_source_id"]],"from_xy":r["from"][1:],"to_xy":r["to"][1:]})
     out=dict(blobs);changed=set()
     for r in kept:
         sym=r["symbol"];mid,x,y=r["from"];dest,dx,dy=r["to"]

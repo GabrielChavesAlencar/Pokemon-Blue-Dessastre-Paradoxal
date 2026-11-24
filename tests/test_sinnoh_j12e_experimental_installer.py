@@ -735,6 +735,12 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
         f08_maps,cr=connection.append(f07_maps,f07_ids,f07_components,source)
         self.assertEqual((cr["directed_candidates"],cr["reciprocal_candidates"]),(145,69))
         self.assertGreater(len(cr["portals"])+len(cr["seams"]),0)
+        self.assertTrue({(79,77),(84,104),(91,90),(110,96),(151,150),(157,159),(214,206)}<={tuple(r["source_ids"]) for r in cr["seams"]})
+        self.assertEqual(cr["portal_directed_accepted"]+cr["portal_directed_pending"],145)
+        for portal in cr["portals"]:
+            mid,x,y=portal["from"];dst,dx,dy=portal["to"]
+            self.assertEqual(f07_masks[mid][y][x],".")
+            self.assertEqual(f07_masks[dst][dy][dx],".")
         self.assertEqual(f08_maps["Data/Tilesets.rxdata"],f07_maps["Data/Tilesets.rxdata"])
         self.assertEqual(f08_maps["Data/MapInfos.rxdata"],f07_maps["Data/MapInfos.rxdata"])
         self.assertEqual(exp.qa_teleport.build(f08_maps,f07_ids,f07_components),f07_entries)
@@ -1219,6 +1225,27 @@ raise "duplicate battle" unless $calls==4
         page.attrs["@condition"].attrs["@self_switch_valid"]=False
         event.attrs["@pages"].append(page)
         self.assertEqual(c.classify_transfer(event),(None,"multiple_pages"))
+
+    def test_f08_tone_portal_uses_native_fade_and_rejects_invalid_tone(self):
+        import struct
+        c=exp.connection_expansion
+        page=c.event_page(warp=(555,4,5),touch=True)
+        event=c.ruby("RPG::Event",id=1,name=b"test",x=2,y=3,pages=[page])
+        tone=c.RubyData("Tone",struct.pack("<4d",-255,-255,-255,0))
+        fade_out=c.ruby("RPG::EventCommand",code=223,indent=0,parameters=[tone,8])
+        fade_in=c.ruby("RPG::EventCommand",code=223,indent=0,parameters=[c.RubyData("Tone",struct.pack("<4d",0,0,0,0)),8])
+        page.attrs["@list"][0].attrs["@parameters"][5]=1
+        page.attrs["@list"].insert(0,fade_out)
+        page.attrs["@list"].insert(-1,fade_in)
+        self.assertEqual(c.classify_transfer(event),((2,3,555,4,5,2,0),"accepted"))
+        for bad in (c.RubyData("Color",tone.data),c.RubyData("Tone",b"bad"),c.RubyData("Tone",struct.pack("<4d",float("nan"),0,0,0)),c.RubyData("Tone",struct.pack("<4d",256,0,0,0))):
+            fade_out.attrs["@parameters"][0]=bad
+            self.assertEqual(c.classify_transfer(event),(None,"unsupported_commands"))
+        fade_out.attrs["@parameters"]=[tone,121]
+        self.assertEqual(c.classify_transfer(event),(None,"unsupported_commands"))
+        fade_out.attrs["@parameters"]=[tone,8]
+        page.attrs["@condition"].attrs["@switch1_valid"]=True
+        self.assertEqual(c.classify_transfer(event),(None,"page_conditions"))
 
     def test_f07_capacity_and_save_namespace_append_only(self):
         city=exp.city_expansion
