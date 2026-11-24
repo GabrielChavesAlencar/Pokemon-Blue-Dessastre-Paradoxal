@@ -45,6 +45,7 @@ import sinnoh_f08c_expansion as f08c_expansion
 import sinnoh_f09_encounters as f09_encounters
 import sinnoh_f09b_original as f09b_original
 import sinnoh_f09c_refinement as f09c_refinement
+import sinnoh_f09d_relative as f09d_relative
 from audit_sinnoh_rxdata import read_marshal
 from audit_sinnoh_twinleaf_events import MAPS,HANDLERS as CH06_HANDLERS,BALLS as CH06_BALLS
 from build_sinnoh_twinleaf_events import HANDLERS as SCRIPT_HANDLERS
@@ -321,7 +322,7 @@ def runtime_config(base:Path,token:str):
     if count!=1:fail("GAME_INI_TITLE_NOT_UNIQUE")
     return (json.dumps(config,ensure_ascii=False,indent=2)+"\n").encode(),result.encode(),profile
 
-def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile=False,save_token=None,route201=None,encounter_coverage=None,route_trainers=False):
+def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile=False,save_token=None,route201=None,encounter_coverage=None,route_trainers=False,encounter_expected=None):
     """Require real Essentials Compiler and all three Barry PBS data; no fake success."""
     rows=Marshal(raw).read()
     matches=[row for row in rows if isinstance(row,list) and len(row)>=3 and row[1]==b"Main"]
@@ -377,6 +378,18 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile
                 if not re.fullmatch(r"[A-Za-z]+",method):fail("INVALID_ENCOUNTER_METHOD")
                 checks.append(f'        raise "Sinnoh QA: encontro ausente {mid}/{method}" unless GameData::Encounter.get({mid},0)&.types&.fetch(:{method},nil)&.any?')
         if route201 is None:hook=hook.replace("trainers.dat","trainers.dat encounters.dat")
+        verify=verify.replace("        File.write(", "        GameData::Encounter.load\n"+"\n".join(checks)+"\n        File.write(",1)
+    if encounter_expected:
+        checks=[]
+        for mid,methods in sorted(encounter_expected.items()):
+            if mid not in map_ids:fail("INVALID_RELATIVE_ENCOUNTER_ID")
+            for method,slots in sorted(methods.items()):
+                if not re.fullmatch(r"[A-Za-z]+",method) or not slots:fail("INVALID_RELATIVE_ENCOUNTER_METHOD")
+                if any(len(slot)!=4 or type(slot[0]) is not int or not 1<=slot[0]<=100 or not re.fullmatch(r"[A-Z][A-Z0-9_]*",slot[1]) or not 1<=slot[2]<=slot[3]<=100 for slot in slots):
+                    fail("INVALID_RELATIVE_ENCOUNTER_SLOT")
+                expected=json.dumps(sorted(slots),ensure_ascii=True,separators=(",",":"))
+                checks.append(f'        actual = GameData::Encounter.get({mid},0)&.types&.fetch(:{method},nil)')
+                checks.append(f'        raise "Sinnoh QA: pesos relativos alterados {mid}/{method}" unless actual && actual.map {{ |e| [e[0],e[1].to_s,e[2],e[3]] }}.sort == {expected}.sort')
         verify=verify.replace("        File.write(", "        GameData::Encounter.load\n"+"\n".join(checks)+"\n        File.write(",1)
     if route_trainers:
         checks=[]
@@ -714,6 +727,8 @@ def build_files(base:Path,project:Path=ROOT):
     f09_report={}
     f09b_report={}
     f09c_report={}
+    f09d_report={}
+    encounter_expected={}
     encounter_coverage={}
     route_trainers=[]
     if "maps" in sources:
@@ -750,6 +765,8 @@ def build_files(base:Path,project:Path=ROOT):
             maps["PBS/encounters.txt"],encounter_coverage,base,mapping,masks,sources["maps"],project)
         maps["PBS/encounters.txt"],encounter_coverage,f09c_report=f09c_refinement.append(
             maps["PBS/encounters.txt"],encounter_coverage,base,mapping,masks,maps,sources["maps"],f09b_report,project)
+        maps["PBS/encounters.txt"],encounter_coverage,f09d_report,encounter_expected=f09d_relative.append(
+            maps["PBS/encounters.txt"],encounter_coverage,base,mapping,masks,sources["maps"],f09c_report,project)
         movement=private_visual.movement_plugin(masks,mapping["SINNOH_ROUTE_202"])
         teleport_entries=qa_teleport.build(maps,mapping,components,project)
         teleport=qa_teleport.plugin(teleport_entries,project)
@@ -774,7 +791,7 @@ def build_files(base:Path,project:Path=ROOT):
         "Graphics/Characters/SNQA_NPC.png":sprite_png("NPC"),
         "Graphics/Characters/SNQA_BALL.png":sprite_png("BALL"),
         "Data/System.rxdata":None,
-        "Data/Scripts.rxdata":patch_bootstrap((base/"Data/Scripts.rxdata").read_bytes(),token,ids,connected=bool(continuity),story_profile=bool(story),save_token=save_token,route201=mapping["SINNOH_ROUTE_201"] if story else None,encounter_coverage={mapping[sym]:v["methods"] for sym,v in encounter_coverage.items() if v["methods"]},route_trainers=bool(route_trainers)),
+        "Data/Scripts.rxdata":patch_bootstrap((base/"Data/Scripts.rxdata").read_bytes(),token,ids,connected=bool(continuity),story_profile=bool(story),save_token=save_token,route201=mapping["SINNOH_ROUTE_201"] if story else None,encounter_coverage={mapping[sym]:v["methods"] for sym,v in encounter_coverage.items() if v["methods"]},route_trainers=bool(route_trainers),encounter_expected=encounter_expected),
         "mkxp.json":config,"Game.ini":game_ini,
         # Only inside the NEW private QA copy. Blue-Story source-only sync
         # cannot update the installed main-game title when Kanto is 142/145.
@@ -828,6 +845,7 @@ def build_files(base:Path,project:Path=ROOT):
         "f09_encounters":f09_report,
         "f09b_original_encounters":f09b_report,
         "f09c_refinement":f09c_report,
+        "f09d_relative":f09d_report,
         "qa_teleport":{"catalog_count":len(teleport_entries),"available_count":sum(row[3] is not None for row in teleport_entries),"destinations":teleport_entries,"native_verified":False},
         "encounter_coverage":encounter_coverage,"route202_trainers":route_trainers,
         "visual_native_reviewed":False,
