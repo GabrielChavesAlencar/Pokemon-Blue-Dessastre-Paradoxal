@@ -295,7 +295,13 @@ class J12EInstallerTests(unittest.TestCase):
         out,story=pv.extend_lake_story(out,mapping,components)
         self.assertEqual(story["portal_pairs"],2)
         self.assertEqual(story["autoruns"],5)
-        self.assertEqual(len(read_marshal(out["Data/map_connections.dat"],"LIVE_CONNECTIONS")),6)
+        self.assertEqual(len(read_marshal(out["Data/map_connections.dat"],"LIVE_CONNECTIONS")),4)
+        masks=pv.movement_masks(out,mapping)
+        pv.verify_starter_corridor(masks,mapping)
+        self.assertEqual(masks[mapping["SINNOH_LAKE_VERITY"]][42][44:46],"..")
+        self.assertEqual(masks[mapping["SINNOH_LAKE_VERITY"]][44][44:46],"##")
+        self.assertTrue(any("g" in row for row in masks[mapping["SINNOH_ROUTE_201"]]))
+        print("SINNOH_REAL_GRASSLESS_STARTER_CORRIDOR_AND_4_NATIVE_SEAMS_OK",flush=True)
         infos=read_marshal(out["Data/MapInfos.rxdata"],"LIVE_INFOS")
         self.assertEqual(infos[451].attrs["@name"],b"Verity Lakefront")
         count=0;autoruns=[]
@@ -502,6 +508,60 @@ puts "SINNOH_NATIVE_FRESH_STATE_WITHOUT_LEGACY_HOOK_OK"
         self.assertIn("BlueSinnohExperimental.install_fresh_hooks!",main)
         self.assertLess(main.index("PluginManager.runPlugins"),main.index("BlueSinnohExperimental.install_fresh_hooks!"))
         self.assertLess(main.index("BlueSinnohExperimental.install_fresh_hooks!"),main.index("Compiler.main"))
+
+    @unittest.skipUnless(shutil.which("ruby"),"Requires Ruby runtime")
+    def test_private_movement_blocks_forest_and_grass_before_starter(self):
+        generated=exp.private_visual.movement_plugin({442:[".g#","..."],443:[".."]})
+        script=r'''
+module BlueSinnohExperimental
+  def self.private_copy?; $private; end
+end
+Map=Struct.new(:map_id)
+Player=Struct.new(:party)
+Monster=Struct.new(:egg?)
+class Factory
+  def getFacingTile(dir,event); $facing; end
+end
+class Game_Player
+  attr_reader :moves
+  def initialize; @moves=[]; end
+  def move_generic(dir,*args); @moves << dir; end
+end
+def _INTL(text); text; end
+def pbMessage(text); $warnings+=1; end
+$private=true;$warnings=0
+$game_map=Map.new(442);$map_factory=Factory.new
+$player=Player.new([])
+load ARGV[0]
+BlueSinnohSafeMovement.install!
+p=Game_Player.new
+$facing=[442,1,0];2.times { p.move_generic(6) }
+raise "grass allowed or repeated message" unless p.moves.empty? && $warnings==1
+$facing=[442,2,0];p.move_generic(6)
+raise "forest allowed" unless p.moves.empty?
+$facing=[442,0,1];p.move_generic(2)
+raise "safe path blocked" unless p.moves==[2]
+$facing=[443,0,0];p.move_generic(4)
+raise "valid connected map blocked" unless p.moves==[2,4]
+$facing=[442,1,0];$player.party=[Monster.new(true)];p.move_generic(6)
+raise "egg allowed" unless p.moves==[2,4]
+$player.party=[Monster.new(false)];p.move_generic(6)
+raise "grass remained blocked after starter" unless p.moves==[2,4,6]
+$facing=[442,99,99];p.move_generic(6)
+$facing=nil;p.move_generic(6)
+$facing=[900,1,1];p.move_generic(6)
+raise "invalid seam allowed" unless p.moves==[2,4,6]
+$game_map=Map.new(2);p.move_generic(6)
+raise "other region changed" unless p.moves==[2,4,6,6]
+$game_map=Map.new(442);$private=false;p.move_generic(6)
+raise "non-QA changed" unless p.moves==[2,4,6,6,6]
+puts "SINNOH_GRASS_AND_FOREST_MOVEMENT_OK"
+'''
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/"guard.rb";path.write_bytes(generated)
+            proc=subprocess.run([shutil.which("ruby"),"-e",script,str(path)],text=True,capture_output=True,timeout=30)
+        self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
+        self.assertIn("SINNOH_GRASS_AND_FOREST_MOVEMENT_OK",proc.stdout)
 
     def test_expanded_profile_only_runs_after_map_initialization(self):
         code=exp.experiment_plugin([442,10,8],"abc123abc123",True,True,story_profile=True).decode()
