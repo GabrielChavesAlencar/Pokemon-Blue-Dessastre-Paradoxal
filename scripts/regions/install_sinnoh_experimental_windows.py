@@ -310,7 +310,7 @@ def runtime_config(base:Path,token:str):
     if count!=1:fail("GAME_INI_TITLE_NOT_UNIQUE")
     return (json.dumps(config,ensure_ascii=False,indent=2)+"\n").encode(),result.encode(),profile
 
-def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False):
+def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile=False):
     """Require real Essentials Compiler and all three Barry PBS data; no fake success."""
     rows=Marshal(raw).read()
     matches=[row for row in rows if isinstance(row,list) and len(row)>=3 and row[1]==b"Main"]
@@ -380,12 +380,142 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False):
     end
 """
     guarded=guarded.replace("__QA_PROTECTED__"," ".join(protected))
-    code=code.replace(anchor,hook+anchor).replace(compiler,guarded+verify)
+    late = ""
+    if story_profile:
+        late = '\n    if File.basename(Dir.pwd) == "game-sinnoh-experimental-'+token+'" && File.file?("sinnoh-experimental-qa.json")\n      BlueSinnohExperimental.install_fresh_hooks!\n    end'
+    code=code.replace(anchor,hook+anchor+late).replace(compiler,guarded+verify)
     code=code.replace("__QA_SCOPE__",scope)
     main[2]=RubyString(zlib.compress(code.encode("utf-8")))
     return b"\x04\x08"+dump(rows)
 
 def experiment_plugin(start,token,platinum_player=False,platinum_dawn=False,story_profile=False):
+
+    if story_profile:
+        # Independent late hook: old installed bases may not have RegionStart,
+        # or the previous prepend ran before that module was loaded. Do not
+        # rely on the base's optional NewGame/SaveValues hooks.
+        return ("""# Isolated Sinnoh new-game bootstrap, loaded after native plugins.
+module BlueSinnohExperimental
+  START = [__START__].freeze
+  TOKEN = "__TOKEN__".freeze
+
+  def self.private_copy?
+    File.basename(Dir.pwd) == "game-sinnoh-experimental-" + TOKEN &&
+      File.file?("sinnoh-experimental-qa.json")
+  end
+
+  def self.fresh?
+    private_copy? && @fresh == true
+  end
+
+  def self.state_template(region)
+    if defined?(BlueRegions) && BlueRegions.respond_to?(:new_state)
+      return BlueRegions.new_state(region)
+    end
+    # Canonical Regions.rb v1 schema for older installed bases. Never
+    # synthesize progression or run this outside a genuine QA new game.
+    {"version"=>1, "initial"=>region, "current"=>region, "leagues"=>[],
+     "achievements"=>{}, "field_events"=>{}, "hisui_complete"=>false, "hisui_quest"=>false}
+  end
+
+  def self.prepare_fresh!
+    raise "Sinnoh QA: fora de Novo Jogo privado" unless fresh?
+    raise "Sinnoh QA: save nativo ainda nao inicializado" unless $PokemonGlobal
+    # Native save values must have completed, or a new metadata object must
+    # have been created by Game.start_new. Never initialize a loaded save.
+    return false unless @values_loaded || !$PokemonGlobal.equal?(@previous_global)
+    unless $PokemonGlobal.respond_to?(:blue_regions) && $PokemonGlobal.respond_to?(:blue_regions=)
+      $PokemonGlobal.class.class_eval { attr_accessor :blue_regions }
+    end
+    record = $PokemonGlobal.blue_regions
+    valid = record.is_a?(Hash) && record["version"] == 1 &&
+      record["initial"] == "SINNOH" && record["current"] == "SINNOH"
+    unless valid
+      if record && record != state_template("DECADES")
+        raise "Sinnoh QA: estado regional nao inicial ou de outra regiao"
+      end
+      $PokemonGlobal.blue_regions = state_template("SINNOH")
+    end
+    # Set spawn before map factory, and do not clear a bag twice if both
+    # the base hook and this independent hook see the same fresh object.
+    if $data_system
+      $data_system.start_map_id = START[0]
+      $data_system.start_x = START[1]
+      $data_system.start_y = START[2]
+    end
+    unless @prepared_global.equal?($PokemonGlobal)
+      BlueStory.choose_mode(:story) if defined?(BlueStory)
+      BlueCampaign.begin_journey(false) if defined?(BlueCampaign) && $bag
+      $PokemonGlobal.blue_traditional_starters = true if $PokemonGlobal.respond_to?(:blue_traditional_starters=)
+      $PokemonGlobal.blue_campaign_departure = false if $PokemonGlobal.respond_to?(:blue_campaign_departure=)
+      @prepared_global = $PokemonGlobal
+    end
+    true
+  end
+
+  def self.with_fresh
+    raise "Sinnoh QA: mapas ou perfil privado invalidos" unless
+      defined?(BlueKantoTitle) && BlueKantoTitle.sinnoh_experimental_maps_ready?
+    @fresh = true
+    @values_loaded = false
+    @previous_global = $PokemonGlobal
+    @prepared_global = nil
+    result = yield
+    raise "Sinnoh QA: Novo Jogo nao inicializou save nativo" unless prepare_fresh!
+    result
+  ensure
+    @fresh = false
+    @values_loaded = false
+    @previous_global = nil
+    @prepared_global = nil
+  end
+
+  module FreshGame
+    def start_new(*args, &block)
+      return super unless BlueSinnohExperimental.private_copy?
+      BlueSinnohExperimental.with_fresh { super(*args, &block) }
+    end
+  end
+
+  module FreshValues
+    def load_new_game_values(*args, &block)
+      result = super
+      if BlueSinnohExperimental.fresh?
+        BlueSinnohExperimental.values_loaded!
+      end
+      result
+    end
+  end
+
+  def self.values_loaded!
+    @values_loaded = true
+    prepare_fresh!
+  end
+
+  module LegacyRegionOverride
+    def select_and_prepare(*args)
+      return super unless BlueSinnohExperimental.fresh?
+      # Called from the older base SaveValues wrapper AFTER native values.
+      BlueSinnohExperimental.values_loaded!
+      nil
+    end
+  end
+
+  def self.install_fresh_hooks!
+    return unless private_copy?
+    raise "Sinnoh QA: API nativa de Novo Jogo indisponivel" unless
+      defined?(Game) && Game.respond_to?(:start_new) &&
+      defined?(SaveData) && SaveData.respond_to?(:load_new_game_values)
+    Game.singleton_class.prepend(FreshGame) unless Game.singleton_class.ancestors.include?(FreshGame)
+    SaveData.singleton_class.prepend(FreshValues) unless SaveData.singleton_class.ancestors.include?(FreshValues)
+    if defined?(BlueRegionStart) && BlueRegionStart.respond_to?(:select_and_prepare)
+      BlueRegionStart.singleton_class.prepend(LegacyRegionOverride) unless
+        BlueRegionStart.singleton_class.ancestors.include?(LegacyRegionOverride)
+    end
+  end
+end
+# Character and name are selected in the bedroom autorun.
+""").replace("__START__",",".join(str(x) for x in start)).replace("__TOKEN__",token).encode("utf-8")
     code="""# Only for one isolated experimental copy; no main-game hooks.
 module BlueSinnohExperimental
   START = [__START__].freeze
@@ -492,7 +622,7 @@ def build_files(base:Path,project:Path=ROOT):
         "Graphics/Characters/SNQA_NPC.png":sprite_png("NPC"),
         "Graphics/Characters/SNQA_BALL.png":sprite_png("BALL"),
         "Data/System.rxdata":None,
-        "Data/Scripts.rxdata":patch_bootstrap((base/"Data/Scripts.rxdata").read_bytes(),token,ids,connected=bool(continuity)),
+        "Data/Scripts.rxdata":patch_bootstrap((base/"Data/Scripts.rxdata").read_bytes(),token,ids,connected=bool(continuity),story_profile=bool(story)),
         "mkxp.json":config,"Game.ini":game_ini,
         # Only inside the NEW private QA copy. Blue-Story source-only sync
         # cannot update the installed main-game title when Kanto is 142/145.
