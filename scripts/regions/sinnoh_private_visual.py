@@ -635,7 +635,7 @@ def extend_lake_story(blobs,mapping,components):
         p=event_page(warp=(mapping[dest],*xy),touch=True)
         ops=p.attrs["@list"]
         test=command(111,12,b"BlueSinnohPilot.lake_entry_allowed?")
-        transfer=ops[0];transfer.attrs["@indent"]=1
+        transfer=ops[0];transfer.attrs["@indent"]=1;transfer.attrs["@parameters"][4]=8
         ending=command(0);ending.attrs["@indent"]=1
         p.attrs["@list"]=[test,transfer,ending,command(412),command(0)]
         return p
