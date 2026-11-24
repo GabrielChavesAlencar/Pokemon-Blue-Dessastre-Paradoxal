@@ -1,0 +1,772 @@
+{
+  "schema": 1,
+  "head": "46bf9f7fe3e2a0695a2c8097629cea6fd2ea8dd3",
+  "job": 138803198748,
+  "portals": [
+    {
+      "source_id": 22,
+      "source_event_id": 13,
+      "target_source_id": 43,
+      "from_xy": [
+        50,
+        18
+      ],
+      "to_xy": [
+        15,
+        15
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 22,
+      "source_event_id": 14,
+      "target_source_id": 48,
+      "from_xy": [
+        32,
+        8
+      ],
+      "to_xy": [
+        2,
+        9
+      ],
+      "trigger": 0,
+      "event_id": 2
+    },
+    {
+      "source_id": 22,
+      "source_event_id": 16,
+      "target_source_id": 32,
+      "from_xy": [
+        52,
+        9
+      ],
+      "to_xy": [
+        4,
+        12
+      ],
+      "trigger": 0,
+      "event_id": 3
+    },
+    {
+      "source_id": 32,
+      "source_event_id": 1,
+      "target_source_id": 22,
+      "from_xy": [
+        4,
+        12
+      ],
+      "to_xy": [
+        52,
+        9
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 43,
+      "source_event_id": 4,
+      "target_source_id": 22,
+      "from_xy": [
+        15,
+        15
+      ],
+      "to_xy": [
+        50,
+        18
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 48,
+      "source_event_id": 2,
+      "target_source_id": 22,
+      "from_xy": [
+        2,
+        9
+      ],
+      "to_xy": [
+        32,
+        8
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 76,
+      "source_event_id": 32,
+      "target_source_id": 105,
+      "from_xy": [
+        7,
+        19
+      ],
+      "to_xy": [
+        55,
+        11
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 77,
+      "source_event_id": 15,
+      "target_source_id": 86,
+      "from_xy": [
+        24,
+        30
+      ],
+      "to_xy": [
+        15,
+        15
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 84,
+      "source_event_id": 8,
+      "target_source_id": 87,
+      "from_xy": [
+        28,
+        14
+      ],
+      "to_xy": [
+        15,
+        15
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 84,
+      "source_event_id": 9,
+      "target_source_id": 88,
+      "from_xy": [
+        34,
+        23
+      ],
+      "to_xy": [
+        2,
+        9
+      ],
+      "trigger": 0,
+      "event_id": 2
+    },
+    {
+      "source_id": 86,
+      "source_event_id": 4,
+      "target_source_id": 77,
+      "from_xy": [
+        15,
+        15
+      ],
+      "to_xy": [
+        24,
+        30
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 87,
+      "source_event_id": 4,
+      "target_source_id": 84,
+      "from_xy": [
+        15,
+        15
+      ],
+      "to_xy": [
+        28,
+        14
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 88,
+      "source_event_id": 2,
+      "target_source_id": 84,
+      "from_xy": [
+        2,
+        9
+      ],
+      "to_xy": [
+        34,
+        23
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 90,
+      "source_event_id": 19,
+      "target_source_id": 129,
+      "from_xy": [
+        16,
+        23
+      ],
+      "to_xy": [
+        15,
+        15
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 90,
+      "source_event_id": 20,
+      "target_source_id": 130,
+      "from_xy": [
+        20,
+        38
+      ],
+      "to_xy": [
+        2,
+        9
+      ],
+      "trigger": 0,
+      "event_id": 2
+    },
+    {
+      "source_id": 96,
+      "source_event_id": 1,
+      "target_source_id": 97,
+      "from_xy": [
+        27,
+        30
+      ],
+      "to_xy": [
+        8,
+        11
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 96,
+      "source_event_id": 6,
+      "target_source_id": 131,
+      "from_xy": [
+        24,
+        48
+      ],
+      "to_xy": [
+        15,
+        15
+      ],
+      "trigger": 0,
+      "event_id": 2
+    },
+    {
+      "source_id": 96,
+      "source_event_id": 7,
+      "target_source_id": 132,
+      "from_xy": [
+        32,
+        38
+      ],
+      "to_xy": [
+        2,
+        9
+      ],
+      "trigger": 0,
+      "event_id": 3
+    },
+    {
+      "source_id": 97,
+      "source_event_id": 1,
+      "target_source_id": 96,
+      "from_xy": [
+        8,
+        11
+      ],
+      "to_xy": [
+        27,
+        30
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 105,
+      "source_event_id": 10,
+      "target_source_id": 76,
+      "from_xy": [
+        55,
+        11
+      ],
+      "to_xy": [
+        7,
+        19
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 106,
+      "source_event_id": 1,
+      "target_source_id": 133,
+      "from_xy": [
+        52,
+        38
+      ],
+      "to_xy": [
+        15,
+        15
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 106,
+      "source_event_id": 7,
+      "target_source_id": 134,
+      "from_xy": [
+        52,
+        28
+      ],
+      "to_xy": [
+        2,
+        9
+      ],
+      "trigger": 0,
+      "event_id": 2
+    },
+    {
+      "source_id": 109,
+      "source_event_id": 11,
+      "target_source_id": 135,
+      "from_xy": [
+        34,
+        15
+      ],
+      "to_xy": [
+        15,
+        15
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 109,
+      "source_event_id": 12,
+      "target_source_id": 136,
+      "from_xy": [
+        30,
+        34
+      ],
+      "to_xy": [
+        2,
+        9
+      ],
+      "trigger": 0,
+      "event_id": 2
+    },
+    {
+      "source_id": 122,
+      "source_event_id": 24,
+      "target_source_id": 124,
+      "from_xy": [
+        63,
+        28
+      ],
+      "to_xy": [
+        3,
+        7
+      ],
+      "trigger": 1,
+      "event_id": 1
+    },
+    {
+      "source_id": 123,
+      "source_event_id": 4,
+      "target_source_id": 138,
+      "from_xy": [
+        30,
+        34
+      ],
+      "to_xy": [
+        2,
+        9
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 123,
+      "source_event_id": 5,
+      "target_source_id": 137,
+      "from_xy": [
+        16,
+        23
+      ],
+      "to_xy": [
+        15,
+        15
+      ],
+      "trigger": 0,
+      "event_id": 2
+    },
+    {
+      "source_id": 124,
+      "source_event_id": 4,
+      "target_source_id": 122,
+      "from_xy": [
+        3,
+        7
+      ],
+      "to_xy": [
+        63,
+        27
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 129,
+      "source_event_id": 4,
+      "target_source_id": 90,
+      "from_xy": [
+        15,
+        15
+      ],
+      "to_xy": [
+        16,
+        23
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 130,
+      "source_event_id": 2,
+      "target_source_id": 90,
+      "from_xy": [
+        2,
+        9
+      ],
+      "to_xy": [
+        20,
+        38
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 131,
+      "source_event_id": 4,
+      "target_source_id": 96,
+      "from_xy": [
+        15,
+        15
+      ],
+      "to_xy": [
+        24,
+        48
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 132,
+      "source_event_id": 2,
+      "target_source_id": 96,
+      "from_xy": [
+        2,
+        9
+      ],
+      "to_xy": [
+        32,
+        38
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 133,
+      "source_event_id": 4,
+      "target_source_id": 106,
+      "from_xy": [
+        15,
+        15
+      ],
+      "to_xy": [
+        52,
+        38
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 134,
+      "source_event_id": 2,
+      "target_source_id": 106,
+      "from_xy": [
+        2,
+        9
+      ],
+      "to_xy": [
+        52,
+        28
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 135,
+      "source_event_id": 4,
+      "target_source_id": 109,
+      "from_xy": [
+        15,
+        15
+      ],
+      "to_xy": [
+        34,
+        15
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 136,
+      "source_event_id": 2,
+      "target_source_id": 109,
+      "from_xy": [
+        2,
+        9
+      ],
+      "to_xy": [
+        30,
+        34
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 137,
+      "source_event_id": 4,
+      "target_source_id": 123,
+      "from_xy": [
+        15,
+        15
+      ],
+      "to_xy": [
+        16,
+        23
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 138,
+      "source_event_id": 2,
+      "target_source_id": 123,
+      "from_xy": [
+        2,
+        9
+      ],
+      "to_xy": [
+        30,
+        34
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 146,
+      "source_event_id": 16,
+      "target_source_id": 189,
+      "from_xy": [
+        25,
+        28
+      ],
+      "to_xy": [
+        47,
+        49
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 150,
+      "source_event_id": 20,
+      "target_source_id": 187,
+      "from_xy": [
+        95,
+        13
+      ],
+      "to_xy": [
+        3,
+        7
+      ],
+      "trigger": 1,
+      "event_id": 1
+    },
+    {
+      "source_id": 160,
+      "source_event_id": 4,
+      "target_source_id": 167,
+      "from_xy": [
+        27,
+        45
+      ],
+      "to_xy": [
+        15,
+        15
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 160,
+      "source_event_id": 5,
+      "target_source_id": 170,
+      "from_xy": [
+        2,
+        45
+      ],
+      "to_xy": [
+        2,
+        9
+      ],
+      "trigger": 0,
+      "event_id": 2
+    },
+    {
+      "source_id": 167,
+      "source_event_id": 4,
+      "target_source_id": 160,
+      "from_xy": [
+        15,
+        15
+      ],
+      "to_xy": [
+        27,
+        45
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 170,
+      "source_event_id": 2,
+      "target_source_id": 160,
+      "from_xy": [
+        2,
+        9
+      ],
+      "to_xy": [
+        2,
+        45
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 187,
+      "source_event_id": 4,
+      "target_source_id": 150,
+      "from_xy": [
+        3,
+        7
+      ],
+      "to_xy": [
+        95,
+        12
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 189,
+      "source_event_id": 16,
+      "target_source_id": 146,
+      "from_xy": [
+        47,
+        49
+      ],
+      "to_xy": [
+        25,
+        28
+      ],
+      "trigger": 0,
+      "event_id": 1
+    },
+    {
+      "source_id": 219,
+      "source_event_id": 14,
+      "target_source_id": 220,
+      "from_xy": [
+        34,
+        10
+      ],
+      "to_xy": [
+        5,
+        10
+      ],
+      "trigger": 1,
+      "event_id": 1
+    },
+    {
+      "source_id": 219,
+      "source_event_id": 15,
+      "target_source_id": 220,
+      "from_xy": [
+        35,
+        10
+      ],
+      "to_xy": [
+        5,
+        10
+      ],
+      "trigger": 1,
+      "event_id": 2
+    },
+    {
+      "source_id": 220,
+      "source_event_id": 2,
+      "target_source_id": 219,
+      "from_xy": [
+        5,
+        10
+      ],
+      "to_xy": [
+        34,
+        11
+      ],
+      "trigger": 0,
+      "event_id": 1
+    }
+  ],
+  "seams": [
+    [
+      79,
+      77
+    ],
+    [
+      84,
+      104
+    ],
+    [
+      91,
+      90
+    ],
+    [
+      110,
+      96
+    ],
+    [
+      151,
+      150
+    ],
+    [
+      157,
+      159
+    ],
+    [
+      214,
+      206
+    ]
+  ]
+}

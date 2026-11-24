@@ -5,7 +5,7 @@ Referência Platinum. Progresso de preparação (não aprovação nativa):
 - Rotas: **30/30**, Rota 201–230 e seis segmentos adicionais.
 - Cidades: **14/14**, todas preparadas na F04.
 - Piloto privado: **127 mapas preparados**.
-- Fases novas: **7/15 concluídas**, F01/F02/F04/F05/F06/F07 integradas (11/11 cada), F03 integrada (9/9); F08 subconjunto seguro implementado, aguarda CI.
+- Fases novas: **7/15 concluídas**, F01/F02/F04/F05/F06/F07 integradas (11/11 cada), F03 integrada (9/9); F08 subconjunto seguro integrado (49 portais e 7 seams), complementação F08B em validação.
 
 ## Progresso das cidades
 
@@ -39,7 +39,7 @@ Referência Platinum. Progresso de preparação (não aprovação nativa):
 - [x] F05 — Importação de todas as rotas 201–230 (PR #283, 11/11; 56 mapas preparados)
 - [x] F06 — Importação de florestas, lagos e cavernas (PR #284, 11/11; 91 mapas preparados)
 - [x] F07 — Importação dos interiores e edifícios (PR #285, 11/11; 127 mapas preparados)
-- [ ] F08 — Conexões entre mapas e colisões (subconjunto seguro, aguarda CI)
+- [ ] F08 — Conexões entre mapas e colisões (PR #286 integrado parcialmente, 97 relações pendentes)
 - [ ] F09 — Pokémon selvagens de todas as áreas
 - [ ] F10 — Todos os treinadores e NPCs
 - [ ] F11 — Oito ginásios e insígnias
@@ -135,3 +135,7 @@ HEAD 8f82b9e48fd8d3080b9a308b0e4021b3959de897: 11/11 workflows, 26/26 checks, ma
 ### F08 — recuperação de portas com coordenadas recíprocas
 
 HEAD ea919135abb7cac490af1dbf0fa2b75266d16274, job 138799290004: 11/11 workflows, 26/26 checks, marcadores F07/F08, 7 seams, 0 portais. 188 sequências de tonalidade agora classificadas como aceitas, mas rejeições geométricas: 71 origens não seguras, 8 destinos não seguros, 26 sem retorno seguro, 4 loops/ambiguidade, 75 fora do grafo recíproco, 4 abertura protegida, 102 páginas múltiplas, 8 comandos aninhados, 1 condição de página, 54 comandos não suportados. Evidência concreta: Oreburgh 22 evento 13 (50,18) -> 43 (15,15); 43 evento 4 (15,16) -> 22 (50,18). A saída original está bloqueada, o ponto de chegada recíproco é transitável e adjacente. Há 34 pares de eventos no log com posições recíprocas a distância <=1, incluindo dois protegidos da abertura e casos com destino bloqueado; não são aprovações. Nova reconstrução admite somente aproximação adjacente única provada pelo retorno original, ainda exigindo componente seguro, destino original seguro, ausência de eventos/QA spawn e testemunha recíproca sobrevivente. Converte aproximações e posições compartilhadas com chegada em interação por botão (evento transparente e atravessável), sem teleporte automático circular, sem alterar colisões, geometrias ou scripts. Destinos bloqueados continuam rejeitados. Preserva sete seams e 127 mapas, 35 eventos anteriores, hashes de namespace e teleportes; teste real ainda necessário. Não declarar portais recuperados antes do CI.
+
+### F08A — subconjunto integrado e continuação F08B
+
+PR #286 integrado em 974706db5ccb976ac3d45da07f290b85578ff268 após 11/11 workflows, 26/26 checks, marcador real no job 138803198748. 49 eventos em 38 mapas, 22 aproximações, 45 ações, 48/145 relações dirigidas e 24/69 pares, sete seams. Nove Centros Pokémon, oito Marts e duas portarias com pelo menos uma ligação. Restam 97 relações; F08 continua aberta, F09 pendente, progresso 7/15. F08B fixa assinatura dos 49 eventos reais e sete seams. Para portas com retorno diagonal (exemplo mapa 106 (0,23) -> 107 (12,7), retorno 107 (13,7) -> 106 (1,22)), aceita apenas ponte ortogonal única já transitável e retorno recíproco único; sem inventar destino, sem alterar colisões, sem tocar os 49 eventos anteriores. Portais novos por ação, sem conflito com posições e chegadas anteriores, sem scripts/condições. Preserva namespace por hashes completos F07, F08A ou F08B; não abre saves. Nenhum portal novo declarado aprovado antes do teste real. Marcador de preservação F08B não implica aprovação de todas as conexões.

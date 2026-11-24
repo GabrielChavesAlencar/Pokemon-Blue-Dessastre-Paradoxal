@@ -156,7 +156,68 @@ def select_portals(candidates):
             r["trigger"]=0
     return pool
 
-def append(blobs,mapping,components,path,root=ROOT):
+def near_door(a,b):
+    # A donor return landing may sit one tile along or diagonally from a
+    # doorway. No arbitrary radius or nearest-cell search is allowed.
+    return max(abs(a[0]-b[0]),abs(a[1]-b[1]))<=1
+
+def diagonal_approach(origin,landing,safe):
+    if abs(origin[0]-landing[0])!=1 or abs(origin[1]-landing[1])!=1:return None
+    if landing not in safe:return None
+    corners=[(origin[0],landing[1]),(landing[0],origin[1])]
+    usable=[q for q in corners if q in safe]
+    return usable[0] if len(usable)==1 else None
+
+def refine_portals(raw,kept,safe,occupied,arrivals,source):
+    """Second pass: add unique diagonally aligned reciprocal doorways only.
+    Preserve the baseline list, trigger, destination, event order and IDs.
+    """
+    locked={(r["source_id"],r["source_event_id"]) for r in kept}
+    origins={tuple(r["from"]) for r in kept}
+    landings={tuple(r["to"]) for r in kept}
+    touch={tuple(r["from"]) for r in kept if r["trigger"]!=0}
+    extra=[];claimed=set();notes=[]
+    for r in raw:
+        key=(r["source_id"],r["source_event_id"])
+        if key in locked or key in claimed:continue
+        matches=[q for q in raw if q["source_id"]==r["target_source_id"]
+            and q["target_source_id"]==r["source_id"]
+            and near_door(q["from"][1:],r["to"][1:])
+            and near_door(q["to"][1:],r["from"][1:])]
+        if len(matches)!=1:continue
+        q=matches[0];qkey=(q["source_id"],q["source_event_id"])
+        if qkey in locked or qkey in claimed:continue
+        reverse=[z for z in raw if z["source_id"]==q["target_source_id"] and z["target_source_id"]==q["source_id"]
+            and near_door(z["from"][1:],q["to"][1:]) and near_door(z["to"][1:],q["from"][1:])]
+        if len(reverse)!=1 or reverse[0]!=r:continue
+        pair=[]
+        for e,w in ((r,q),(q,r)):
+            sym=e["symbol"];dest=source[e["target_source_id"]]["symbol"]
+            mid,x,y=e["from"];dst,dx,dy=e["to"]
+            origin=(x,y);landing=tuple(w["to"][1:])
+            if (dx,dy) not in safe[dest] or (dx,dy) in occupied[dest]:break
+            if origin in occupied[sym]:break
+            if origin in safe[sym]:approach=origin;witness=None;mode="original"
+            elif distance(origin,landing)==1 and landing in safe[sym]:
+                approach=landing;witness=w["source_event_id"];mode="adjacent"
+            else:
+                approach=diagonal_approach(origin,landing,safe[sym]);witness=w["source_event_id"];mode="diagonal"
+            if approach is None or approach in occupied[sym] or distance(approach,arrivals[sym])<=1:break
+            if not any(n in safe[sym] for n in city.teleport.neighbours(*approach)):break
+            if not any(n in safe[dest] for n in city.teleport.neighbours(dx,dy)):break
+            pos=(mid,*approach)
+            if pos in origins or pos in landings or tuple(e["to"]) in touch:break
+            pair.append({**e,"original_from":e["from"],"from":list(pos),"trigger":0,
+                "approach_witness":witness,"approach_mode":mode,"refinement":"F08B"})
+        if len(pair)!=2 or not any(e["approach_mode"]=="diagonal" for e in pair):continue
+        if pair[0]["from"]==pair[1]["from"]:continue
+        extra.extend(pair);claimed.update((key,qkey))
+        origins.update(tuple(e["from"]) for e in pair)
+        landings.update(tuple(e["to"]) for e in pair)
+        notes.append({"pair":[r["source_id"],q["source_id"]],"events":[r["source_event_id"],q["source_event_id"]]})
+    return extra,notes
+
+def append(blobs,mapping,components,path,root=ROOT,refine=False):
     if set(mapping)!=interior.ALL or len(set(mapping.values()))!=127:raise ValueError("F08_MAPIDS")
     source,directed,reciprocal=graph(root)
     reciprocal_dirs=reciprocal|{(b,a) for a,b in reciprocal}
@@ -222,6 +283,16 @@ def append(blobs,mapping,components,path,root=ROOT):
         rejected[reason]+=1
         diagnostics.append({"source_id":r["source_id"],"event_id":r["source_event_id"],"reason":reason,
             "targets":[r["target_source_id"]],"from_xy":r["from"][1:],"to_xy":r["to"][1:]})
+    baseline_count=len(kept)
+    refinement_notes=[]
+    if refine:
+        extra,refinement_notes=refine_portals(raw_candidates,kept,safe,occupied,arrivals,source)
+        kept.extend(extra)
+        recovered={(r['source_id'],r['source_event_id']) for r in extra}
+        for item in diagnostics:
+            if (item['source_id'],item['event_id']) in recovered:
+                rejected[item['reason']]-=1
+        diagnostics=[item for item in diagnostics if (item['source_id'],item['event_id']) not in recovered]
     out=dict(blobs);changed=set()
     for r in kept:
         sym=r["symbol"];mid,x,y=r["from"];dest,dx,dy=r["to"]
@@ -269,5 +340,8 @@ def append(blobs,mapping,components,path,root=ROOT):
         "portal_pairs_accepted":sum(a<b and (b,a) in accepted for a,b in accepted),
         "approach_portals":sum(r["approach_witness"] is not None for r in kept),
         "action_portals":sum(r["trigger"]==0 for r in kept)}
+    report["baseline_portals"]=baseline_count
+    report["refined_portals"]=len(kept)-baseline_count
+    report["refinement_pairs"]=refinement_notes
     print("SINNOH_F08_CONNECTION_REPORT "+json.dumps(report,sort_keys=True),flush=True)
     return out,report

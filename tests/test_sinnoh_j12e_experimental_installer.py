@@ -764,6 +764,33 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                 self.assertEqual(serialize(event,connection.EVENT_CLASSES),serialize(current[eid],connection.EVENT_CLASSES))
         self.assertTrue(f08_maps["PBS/map_connections.txt"].startswith(f07_maps["PBS/map_connections.txt"]))
         print("SINNOH_REAL_F08_145_DIRECTED_69_RECIPROCAL_CANDIDATES_127_MAPS_SAFE_SUBSET_OK",flush=True)
+        baseline=json.loads((connection.ROOT/"data/regions/sinnoh-f08-approved-portals.json").read_text("utf-8"))
+        def signature(portal):
+            return {"source_id":portal["source_id"],"source_event_id":portal["source_event_id"],
+                "target_source_id":portal["target_source_id"],"from_xy":portal["from"][1:],
+                "to_xy":portal["to"][1:],"trigger":portal["trigger"],"event_id":portal["event_id"]}
+        self.assertEqual([signature(p) for p in cr["portals"]],baseline["portals"])
+        f08b_maps,br=connection.append(f07_maps,f07_ids,f07_components,source,refine=True)
+        self.assertEqual([signature(p) for p in br["portals"][:49]],baseline["portals"])
+        self.assertEqual(br["baseline_portals"],49)
+        self.assertEqual(br["seams"],cr["seams"])
+        self.assertEqual(exp.qa_teleport.build(f08b_maps,f07_ids,f07_components),f07_entries)
+        self.assertEqual(pv.movement_masks(f08b_maps,f07_ids,extra_symbols=city.CITIES|routes.ROUTES|natural.NATURAL|interior.INTERIORS),f07_masks)
+        for mid in f07_ids.values():
+            rel="Data/Map%03d.rxdata"%mid
+            old=read_marshal(f08_maps[rel],"F08B_OLD");new=read_marshal(f08b_maps[rel],"F08B_NEW")
+            before=old.attrs.pop("@events");after=new.attrs.pop("@events")
+            self.assertEqual(serialize(old,connection.EVENT_CLASSES),serialize(new,connection.EVENT_CLASSES))
+            for eid,event in before.items():
+                self.assertEqual(serialize(event,connection.EVENT_CLASSES),serialize(after[eid],connection.EVENT_CLASSES))
+        for portal in br["portals"][49:]:
+            mid,x,y=portal["from"];dst,dx,dy=portal["to"]
+            self.assertEqual(f07_masks[mid][y][x],".")
+            self.assertEqual(f07_masks[dst][dy][dx],".")
+            self.assertEqual(portal["trigger"],0)
+            if portal["approach_mode"]=="diagonal":
+                self.assertEqual(connection.distance(portal["from"][1:],portal["original_from"][1:]),1)
+        print("SINNOH_REAL_F08B_49_BASELINE_PORTALS_7_SEAMS_127_MAPS_PRESERVED_OK",flush=True)
 
 
 
@@ -1275,6 +1302,15 @@ raise "duplicate battle" unless $calls==4
         self.assertEqual(c.select_portals([adjusted]),[])
         self.assertEqual(c.select_portals([entry,adjusted,{**entry,"source_event_id":14}]),[])
         self.assertEqual(c.select_portals([{**entry,"source_event_id":14},adjusted]),[])
+
+    def test_f08b_diagonal_corner_requires_unique_walkable_bridge(self):
+        c=exp.connection_expansion
+        # Original Route 218 gate pair: city (0,23), return (1,22).
+        self.assertEqual(c.diagonal_approach((0,23),(1,22),{(1,22),(1,23)}),(1,23))
+        self.assertIsNone(c.diagonal_approach((0,23),(1,22),{(1,22),(1,23),(0,22)}))
+        self.assertIsNone(c.diagonal_approach((0,23),(1,22),{(1,22)}))
+        self.assertIsNone(c.diagonal_approach((0,23),(1,22),{(1,23)}))
+        self.assertIsNone(c.diagonal_approach((0,23),(2,22),{(2,22),(1,23)}))
 
     def test_f07_capacity_and_save_namespace_append_only(self):
         city=exp.city_expansion
