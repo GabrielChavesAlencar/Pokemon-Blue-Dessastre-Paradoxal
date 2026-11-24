@@ -2,7 +2,7 @@
   "schema": 1,
   "region": "SINNOH",
   "reference": "Platinum",
-  "status": "F01_F02_F03_F04_F05_F06_F07_MERGED_F08_SAFE_SUBSET_PENDING_CI",
+  "status": "F01_F02_F03_F04_F05_F06_F07_MERGED_F08_PARTIAL_MERGED_F08B_PENDING_CI",
   "catalog": "data/regions/sinnoh-expansion-destinations.json",
   "prepared_pilot": {
     "maps": 127,
@@ -134,10 +134,21 @@
     {
       "id": "F08",
       "title": "Conexões entre mapas e colisões",
-      "status": "implemented_pending_ci",
+      "status": "partially_merged",
       "target_maps": 127,
       "directed_candidates": 145,
-      "reciprocal_candidates": 69
+      "reciprocal_candidates": 69,
+      "pr": 286,
+      "merge_commit": "974706db5ccb976ac3d45da07f290b85578ff268",
+      "prepared_maps": 127,
+      "portals": 49,
+      "approach_portals": 22,
+      "action_portals": 45,
+      "portal_directed_accepted": 48,
+      "portal_directed_pending": 97,
+      "portal_pairs_accepted": 24,
+      "seams": 7,
+      "followup": "F08B_PENDING_CI"
     },
     {
       "id": "F09",
@@ -216,11 +227,22 @@
     "prepared_maps": 127
   },
   "f08": {
-    "status": "implemented_pending_ci",
+    "status": "partially_merged",
     "source_maps": 123,
     "directed_candidates": 145,
     "reciprocal_candidates": 69,
     "all_connections_approved": false,
-    "native_verified": false
+    "native_verified": false,
+    "pr": 286,
+    "merge_commit": "974706db5ccb976ac3d45da07f290b85578ff268",
+    "prepared_maps": 127,
+    "portals": 49,
+    "approach_portals": 22,
+    "action_portals": 45,
+    "portal_directed_accepted": 48,
+    "portal_directed_pending": 97,
+    "portal_pairs_accepted": 24,
+    "seams": 7,
+    "followup": "F08B_PENDING_CI"
   }
 }
