@@ -1149,6 +1149,21 @@ raise "duplicate battle" unless $calls==4
         with self.assertRaisesRegex(ValueError,"NO_SAFE_WALKABLE_COMPONENT"):
             city.component(cells,w,h,p,tags,"SINNOH_WAYWARD_CAVE")
 
+    def test_f07_source_identity_uses_inventory_trim_only(self):
+        city=exp.city_expansion
+        row=next(r for r in exp.interior_expansion.rows() if r["source_id"]==148)
+        name=row["source_name"].encode("ascii")
+        parent=row["parent_id"]
+        city.source_identity({"@name":name,"@parent_id":parent},row,"F07")
+        city.source_identity({"@name":b" "+name+b"\t ","@parent_id":parent},row,"F07")
+        for actual,actual_parent in ((name.lower(),parent),(name+b" altered",parent),
+                                     (name.replace(b" ",b"  "),parent),(name,parent+1),
+                                     (name+b"\x00",parent)):
+            with self.assertRaisesRegex(ValueError,"SOURCE_EXTERIOR_IDENTITY"):
+                city.source_identity({"@name":actual,"@parent_id":actual_parent},row,"F07")
+        with self.assertRaisesRegex(ValueError,"SOURCE_EXTERIOR_IDENTITY"):
+            city.source_identity({"@name":name+b" ","@parent_id":parent},row,"F06")
+
     def test_f07_capacity_and_save_namespace_append_only(self):
         city=exp.city_expansion
         route=exp.route_expansion

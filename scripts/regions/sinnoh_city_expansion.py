@@ -104,6 +104,18 @@ def append(blobs,mapping,components,path,occupied,root=ROOT):
     expanded=allocate(mapping,occupied,root)
     return append_exteriors(blobs,mapping,components,path,expanded,rows(root),"F04")
 
+def source_identity(info,row,phase):
+    expected=row.get("source_name",row["label"]).encode("ascii")
+    actual=info.get("@name")
+    # F03's map-name inventory strips surrounding whitespace. Match only that
+    # transformation for F07; still require exact text and exact parent ID.
+    # The pinned archive and map SHA-256 remain independently mandatory.
+    if phase=="F07" and isinstance(actual,bytes):
+        actual=actual.strip()
+    if actual!=expected or info.get("@parent_id")!=row.get("parent_id",0):
+        fail("SOURCE_EXTERIOR_IDENTITY:phase=%s:source_id=%s:name_match=%s:parent_match=%s"%(
+            phase,row["source_id"],actual==expected,info.get("@parent_id")==row.get("parent_id",0)))
+
 def append_exteriors(blobs,mapping,components,path,expanded,source_rows,phase,source_tileset_id=24):
     if (phase=="F07")!=(source_tileset_id==25) or source_tileset_id not in (24,25):fail("SOURCE_TILESET_SCOPE")
     # Appending only; existing tileset indices and map bytes are immutable.
@@ -131,7 +143,7 @@ def append_exteriors(blobs,mapping,components,path,expanded,source_rows,phase,so
         for row in source_rows:
             sym,mid=row["symbol"],row["source_id"]
             info=donor_infos[mid].attrs
-            if info["@name"]!=row.get("source_name",row["label"]).encode("ascii") or info["@parent_id"]!=row.get("parent_id",0):fail("SOURCE_EXTERIOR_IDENTITY")
+            source_identity(info,row,phase)
             raw=pv.member(z,pv.MAP_ROOT+"Data/Map%03d.rxdata"%mid)
             if hashlib.sha256(raw).hexdigest()!=row["sha256"]:fail("SOURCE_MAP_HASH")
             w,h=row["width"],row["height"]
