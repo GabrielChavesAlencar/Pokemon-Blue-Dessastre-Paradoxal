@@ -538,7 +538,8 @@ def bind_audio_and_connections(blobs,mapping,components,path,base):
     meta=[]
     for symbol,mid in mapping.items():
         outside=symbol in DONOR
-        lines=["[%03d]"%mid, "Outdoor = "+("true" if outside else "false"),
+        area_name=DONOR[symbol][1].decode("ascii") if outside else {"SINNOH_PLAYER_BEDROOM":"Twinleaf Town","SINNOH_PLAYER_HOUSE_1F":"Twinleaf Town","SINNOH_BARRY_HOUSE":"Twinleaf Town","SINNOH_PROFESSOR_ROWAN_LABORATORY":"Sandgem Town"}[symbol]
+        lines=["[%03d]"%mid, "Name = "+area_name, "Outdoor = "+("true" if outside else "false"),
                "ShowArea = "+("true" if outside else "false")]
         if outside:lines.append("Bicycle = true")
         if not outside or symbol=="SINNOH_LAKE_VERITY":lines.append("SnapEdges = true")
