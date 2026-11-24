@@ -576,6 +576,45 @@ puts "SINNOH_GRASS_AND_FOREST_MOVEMENT_OK"
         self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
         self.assertIn("SINNOH_GRASS_AND_FOREST_MOVEMENT_OK",proc.stdout)
 
+    @unittest.skipUnless(shutil.which("ruby"),"Requires Ruby runtime")
+    def test_route202_seam_requires_lab_reward(self):
+        code=exp.private_visual.movement_plugin({442:[".."],443:[".."]},443)
+        script=r'''
+module BlueSinnohExperimental
+  def self.private_copy?; true; end
+end
+module BlueSinnohPilot
+  def self.route202_allowed?; $reward; end
+end
+Map=Struct.new(:map_id)
+Player=Struct.new(:party)
+class Factory
+  def getFacingTile(*args); $facing; end
+end
+class Game_Player
+  attr_reader :moves
+  def initialize; @moves=[]; end
+  def move_generic(dir,*args); @moves << dir; end
+end
+def _INTL(text); text; end
+def pbMessage(text); $warnings+=1; end
+$game_map=Map.new(442);$map_factory=Factory.new;$player=Player.new([Object.new])
+$reward=false;$warnings=0;$facing=[443,0,0]
+load ARGV[0]
+BlueSinnohSafeMovement.install!
+p=Game_Player.new
+2.times { p.move_generic(8) }
+raise "gate bypassed" unless p.moves.empty? && $warnings==1
+$reward=true;p.move_generic(8)
+raise "gate not released" unless p.moves==[8]
+$reward=false;$game_map.map_id=443;$facing=[442,0,0];p.move_generic(2)
+raise "return blocked" unless p.moves==[8,2]
+'''
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/"guard.rb";path.write_bytes(code)
+            proc=subprocess.run([shutil.which("ruby"),"-e",script,str(path)],capture_output=True,text=True,timeout=30)
+        self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
+
     def test_save_namespace_reused_only_for_compatible_private_manifest(self):
         token="abc123abc123"
         work=self.proj/exp.REPO_OUTPUT
