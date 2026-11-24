@@ -64,3 +64,10 @@ A atualização será usada ao abrir o Blue-Story já existente e clicar em Test
 - A abertura apresenta seleção Lucas/Dawn e entrada de nome pelo pbTrainerName após a inicialização real do quarto. O estado de perfil só é marcado após sucesso. Cinco cenas de execução única apresentam perfil, mãe, Barry, Rowan no lago e Pokédex no laboratório; NPCs manuais continuam presentes, e a escolha de Pokémon exige confirmação e tenta a batalha Barry somente pelo guard nativo existente.
 - Escopo: 10 mapas, 32 eventos (incluindo IDs dos warps desativados), 4 costuras caminháveis, 2 ligações visuais, 2 pares de portais e 7 BGM. Sem ampliar até Jubilife ou Verity Cavern e sem declarar recriação integral das cutscenes oficiais. A história permanece a versão autoral Blue.
 - O CI repete a importação do ZIP real e executa testes Ruby isolados. Testes de Game.exe, visual, áudio e R09 continuam pendentes. Os saves das cópias anteriores ficam intactos; para testar a abertura é necessário novo jogo em nova cópia QA.
+
+
+## Recuperação do erro de abertura do perfil (QA 1e2b9d26ec48)
+
+O relato mostra apenas EventScriptError do Interpreter, linha 177; a exceção original não está na captura. O diagnóstico exato do erro ocorrido no PC depende do log local. A correção usa a sequência nativa de Essentials 21.1: cadastro 9/10 validado, seleção, entrada explícita de nome não vazio via pbEnterPlayerName, pbTrainerName(nome), refresh de sprite e marcação do perfil apenas após sucesso. Não usar nome automático do sistema nem confirmar um perfil cancelado.
+
+O autorun da primeira tentativa termina mesmo quando a interface falha. A escada do quarto reexecuta o setup se necessário e só transfere após perfil completo. O log local sinnoh-profile-error.txt guarda etapa e exceção original, dentro da cópia QA. Não envia diagnóstico pela rede. O arquivo pode ser solicitado ao jogador se o problema reaparecer. Mantém dez mapas, 32 eventos, sete BGM e os saves anteriores. Ruby simulado cobre duas escolhas, cancelamento, falha e nova tentativa; não declarar Game.exe nativo validado.
