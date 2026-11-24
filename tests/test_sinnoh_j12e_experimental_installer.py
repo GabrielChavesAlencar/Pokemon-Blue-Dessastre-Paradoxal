@@ -917,7 +917,7 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
         species={mon for group in f10b.REFERENCES.values() for kind,team in group.values() for mon,level in team}
         baseline={**f08c_maps,"PBS/encounters.txt":relative_pbs}
         ow=os.environ.get("BLUE_SINNOH_PRIVATE_OVERWORLDS")
-        prepared,battles,plugin=f10b.build(baseline,f08c_ids,masks,f08c_components,source,types,species,set(),overworlds=Path(ow) if ow else None)
+        prepared,battles,plugin=f10b.build(baseline,f08c_ids,masks,f08c_components,source,types,species,set(),overworlds=Path(ow) if ow else None,revision=2)
         self.assertEqual(battles["all_source_trainer_candidates"],12)
         self.assertEqual(len(battles["all_trainer_diagnostics"]),12)
         self.assertEqual(battles["overworld_archive_checked"],bool(ow))
@@ -948,6 +948,36 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
         if ow:
             print("SINNOH_F10B2_ASSET_REPORT "+json.dumps(battles,sort_keys=True),flush=True)
             print("SINNOH_REAL_F10B2_131_MAPS_12_IDENTITIES_5_PLACEMENTS_ASSETS_AUDITED_OK",flush=True)
+            expanded,report3,plugin3=f10b.build(baseline,f08c_ids,masks,f08c_components,source,types,species,set(),overworlds=Path(ow),revision=3)
+            self.assertEqual(report3["all_source_trainer_candidates"],12)
+            old_by_key={row["key"]:row for row in battles["accepted"]}
+            new_by_key={row["key"]:row for row in report3["accepted"]}
+            self.assertTrue(set(old_by_key)<=set(new_by_key))
+            self.assertIn("F10B_42_31",new_by_key)
+            self.assertIn("F10B_79_34",new_by_key)
+            self.assertGreaterEqual(report3["new_trainers"],2)
+            for key,row in old_by_key.items():
+                new=new_by_key[key]
+                for field in ("event_id","map_id","position","type","name","version","team","sprite_sha256"):
+                    self.assertEqual(row[field],new[field])
+            for path,raw in prepared.items():
+                if path=="PBS/trainers_sinnoh_f10b.txt":continue
+                if path.startswith("Data/Map") and path.endswith(".rxdata") and path!="Data/MapInfos.rxdata":
+                    old=read_marshal(raw,"F10B2_OLD");new=read_marshal(expanded[path],"F10B3_NEW")
+                    before=old.attrs.pop("@events");after=new.attrs.pop("@events")
+                    self.assertEqual(serialize(old,connection.EVENT_CLASSES),serialize(new,connection.EVENT_CLASSES))
+                    for eid,event in before.items():
+                        self.assertEqual(serialize(event,connection.EVENT_CLASSES),serialize(after[eid],connection.EVENT_CLASSES))
+                else:self.assertEqual(expanded[path],raw)
+            self.assertEqual(exp.qa_teleport.build(expanded,f08c_ids,f08c_components),entries)
+            self.assertFalse(report3["native_verified"])
+            self.assertFalse(report3["water_enabled"])
+            self.assertIn(b"BlueSinnohF10B",plugin3)
+            self.assertEqual({q["reason"] for q in report3["rejected"] if q["source_id"]==42 and q["source_event_id"] in (29,30)},{"double_battle_pending"})
+            report3["species_and_types_validation"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
+            print("SINNOH_F10B3_TRAINER_REPORT "+json.dumps(report3,sort_keys=True),flush=True)
+            print("SINNOH_REAL_F10B3_131_MAPS_JUSTIN_SEAN_BASELINE_PRESERVED_OK",flush=True)
+
 
 
 
@@ -1561,6 +1591,35 @@ puts "F10B_RUBY_VICTORY_PERSISTENCE_OK"
             self.assertEqual(len(labels),2)
         with archive([]) as donor,archive(["NPC_123_HikerB.png"]) as ow:
             self.assertIsNone(f.resolve_sprite(donor,ow,e,"HIKER")[0])
+
+    def test_f10b3_sean_explicit_variant_and_kath_alias(self):
+        import io,zipfile
+        import sinnoh_f10b_trainers as f
+        from build_johto_events import ruby
+        raw=b"\x89PNG\r\n\x1a\n"+struct.pack(">I",13)+b"IHDR"+struct.pack(">II",256,256)+b"\x08\x06\x00\x00\x00"+b"\x00"*4
+        def archive(names):
+            b=io.BytesIO()
+            with zipfile.ZipFile(b,"w") as z:
+                for name in names:z.writestr(f.pv.OW_ROOT+name,raw)
+            b.seek(0)
+            return zipfile.ZipFile(b)
+        e=ruby("RPG::Event",pages=[])
+        with archive([]) as donor,archive(f.SEAN_ART) as ow:
+            self.assertIsNone(f.resolve_sprite(donor,ow,e,"BLACKBELT")[0])
+            data,kind,labels=f.resolve_sprite(donor,ow,e,"BLACKBELT",selected_variant=f.SEAN_ART[0])
+            self.assertEqual(data,raw)
+            self.assertEqual(kind,"CLASS_EQUIVALENT_PROJECT_SELECTED")
+            self.assertIsNone(f.resolve_sprite(donor,ow,e,"BLACKBELT",selected_variant=f.SEAN_ART[1])[0])
+        with archive([]) as donor,archive([*f.SEAN_ART,"NPC_009_Black_Belt.png"]) as ow:
+            self.assertIsNone(f.resolve_sprite(donor,ow,e,"BLACKBELT",selected_variant=f.SEAN_ART[0])[0])
+        event=ruby("RPG::Event",pages=[ruby("RPG::Event::Page",list=[
+            ruby("RPG::EventCommand",code=111,parameters=[12,b'pbTrainerBattle(PBTrainers::BIRDKEEPER,"Kath",_I("Lost"))'])])])
+        self.assertIsNone(f.identity(event,79,2)[0])
+        spec,why=f.identity(event,79,3)
+        self.assertIsNone(why)
+        self.assertEqual(spec[1],"Kath")
+        self.assertEqual(spec[3],[("NOCTOWL",34)])
+        self.assertIsNone(f.identity(event,42,3)[0])
 
     def test_f10b_identity_and_connectivity(self):
         import sinnoh_f10b_trainers as f
