@@ -843,7 +843,8 @@ def extend_lake_story(blobs,mapping,components):
                 if not script.startswith(b"BlueSinnohPilot.choose_starter_from_ball("):
                     fail("STORY_STARTER_HANDLER_UNEXPECTED")
                 op.attrs["@parameters"][0]=script.replace(b"choose_starter_from_ball",b"choose_starter_scene")
-        hidden=event_page()
+        hidden=event_page(script="nil")
+        hidden.attrs["@list"]=[command(0)]
         hidden.attrs["@through"]=True
         hidden.attrs["@condition"].attrs.update({"@self_switch_valid":True,"@self_switch_ch":b"B"})
         e.attrs["@pages"].append(hidden)
