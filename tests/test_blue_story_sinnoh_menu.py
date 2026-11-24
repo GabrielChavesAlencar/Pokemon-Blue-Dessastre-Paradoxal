@@ -196,4 +196,58 @@ class BlueStorySinnohMenuTests(unittest.TestCase):
         self.assertIn('if(sourceOnly) {',self.csharp)
         self.assertIn('Run(python,install.ToArray(),pathExtra);',self.csharp)
 
+    def test_fresh_base_is_provisioned_after_sinnoh_selection(self):
+        game=self.root/"game"
+        (game/"Game.exe").unlink()
+        game.rmdir()
+        def provision(cmd,**kwargs):
+            self.assertIn("--skip-kanto",cmd)
+            self.assertIn("--apply",cmd)
+            self.assertEqual(kwargs["cwd"],self.root)
+            self.assertTrue(kwargs["check"])
+            game.mkdir();(game/"Game.exe").write_bytes(b"synthetic")
+        with patch.object(ui.subprocess,"run",side_effect=provision) as run:
+            ui.ensure_first_run_base(self.root,game)
+            run.assert_called_once()
+        self.assertFalse((self.root/".blue-work/sinnoh-first-base.json").exists())
+
+    def test_existing_base_is_not_reinstalled(self):
+        game=self.root/"game"
+        with patch.object(ui.subprocess,"run") as run:
+            ui.ensure_first_run_base(self.root,game)
+            run.assert_not_called()
+        self.assertEqual((game/"Game.exe").read_bytes(),b"synthetic fake executable")
+
+    def test_existing_partial_base_is_preserved(self):
+        game=self.root/"game"
+        (game/"Game.exe").unlink()
+        (game/"save.rxdata").write_bytes(b"private")
+        with patch.object(ui.subprocess,"run") as run:
+            with self.assertRaisesRegex(ValueError,"PARTIAL_BASE_PRESERVED"):
+                ui.ensure_first_run_base(self.root,game)
+            run.assert_not_called()
+        self.assertEqual((game/"save.rxdata").read_bytes(),b"private")
+
+    def test_retry_after_failed_fresh_base(self):
+        game=self.root/"game"
+        (game/"Game.exe").unlink()
+        with patch.object(ui.subprocess,"run",side_effect=OSError("offline")):
+            with self.assertRaises(OSError):ui.ensure_first_run_base(self.root,game)
+        marker=self.root/".blue-work/sinnoh-first-base.json"
+        self.assertTrue(marker.is_file())
+        def provision(*args,**kwargs):
+            (game/"Game.exe").write_bytes(b"synthetic")
+        with patch.object(ui.subprocess,"run",side_effect=provision):
+            ui.ensure_first_run_base(self.root,game)
+        self.assertFalse(marker.exists())
+
+    def test_fresh_base_does_not_adopt_old_installation_state(self):
+        game=self.root/"game";(game/"Game.exe").unlink()
+        work=self.root/".blue-work";work.mkdir()
+        (work/"installation.json").write_text("{}")
+        with patch.object(ui.subprocess,"run") as run:
+            with self.assertRaisesRegex(ValueError,"INSTALLATION_STATE_PRESERVED"):
+                ui.ensure_first_run_base(self.root,game)
+            run.assert_not_called()
+
 if __name__=="__main__":unittest.main()
