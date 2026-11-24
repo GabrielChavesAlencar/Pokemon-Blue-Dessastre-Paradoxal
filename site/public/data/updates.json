@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "65af839c67f36c3d97b8191b3597e0b039b0504f",
+      "date": "2026-11-24T10:36:09-03:00",
+      "title": "Sinnoh: local map and character import with nine-map QA",
+      "category": "Melhorias"
+    },
+    {
       "sha": "753e5d682e1d5ef74d406617825577194bd1c889",
       "date": "2026-11-24T09:45:08-03:00",
       "title": "Sinnoh V2: improve pilot visuals and first-run Blue-Story setup",
