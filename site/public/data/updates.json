@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ee93e9719c88f045c9dd8b4510e596ee6ffd81cc",
+      "date": "2026-11-24T12:22:33-03:00",
+      "title": "Sinnoh: initialize private fresh regional state before bedroom profile",
+      "category": "Melhorias"
+    },
+    {
       "sha": "92d51fedd5f94d8c8b18ba9ccc91afeaccd4c959",
       "date": "2026-11-24T12:01:58-03:00",
       "title": "Sinnoh: recover native profile event and preserve diagnostic context",
