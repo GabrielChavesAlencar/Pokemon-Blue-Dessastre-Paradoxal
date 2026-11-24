@@ -2,7 +2,7 @@
   "schema": 1,
   "region": "SINNOH",
   "reference": "Platinum",
-  "status": "F01_F02_F03_F04_F05_F06_F07_MERGED_F08C_MERGED_F09A_PENDING_CI",
+  "status": "F01_F02_F03_F04_F05_F06_F07_MERGED_F08C_MERGED_F09A_MERGED_F09B_PENDING_CI",
   "catalog": "data/regions/sinnoh-expansion-destinations.json",
   "prepared_pilot": {
     "maps": 131,
@@ -165,11 +165,21 @@
     {
       "id": "F09",
       "title": "Pokémon selvagens de todas as áreas",
-      "status": "implemented_partial_pending_ci",
+      "status": "partially_merged",
       "maps_to_audit": 131,
       "reference_candidate_areas": 14,
       "original_weights_verified": false,
-      "native_verified": false
+      "native_verified": false,
+      "f09a_pr": 289,
+      "f09a_merge_commit": "efd414ed8ec4d2f4ed225aa249de019b6a441967",
+      "maps_audited": 131,
+      "maps_with_encounters": 17,
+      "new_tables": 13,
+      "grass_without_land": 29,
+      "source_pbs_sha256": "e812fb6413b410a8c9ce4380cd02c0e1f8a5d257f5793cf87182201d6e6d7990",
+      "source_map_count": 81,
+      "matched_source_maps": 67,
+      "followup": "F09B_PENDING_CI"
     },
     {
       "id": "F10",
@@ -275,10 +285,20 @@
     ]
   },
   "f09": {
-    "status": "implemented_partial_pending_ci",
+    "status": "partially_merged",
     "maps_to_audit": 131,
     "reference_candidate_areas": 14,
     "original_weights_verified": false,
-    "native_verified": false
+    "native_verified": false,
+    "f09a_pr": 289,
+    "f09a_merge_commit": "efd414ed8ec4d2f4ed225aa249de019b6a441967",
+    "maps_audited": 131,
+    "maps_with_encounters": 17,
+    "new_tables": 13,
+    "grass_without_land": 29,
+    "source_pbs_sha256": "e812fb6413b410a8c9ce4380cd02c0e1f8a5d257f5793cf87182201d6e6d7990",
+    "source_map_count": 81,
+    "matched_source_maps": 67,
+    "followup": "F09B_PENDING_CI"
   }
 }
