@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b0a5868130429ed2cdcf05f5c8688bc8d42227e3",
+      "date": "2026-11-24T20:33:23-03:00",
+      "title": "Merge pull request #295 from GabrielChavesAlencar/sinnoh-full-expansion-f10b2-trainer-assets",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "95c2ea9b397d5e1e03adf398a1149ba6703d8e55",
+      "date": "2026-11-24T20:22:22-03:00",
+      "title": "Sinnoh F10B2: recover unique class sprites and diagnose all twelve trainer identities",
+      "category": "Melhorias"
+    },
+    {
       "sha": "9a261b423c2982f8651edf5779dc77d492727aa9",
       "date": "2026-11-24T20:21:43-03:00",
       "title": "Merge pull request #294 from GabrielChavesAlencar/sinnoh-full-expansion-f10b-trainers",
