@@ -5,7 +5,7 @@ Referência Platinum. Progresso de preparação (não aprovação nativa):
 - Rotas: **2/30**, Rota 201 e 202.
 - Cidades: **2/14**, Twinleaf e Sandgem.
 - Piloto privado: **10 mapas preparados**.
-- Fases novas: **1/15 concluída**, F01 integrada no PR #279 (11/11); F02 implementada, aguarda CI.
+- Fases novas: **2/15 concluídas**, F01 e F02 integradas (11/11 cada); F03 implementada, aguarda inventário real e CI.
 
 ## Progresso das cidades
 
@@ -33,8 +33,8 @@ Referência Platinum. Progresso de preparação (não aprovação nativa):
 ## Fases
 
 - [x] F01 — Menu de teleporte QA no menu de pausa (PR #279, 11/11)
-- [ ] F02 — Correção das bordas pretas com árvores (implementada, aguardando CI)
-- [ ] F03 — Inventário completo dos mapas, sprites e MapIDs
+- [x] F02 — Correção das bordas pretas com árvores (PR #280, 11/11)
+- [ ] F03 — Inventário completo dos mapas, sprites e MapIDs (auditor implementado, recibo real pendente)
 - [ ] F04 — Importação de todas as cidades e vilarejos
 - [ ] F05 — Importação de todas as rotas 201–230
 - [ ] F06 — Importação de florestas, lagos e cavernas
@@ -62,3 +62,17 @@ Escopo: seis exteriores reais do piloto privado (Twinleaf, Route 201, Sandgem, R
 A textura opaca de 64x64 é gerada exclusivamente na instalação privada: prioriza amostra repetida de tiles bloqueados, verdes e opacos da borda da fonte original já verificada; caso não exista amostra adequada, usa árvores autorais do piloto. A escolha heurística de arte não equivale à avaliação visual nativa. Não publica os gráficos importados no GitHub. O relatório indica a origem escolhida e os seis MapIDs.
 
 CI: teste Ruby simulado de célula vazia, vizinho carregado, tile transparente mas válido, posição subpixel, tom, escopo e descarte; teste com os ZIPs originais compara mapas, máscaras de colisão, 35 eventos e dez pontos QA sem alterações, e valida a opacidade da textura. Ainda não há aprovação visual em Game.exe nem garantia de aparência idêntica às árvores originais em cada borda. Testar andando até as bordas em todos os seis exteriores, inclusive nas conexões e após teleporte, de dia e de noite. F03 continua pendente.
+
+## F03 — inventário completo e preparação da F04
+
+O auditor lê os dois ZIPs SHA-256 fixados pela F01/F02, sem extrair nem executar scripts do doador. Enumera todos os MapIDs físicos e indexados (inclusive submapas ainda não catalogados), nomes, dimensões, hierarquia, geometria não vazia, tilesets e tabelas, referências gráficas, eventos/transferências estáticas, PNGs do pacote de overworlds. A comparação com o catálogo de 133 destinos usa nomes normalizados e aliases explícitos; ausência de correspondência exata não prova ausência do mapa. Candidatos ambíguos, vazios, com referências inválidas ou faltantes precisam de revisão. O CI publica apenas recibo JSON de metadados e contagens, nunca os ZIPs, imagens, RXDATA ou scripts do doador. PNGs são checados por cabeçalho e dimensões, não por fidelidade visual.
+
+F04: 14 cidades, duas já preparadas e 12 pendentes. O recibo identifica os candidatos por cidade. O auditor opcional de capacidade consulta MapInfos e arquivos Map*.rxdata da base local, preserva os dez IDs anteriores e verifica capacidade na faixa privada 442–517, sem reservar nem instalar. A faixa comporta no máximo 76 IDs, por isso toda Sinnoh pode exigir revisão de reservas futura; não reutilizar IDs de outras regiões. O snapshot histórico B01 de 648 IDs não prova disponibilidade atual. A F04 precisa de confirmação da geometria de cada cidade, gráficos/colisões, remapeamento, spawns seguros e política de compatibilidade dos saves ao ampliar a lista de IDs. Não importar eventos ou scripts externos. R07/R08/R09 e Game.exe continuam pendentes.
+
+Execução local somente leitura (com os ZIPs já baixados):
+
+```powershell
+python scripts/regions/audit_sinnoh_expansion_f03.py --maps "Sinnoh Maps.zip" --overworlds "Ultimate Gen 4 Overworlds Pack.zip"
+```
+
+Opcionalmente informar --base game e --prior-manifest com o manifesto privado anterior. O relatório vai para stdout; nenhum save é lido ou alterado. Contagens físicas serão registradas somente após o recibo original do CI.
