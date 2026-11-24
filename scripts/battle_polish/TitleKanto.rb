@@ -332,15 +332,21 @@ module BlueKantoTitle
       end
       interior_report = data["interior_expansion"]
       interior_keys = [32,43,48,81,86,87,88,97,107,115,120,124,125,129,130,131,132,133,134,135,136,137,138,143,148,149,158,167,168,169,170,171,172,187,188,220].map { |id| sprintf("SINNOH_F07_INTERIOR_%03d",id) }
+      extra_report = data["f08c_expansion"]
+      extra_keys = %w[SINNOH_RESORT_AREA SINNOH_CYCLING_ROAD SINNOH_SURVIVAL_AREA SINNOH_FIGHT_AREA]
       natural_report = data["natural_expansion"]
       if natural_report.is_a?(Hash) && !natural_report.empty?
         natural_keys = %w[SINNOH_OREBURGH_MINE SINNOH_OREBURGH_GATE SINNOH_MT_CORONET_WEST_APPROACH SINNOH_SOLACEON_RUINS SINNOH_ETERNA_FOREST SINNOH_ETERNA_FOREST_SOURCE_093 SINNOH_FLOAROMA_MEADOW SINNOH_MT_CORONET_SOURCE_117 SINNOH_MT_CORONET_INTERIOR_ROUTES SINNOH_RAVAGED_PATH SINNOH_STARK_MOUNTAIN SINNOH_STARK_MOUNTAIN_SOURCE_153 SINNOH_ACUITY_LAKEFRONT SINNOH_LAKE_ACUITY SINNOH_ACUITY_CAVERN SINNOH_SNOWPOINT_TEMPLE SINNOH_MT_CORONET_SOURCE_174 SINNOH_MT_CORONET_SOURCE_182 SINNOH_MT_CORONET_SOURCE_183 SINNOH_MT_CORONET_SOURCE_184 SINNOH_WAYWARD_CAVE SINNOH_WAYWARD_CAVE_SOURCE_190 SINNOH_VERITY_CAVERN SINNOH_MANIAC_TUNNEL SINNOH_SPRING_PATH SINNOH_SENDOFF_SPRING SINNOH_TURNBACK_CAVE SINNOH_TURNBACK_CAVE_SOURCE_211 SINNOH_TURNBACK_CAVE_SOURCE_212 SINNOH_TURNBACK_CAVE_SOURCE_213 SINNOH_VALOR_LAKEFRONT SINNOH_LAKE_VALOR SINNOH_LAKE_VALOR_SOURCE_216 SINNOH_VALOR_CAVERN SINNOH_GREAT_MARSH]
-        return sinnoh_qa_block("Manifesto F06 invalido.") unless expected_count == 56 && ids.is_a?(Hash) && natural_report.keys.sort == natural_keys.sort && natural_keys.all? { |k| ids.key?(k) && natural_report[k].is_a?(Hash) && natural_report[k]["target_id"] == ids[k] } && ids.all? { |k,n| natural_keys.include?(k) || (interior_report.is_a?(Hash) && !interior_report.empty? && interior_keys.include?(k)) || (n.is_a?(Integer) && n.between?(442,517)) }
+        return sinnoh_qa_block("Manifesto F06 invalido.") unless expected_count == 56 && ids.is_a?(Hash) && natural_report.keys.sort == natural_keys.sort && natural_keys.all? { |k| ids.key?(k) && natural_report[k].is_a?(Hash) && natural_report[k]["target_id"] == ids[k] } && ids.all? { |k,n| natural_keys.include?(k) || (interior_report.is_a?(Hash) && !interior_report.empty? && interior_keys.include?(k)) || (extra_report.is_a?(Hash) && !extra_report.empty? && extra_keys.include?(k)) || (n.is_a?(Integer) && n.between?(442,517)) }
         expected_count = 91
       end
       if interior_report.is_a?(Hash) && !interior_report.empty?
         return sinnoh_qa_block("Manifesto F07 invalido.") unless expected_count == 91 && ids.is_a?(Hash) && interior_report.keys.sort == interior_keys.sort && interior_keys.all? { |k| ids.key?(k) && interior_report[k].is_a?(Hash) && interior_report[k]["target_id"] == ids[k] && interior_report[k]["source_tileset_id"] == 25 && interior_report[k]["outdoor"] == false }
         expected_count = 127
+      end
+      if extra_report.is_a?(Hash) && !extra_report.empty?
+        return sinnoh_qa_block("Manifesto F08C invalido.") unless expected_count == 127 && ids.is_a?(Hash) && extra_report.keys.sort == extra_keys.sort && extra_keys.all? { |k| ids.key?(k) && extra_report[k].is_a?(Hash) && extra_report[k]["target_id"] == ids[k] && extra_report[k]["source_tileset_id"] == 24 && extra_report[k]["outdoor"] == true }
+        expected_count = 131
       end
       return sinnoh_qa_block("MapIDs QA invalidos ou colisao entre mapas.") unless
         ids.is_a?(Hash) && ids.length == expected_count &&
@@ -370,10 +376,15 @@ module BlueKantoTitle
         return sinnoh_qa_block("Fontes F06 invalidas.") unless source_ids.all? { |id| id.is_a?(Integer) } && source_ids.sort == [33,76,82,89,92,93,98,117,121,145,152,153,159,161,162,173,174,182,183,184,189,190,197,207,208,209,210,211,212,213,214,215,216,217,221]
         required += source_ids.map { |id| sprintf("Graphics/Tilesets/SNQA_F06_%03d.png",id) }
       end
-      if expected_count == 127
+      if expected_count >= 127
         source_ids = interior_report.values.map { |r| r["source_id"] }
         return sinnoh_qa_block("Fontes F07 invalidas.") unless source_ids.all? { |id| id.is_a?(Integer) } && source_ids.sort == [32,43,48,81,86,87,88,97,107,115,120,124,125,129,130,131,132,133,134,135,136,137,138,143,148,149,158,167,168,169,170,171,172,187,188,220]
         required += source_ids.map { |id| sprintf("Graphics/Tilesets/SNQA_F07_%03d.png",id) }
+      end
+      if expected_count == 131
+        source_ids = extra_report.values.map { |r| r["source_id"] }
+        return sinnoh_qa_block("Fontes F08C invalidas.") unless source_ids.all? { |id| id.is_a?(Integer) } && source_ids.sort == [139,147,163,166]
+        required += source_ids.map { |id| sprintf("Graphics/Tilesets/SNQA_F08C_%03d.png",id) }
       end
       required.each do |file|
         hash = files[file]

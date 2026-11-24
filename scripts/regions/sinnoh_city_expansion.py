@@ -110,7 +110,7 @@ def source_identity(info,row,phase):
     # F03's map-name inventory strips surrounding whitespace. Match only that
     # transformation for F07; still require exact text and exact parent ID.
     # The pinned archive and map SHA-256 remain independently mandatory.
-    if phase=="F07" and isinstance(actual,bytes):
+    if phase in ("F07","F08C") and isinstance(actual,bytes):
         actual=actual.strip()
     if actual!=expected or info.get("@parent_id")!=row.get("parent_id",0):
         fail("SOURCE_EXTERIOR_IDENTITY:phase=%s:source_id=%s:name_match=%s:parent_match=%s"%(
@@ -158,10 +158,10 @@ def append_exteriors(blobs,mapping,components,path,expanded,source_rows,phase,so
             if any(0<t<48 for t in cells):fail("SOURCE_RESERVED_TILE")
             sets[sym]={t for t in cells if t>=384};source_cells[sym]=cells
             try:
-                comps[sym]=component(cells,w,h,tables["@passages"],tables["@terrain_tags"],sym if phase in ("F05","F06","F07") else None)
+                comps[sym]=component(cells,w,h,tables["@passages"],tables["@terrain_tags"],sym if phase in ("F05","F06","F07","F08C") else None)
             except ValueError as exc:
                 component_failures.append({"symbol":sym,"source_id":mid,"error":str(exc)})
-            if phase in ("F05","F06","F07"):
+            if phase in ("F05","F06","F07","F08C"):
                 print("SINNOH_"+phase+"_TERRAIN "+json.dumps({"symbol":sym,"source_id":mid,
                       **terrain_diagnostics(cells,w,h,tables["@passages"],tables["@terrain_tags"]),
                       "policy_ground_cells":len(teleport.arrival_ground(cells,w,h,tables["@passages"],tables["@terrain_tags"],sym)),
@@ -194,10 +194,10 @@ def append_exteriors(blobs,mapping,components,path,expanded,source_rows,phase,so
         rel="Data/Map%03d.rxdata"%mid
         out[rel]=serialize(m,EVENT_CLASSES)
         try:
-            x,y=teleport.safe_spawn(out[rel],tiles,comps[sym],sym if phase in ("F05","F06","F07") else None)
+            x,y=teleport.safe_spawn(out[rel],tiles,comps[sym],sym if phase in ("F05","F06","F07","F08C") else None)
         except ValueError as exc:
             raise ValueError("F04_CITY:"+sym+":"+str(exc)) from exc
-        if phase in ("F05","F06","F07"):
+        if phase in ("F05","F06","F07","F08C"):
             print("SINNOH_"+phase+"_ARRIVAL "+json.dumps({"symbol":sym,"source_id":row["source_id"],
                   "target_id":mid,"x":x,"y":y,"component_cells":len(comps[sym])},sort_keys=True),flush=True)
         info=copy.deepcopy(infos[mapping["SINNOH_SANDGEM_TOWN"]]);order+=1
@@ -212,7 +212,7 @@ def append_exteriors(blobs,mapping,components,path,expanded,source_rows,phase,so
                      "source_sha256":row["sha256"],"source_tileset_id":source_tileset_id,"target_tileset_id":tid,
                      "safe_spawn":[mid,x,y],"model_connected_cells":len(comps[sym]),
                      "donor_events_copied":0,"native_verified":False}
-        if phase in ("F06","F07"):report[sym]["outdoor"]=outdoor
+        if phase in ("F06","F07","F08C"):report[sym]["outdoor"]=outdoor
     out["Data/MapInfos.rxdata"]=serialize(infos)
     out["Data/Tilesets.rxdata"]=serialize(tiles)
     out["PBS/map_metadata.txt"]=pbs

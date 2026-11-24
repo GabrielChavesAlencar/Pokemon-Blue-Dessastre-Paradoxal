@@ -791,6 +791,42 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
             if portal["approach_mode"]=="diagonal":
                 self.assertEqual(connection.distance(portal["from"][1:],portal["original_from"][1:]),1)
         print("SINNOH_REAL_F08B_49_BASELINE_PORTALS_7_SEAMS_127_MAPS_PRESERVED_OK",flush=True)
+        f08c=exp.f08c_expansion
+        f08c_maps,f08c_ids,f08c_components,extra=f08c.append(f08b_maps,f07_ids,f07_components,source,{2},br)
+        self.assertEqual(len(f08c_ids),131)
+        self.assertEqual({k:f08c_ids[k] for k in f07_ids},f07_ids)
+        self.assertEqual(set(extra["maps"]),f08c.EXTERIORS)
+        self.assertEqual(f08c_maps["Data/map_connections.dat"],f08b_maps["Data/map_connections.dat"])
+        self.assertEqual(f08c_maps["PBS/map_connections.txt"],f08b_maps["PBS/map_connections.txt"])
+        entries=exp.qa_teleport.build(f08c_maps,f08c_ids,f08c_components)
+        self.assertEqual(len(entries),len(f07_entries))
+        self.assertEqual(len({r[0] for r in entries}),len(entries))
+        self.assertEqual([r[:3] for r in entries],[r[:3] for r in f07_entries])
+        self.assertEqual({r[0]:r for r in entries if r[0] not in f08c.EXTERIORS},
+                         {r[0]:r for r in f07_entries if r[0] not in f08c.EXTERIORS})
+        for sym in f08c.EXTERIORS:
+            previous=next(r for r in f07_entries if r[0]==sym)
+            current=next(r for r in entries if r[0]==sym)
+            self.assertIsNone(previous[3])
+            self.assertEqual(current[3],extra["maps"][sym]["safe_spawn"])
+        self.assertGreaterEqual(extra["new_portals"],10)
+        self.assertTrue({(163,168),(168,163),(163,171),(171,163),(166,169),(169,166),(166,172),(172,166),(166,188),(188,166)}
+                        <={(p["source_id"],p["target_source_id"]) for p in extra["portals"]})
+        masks=pv.movement_masks(f08c_maps,f08c_ids,extra_symbols=city.CITIES|routes.ROUTES|natural.NATURAL|interior.INTERIORS|f08c.EXTERIORS)
+        self.assertEqual({mid:masks[mid] for mid in f07_masks},f07_masks)
+        for mid in f07_ids.values():
+            rel="Data/Map%03d.rxdata"%mid
+            old=read_marshal(f08b_maps[rel],"F08C_OLD");new=read_marshal(f08c_maps[rel],"F08C_NEW")
+            before=old.attrs.pop("@events");after=new.attrs.pop("@events")
+            self.assertEqual(serialize(old,connection.EVENT_CLASSES),serialize(new,connection.EVENT_CLASSES))
+            for eid,event in before.items():
+                self.assertEqual(serialize(event,connection.EVENT_CLASSES),serialize(after[eid],connection.EVENT_CLASSES))
+        for portal in extra["portals"]:
+            mid,x,y=portal["from"];dst,dx,dy=portal["to"]
+            self.assertEqual(masks[mid][y][x],".")
+            self.assertEqual(masks[dst][dy][dx],".")
+            self.assertEqual(portal["trigger"],0)
+        print("SINNOH_REAL_F08C_4_EXTERIORS_131_MAPS_63_BASELINE_PORTALS_7_SEAMS_PRESERVED_OK",flush=True)
 
 
 
@@ -1311,6 +1347,25 @@ raise "duplicate battle" unless $calls==4
         self.assertIsNone(c.diagonal_approach((0,23),(1,22),{(1,22)}))
         self.assertIsNone(c.diagonal_approach((0,23),(1,22),{(1,23)}))
         self.assertIsNone(c.diagonal_approach((0,23),(2,22),{(2,22),(1,23)}))
+
+    def test_f08c_catalog_already_contains_planned_destinations_and_connected_ground(self):
+        c=exp.f08c_expansion
+        rows=exp.qa_teleport.catalog()
+        self.assertEqual({r["symbol"] for r in rows}&c.EXTERIORS,c.EXTERIORS)
+        self.assertEqual(c.connected_ground({(1,1),(2,1),(3,1),(8,8)},(1,1)),{(1,1),(2,1),(3,1)})
+        self.assertEqual(c.connected_ground({(1,1)},(2,1)),set())
+
+    def test_f08c_append_only_capacity(self):
+        c=exp.f08c_expansion
+        old={k:442+i for i,k in enumerate(sorted(exp.interior_expansion.ALL))}
+        full=c.allocate(old,{2,570})
+        self.assertEqual(len(full),131)
+        self.assertEqual({k:full[k] for k in old},old)
+        self.assertNotIn(570,full.values())
+        with self.assertRaisesRegex(ValueError,"INSUFFICIENT"):
+            c.allocate(old,set(range(569,600)))
+        with self.assertRaisesRegex(ValueError,"PRIOR"):
+            c.allocate(old,{442})
 
     def test_f07_capacity_and_save_namespace_append_only(self):
         city=exp.city_expansion
