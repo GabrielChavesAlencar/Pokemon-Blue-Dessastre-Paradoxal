@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "817ca9df06008650f2fdbe3d173bffa3b83f2a3e",
+      "date": "2026-11-24T19:19:10-03:00",
+      "title": "Merge pull request #288 from GabrielChavesAlencar/sinnoh-full-expansion-f08c-exteriors",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "b53fd33f6e3179397f567a1d20b895ab79bd6095",
+      "date": "2026-11-24T19:09:27-03:00",
+      "title": "fix(F08C): activate existing QA destinations and audit cycling ground connectivity",
+      "category": "Correções"
+    },
+    {
+      "sha": "33be9e845a79b324e4d3269780d25b8d5608f87d",
+      "date": "2026-11-24T19:04:40-03:00",
+      "title": "feat(Sinnoh F08C): append four pinned missing exteriors and reciprocal doors",
+      "category": "Novidades"
+    },
+    {
       "sha": "46f0131bec418e7b12c7c526034362c7b940b487",
       "date": "2026-11-24T19:03:26-03:00",
       "title": "Merge pull request #287 from GabrielChavesAlencar/sinnoh-full-expansion-f08b-portals",
