@@ -874,6 +874,22 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
         refined["species_validation"]="SYNTHETIC_DONOR_SPECIES_FIXTURE_NOT_LOCAL_DATABASE"
         print("SINNOH_F09C_REFINEMENT_REPORT "+json.dumps(refined,sort_keys=True),flush=True)
         print("SINNOH_REAL_F09C_131_MAPS_99_ORIGINAL_METHODS_21_WEIGHT_CANDIDATES_AUDITED_OK",flush=True)
+        f09d=exp.f09d_relative
+        relative_pbs,relative_coverage,relative_stats,expected=f09d.build(final_pbs,final_coverage,f08c_ids,masks,donor,donor_species,refined)
+        self.assertEqual(relative_stats["candidate_methods"],20)
+        self.assertEqual(len(relative_stats["accepted"])+len(relative_stats["rejected"]),20)
+        self.assertTrue(all(set(row["methods"])<=set(relative_coverage[s]["methods"]) for s,row in final_coverage.items()))
+        self.assertFalse(relative_stats["water_access_verified"])
+        old_sections,_=f09b.parse(final_pbs);new_sections,_=f09b.parse(relative_pbs)
+        for key,row in old_sections.items():
+            for method,table in row["methods"].items():
+                self.assertEqual(new_sections[key]["methods"][method],table)
+        for mid,methods in expected.items():
+            for method,slots in methods.items():
+                self.assertEqual(new_sections[(mid,0)]["methods"][method]["slots"],[tuple(s) for s in slots])
+        relative_stats["species_validation"]="SYNTHETIC_DONOR_SPECIES_FIXTURE_NOT_LOCAL_DATABASE"
+        print("SINNOH_F09D_RELATIVE_REPORT "+json.dumps(relative_stats,sort_keys=True),flush=True)
+        print("SINNOH_REAL_F09D_131_MAPS_100_BASELINE_METHODS_20_RELATIVE_CANDIDATES_AUDITED_OK",flush=True)
 
 
 
@@ -1401,6 +1417,19 @@ raise "duplicate battle" unless $calls==4
         self.assertEqual({r["symbol"] for r in rows}&c.EXTERIORS,c.EXTERIORS)
         self.assertEqual(c.connected_ground({(1,1),(2,1),(3,1),(8,8)},(1,1)),{(1,1),(2,1),(3,1)})
         self.assertEqual(c.connected_ground({(1,1)},(2,1)),set())
+
+    def test_f09d_relative_weights_preserve_slots_and_reject_invalid_species(self):
+        f=exp.f09d_relative
+        table={"rate":21,"slots":[(20,"STARLY",2,4),(45,"BIDOOF",2,4)]}
+        self.assertIsNone(f.validate_relative("Land",table,{"STARLY","BIDOOF"}))
+        self.assertEqual(f.validate_relative("Land",table,{"STARLY"}),"missing_local_species")
+        self.assertEqual(f.validate_relative("Land",{"rate":21,"slots":[(65,"ROTOM",4,5)]},{"ROTOM"}),"special_species")
+        self.assertEqual(f.validate_relative("Land",{"rate":21,"slots":[(0,"STARLY",4,5)]},{"STARLY"}),"invalid_slot")
+        self.assertEqual(f.validate_relative("Land",{"rate":0,"slots":[(65,"STARLY",4,5)]},{"STARLY"}),"invalid_rate")
+        self.assertEqual(f.validate_relative("PokeRadar",table,{"STARLY","BIDOOF"}),"unsupported_method")
+        self.assertEqual(table["slots"],[(20,"STARLY",2,4),(45,"BIDOOF",2,4)])
+        self.assertEqual(len(f.gaps({"X":{"methods":["CaveMorning","CaveNight"]}})),1)
+        self.assertEqual(f.gaps({"X":{"methods":["CaveMorning","CaveNight","Cave"]}}),[])
 
     def test_f09c_exact_proportions_no_rounding(self):
         f=exp.f09c_refinement

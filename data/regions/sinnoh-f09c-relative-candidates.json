@@ -1,0 +1,156 @@
+{
+  "schema": 1,
+  "job": 138831024964,
+  "source_sha256": "e812fb6413b410a8c9ce4380cd02c0e1f8a5d257f5793cf87182201d6e6d7990",
+  "candidates": [
+    {
+      "source_id": 80,
+      "symbol": "SINNOH_ROUTE_210",
+      "method": "LandMorning",
+      "total": 65,
+      "slots": 4
+    },
+    {
+      "source_id": 80,
+      "symbol": "SINNOH_ROUTE_210",
+      "method": "LandNight",
+      "total": 65,
+      "slots": 6
+    },
+    {
+      "source_id": 105,
+      "symbol": "SINNOH_ROUTE_203",
+      "method": "LandNight",
+      "total": 110,
+      "slots": 7
+    },
+    {
+      "source_id": 121,
+      "symbol": "SINNOH_MT_CORONET_INTERIOR_ROUTES",
+      "method": "CaveDay",
+      "total": 90,
+      "slots": 7
+    },
+    {
+      "source_id": 140,
+      "symbol": "SINNOH_ROUTE_229",
+      "method": "Land",
+      "total": 110,
+      "slots": 7
+    },
+    {
+      "source_id": 151,
+      "symbol": "SINNOH_ROUTE_227",
+      "method": "LandNight",
+      "total": 90,
+      "slots": 8
+    },
+    {
+      "source_id": 152,
+      "symbol": "SINNOH_STARK_MOUNTAIN",
+      "method": "LandNight",
+      "total": 90,
+      "slots": 8
+    },
+    {
+      "source_id": 157,
+      "symbol": "SINNOH_ROUTE_217",
+      "method": "LandNight",
+      "total": 105,
+      "slots": 6
+    },
+    {
+      "source_id": 159,
+      "symbol": "SINNOH_ACUITY_LAKEFRONT",
+      "method": "LandNight",
+      "total": 105,
+      "slots": 5
+    },
+    {
+      "source_id": 161,
+      "symbol": "SINNOH_LAKE_ACUITY",
+      "method": "LandNight",
+      "total": 105,
+      "slots": 7
+    },
+    {
+      "source_id": 174,
+      "symbol": "SINNOH_MT_CORONET_SOURCE_174",
+      "method": "Cave",
+      "total": 120,
+      "slots": 9
+    },
+    {
+      "source_id": 174,
+      "symbol": "SINNOH_MT_CORONET_SOURCE_174",
+      "method": "CaveNight",
+      "total": 60,
+      "slots": 5
+    },
+    {
+      "source_id": 182,
+      "symbol": "SINNOH_MT_CORONET_SOURCE_182",
+      "method": "Cave",
+      "total": 120,
+      "slots": 9
+    },
+    {
+      "source_id": 184,
+      "symbol": "SINNOH_MT_CORONET_SOURCE_184",
+      "method": "Cave",
+      "total": 120,
+      "slots": 9
+    },
+    {
+      "source_id": 200,
+      "symbol": "SINNOH_ROUTE_221",
+      "method": "Land",
+      "total": 145,
+      "slots": 6
+    },
+    {
+      "source_id": 214,
+      "symbol": "SINNOH_VALOR_LAKEFRONT",
+      "method": "LandMorning",
+      "total": 110,
+      "slots": 5
+    },
+    {
+      "source_id": 214,
+      "symbol": "SINNOH_VALOR_LAKEFRONT",
+      "method": "Land",
+      "total": 110,
+      "slots": 4
+    },
+    {
+      "source_id": 214,
+      "symbol": "SINNOH_VALOR_LAKEFRONT",
+      "method": "LandNight",
+      "total": 110,
+      "slots": 5
+    },
+    {
+      "source_id": 221,
+      "symbol": "SINNOH_GREAT_MARSH",
+      "method": "LandMorning",
+      "total": 112,
+      "slots": 9
+    },
+    {
+      "source_id": 221,
+      "symbol": "SINNOH_GREAT_MARSH",
+      "method": "LandNight",
+      "total": 122,
+      "slots": 10
+    }
+  ],
+  "recovered": [
+    {
+      "method": "LandMorning",
+      "original_total": 125,
+      "slots": 5,
+      "source_id": 200,
+      "symbol": "SINNOH_ROUTE_221"
+    }
+  ]
+}
