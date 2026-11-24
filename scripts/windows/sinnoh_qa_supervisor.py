@@ -139,6 +139,16 @@ def audit_maps(qa: Path, data: dict, *, allow_tile_recovery: bool):
     files = ["Data/MapInfos.rxdata", TILESETS] + [
         "Data/Map%03d.rxdata" % n for n in data["mapids"].values()
     ]
+    if data.get("visual_revision") == "SINNOH_ORIGINAL_PIXEL_ART_V2":
+        files += [
+            "Graphics/Tilesets/SN_J11C_Original_Interior.png",
+            "Graphics/Tilesets/SN_J11C_Original_Exterior.png",
+            "Graphics/Autotiles/SNQA_WaterV2.png",
+            "Graphics/Characters/SNQA_MOTHER.png",
+            "Graphics/Characters/SNQA_BARRY.png",
+            "Graphics/Characters/SNQA_ROWAN.png",
+            "Graphics/Characters/SNQA_BALL.png",
+        ]
     if (not isinstance(hashes.get(PRISTINE), str) or
         hashes.get(PRISTINE) != hashes.get(TILESETS)):
         block("PRISTINE_NOT_PINNED_TO_ORIGINAL_HASH")
