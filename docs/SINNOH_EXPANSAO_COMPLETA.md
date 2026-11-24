@@ -2,10 +2,10 @@
 
 Referência Platinum. Progresso de preparação (não aprovação nativa):
 
-- Rotas: **2/30**, Rota 201 e 202.
+- Rotas: **30/30**, Rota 201–230 e seis segmentos adicionais.
 - Cidades: **14/14**, todas preparadas na F04.
-- Piloto privado: **22 mapas preparados**.
-- Fases novas: **4/15 concluídas**, F01/F02/F04 integradas (11/11 cada), F03 integrada (9/9); F05 implementada, aguarda CI.
+- Piloto privado: **56 mapas preparados**.
+- Fases novas: **5/15 concluídas**, F01/F02/F04/F05 integradas (11/11 cada), F03 integrada (9/9); F06 implementada, aguarda CI.
 
 ## Progresso das cidades
 
@@ -28,7 +28,7 @@ Referência Platinum. Progresso de preparação (não aprovação nativa):
 
 ## Progresso das rotas
 
-201 e 202 preparadas; 203–230 pendentes. Fight, Survival e Resort Area são contadas separadamente das 14 cidades.
+201–230 preparadas; seis segmentos adicionais validados. Fight, Survival e Resort Area são contadas separadamente das 14 cidades.
 
 ## Fases
 
@@ -36,8 +36,8 @@ Referência Platinum. Progresso de preparação (não aprovação nativa):
 - [x] F02 — Correção das bordas pretas com árvores (PR #280, 11/11)
 - [x] F03 — Inventário completo dos mapas, sprites e MapIDs (PR #281, 9/9)
 - [x] F04 — Importação de todas as cidades e vilarejos (PR #282, 11/11; 22 mapas preparados)
-- [ ] F05 — Importação de todas as rotas 201–230 (56 mapas candidatos, aguardando CI)
-- [ ] F06 — Importação de florestas, lagos e cavernas
+- [x] F05 — Importação de todas as rotas 201–230 (PR #283, 11/11; 56 mapas preparados)
+- [ ] F06 — Importação de florestas, lagos e cavernas (35 mapas candidatos, aguardando CI)
 - [ ] F07 — Importação dos interiores e edifícios
 - [ ] F08 — Conexões entre mapas e colisões
 - [ ] F09 — Pokémon selvagens de todas as áreas
@@ -88,3 +88,16 @@ A compatibilidade com saves antigos exige exatamente a mesma base MapInfos e os 
 F04 integrada no PR #282 (11/11). Marcador real: SINNOH_REAL_F04_14_CITIES_22_TELEPORTS_35_EVENTS_18_EXTERIORS_OK. A F05 acrescenta 34 mapas exteriores do tileset 24: 28 rotas restantes e seis mapas adicionais associados às rotas 205, 210, 212, 224, 225 e 228. Os IDs de origem, nomes, hierarquia, dimensões e hashes SHA-256 estão fixados no catálogo data/regions/sinnoh-f05-route-sources.json. A classificação dos mapas subordinados como segmentos QA não implica que sejam conexões naturais, nem que a variante 224 seja uma passagem adicional na história. Portarias e interiores permanecem em F07.
 
 Meta: 56 mapas privados, 30 rotas principais, 36 destinos na categoria Rotas (incluindo seis entradas extras), 139 destinos de catálogo, 52 exteriores com proteção de bordas e 35 eventos antigos. Os 22 mapas e respectivos tilesets anteriores permanecem byte a byte; somente IDs livres de 442–517 podem ser usados. Não são adicionadas conexões, encontros, scripts ou eventos do doador. Música temporária de Sandgem para novas rotas. O filtro de chegada conserva terreno comum, passagem em todas as direções e dois vizinhos; se uma rota marítima ou qualquer outra não tiver ponto terrestre seguro, o CI bloqueia a importação até uma solução específica, nunca teleporta para água ou colisão. Saves reutilizam namespace somente se base, IDs e hashes anteriores coincidirem. Nenhum save pessoal aberto. Game.exe, R07/R08/R09 e aprovação visual nativa pendentes.
+
+
+## F05 — aceite CI
+
+PR #283 integrado em 09409e01dd89d57b74b334cb2826077791d5c3c0; 11/11 workflows e 26/26 checks. Marcador real SINNOH_REAL_F05_30_ROUTES_56_TELEPORTS_35_EVENTS_52_EXTERIORS_OK no job 138742746702. Fonte 165 (0,27), 142 (18,14), IDs da fixture não são reservas locais.
+
+## F06 — áreas naturais privadas
+
+35 mapas com dimensões, hierarquia e SHA-256 do inventário real F03 (job 138719583390). Meta 91 mapas, 64 exteriores, 35 eventos antigos, 56 mapas e teleportes anteriores imutáveis. Sem scripts ou eventos externos, sem conexões novas, sem afirmação de piso ou progressão para variantes. Classificação exterior/interior provisória, cavernas não recebem cobertura de árvores F02. MapIDs adicionais selecionados somente após leitura da ocupação local MapInfos, Data/Map*.rxdata e PBS; faixa 442–599 apenas na cópia QA isolada. 518–599 são candidatos históricos de Unova e NÃO são reservados para Sinnoh compartilhada. Se insuficiente, abortar; não usar 600+ nem mudar 56 IDs. Reutilizar namespace somente com hash de base, IDs e bytes anteriores iguais; não acessar saves. R07/R08/R09 e aprovação nativa continuam pendentes. Victory Road, ruínas lendárias e outras áreas de pós-jogo ficam para F13/F14.
+
+### F06 — correção de chegada rochosa
+
+O job 138748423718 confirmou novamente F05 e encontrou 21 interiores naturais sem componente de chegada de terreno 0. Todos os 21 contêm células transitáveis de terreno 4 (Rock). A exceção usa allowlist explícita desses símbolos, mantém todas as camadas desobstruídas, interior dos limites, componente conectado de pelo menos 12 células elegíveis e dois vizinhos elegíveis. Não inclui água, gelo (inclusive Snowpoint Temple), grama, terrenos especiais ou tiles bloqueados. Os outros 14 mapas e os 56 anteriores mantêm sua política de chegada. Nenhuma geometria, tabela de passagens ou tile do doador é alterado. A aprovação continua condicionada ao novo teste real.

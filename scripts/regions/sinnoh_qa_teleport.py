@@ -21,6 +21,33 @@ def catalog(root=ROOT):
         raise ValueError("SINNOH_F01_CITIES_INCOMPLETE")
     return rows
 
+# Exact F06 rock-floor exceptions from original-source job 138748423718.
+# Every listed map had no ordinary arrival component but passable tag-4 cells.
+# Do not extend to previously validated maps or other special terrain.
+F06_ROCK_ARRIVALS=frozenset({
+    "SINNOH_OREBURGH_GATE",  # source 76: 462 passable pure-rock cells
+    "SINNOH_MT_CORONET_WEST_APPROACH",  # source 82: 1063 passable pure-rock cells
+    "SINNOH_SOLACEON_RUINS",  # source 89: 499 passable pure-rock cells
+    "SINNOH_MT_CORONET_SOURCE_117",  # source 117: 121 passable pure-rock cells
+    "SINNOH_MT_CORONET_INTERIOR_ROUTES",  # source 121: 218 passable pure-rock cells
+    "SINNOH_RAVAGED_PATH",  # source 145: 346 passable pure-rock cells
+    "SINNOH_STARK_MOUNTAIN_SOURCE_153",  # source 153: 1551 passable pure-rock cells
+    "SINNOH_ACUITY_CAVERN",  # source 162: 231 passable pure-rock cells
+    "SINNOH_SNOWPOINT_TEMPLE",  # source 173: 510 passable pure-rock cells
+    "SINNOH_MT_CORONET_SOURCE_174",  # source 174: 462 passable pure-rock cells
+    "SINNOH_MT_CORONET_SOURCE_182",  # source 182: 587 passable pure-rock cells
+    "SINNOH_MT_CORONET_SOURCE_184",  # source 184: 581 passable pure-rock cells
+    "SINNOH_WAYWARD_CAVE",  # source 189: 1337 passable pure-rock cells
+    "SINNOH_WAYWARD_CAVE_SOURCE_190",  # source 190: 594 passable pure-rock cells
+    "SINNOH_VERITY_CAVERN",  # source 197: 244 passable pure-rock cells
+    "SINNOH_MANIAC_TUNNEL",  # source 207: 474 passable pure-rock cells
+    "SINNOH_TURNBACK_CAVE",  # source 210: 367 passable pure-rock cells
+    "SINNOH_TURNBACK_CAVE_SOURCE_211",  # source 211: 2028 passable pure-rock cells
+    "SINNOH_TURNBACK_CAVE_SOURCE_212",  # source 212: 2028 passable pure-rock cells
+    "SINNOH_TURNBACK_CAVE_SOURCE_213",  # source 213: 2028 passable pure-rock cells
+    "SINNOH_VALOR_CAVERN",  # source 217: 204 passable pure-rock cells
+})
+
 def arrival_policy(symbol=None):
     # Exact F05 exceptions, never applied to prior maps or other routes.
     # 165: only four fully passable tag-0 cells, all on the map boundary.
@@ -28,7 +55,7 @@ def arrival_policy(symbol=None):
     # Require a connected ordinary/rock pocket; never admit grass or water.
     if symbol=="SINNOH_ROUTE_225_SEGMENT_2":
         return frozenset({0}),True,1,2
-    if symbol=="SINNOH_ROUTE_228_SEGMENT_2":
+    if symbol=="SINNOH_ROUTE_228_SEGMENT_2" or symbol in F06_ROCK_ARRIVALS:
         return frozenset({0,4}),False,2,12
     return frozenset({0}),False,2,12
 
@@ -71,6 +98,9 @@ def build(blobs,mapping,components,root=ROOT):
     if any("_SEGMENT_" in sym for sym in mapping):
         from sinnoh_route_expansion import extra_destinations
         rows += extra_destinations(root)
+    if len(mapping)>56:
+        from sinnoh_natural_expansion import extra_destinations as natural_destinations
+        rows += natural_destinations(root)
     if not set(mapping)<={r["symbol"] for r in rows}:
         raise ValueError("SINNOH_F01_UNCATALOGUED_MAP")
     if len(set(mapping.values()))!=len(mapping):

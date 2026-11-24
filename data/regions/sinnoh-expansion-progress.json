@@ -2,13 +2,41 @@
   "schema": 1,
   "region": "SINNOH",
   "reference": "Platinum",
-  "status": "F01_F02_F03_F04_MERGED_F05_IMPLEMENTED_PENDING_CI",
+  "status": "F01_F02_F03_F04_F05_MERGED_F06_IMPLEMENTED_PENDING_CI",
   "catalog": "data/regions/sinnoh-expansion-destinations.json",
   "prepared_pilot": {
-    "maps": 22,
+    "maps": 56,
     "routes": [
       "SINNOH_ROUTE_201",
-      "SINNOH_ROUTE_202"
+      "SINNOH_ROUTE_202",
+      "SINNOH_ROUTE_203",
+      "SINNOH_ROUTE_204",
+      "SINNOH_ROUTE_205",
+      "SINNOH_ROUTE_206",
+      "SINNOH_ROUTE_207",
+      "SINNOH_ROUTE_208",
+      "SINNOH_ROUTE_209",
+      "SINNOH_ROUTE_210",
+      "SINNOH_ROUTE_211",
+      "SINNOH_ROUTE_212",
+      "SINNOH_ROUTE_213",
+      "SINNOH_ROUTE_214",
+      "SINNOH_ROUTE_215",
+      "SINNOH_ROUTE_216",
+      "SINNOH_ROUTE_217",
+      "SINNOH_ROUTE_218",
+      "SINNOH_ROUTE_219",
+      "SINNOH_ROUTE_220",
+      "SINNOH_ROUTE_221",
+      "SINNOH_ROUTE_222",
+      "SINNOH_ROUTE_223",
+      "SINNOH_ROUTE_224",
+      "SINNOH_ROUTE_225",
+      "SINNOH_ROUTE_226",
+      "SINNOH_ROUTE_227",
+      "SINNOH_ROUTE_228",
+      "SINNOH_ROUTE_229",
+      "SINNOH_ROUTE_230"
     ],
     "cities": [
       "SINNOH_TWINLEAF_TOWN",
@@ -74,16 +102,21 @@
     {
       "id": "F05",
       "title": "Importação de todas as rotas 201–230",
-      "status": "implemented_pending_ci",
+      "status": "merged_ci_passed",
       "target_maps": 56,
       "target_routes": 30,
       "new_exterior_maps": 34,
-      "extra_segments": 6
+      "extra_segments": 6,
+      "pr": 283,
+      "merge_commit": "09409e01dd89d57b74b334cb2826077791d5c3c0",
+      "prepared_maps": 56
     },
     {
       "id": "F06",
       "title": "Importação de florestas, lagos e cavernas",
-      "status": "pending"
+      "status": "implemented_pending_ci",
+      "target_maps": 91,
+      "planned_new_natural_maps": 35
     },
     {
       "id": "F07",
@@ -142,13 +175,22 @@
     "destination_ids_allocated": 0
   },
   "f05": {
-    "status": "implemented_pending_ci",
-    "routes_prepared": 2,
-    "routes_pending": 28,
+    "status": "merged_ci_passed",
+    "routes_prepared": 30,
+    "routes_pending": 0,
     "total": 30,
     "target_maps": 56,
     "source_routes": 30,
     "extra_segments": 6,
     "destination_ids_allocated": 0
+  },
+  "f06": {
+    "status": "implemented_pending_ci",
+    "target_maps": 91,
+    "source_maps": 35,
+    "outdoor_candidates": 12,
+    "destination_ids_allocated": 0,
+    "private_max": 599,
+    "shared_reservation": false
   }
 }
