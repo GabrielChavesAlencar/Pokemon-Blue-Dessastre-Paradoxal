@@ -2,10 +2,10 @@
   "schema": 1,
   "region": "SINNOH",
   "reference": "Platinum",
-  "status": "F01_F02_F03_F04_F05_F06_F07_MERGED_F08B_MERGED_F08C_PENDING_CI",
+  "status": "F01_F02_F03_F04_F05_F06_F07_MERGED_F08C_MERGED_F09A_PENDING_CI",
   "catalog": "data/regions/sinnoh-expansion-destinations.json",
   "prepared_pilot": {
-    "maps": 127,
+    "maps": 131,
     "routes": [
       "SINNOH_ROUTE_201",
       "SINNOH_ROUTE_202",
@@ -140,22 +140,36 @@
       "reciprocal_candidates": 69,
       "pr": 286,
       "merge_commit": "974706db5ccb976ac3d45da07f290b85578ff268",
-      "prepared_maps": 127,
-      "portals": 63,
+      "prepared_maps": 131,
+      "portals": 73,
       "approach_portals": 35,
       "action_portals": 59,
       "portal_directed_accepted": 62,
       "portal_directed_pending": 83,
       "portal_pairs_accepted": 31,
       "seams": 7,
-      "followup": "F08C_PENDING_CI",
+      "followup": "GEOMETRY_AND_STORY_PENDING",
       "f08b_pr": 287,
-      "f08b_merge_commit": "46f0131bec418e7b12c7c526034362c7b940b487"
+      "f08b_merge_commit": "46f0131bec418e7b12c7c526034362c7b940b487",
+      "f08c_pr": 288,
+      "f08c_merge_commit": "817ca9df06008650f2fdbe3d173bffa3b83f2a3e",
+      "centers_connected": 11,
+      "marts_connected": 10,
+      "gates_with_connection": 7,
+      "new_exteriors": 4,
+      "remaining_geometry": [
+        "Resort Area",
+        "Cycling Road"
+      ]
     },
     {
       "id": "F09",
       "title": "Pokémon selvagens de todas as áreas",
-      "status": "pending"
+      "status": "implemented_partial_pending_ci",
+      "maps_to_audit": 131,
+      "reference_candidate_areas": 14,
+      "original_weights_verified": false,
+      "native_verified": false
     },
     {
       "id": "F10",
@@ -237,17 +251,34 @@
     "native_verified": false,
     "pr": 286,
     "merge_commit": "974706db5ccb976ac3d45da07f290b85578ff268",
-    "prepared_maps": 127,
-    "portals": 63,
+    "prepared_maps": 131,
+    "portals": 73,
     "approach_portals": 35,
     "action_portals": 59,
     "portal_directed_accepted": 62,
     "portal_directed_pending": 83,
     "portal_pairs_accepted": 31,
     "seams": 7,
-    "followup": "F08C_PENDING_CI",
+    "followup": "GEOMETRY_AND_STORY_PENDING",
     "f08b_pr": 287,
     "f08b_merge_commit": "46f0131bec418e7b12c7c526034362c7b940b487",
-    "target_maps": 131
+    "target_maps": 131,
+    "f08c_pr": 288,
+    "f08c_merge_commit": "817ca9df06008650f2fdbe3d173bffa3b83f2a3e",
+    "centers_connected": 11,
+    "marts_connected": 10,
+    "gates_with_connection": 7,
+    "new_exteriors": 4,
+    "remaining_geometry": [
+      "Resort Area",
+      "Cycling Road"
+    ]
+  },
+  "f09": {
+    "status": "implemented_partial_pending_ci",
+    "maps_to_audit": 131,
+    "reference_candidate_areas": 14,
+    "original_weights_verified": false,
+    "native_verified": false
   }
 }

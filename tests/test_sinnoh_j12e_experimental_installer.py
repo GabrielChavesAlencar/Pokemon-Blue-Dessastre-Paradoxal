@@ -827,6 +827,24 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
             self.assertEqual(masks[dst][dy][dx],".")
             self.assertEqual(portal["trigger"],0)
         print("SINNOH_REAL_F08C_4_EXTERIORS_131_MAPS_63_BASELINE_PORTALS_7_SEAMS_PRESERVED_OK",flush=True)
+        f09=exp.f09_encounters
+        refs=f09.reviewed()
+        # Species fixture is explicit; actual installer validates local PBS.
+        allowed={m for sym in f09.BALANCE for m in refs[sym]["reference_species"]}
+        encounter_raw,encounter_report,stats=f09.build(pbs,coverage,f08c_ids,masks,allowed)
+        self.assertEqual(stats["maps_audited"],131)
+        self.assertTrue(encounter_raw.startswith(pbs))
+        self.assertGreater(stats["new_tables"],0)
+        self.assertEqual({s:encounter_report[s] for s in coverage},coverage)
+        self.assertFalse(stats["original_weights_verified"])
+        self.assertFalse(stats["native_verified"])
+        for sym,row in stats["areas"].items():
+            if row["status"]=="AUTHORED_QA_TABLE":
+                self.assertIn(("[%03d] # %s"%(f08c_ids[sym],sym)).encode("ascii"),encounter_raw)
+                self.assertTrue(row["grass_cells"]>0 or row["methods"]==["Cave"])
+        stats["donor_encounter_inventory"]=f09.source_inventory(source)
+        print("SINNOH_F09_ENCOUNTER_REPORT "+json.dumps(stats,sort_keys=True),flush=True)
+        print("SINNOH_REAL_F09A_131_MAPS_ENCOUNTER_COVERAGE_QA_BASELINE_PRESERVED_OK",flush=True)
 
 
 
@@ -1354,6 +1372,26 @@ raise "duplicate battle" unless $calls==4
         self.assertEqual({r["symbol"] for r in rows}&c.EXTERIORS,c.EXTERIORS)
         self.assertEqual(c.connected_ground({(1,1),(2,1),(3,1),(8,8)},(1,1)),{(1,1),(2,1),(3,1)})
         self.assertEqual(c.connected_ground({(1,1)},(2,1)),set())
+
+    def test_f09_reference_and_authorial_weights(self):
+        f=exp.f09_encounters
+        refs=f.reviewed()
+        self.assertEqual(len(f.BALANCE),14)
+        self.assertEqual(sum(row[0] for row in f.slots(["A","B","C"],4,7)),100)
+        self.assertEqual(f.slots(["A","B","C"],4,7),[(34,"A",4,7),(33,"B",4,7),(33,"C",4,7)])
+        self.assertTrue(all(sym in refs for sym in f.BALANCE))
+        ids={k:442+i for i,k in enumerate(sorted(exp.f08c_expansion.ALL))}
+        mid=ids["SINNOH_ROUTE_203"]
+        raw=b"[002]\nLand,21\n    100,PIDGEY,5\n"
+        mons=set(refs["ROUTE_203"]["reference_species"])
+        out,coverage,report=f.build(raw,{},ids,{mid:["gg",".."]},mons)
+        self.assertTrue(out.startswith(raw))
+        self.assertEqual(coverage["SINNOH_ROUTE_203"]["methods"],["Land"])
+        self.assertEqual(report["new_tables"],1)
+        self.assertEqual(f.build(raw,{},ids,{mid:[".."]},mons)[2]["new_tables"],0)
+        self.assertEqual(f.build(raw,{},ids,{mid:["gg"]},set())[2]["new_tables"],0)
+        with self.assertRaisesRegex(ValueError,"COLLISION"):
+            f.build(raw+("[%03d]\n"%mid).encode("ascii"),{},ids,{mid:["gg"]},mons)
 
     def test_f08c_append_only_capacity(self):
         c=exp.f08c_expansion
