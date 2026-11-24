@@ -7,6 +7,8 @@ import copy
 from pathlib import Path
 import json
 import os
+import shutil
+import subprocess
 import struct
 import sys
 import tempfile
@@ -318,6 +320,48 @@ class J12EInstallerTests(unittest.TestCase):
         self.assertEqual(len(autoruns),5)
         self.assertIn(b"SN_PROFILE_SETUP",autoruns)
         print("SINNOH_REAL_10_MAPS_4_WALK_SEAMS_2_VISUAL_2_PORTALS_32_EVENTS_OK",flush=True)
+
+    @unittest.skipUnless(shutil.which("ruby"),"Requires Ruby runtime")
+    def test_new_profile_dialogue_selects_both_characters_and_names_once(self):
+        script=r'''
+load ARGV[0]
+Player = Struct.new(:character_ID,:name)
+Global = Struct.new(:blue_regions)
+class GamePlayer
+  attr_accessor :transparent
+  def refresh_charset; @refreshed = true; end
+  def refreshed?; @refreshed; end
+end
+def _INTL(text,*args); text; end
+def pbMessage(text,*args)
+  return nil if args.empty?
+  raise "wrong selection options" unless args[0] == ["Lucas","Dawn"]
+  $asked += 1
+  $choice
+end
+def pbChangePlayer(id); $player.character_ID = id; end
+def pbTrainerName; $named += 1; $player.name = "Teste Sinnoh"; end
+[0,1].each do |choice|
+  $choice=choice; $asked=0; $named=0
+  $PokemonGlobal=Global.new({"version"=>1,"initial"=>"SINNOH","current"=>"SINNOH"})
+  $player=Player.new(1,"Red"); $game_player=GamePlayer.new
+  raise "failed profile" unless BlueSinnohPilot.setup_profile
+  raise "wrong character" unless $player.character_ID==9+choice
+  raise "wrong name" unless $player.name=="Teste Sinnoh"
+  raise "missing refresh" unless $game_player.refreshed? && $game_player.transparent==false
+  raise "profile repeated" unless BlueSinnohPilot.setup_profile && $asked==1 && $named==1
+  raise "gate missing" if BlueSinnohPilot.lake_entry_allowed?
+  BlueSinnohPilot.mother
+  raise "gate bypass" if BlueSinnohPilot.lake_entry_allowed?
+  BlueSinnohPilot.barry_intro
+  raise "gate did not open" unless BlueSinnohPilot.lake_entry_allowed?
+end
+puts "SINNOH_PROFILE_2_CHOICES_NAME_AND_GATE_OK"
+'''
+        proc=subprocess.run([shutil.which("ruby"),"-e",script,str(ROOT/"scripts/regions/SinnohPilot.rb")],
+                            text=True,capture_output=True,timeout=30)
+        self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
+        self.assertIn("SINNOH_PROFILE_2_CHOICES_NAME_AND_GATE_OK",proc.stdout)
 
     def test_expanded_profile_only_runs_after_map_initialization(self):
         code=exp.experiment_plugin([442,10,8],"abc123abc123",True,True,story_profile=True).decode()
