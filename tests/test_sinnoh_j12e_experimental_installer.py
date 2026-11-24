@@ -108,6 +108,45 @@ class J12EInstallerTests(unittest.TestCase):
         self.assertEqual(visual.remap_cells([402,0,0],1,1,True),[48,0,0])
         with self.assertRaises(ValueError):visual.remap_cells([999,0,0],1,1,True)
 
+    def test_private_map_source_contract_and_platinum_player(self):
+        pv=exp.private_visual
+        self.assertEqual(len(pv.DONOR),5)
+        self.assertEqual({v[0] for v in pv.DONOR.values()},{191,192,193,194,196})
+        self.assertEqual(set(pv.SPRITES),{"MOTHER","BARRY","ROWAN"})
+        self.assertIn("pbChangePlayer(9)",exp.experiment_plugin([442,10,8],"abc123abc123",True).decode())
+        self.assertNotIn("pbChangePlayer(9)",exp.experiment_plugin([442,10,8],"abc123abc123").decode())
+
+    def test_private_map_component_rejects_blocked_seed_and_disconnected_tiles(self):
+        pv=exp.private_visual
+        p=[0]*386;p[385]=15
+        cells=[384,385,384,384,385,384]+[0]*12
+        self.assertEqual(pv.connected(cells,3,2,p,(0,0)),{(0,0),(0,1)})
+        with self.assertRaisesRegex(ValueError,"DONOR_SEED_BLOCKED"):
+            pv.connected(cells,3,2,p,(1,0))
+
+    def test_private_compact_atlas_keeps_exact_source_pixels_and_indices(self):
+        pv=exp.private_visual
+        rows=[bytes([10,20,30,255])*32+bytes([40,50,60,255])*32+bytes(768) for _ in range(32)]
+        with patch.object(pv,"rgba_rows",return_value=iter(rows)):
+            blob,remap=pv.compact_atlas(b"synthetic",{384,385})
+        self.assertEqual(remap,{384:384,385:385})
+        self.assertEqual(pv.dims(blob),(256,32))
+        off=8;payload=b""
+        while off<len(blob):
+            n=struct.unpack_from(">I",blob,off)[0]
+            if blob[off+4:off+8]==b"IDAT":payload+=blob[off+8:off+8+n]
+            off+=n+12
+        raw=zlib.decompress(payload)
+        self.assertEqual(raw[1:257],rows[0][:256])
+        with self.assertRaises(ValueError):pv.compact_atlas(b"",{383})
+
+    def test_private_archives_are_hash_pinned_and_not_extracted(self):
+        pv=exp.private_visual
+        with tempfile.TemporaryDirectory() as d:
+            path=Path(d)/"Sinnoh Maps.zip";path.write_bytes(b"not the original")
+            with self.assertRaisesRegex(ValueError,"ARCHIVE_SHA256_MISMATCH"):
+                pv.verified_archive(path,"maps")
+
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory(prefix="sinnoh-experimental-synthetic-")
         self.addCleanup(self.tmp.cleanup)
