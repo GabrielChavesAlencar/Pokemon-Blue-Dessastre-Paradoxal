@@ -43,6 +43,7 @@ import sinnoh_interior_expansion as interior_expansion
 import sinnoh_connection_expansion as connection_expansion
 import sinnoh_f08c_expansion as f08c_expansion
 import sinnoh_f09_encounters as f09_encounters
+import sinnoh_f09b_original as f09b_original
 from audit_sinnoh_rxdata import read_marshal
 from audit_sinnoh_twinleaf_events import MAPS,HANDLERS as CH06_HANDLERS,BALLS as CH06_BALLS
 from build_sinnoh_twinleaf_events import HANDLERS as SCRIPT_HANDLERS
@@ -710,6 +711,7 @@ def build_files(base:Path,project:Path=ROOT):
     refined_maps=None
     f08c_report={}
     f09_report={}
+    f09b_report={}
     encounter_coverage={}
     route_trainers=[]
     if "maps" in sources:
@@ -741,6 +743,8 @@ def build_files(base:Path,project:Path=ROOT):
         masks=private_visual.movement_masks(maps,mapping,extra_symbols=city_expansion.CITIES|route_expansion.ROUTES|natural_expansion.NATURAL|interior_expansion.INTERIORS|f08c_expansion.EXTERIORS)
         # Existing early-route PBS bytes and all MapIDs/events stay intact.
         maps["PBS/encounters.txt"],encounter_coverage,f09_report=f09_encounters.append(
+            maps["PBS/encounters.txt"],encounter_coverage,base,mapping,masks,sources["maps"],project)
+        maps["PBS/encounters.txt"],encounter_coverage,f09b_report=f09b_original.append(
             maps["PBS/encounters.txt"],encounter_coverage,base,mapping,masks,sources["maps"],project)
         movement=private_visual.movement_plugin(masks,mapping["SINNOH_ROUTE_202"])
         teleport_entries=qa_teleport.build(maps,mapping,components,project)
@@ -818,6 +822,7 @@ def build_files(base:Path,project:Path=ROOT):
         "f08c_expansion":f08c_report.get("maps",{}),
         "f08c_connections":f08c_report,
         "f09_encounters":f09_report,
+        "f09b_original_encounters":f09b_report,
         "qa_teleport":{"catalog_count":len(teleport_entries),"available_count":sum(row[3] is not None for row in teleport_entries),"destinations":teleport_entries,"native_verified":False},
         "encounter_coverage":encounter_coverage,"route202_trainers":route_trainers,
         "visual_native_reviewed":False,

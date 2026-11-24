@@ -845,6 +845,23 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
         stats["donor_encounter_inventory"]=f09.source_inventory(source)
         print("SINNOH_F09_ENCOUNTER_REPORT "+json.dumps(stats,sort_keys=True),flush=True)
         print("SINNOH_REAL_F09A_131_MAPS_ENCOUNTER_COVERAGE_QA_BASELINE_PRESERVED_OK",flush=True)
+        f09b=exp.f09b_original
+        donor=f09b.read_source(source)
+        sections,_=f09b.parse(donor)
+        # Fixture species only: actual installer validates the local catalog.
+        donor_species={m for section in sections.values() for table in section["methods"].values() for _,m,_,_ in table["slots"]}
+        expanded_pbs,expanded_coverage,original_stats=f09b.build(encounter_raw,encounter_report,f08c_ids,masks,donor,donor_species)
+        self.assertEqual(original_stats["maps_audited"],131)
+        self.assertEqual(original_stats["original_file_sha256"],f09b.SHA256)
+        self.assertTrue(all(set(row["methods"])<=set(expanded_coverage[s]["methods"]) for s,row in encounter_report.items()))
+        self.assertTrue(all(m not in f09b.AQUATIC for r in original_stats["accepted"] for m in [r["method"]]))
+        old_sections,_=f09b.parse(encounter_raw);new_sections,_=f09b.parse(expanded_pbs)
+        for key,row in old_sections.items():
+            for method,table in row["methods"].items():
+                self.assertEqual(new_sections[key]["methods"][method],table)
+        original_stats["species_validation"]="SYNTHETIC_DONOR_SPECIES_FIXTURE_NOT_LOCAL_DATABASE"
+        print("SINNOH_F09B_ORIGINAL_REPORT "+json.dumps(original_stats,sort_keys=True),flush=True)
+        print("SINNOH_REAL_F09B_131_MAPS_ORIGINAL_PBS_AUDITED_BASELINE_PRESERVED_OK",flush=True)
 
 
 
@@ -1372,6 +1389,26 @@ raise "duplicate battle" unless $calls==4
         self.assertEqual({r["symbol"] for r in rows}&c.EXTERIORS,c.EXTERIORS)
         self.assertEqual(c.connected_ground({(1,1),(2,1),(3,1),(8,8)},(1,1)),{(1,1),(2,1),(3,1)})
         self.assertEqual(c.connected_ground({(1,1)},(2,1)),set())
+
+    def test_f09b_parser_and_append_preserve_tables(self):
+        f=exp.f09b_original
+        raw=b"[004]\nLand,21\n    100,STARLY,2,4\n"
+        tables,issues=f.parse(raw)
+        self.assertFalse(issues)
+        self.assertIsNone(f.valid_table("Land",tables[(4,0)]["methods"]["Land"],{"STARLY"}))
+        self.assertEqual(f.valid_table("Land",tables[(4,0)]["methods"]["Land"],set()),"missing_local_species")
+        self.assertEqual(f.valid_table("Land",{"rate":21,"slots":[(100,"ROTOM",10,10)]},{"ROTOM"}),"special_species")
+        self.assertEqual(f.valid_table("Land",{"rate":21,"slots":[(90,"STARLY",2,4)]},{"STARLY"}),"weight_total_not_100")
+        legacy,_=f.parse(b"[004]\n25,10,10\nLand\nSTARLY,2,4\n")
+        self.assertTrue(legacy[(4,0)]["invalid"])
+        duplicate,_=f.parse(raw+b"Land,21\n    100,STARLY,2,4\n")
+        self.assertTrue(duplicate[(4,0)]["invalid"])
+        out=f.append_methods(raw,{(4,0):b"LandNight,21\n    100,STARLY,3,4\n",(5,0):b"Cave,21\n    100,GEODUDE,4,5\n"})
+        new,_=f.parse(out)
+        self.assertEqual(new[(4,0)]["methods"]["Land"],tables[(4,0)]["methods"]["Land"])
+        self.assertIn("LandNight",new[(4,0)]["methods"])
+        self.assertIn("Cave",new[(5,0)]["methods"])
+        self.assertEqual(out.count(b"[004]"),1)
 
     def test_f09_reference_and_authorial_weights(self):
         f=exp.f09_encounters
