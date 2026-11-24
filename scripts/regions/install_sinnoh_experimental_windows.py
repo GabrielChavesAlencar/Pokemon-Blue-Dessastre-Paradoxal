@@ -32,6 +32,7 @@ for p in (ROOT,ROOT/"scripts/regions"):
 import generate_sinnoh_original_j10a as five
 import generate_sinnoh_four_exteriors_j11b as four
 import prepare_sinnoh_nine_original_j11c as j11c
+import sinnoh_visual_qa as visual
 from audit_sinnoh_rxdata import read_marshal
 from audit_sinnoh_twinleaf_events import MAPS,HANDLERS as CH06_HANDLERS,BALLS as CH06_BALLS
 from build_sinnoh_twinleaf_events import HANDLERS as SCRIPT_HANDLERS
@@ -175,7 +176,11 @@ def plan_events(blobs:dict,mapping:dict):
             if event["kind"]!="warp":continue
             dest=event["destination"]
             if dest not in chars:fail("CH06_DESTINATION_UNKNOWN")
-            near=tuple(scenes[dest]["access"][0])
+            # Land near the actual reciprocal portal, not a shared map origin.
+            reverse=[e for target in draft["maps"] if target["symbol"]==dest
+                     for e in target["events"] if e["kind"]=="warp" and e["destination"]==row["symbol"]]
+            if len(reverse)!=1:fail("CH06_RECIPROCAL_PORTAL_NOT_UNIQUE")
+            near=positions[dest][reverse[0]["key"]]
             arrival=choose_point(chars[dest],near,local_used[dest])
             world=read_marshal(blobs["Data/Map%03d.rxdata"%mapping[dest]],"QA_DEST")
             tiles=read_marshal(blobs["Data/Tilesets.rxdata"],"QA_TILES")
@@ -198,7 +203,11 @@ def plan_events(blobs:dict,mapping:dict):
                               arrival=list(arrivals[key]),
                               destination_map_id=mapping[event["destination"]])
             else:
-                record["sprite"]="SNQA_BALL" if kind=="starter_ball" else "SNQA_NPC"
+                if kind=="starter_ball":record["sprite"]="SNQA_BALL"
+                else:
+                    role={"mother":"MOTHER","barry_intro":"BARRY","barry_rival":"BARRY",
+                          "rowan_briefcase":"ROWAN","rowan_pokedex":"ROWAN"}[event["handler"]]
+                    record["sprite"]="SNQA_"+role
             details.append(record)
     if len([x for x in details if x["kind"]=="warp"])!=16 or len(details)!=24:
         fail("CH06_WRONG_EVENT_COUNTS")
@@ -441,6 +450,7 @@ def build_files(base:Path,project:Path=ROOT):
       baseline_hashes={"mapinfos":sha((base/"Data/MapInfos.rxdata").read_bytes()),
                        "tilesets":sha((base/"Data/Tilesets.rxdata").read_bytes())})
     maps,events,start=compile_events(empty,mapping)
+    maps=visual.upgrade(maps,mapping,manifest["tileset_ids"],events,start)
     token=secrets.token_hex(6)
     config,game_ini,profile=runtime_config(base,token)
     # This is an isolated copy, never the installed game:
@@ -486,6 +496,8 @@ def build_files(base:Path,project:Path=ROOT):
         "save_profile":profile,"profile_token":token,
         "mapids":mapping,"start":[mapping["SINNOH_PLAYER_BEDROOM"],*start],
         "coordinates_provenance":"ORIGINAL_GENERATED_GEOMETRY_AND_MODEL_PASSABILITY_ONLY",
+        "visual_revision":"SINNOH_ORIGINAL_PIXEL_ART_V2",
+        "visual_native_reviewed":False,
         "human_positions_reviewed":False,"native_collision_verified":False,
         "compile_token":proof,
         "file_sha256":{path:sha(content) for path,content in final.items()},
