@@ -15,28 +15,73 @@ module BlueSinnohPilot
 
   # Runs from a bedroom autorun after the native map and player exist.
   # The profile flag is separate from the six story checkpoints.
+  PROFILE_LOG = "sinnoh-profile-error.txt".freeze
+
+  # This report contains runtime diagnostics, not saves or typed player names.
+  def self.profile_error(stage, error)
+    if defined?(BlueSinnohExperimental) && File.file?("sinnoh-experimental-qa.json") &&
+       File.basename(Dir.pwd) == "game-sinnoh-experimental-" + BlueSinnohExperimental::TOKEN
+      File.open(PROFILE_LOG, "wb") do |file|
+        file.write("SINNOH_PROFILE_STAGE=#{stage}\n")
+        file.write("#{error.class}: #{error.message}\n")
+        file.write(Array(error.backtrace).first(15).join("\n"))
+      end
+    end
+  rescue StandardError
+    # Do not let diagnostic I/O replace the original runtime failure.
+  end
+
   def self.setup_profile
+    stage = "regional_state"
     state = regional_state
     raise "Sinnoh QA: perfil regional ausente" unless state
     return true if state["sinnoh_profile_complete"] == true
+    stage = "native_api"
     raise "Sinnoh QA: tela de personagem indisponivel" unless
       defined?($player) && $player && defined?($game_player) && $game_player &&
-      defined?(pbChangePlayer) && defined?(pbTrainerName)
-    pbMessage(_INTL("Rowan: Bem-vindo ao mundo dos Pokémon! Esta é a região de Sinnoh."))
-    choice = pbMessage(_INTL("Qual será seu personagem?"), ["Lucas", "Dawn"], 1)
+      defined?(pbChangePlayer) && defined?(pbTrainerName) &&
+      defined?(pbEnterPlayerName) && defined?(Settings::MAX_PLAYER_NAME_SIZE)
+    stage = "character_metadata"
+    if defined?(GameData::PlayerMetadata)
+      [9, 10].each do |id|
+        raise "Sinnoh QA: cadastro Platinum ausente (#{id})" unless GameData::PlayerMetadata.try_get(id)
+      end
+    end
+    stage = "intro_message"
+    pbMessage(_INTL("Rowan: Bem-vindo ao mundo dos Pokemon! Esta e a regiao de Sinnoh."))
+    stage = "character_choice"
+    choice = pbMessage(_INTL("Qual sera seu personagem?"), ["Lucas", "Dawn"], 0)
+    return false unless choice == 0 || choice == 1
     id = choice == 1 ? 10 : 9
+    stage = "change_player"
     pbChangePlayer(id)
     raise "Sinnoh QA: cadastro Platinum nao carregado" unless
       $player.respond_to?(:character_ID) && $player.character_ID == id
+    # Essentials sets the character ID before opening its native naming UI.
+    # Do not force an additional refresh until both ID and outfit are set.
+    stage = "name_entry"
+    pbMessage(_INTL("Rowan: E como voce se chama?"))
+    name = pbEnterPlayerName(_INTL("Seu nome?"), 1, Settings::MAX_PLAYER_NAME_SIZE)
+    return false unless name.is_a?(String) && !name.strip.empty?
+    stage = "name_commit"
+    pbTrainerName(name)
+    raise "Sinnoh QA: nome do jogador nao foi aplicado" unless
+      $player.respond_to?(:name) && $player.name == name
+    stage = "sprite_refresh"
     $game_player.refresh_charset if $game_player.respond_to?(:refresh_charset)
     $game_player.transparent = false if $game_player.respond_to?(:transparent=)
-    pbMessage(_INTL("Rowan: E como você se chama?"))
-    pbTrainerName
-    raise "Sinnoh QA: nome do jogador ausente" unless
-      $player.respond_to?(:name) && !$player.name.to_s.strip.empty?
+    stage = "final_message"
+    pbMessage(_INTL("Rowan: {1}, sua aventura esta prestes a comecar!", $player.name))
     state["sinnoh_profile_complete"] = true
-    pbMessage(_INTL("Rowan: {1}, sua aventura está prestes a começar!", $player.name))
     true
+  rescue StandardError => error
+    profile_error(stage, error)
+    begin
+      pbMessage("Sinnoh QA: falha na etapa #{stage} (#{error.class}). Tente novamente ao sair do quarto. Diagnostico: sinnoh-profile-error.txt.")
+    rescue StandardError
+      # Preserve control of the map even when the message API is unavailable.
+    end
+    false
   end
 
   def self.lake_entry_allowed?
