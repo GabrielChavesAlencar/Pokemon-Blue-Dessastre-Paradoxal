@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2770a91f790a2ae904caff83bd92f6f2595b35f2",
+      "date": "2026-11-24T18:06:40-03:00",
+      "title": "Merge pull request #285 from GabrielChavesAlencar/sinnoh-full-expansion-f07-interiors",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "36833299ec43402a50834b64b7aa228863bc23da",
+      "date": "2026-11-24T17:59:26-03:00",
+      "title": "fix(F07): compare source names using inventory whitespace normalization only",
+      "category": "Correções"
+    },
+    {
+      "sha": "eb39d0b917f8f759f760ae8d3e5a554006feb2d1",
+      "date": "2026-11-24T17:30:27-03:00",
+      "title": "feat(Sinnoh F07): append 36 pinned interiors with isolated QA save preservation",
+      "category": "Novidades"
+    },
+    {
       "sha": "b33d57d2ee199b404ad7e53424ee573b83d1bf56",
       "date": "2026-11-24T17:30:20-03:00",
       "title": "Merge pull request #284 from GabrielChavesAlencar/sinnoh-full-expansion-f06-natural-areas",
