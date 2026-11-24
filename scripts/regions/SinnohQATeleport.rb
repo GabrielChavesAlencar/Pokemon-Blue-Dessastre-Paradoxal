@@ -74,6 +74,8 @@ module BlueSinnohQATeleport
       closed=true
       $game_temp.in_menu=false
       mid,x,y=row[3]
+      @arrival_map=mid
+      @arrival_player=$game_player
       pbFadeOutIn do
         $game_temp.player_new_map_id=mid
         $game_temp.player_new_x=x
@@ -93,6 +95,25 @@ module BlueSinnohQATeleport
     end
   end
 
+  # Do not run the map-entry story autorun just because QA teleported here.
+  # The suppression is transient; ordinary NPC interaction is unaffected.
+  def self.suppress_story_autorun?(event)
+    @arrival_player && @arrival_player.equal?($game_player) &&
+      event.map_id==@arrival_map && event.trigger==3 &&
+      %w[SN_PROFILE_SETUP SN_MOTHER_SCENE SN_BARRY_SCENE SN_ROWAN_SCENE SN_DEX_SCENE].include?(event.name)
+  end
+
+  def self.clear_arrival_if_left
+    @arrival_map=nil if !$game_map || $game_map.map_id!=@arrival_map
+  end
+
+  module StoryAutorun
+    def check_event_trigger_auto
+      return if BlueSinnohQATeleport.suppress_story_autorun?(self)
+      super
+    end
+  end
+
   # Voltseon's menu resolves every command through an existing theme bitmap.
   # Reuse the stock town-map icon rather than reference a nonexistent image.
   module ThemeIcon
@@ -108,6 +129,13 @@ module BlueSinnohQATeleport
   def self.install!
     return unless defined?(BlueSinnohExperimental) && BlueSinnohExperimental.respond_to?(:private_copy?) &&
       BlueSinnohExperimental.private_copy? && defined?(MenuHandlers)
+    if defined?(Game_Event) && Game_Event.method_defined?(:check_event_trigger_auto) &&
+       !Game_Event.ancestors.include?(StoryAutorun)
+      Game_Event.prepend(StoryAutorun)
+    end
+    if defined?(EventHandlers)
+      EventHandlers.add(:on_enter_map,:blue_sinnoh_qa_arrival,proc { |*args| BlueSinnohQATeleport.clear_arrival_if_left })
+    end
     if defined?(PokemonSystem) && PokemonSystem.method_defined?(:from_current_menu_theme) &&
        defined?(MENU_FILE_PATH) && !PokemonSystem.ancestors.include?(ThemeIcon)
       PokemonSystem.prepend(ThemeIcon)
