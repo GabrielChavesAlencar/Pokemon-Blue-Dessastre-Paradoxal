@@ -384,7 +384,7 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=()):
     main[2]=RubyString(zlib.compress(code.encode("utf-8")))
     return b"\x04\x08"+dump(rows)
 
-def experiment_plugin(start,token,platinum_player=False):
+def experiment_plugin(start,token,platinum_player=False,platinum_dawn=False):
     code="""# Only for one isolated experimental copy; no main-game hooks.
 module BlueSinnohExperimental
   START = [__START__].freeze
@@ -430,6 +430,9 @@ end
 """
     code=code.replace("__START__",",".join(str(x) for x in start)).replace("__TOKEN__",token)
     player_code = 'if $game_player && defined?(pbChangePlayer); pbChangePlayer(9); $game_player.refresh_charset; $game_player.transparent = false; end' if platinum_player else '# native player unchanged for original QA'
+    if platinum_dawn:
+        choose = 'choice = pbMessage("Escolha seu protagonista de Sinnoh:", ["Lucas", "Dawn"], 1); pbChangePlayer(choice == 1 ? 10 : 9)' if platinum_player else 'pbChangePlayer(10)'
+        player_code = 'if $game_player && defined?(pbChangePlayer); ' + choose + '; $game_player.refresh_charset; $game_player.transparent = false; end'
     code=code.replace("__PLATINUM_PLAYER__",player_code)
     return code.encode("utf-8")
 
@@ -468,6 +471,7 @@ def build_files(base:Path,project:Path=ROOT):
         print("SINNOH QA: sprites DPPt locais; creditos PurpleZaffre",flush=True)
         maps=private_visual.apply_sprites(maps,sources["overworlds"])
     platinum_player=private_visual.has_platinum_player(base)
+    platinum_dawn=private_visual.has_platinum_player(base,10)
     token=secrets.token_hex(6)
     config,game_ini,profile=runtime_config(base,token)
     # This is an isolated copy, never the installed game:
@@ -487,7 +491,7 @@ def build_files(base:Path,project:Path=ROOT):
         f"{INTRO_PLUGIN}/SinnohPilot.rb":(project/"scripts/regions/SinnohPilot.rb").read_bytes(),
         f"{INTRO_PLUGIN}/meta.txt":b"Name = Blue Sinnoh Intro\nVersion = 0.1\nEssentials = 21.1\nScripts = SinnohPilot.rb\n",
         f"{EXPERIMENT_PLUGIN}/SinnohExperimentalStart.rb":experiment_plugin(
-                  [mapping["SINNOH_PLAYER_BEDROOM"],*start],token,platinum_player),
+                  [mapping["SINNOH_PLAYER_BEDROOM"],*start],token,platinum_player,platinum_dawn),
         f"{EXPERIMENT_PLUGIN}/meta.txt":b"Name = Blue Sinnoh Experimental\nVersion = 0.1\nEssentials = 21.1\nRequires = Blue Sinnoh Intro\nScripts = SinnohExperimentalStart.rb\n",
     })
     sysdata=read_marshal((base/"Data/System.rxdata").read_bytes(),"BASE_SYSTEM")
@@ -514,7 +518,7 @@ def build_files(base:Path,project:Path=ROOT):
         "mapids":mapping,"start":[mapping["SINNOH_PLAYER_BEDROOM"],*start],
         "coordinates_provenance":"PRIVATE_DONOR_GEOMETRY_AND_MODEL_PASSABILITY_ONLY" if imported else "ORIGINAL_GENERATED_GEOMETRY_AND_MODEL_PASSABILITY_ONLY",
         "private_visual_import":{"maps":imported,"overworlds":"overworlds" in sources,
-                                 "platinum_player":platinum_player,"credits":private_visual.CREDITS if sources else "",
+                                 "platinum_player":platinum_player,"platinum_dawn":platinum_dawn,"credits":private_visual.CREDITS if sources else "",
                                  "source_sha256":{k:private_visual.PACKS[k][1] for k in sources},
                                  "native_approved":False,"distribution_approved":False},
         "visual_revision":"SINNOH_ORIGINAL_PIXEL_ART_V2",
