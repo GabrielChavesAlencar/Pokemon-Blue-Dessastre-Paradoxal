@@ -504,6 +504,20 @@ def connection_plan(mapping,components,source_rows):
         result.append({"record":[mapping[a],da,oa,mapping[b],db,ob],
                        "source_ids":[source[0],source[3]],"reachable_seam_tiles":len(shared),
                        "warp_keys":[k for k in (wa,wb) if k]})
+    # The donor also aligns the two forest/water borders visually. Neither
+    # border has a traversable common cell; actual lake access uses portals.
+    if LAKEFRONT in mapping:
+        for a,da,oa,b,db,ob in (("SINNOH_LAKE_VERITY","S",36,LAKEFRONT,"N",0),
+                                 ("SINNOH_LAKE_VERITY","E",46,"SINNOH_ROUTE_201","W",0)):
+            source=(donors[a][0],da,oa,donors[b][0],db,ob)
+            reverse=(source[3],db,ob,source[0],da,oa)
+            if source_rows.count(source)+source_rows.count(reverse)!=1:
+                fail("SOURCE_VISUAL_CONNECTION_MISSING")
+            if edge_axis(components[a],donors[a][2],da,oa)&edge_axis(components[b],donors[b][2],db,ob):
+                fail("SOURCE_VISUAL_CONNECTION_UNEXPECTED_WALKABLE_EDGE")
+            result.append({"record":[mapping[a],da,oa,mapping[b],db,ob],
+                           "source_ids":[source[0],source[3]],"reachable_seam_tiles":0,
+                           "warp_keys":[],"visual_only":True})
     return result
 
 
