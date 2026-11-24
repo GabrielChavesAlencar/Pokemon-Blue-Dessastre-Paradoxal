@@ -11,6 +11,7 @@ import json
 import os
 from pathlib import Path
 import sys
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts" / "regions"))
@@ -19,6 +20,36 @@ import install_sinnoh_experimental_windows as installer
 RECEIPT_NAME = "blue-story-sinnoh-launch.json"
 MODE = "SINNOH_PRIVATE_EXPERIMENTAL_COPY_NOT_APPROVED"
 
+def ensure_first_run_base(project: Path, game: Path):
+    """Provision only a new managed game, or resume our own incomplete setup."""
+    marker = installer.safe_path(project / ".blue-work" / "sinnoh-first-base.json")
+    expected = {"schema": 1, "game": str(game), "purpose": "sinnoh-first-run"}
+    if marker.exists():
+        if not marker.is_file() or json.loads(marker.read_text("utf-8")) != expected:
+            installer.fail("SINNOH_FIRST_BASE_MARKER_INVALID")
+    else:
+        if (game / "Game.exe").is_file():
+            return
+        if game.exists() and (not game.is_dir() or any(game.iterdir())):
+            installer.fail("SINNOH_EXISTING_PARTIAL_BASE_PRESERVED")
+        marker.parent.mkdir(parents=True, exist_ok=True)
+        # Existing installer state might belong to another installation.
+        for name in ("installation.json", "base-download.json"):
+            if (marker.parent / name).exists():
+                installer.fail("SINNOH_EXISTING_INSTALLATION_STATE_PRESERVED")
+        with marker.open("x", encoding="utf-8") as stream:
+            json.dump(expected, stream)
+    # This is the ordinary Blue base installer, without unrelated regional imports.
+    # No Game.exe is launched; no existing campaign is updated by this path.
+    print("SINNOH_QA: preparando base Blue nova (sem importar Kanto/Johto/Hoenn)", flush=True)
+    subprocess.run([sys.executable, str(project / "scripts/install_game.py"),
+                    "--game-dir", str(game), "--apply", "--skip-kanto"],
+                   cwd=project, check=True)
+    if not (game / "Game.exe").is_file():
+        installer.fail("SINNOH_FIRST_BASE_EXECUTABLE_MISSING")
+    marker.unlink()
+
+
 def prepare(project: Path, game: Path, receipt: Path) -> dict:
     project = installer.safe_path(Path(project).absolute())
     game = installer.safe_path(Path(game).absolute())
@@ -26,10 +57,11 @@ def prepare(project: Path, game: Path, receipt: Path) -> dict:
     work = installer.safe_path(project / ".blue-work")
     if not project.is_dir() or not (project / "scripts" / "install_game.py").is_file():
         installer.fail("BLUE_STORY_PROJECT_ROOT_INVALID")
-    if game != project / "game" or not game.is_dir():
+    if game != project / "game" or (game.exists() and not game.is_dir()):
         installer.fail("BLUE_STORY_ONLY_MANAGED_READONLY_GAME")
     if receipt != work / RECEIPT_NAME or receipt.exists() or receipt.is_symlink():
         installer.fail("BLUE_STORY_RECEIPT_NOT_NEW_OR_UNSAFE")
+    ensure_first_run_base(project, game)
     # J12-E's source preflight validates MapInfos/Tilesets/PBS and allocates
     # private, collision-free, provisional MapIDs. No writes to the source.
     files, report = installer.build_files(game, project)
@@ -78,7 +110,7 @@ def main(argv=None) -> int:
     args = p.parse_args(argv)
     try:
         result = prepare(args.project_root, args.game_dir, args.receipt)
-    except (OSError, ValueError, TypeError, KeyError, OverflowError) as exc:
+    except (OSError, ValueError, TypeError, KeyError, OverflowError, subprocess.CalledProcessError) as exc:
         print("BLUE_STORY_SINNOH_BLOQUEADO: " + str(exc), file=sys.stderr)
         return 2
     print(json.dumps({
