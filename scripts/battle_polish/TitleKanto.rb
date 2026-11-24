@@ -314,10 +314,13 @@ module BlueKantoTitle
         File.readlines("Game.ini").count { |row| row.strip == "Title=" + namespace["title"] } == 1
       ids = data["mapids"]
       files = data["file_sha256"]
-      return sinnoh_qa_block("MapIDs QA invalidos ou colisao entre nove mapas.") unless
-        ids.is_a?(Hash) && ids.length == 9 &&
+      lake_story = data["private_lake_story"]
+      expected_count = lake_story.is_a?(Hash) && lake_story["portal_pairs"] == 2 ? 10 : 9
+      return sinnoh_qa_block("MapIDs QA invalidos ou colisao entre mapas.") unless
+        ids.is_a?(Hash) && ids.length == expected_count &&
+        (expected_count == 9 || ids.key?("SINNOH_VERITY_LAKEFRONT")) &&
         ids.values.all? { |value| value.is_a?(Integer) && value.between?(442,517) } &&
-        ids.values.uniq.length == 9 && files.is_a?(Hash)
+        ids.values.uniq.length == expected_count && files.is_a?(Hash)
       start = data["start"]
       return sinnoh_qa_block("Quarto inicial nao corresponde aos MapIDs QA.") unless
         start.is_a?(Array) && start.length == 3 &&
