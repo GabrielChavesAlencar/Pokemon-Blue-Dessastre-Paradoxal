@@ -912,6 +912,32 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
         for row in report["queue"]:
             print("SINNOH_F10A_CANDIDATE "+json.dumps(row,sort_keys=True),flush=True)
         print("SINNOH_REAL_F10A_131_MAPS_127_SOURCE_EVENT_MAPS_AUDITED_BASELINE_PRESERVED_OK",flush=True)
+        import sinnoh_f10b_trainers as f10b
+        types={t for group in f10b.ALIASES.values() for t in group}
+        species={mon for group in f10b.REFERENCES.values() for kind,team in group.values() for mon,level in team}
+        baseline={**f08c_maps,"PBS/encounters.txt":relative_pbs}
+        prepared,battles,plugin=f10b.build(baseline,f08c_ids,masks,f08c_components,source,types,species,set())
+        self.assertEqual(battles["pinned_candidates"],5)
+        self.assertEqual(len(battles["accepted"])+len(battles["rejected"]),5)
+        self.assertFalse(battles["native_verified"])
+        self.assertFalse(battles["water_enabled"])
+        changed={r["map_id"] for r in battles["accepted"]}
+        for path,raw in baseline.items():
+            if path not in {"Data/Map%03d.rxdata"%mid for mid in changed}:
+                self.assertEqual(prepared[path],raw)
+        for mid in changed:
+            path="Data/Map%03d.rxdata"%mid
+            old=read_marshal(baseline[path],"F10B_OLD");new=read_marshal(prepared[path],"F10B_NEW")
+            before=old.attrs.pop("@events");after=new.attrs.pop("@events")
+            self.assertEqual(serialize(old,connection.EVENT_CLASSES),serialize(new,connection.EVENT_CLASSES))
+            for eid,event in before.items():
+                self.assertEqual(serialize(event,connection.EVENT_CLASSES),serialize(after[eid],connection.EVENT_CLASSES))
+            self.assertEqual(len(after)-len(before),sum(r["map_id"]==mid for r in battles["accepted"]))
+        self.assertEqual(exp.qa_teleport.build(prepared,f08c_ids,f08c_components),entries)
+        self.assertIn(b"BlueSinnohF10B",plugin)
+        battles["species_and_types_validation"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
+        print("SINNOH_F10B_TRAINER_REPORT "+json.dumps(battles,sort_keys=True),flush=True)
+        print("SINNOH_REAL_F10B_131_MAPS_5_CANDIDATES_AUDITED_BASELINE_PRESERVED_OK",flush=True)
 
 
 
@@ -1439,6 +1465,23 @@ raise "duplicate battle" unless $calls==4
         self.assertEqual({r["symbol"] for r in rows}&c.EXTERIORS,c.EXTERIORS)
         self.assertEqual(c.connected_ground({(1,1),(2,1),(3,1),(8,8)},(1,1)),{(1,1),(2,1),(3,1)})
         self.assertEqual(c.connected_ground({(1,1)},(2,1)),set())
+
+    def test_f10b_identity_and_connectivity(self):
+        import sinnoh_f10b_trainers as f
+        from build_johto_events import ruby
+        def event(script,code=111):
+            return ruby("RPG::Event",pages=[ruby("RPG::Event::Page",list=[
+                ruby("RPG::EventCommand",code=code,parameters=[12,script])])])
+        spec,why=f.identity(event(b'pbTrainerBattle(PBTrainers::HIKER,"Kevin",_I("Lost"))'),42)
+        self.assertIsNone(why)
+        self.assertEqual(spec[1],"Kevin")
+        self.assertEqual(len(spec[3]),4)
+        self.assertIsNone(f.identity(event(b'TrainerBattle.start(:HIKER,"Fake")'),42)[0])
+        self.assertIsNone(f.identity(event(b'TrainerBattle.start(:HIKER,"Kevin")',101),42)[0])
+        self.assertIsNone(f.identity(event(b'TrainerBattle.start(:HIKER,"Kevin"); TrainerBattle.start(:HIKER,"Justin")'),42)[0])
+        self.assertIsNone(f.identity(event(b'TrainerBattle.start(:CAMPER,"Anthony")'),42)[0])
+        self.assertFalse(f.non_cut({(0,0),(1,0),(2,0)},(1,0)))
+        self.assertTrue(f.non_cut({(0,0),(1,0),(0,1),(1,1)},(0,0)))
 
     def test_f10a_inert_event_classification(self):
         import sinnoh_f10a_inventory as f
