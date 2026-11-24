@@ -2,17 +2,29 @@
   "schema": 1,
   "region": "SINNOH",
   "reference": "Platinum",
-  "status": "F01_F02_F03_MERGED_F04_IMPLEMENTED_PENDING_CI",
+  "status": "F01_F02_F03_F04_MERGED_F05_IMPLEMENTED_PENDING_CI",
   "catalog": "data/regions/sinnoh-expansion-destinations.json",
   "prepared_pilot": {
-    "maps": 10,
+    "maps": 22,
     "routes": [
       "SINNOH_ROUTE_201",
       "SINNOH_ROUTE_202"
     ],
     "cities": [
       "SINNOH_TWINLEAF_TOWN",
-      "SINNOH_SANDGEM_TOWN"
+      "SINNOH_SANDGEM_TOWN",
+      "SINNOH_JUBILIFE_CITY",
+      "SINNOH_OREBURGH_CITY",
+      "SINNOH_FLOAROMA_TOWN",
+      "SINNOH_ETERNA_CITY",
+      "SINNOH_HEARTHOME_CITY",
+      "SINNOH_SOLACEON_TOWN",
+      "SINNOH_VEILSTONE_CITY",
+      "SINNOH_PASTORIA_CITY",
+      "SINNOH_CELESTIC_TOWN",
+      "SINNOH_CANALAVE_CITY",
+      "SINNOH_SNOWPOINT_CITY",
+      "SINNOH_SUNYSHORE_CITY"
     ],
     "native_qa_verified": false
   },
@@ -52,14 +64,21 @@
     {
       "id": "F04",
       "title": "Importação de todas as cidades e vilarejos",
-      "status": "implemented_pending_ci",
+      "status": "merged_ci_passed",
       "planned_new_city_maps": 12,
-      "target_maps": 22
+      "target_maps": 22,
+      "pr": 282,
+      "merge_commit": "5f8f20d809653c0cef0b2d6108beb642b77049b3",
+      "prepared_maps": 22
     },
     {
       "id": "F05",
       "title": "Importação de todas as rotas 201–230",
-      "status": "pending"
+      "status": "implemented_pending_ci",
+      "target_maps": 56,
+      "target_routes": 30,
+      "new_exterior_maps": 34,
+      "extra_segments": 6
     },
     {
       "id": "F06",
@@ -114,12 +133,22 @@
   ],
   "note": "Fases só contam concluídas após merge e checks. Mapas preparados não representam aprovação nativa.",
   "f04": {
-    "status": "implemented_pending_ci",
-    "cities_prepared": 2,
-    "cities_pending": 12,
+    "status": "merged_ci_passed",
+    "cities_prepared": 14,
+    "cities_pending": 0,
     "total": 14,
     "target_maps": 22,
     "source_cities": 14,
+    "destination_ids_allocated": 0
+  },
+  "f05": {
+    "status": "implemented_pending_ci",
+    "routes_prepared": 2,
+    "routes_pending": 28,
+    "total": 30,
+    "target_maps": 56,
+    "source_routes": 30,
+    "extra_segments": 6,
     "destination_ids_allocated": 0
   }
 }

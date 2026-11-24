@@ -3,9 +3,9 @@
 Referência Platinum. Progresso de preparação (não aprovação nativa):
 
 - Rotas: **2/30**, Rota 201 e 202.
-- Cidades: **2/14**, Twinleaf e Sandgem.
-- Piloto privado: **10 mapas preparados**.
-- Fases novas: **3/15 concluídas**, F01/F02 integradas (11/11 cada), F03 integrada (9/9); F04 implementada, aguarda CI.
+- Cidades: **14/14**, todas preparadas na F04.
+- Piloto privado: **22 mapas preparados**.
+- Fases novas: **4/15 concluídas**, F01/F02/F04 integradas (11/11 cada), F03 integrada (9/9); F05 implementada, aguarda CI.
 
 ## Progresso das cidades
 
@@ -13,18 +13,18 @@ Referência Platinum. Progresso de preparação (não aprovação nativa):
 |---|---|
 | Twinleaf Town | Preparada |
 | Sandgem Town | Preparada |
-| Jubilife City | Pendente |
-| Oreburgh City | Pendente |
-| Floaroma Town | Pendente |
-| Eterna City | Pendente |
-| Hearthome City | Pendente |
-| Solaceon Town | Pendente |
-| Veilstone City | Pendente |
-| Pastoria City | Pendente |
-| Celestic Town | Pendente |
-| Canalave City | Pendente |
-| Snowpoint City | Pendente |
-| Sunyshore City | Pendente |
+| Jubilife City | Preparada |
+| Oreburgh City | Preparada |
+| Floaroma Town | Preparada |
+| Eterna City | Preparada |
+| Hearthome City | Preparada |
+| Solaceon Town | Preparada |
+| Veilstone City | Preparada |
+| Pastoria City | Preparada |
+| Celestic Town | Preparada |
+| Canalave City | Preparada |
+| Snowpoint City | Preparada |
+| Sunyshore City | Preparada |
 
 ## Progresso das rotas
 
@@ -35,8 +35,8 @@ Referência Platinum. Progresso de preparação (não aprovação nativa):
 - [x] F01 — Menu de teleporte QA no menu de pausa (PR #279, 11/11)
 - [x] F02 — Correção das bordas pretas com árvores (PR #280, 11/11)
 - [x] F03 — Inventário completo dos mapas, sprites e MapIDs (PR #281, 9/9)
-- [ ] F04 — Importação de todas as cidades e vilarejos (22 mapas candidatos, aguardando CI)
-- [ ] F05 — Importação de todas as rotas 201–230
+- [x] F04 — Importação de todas as cidades e vilarejos (PR #282, 11/11; 22 mapas preparados)
+- [ ] F05 — Importação de todas as rotas 201–230 (56 mapas candidatos, aguardando CI)
 - [ ] F06 — Importação de florestas, lagos e cavernas
 - [ ] F07 — Importação dos interiores e edifícios
 - [ ] F08 — Conexões entre mapas e colisões
@@ -82,3 +82,9 @@ Opcionalmente informar --base game e --prior-manifest com o manifesto privado an
 F03 confirmou 238 mapas de origem (224 não vazios e sem problemas geométricos detectados), 25 tilesets e 495 PNGs de overworlds. As 12 cidades adicionais são identificadas por MapInfo raiz, tileset 24, dimensões e SHA-256 fixados em data/regions/sinnoh-f04-city-sources.json. O instalador prepara 22 mapas somente na cópia privada, sem copiar eventos ou scripts externos. As cidades novas recebem atlases independentes para manter intactos os índices dos dez mapas anteriores; pontos seguros de chegada, máscaras de movimento e bordas F02 são derivados dos mapas reais. Os novos exteriores são acessíveis pelo menu de teleporte QA, sem conexões ou interiores novos nesta fase. BGM temporário de Sandgem até a fase de músicas/progressão. Os 35 eventos anteriores permanecem; NPCs e história das novas cidades não são implementados nesta fase.
 
 A compatibilidade com saves antigos exige exatamente a mesma base MapInfos e os dez MapIDs anteriores intactos, além dos SHA-256 dos dez mapas gerados iguais ao manifesto anterior. O namespace é então reutilizado, sem abrir/copiar saves. Base ou mapas incompatíveis mantêm o perfil isolado anterior intacto; nenhuma migração forçada. A QA nativa, R07/R08/R09 e a validação visual continuam pendentes. O CI real deve demonstrar 14 cidades, 22 destinos, 18 exteriores e 35 eventos preservados antes de qualquer merge.
+
+## F05 — rotas 201–230 e segmentos
+
+F04 integrada no PR #282 (11/11). Marcador real: SINNOH_REAL_F04_14_CITIES_22_TELEPORTS_35_EVENTS_18_EXTERIORS_OK. A F05 acrescenta 34 mapas exteriores do tileset 24: 28 rotas restantes e seis mapas adicionais associados às rotas 205, 210, 212, 224, 225 e 228. Os IDs de origem, nomes, hierarquia, dimensões e hashes SHA-256 estão fixados no catálogo data/regions/sinnoh-f05-route-sources.json. A classificação dos mapas subordinados como segmentos QA não implica que sejam conexões naturais, nem que a variante 224 seja uma passagem adicional na história. Portarias e interiores permanecem em F07.
+
+Meta: 56 mapas privados, 30 rotas principais, 36 destinos na categoria Rotas (incluindo seis entradas extras), 139 destinos de catálogo, 52 exteriores com proteção de bordas e 35 eventos antigos. Os 22 mapas e respectivos tilesets anteriores permanecem byte a byte; somente IDs livres de 442–517 podem ser usados. Não são adicionadas conexões, encontros, scripts ou eventos do doador. Música temporária de Sandgem para novas rotas. O filtro de chegada conserva terreno comum, passagem em todas as direções e dois vizinhos; se uma rota marítima ou qualquer outra não tiver ponto terrestre seguro, o CI bloqueia a importação até uma solução específica, nunca teleporta para água ou colisão. Saves reutilizam namespace somente se base, IDs e hashes anteriores coincidirem. Nenhum save pessoal aberto. Game.exe, R07/R08/R09 e aprovação visual nativa pendentes.

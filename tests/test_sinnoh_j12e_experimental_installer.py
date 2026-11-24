@@ -626,6 +626,42 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                 run=subprocess.run([shutil.which("ruby"),"-c"],input=script,capture_output=True,timeout=30)
                 self.assertEqual(run.returncode,0,run.stdout+run.stderr)
         print("SINNOH_REAL_F04_14_CITIES_22_TELEPORTS_35_EVENTS_18_EXTERIORS_OK",flush=True)
+        routes=exp.route_expansion
+        full_maps,full_ids,full_components,route_report=routes.append(all_maps,all_ids,all_components,source,{2})
+        self.assertEqual(len(full_ids),56)
+        self.assertEqual(len(route_report),34)
+        self.assertEqual({k:full_ids[k] for k in all_ids},all_ids)
+        for mid in all_ids.values():
+            rel="Data/Map%03d.rxdata"%mid
+            self.assertEqual(full_maps[rel],all_maps[rel])
+        self.assertEqual(full_maps["Data/map_connections.dat"],all_maps["Data/map_connections.dat"])
+        self.assertEqual(full_maps["PBS/map_connections.txt"],all_maps["PBS/map_connections.txt"])
+        full_tiles=read_marshal(full_maps["Data/Tilesets.rxdata"],"F05_TILES")
+        self.assertEqual(serialize(full_tiles[:len(new_tiles)]),serialize(new_tiles))
+        self.assertEqual(len(full_tiles)-len(new_tiles),34)
+        full_entries=exp.qa_teleport.build(full_maps,full_ids,full_components)
+        self.assertEqual(len(full_entries),139)
+        self.assertEqual(sum(r[3] is not None for r in full_entries),56)
+        self.assertEqual(sum(r[3] is not None and r[2]=="Rotas" for r in full_entries),36)
+        previous={r[0]:r[3] for r in all_entries if r[3] is not None}
+        self.assertEqual({r[0]:r[3] for r in full_entries if r[0] in previous},previous)
+        self.assertEqual(sum(len(read_marshal(full_maps["Data/Map%03d.rxdata"%mid],"F05_MAP").attrs["@events"]) for mid in full_ids.values()),35)
+        full_masks=pv.movement_masks(full_maps,full_ids,extra_symbols=city.CITIES|routes.ROUTES)
+        self.assertEqual({mid:full_masks[mid] for mid in all_masks},all_masks)
+        self.assertEqual(len(full_masks),52)
+        for row in full_entries:
+            if row[0] in routes.ROUTES:
+                mid,x,y=row[3]
+                self.assertEqual(full_masks[mid][y][x],".")
+                self.assertEqual(row[3],route_report[row[0]]["safe_spawn"])
+        _,full_forest,full_forest_report=exp.forest_edge.build(full_maps,full_ids,extra_symbols=city.CITIES|routes.ROUTES)
+        self.assertEqual(len(full_forest_report["map_ids"]),52)
+        if shutil.which("ruby"):
+            for script in (full_forest,exp.qa_teleport.plugin(full_entries),pv.movement_plugin(full_masks,full_ids["SINNOH_ROUTE_202"])):
+                run=subprocess.run([shutil.which("ruby"),"-c"],input=script,capture_output=True,timeout=30)
+                self.assertEqual(run.returncode,0,run.stdout+run.stderr)
+        print("SINNOH_REAL_F05_30_ROUTES_56_TELEPORTS_35_EVENTS_52_EXTERIORS_OK",flush=True)
+
 
 
 
@@ -959,6 +995,85 @@ raise "duplicate battle" unless $calls==4
         self.assertEqual(len(exp.city_expansion.component(cells,w,h,[0,0,0],[0,0,2])),15)
         with self.assertRaisesRegex(ValueError,"NO_SAFE_WALKABLE_COMPONENT"):
             exp.city_expansion.component(cells,w,h,[0,0,0],[0,2,2])
+
+    def test_f05_terrain_diagnostics_distinguishes_blocked_and_special_tiles(self):
+        w,h=5,5
+        cells=[0]*(w*h*3)
+        for y in range(1,4):
+            for x in range(1,4):
+                cells[y*w+x]=1
+        cells[0]=2
+        cells[4]=3
+        cells[5]=4
+        result=exp.city_expansion.terrain_diagnostics(cells,w,h,[0,0,0,15,0],[0,0,2,0,7])
+        self.assertEqual(result["ordinary_ground_cells"],9)
+        self.assertEqual(result["ordinary_arrival_candidates"],9)
+        self.assertEqual(result["walkable_stacks"],{"0":9,"2":1,"7":1})
+        self.assertEqual(result["blocked_stacks"],{"0":1})
+        self.assertEqual(result["empty_cells"],13)
+
+    def test_f05_scoped_arrival_policy_keeps_geometry_and_rejects_unsafe_tiles(self):
+        city=exp.city_expansion
+        qa=exp.qa_teleport
+        w,h=7,7
+        cells=[0]*(w*h*3)
+        for x in (2,3,4): cells[x]=1
+        cells[1]=2  # grass
+        cells[5]=3  # water
+        cells[6]=4  # blocked ordinary tile
+        p=[0,0,0,0,15,0]
+        tags=[0,0,2,7,0,4]
+        original=list(cells)
+        narrow="SINNOH_ROUTE_225_SEGMENT_2"
+        self.assertEqual(city.component(cells,w,h,p,tags,narrow),{(2,0),(3,0),(4,0)})
+        self.assertEqual(cells,original)
+        with self.assertRaisesRegex(ValueError,"NO_SAFE_WALKABLE_COMPONENT"):
+            city.component(cells,w,h,p,tags,"SINNOH_ROUTE_225")
+        cells[3]=0
+        with self.assertRaisesRegex(ValueError,"NO_SAFE_WALKABLE_COMPONENT"):
+            city.component(cells,w,h,p,tags,narrow)
+        cells=[0]*(w*h*3)
+        for y in range(1,5):
+            for x in range(1,5): cells[y*w+x]=5
+        cells[w+1]=3
+        cells[2*w+2+w*h]=2  # grass overlay
+        cells[3*w+3+w*h]=4  # blocked overlay
+        rock="SINNOH_ROUTE_228_SEGMENT_2"
+        allowed=qa.arrival_ground(cells,w,h,p,tags,rock)
+        self.assertNotIn((1,1),allowed)
+        self.assertNotIn((2,2),allowed)
+        self.assertNotIn((3,3),allowed)
+        self.assertEqual(len(city.component(cells,w,h,p,tags,rock)),13)
+        with self.assertRaisesRegex(ValueError,"NO_SAFE_WALKABLE_COMPONENT"):
+            city.component(cells,w,h,p,tags,"SINNOH_ROUTE_228")
+
+    def test_f05_save_namespace_and_route_segments(self):
+        city=exp.city_expansion
+        route=exp.route_expansion
+        old={k:442+i for i,k in enumerate(sorted(city.OLD))}
+        prior=city.allocate(old,{2})
+        full=route.allocate(prior,{2})
+        self.assertEqual(len(full),56)
+        self.assertEqual({k:full[k] for k in prior},prior)
+        self.assertEqual(len(route.extra_destinations()),6)
+        with self.assertRaises(ValueError):route.allocate(prior,set(range(464,518)))
+        token="abc123abc123"
+        folder=self.proj/exp.REPO_OUTPUT/(exp.QA_DIR+"-"+token)
+        folder.mkdir(parents=True)
+        profile=exp.namespace(token)
+        files={"Data/Map%03d.rxdata"%mid:("map-%s"%mid).encode() for mid in prior.values()}
+        data={"schema":1,"region":"SINNOH","mode":exp.MODE,"profile_token":token,
+              "main_game_modified":False,"personal_saves_copied":False,
+              "mapids":prior,"base_mapinfos_sha256":"a"*64,"save_profile":profile,
+              "file_sha256":{k:exp.sha(v) for k,v in files.items()}}
+        (folder/"sinnoh-experimental-qa.json").write_text(json.dumps(data))
+        (folder/"mkxp.json").write_text(json.dumps(profile))
+        self.assertEqual(exp.compatible_save_token(self.proj,full,"a"*64,files),token)
+        self.assertIsNone(exp.compatible_save_token(self.proj,full,"b"*64,files))
+        key=next(iter(files))
+        self.assertIsNone(exp.compatible_save_token(self.proj,full,"a"*64,{**files,key:b"changed"}))
+        bad=dict(full);a,b=list(prior)[:2];bad[a],bad[b]=bad[b],bad[a]
+        self.assertIsNone(exp.compatible_save_token(self.proj,bad,"a"*64,files))
 
     def test_f04_save_namespace_append_only(self):
         city=exp.city_expansion

@@ -35,18 +35,21 @@ def allocate(mapping,occupied,root=ROOT):
     if len(free)<12:fail("INSUFFICIENT_FREE_CITY_MAPIDS")
     return {**mapping,**{r["symbol"]:mid for r,mid in zip(rows(root),free)}}
 
-def component(cells,w,h,p,tags=None):
+def component(cells,w,h,p,tags=None,symbol=None):
     # Choose the largest conservative walking component that contains an
     # ordinary-ground arrival AND two ordinary-ground neighbours, rather
     # than the largest component regardless of terrain.
     free={(x,y) for y in range(h) for x in range(w)
           if (stack:=[cells[z*w*h+y*w+x] for z in range(3) if cells[z*w*h+y*w+x]])
           and all(t<len(p) and not p[t]&15 for t in stack)}
-    ground={q for q in free if 0<q[0]<w-1 and 0<q[1]<h-1 and
-            (tags is None or all(tags[t]==0 for z in range(3)
-            if (t:=cells[z*w*h+q[1]*w+q[0]])))}
-    arrivals={q for q in ground if sum(n in ground for n in
-              ((q[0]-1,q[1]),(q[0]+1,q[1]),(q[0],q[1]-1),(q[0],q[1]+1)))>=2}
+    allowed,edge,min_neighbours,min_component=teleport.arrival_policy(symbol)
+    ground=({q for q in free if 0<q[0]<w-1 and 0<q[1]<h-1}
+            if tags is None else teleport.arrival_ground(cells,w,h,p,tags,symbol))
+    # Exception pockets must be connected without crossing grass, water,
+    # ledges, or any other disallowed terrain. Preserve F04 behavior.
+    if symbol in ("SINNOH_ROUTE_225_SEGMENT_2","SINNOH_ROUTE_228_SEGMENT_2"):
+        free=set(ground)
+    arrivals={q for q in ground if sum(n in ground for n in teleport.neighbours(*q))>=min_neighbours}
     best=set()
     while free:
         seed=min(free,key=lambda q:(q[1],q[0]))
@@ -56,9 +59,28 @@ def component(cells,w,h,p,tags=None):
             for q in ((x-1,y),(x+1,y),(x,y-1),(x,y+1)):
                 if q in free:free.remove(q);part.add(q);todo.append(q)
         if len(part)>len(best) and part & arrivals:best=part
-    if len(best)<12:
+    if len(best)<min_component:
         fail("NO_SAFE_WALKABLE_COMPONENT:ordinary_ground=%d:arrival_candidates=%d"%(len(ground),len(arrivals)))
     return best
+
+def terrain_diagnostics(cells,w,h,passages,tags):
+    # Metadata only. Count passage patterns and terrain stacks across every
+    # occupied cell. No guessed terrain meanings and no mutation.
+    from collections import Counter
+    walkable=Counter();blocked=Counter();empty=0;land=set()
+    for y in range(h):
+        for x in range(w):
+            stack=[cells[z*w*h+y*w+x] for z in range(3) if cells[z*w*h+y*w+x]]
+            if not stack:
+                empty+=1;continue
+            key=",".join(str(t) for t in sorted({tags[t] for t in stack}))
+            if all(not passages[t]&15 for t in stack):
+                walkable[key]+=1
+                if key=="0" and 0<x<w-1 and 0<y<h-1:land.add((x,y))
+            else:blocked[key]+=1
+    arrivals=sum(sum(q in land for q in ((x-1,y),(x+1,y),(x,y-1),(x,y+1)))>=2 for x,y in land)
+    return {"walkable_stacks":dict(sorted(walkable.items())),"blocked_stacks":dict(sorted(blocked.items())),
+            "empty_cells":empty,"ordinary_ground_cells":len(land),"ordinary_arrival_candidates":arrivals}
 
 def city_atlases(raw,sets):
     """Decode pinned source once, produce independent compact city atlases."""
@@ -80,6 +102,14 @@ def city_atlases(raw,sets):
 
 def append(blobs,mapping,components,path,occupied,root=ROOT):
     expanded=allocate(mapping,occupied,root)
+    return append_exteriors(blobs,mapping,components,path,expanded,rows(root),"F04")
+
+def append_exteriors(blobs,mapping,components,path,expanded,source_rows,phase):
+    # Appending only; existing tileset indices and map bytes are immutable.
+    if not all(expanded.get(k)==v for k,v in mapping.items()) or len(set(expanded.values()))!=len(expanded):
+        fail("INVALID_APPEND_MAPPING")
+    if set(expanded)-set(mapping)!={r["symbol"] for r in source_rows}:
+        fail("INVALID_APPEND_ROWS")
     out=dict(blobs);comps=dict(components);report={}
     infos=read_marshal(out["Data/MapInfos.rxdata"],"F04_TARGET_INFOS")
     tiles=read_marshal(out["Data/Tilesets.rxdata"],"F04_TARGET_TILES")
@@ -94,11 +124,11 @@ def append(blobs,mapping,components,path,occupied,root=ROOT):
         source=read_marshal(pv.member(z,pv.MAP_ROOT+"Data/Tilesets.rxdata"),"F04_SOURCE_TILES")[24]
         if source.attrs["@tileset_name"]!=b"outdoors":fail("SOURCE_TILESET")
         tables={k:pv.table(source.attrs[k],7880) for k in ("@passages","@priorities","@terrain_tags")}
-        sets={};source_cells={}
-        for row in rows(root):
+        sets={};source_cells={};component_failures=[]
+        for row in source_rows:
             sym,mid=row["symbol"],row["source_id"]
             info=donor_infos[mid].attrs
-            if info["@name"]!=row["label"].encode("ascii") or info["@parent_id"]!=0:fail("SOURCE_CITY_NOT_EXTERIOR")
+            if info["@name"]!=row.get("source_name",row["label"]).encode("ascii") or info["@parent_id"]!=row.get("parent_id",0):fail("SOURCE_EXTERIOR_IDENTITY")
             raw=pv.member(z,pv.MAP_ROOT+"Data/Map%03d.rxdata"%mid)
             if hashlib.sha256(raw).hexdigest()!=row["sha256"]:fail("SOURCE_MAP_HASH")
             w,h=row["width"],row["height"]
@@ -113,17 +143,26 @@ def append(blobs,mapping,components,path,occupied,root=ROOT):
             if any(0<t<48 for t in cells):fail("SOURCE_RESERVED_TILE")
             sets[sym]={t for t in cells if t>=384};source_cells[sym]=cells
             try:
-                comps[sym]=component(cells,w,h,tables["@passages"],tables["@terrain_tags"])
+                comps[sym]=component(cells,w,h,tables["@passages"],tables["@terrain_tags"],sym if phase=="F05" else None)
             except ValueError as exc:
-                raise ValueError("F04_CITY:"+sym+":"+str(exc)) from exc
+                component_failures.append({"symbol":sym,"source_id":mid,"error":str(exc)})
+            if phase=="F05":
+                print("SINNOH_F05_TERRAIN "+json.dumps({"symbol":sym,"source_id":mid,
+                      **terrain_diagnostics(cells,w,h,tables["@passages"],tables["@terrain_tags"]),
+                      "policy_ground_cells":len(teleport.arrival_ground(cells,w,h,tables["@passages"],tables["@terrain_tags"],sym)),
+                      "policy_component_cells":len(comps.get(sym,()))},sort_keys=True),flush=True)
+        if component_failures:
+            # Report ALL blocked routes in the same run, rather than failing
+            # at the first one. Do not generate maps or a success marker.
+            raise ValueError("SINNOH_"+phase+"_UNSAFE_ARRIVALS:"+json.dumps(component_failures,sort_keys=True))
         atlases=city_atlases(pv.member(z,pv.MAP_ROOT+"Graphics/Tilesets/outdoors.png"),sets)
     order=max(v.attrs["@order"] for v in infos.values())
-    for row in rows(root):
+    for row in source_rows:
         sym=row["symbol"];mid=expanded[sym];w,h=row["width"],row["height"];n=w*h*3
         atlas,remap=atlases[sym];tid=len(tiles)
         if tid>=5000:fail("TILESET_CAPACITY")
         tile=copy.deepcopy(source);a=tile.attrs
-        name="SNQA_F04_%03d"%row["source_id"]
+        name="SNQA_%s_%03d"%(phase,row["source_id"])
         a.update({"@id":tid,"@name":name.encode("ascii"),"@tileset_name":name.encode("ascii"),
                   "@autotile_names":copy.deepcopy(tiles[existing_tile].attrs["@autotile_names"])})
         total=384+((len(remap)+7)//8)*8
@@ -140,13 +179,16 @@ def append(blobs,mapping,components,path,occupied,root=ROOT):
         rel="Data/Map%03d.rxdata"%mid
         out[rel]=serialize(m,EVENT_CLASSES)
         try:
-            x,y=teleport.safe_spawn(out[rel],tiles,comps[sym])
+            x,y=teleport.safe_spawn(out[rel],tiles,comps[sym],sym if phase=="F05" else None)
         except ValueError as exc:
             raise ValueError("F04_CITY:"+sym+":"+str(exc)) from exc
+        if phase=="F05":
+            print("SINNOH_F05_ARRIVAL "+json.dumps({"symbol":sym,"source_id":row["source_id"],
+                  "target_id":mid,"x":x,"y":y,"component_cells":len(comps[sym])},sort_keys=True),flush=True)
         info=copy.deepcopy(infos[mapping["SINNOH_SANDGEM_TOWN"]]);order+=1
         info.attrs.update({"@name":row["label"].encode("ascii"),"@parent_id":0,"@order":order})
         infos[mid]=info
-        pbs+=("\n# F04 private exterior\n[%03d]\nName = %s\nOutdoor = true\nShowArea = true\nBicycle = true\nSnapEdges = true\n"%(mid,row["label"])).encode("ascii")
+        pbs+=("\n# %s private exterior\n[%03d]\nName = %s\nOutdoor = true\nShowArea = true\nBicycle = true\nSnapEdges = true\n"%(phase,mid,row["label"])).encode("ascii")
         report[sym]={"source_id":row["source_id"],"target_id":mid,"width":w,"height":h,
                      "source_sha256":row["sha256"],"source_tileset_id":24,"target_tileset_id":tid,
                      "safe_spawn":[mid,x,y],"model_connected_cells":len(comps[sym]),

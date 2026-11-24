@@ -103,6 +103,13 @@ def load_qa(project: Path, qa: Path) -> dict:
                 any(k not in maps or not isinstance(city_report[k],dict) or city_report[k].get("target_id")!=maps[k] for k in cities)):
             block("INVALID_F04_CITY_MANIFEST")
         count=22
+    routes=data.get("route_expansion",{})
+    route_keys={"SINNOH_ROUTE_%d"%n for n in range(203,231)}|{"SINNOH_ROUTE_%d_SEGMENT_2"%n for n in (205,210,212,224,225,228)}
+    if routes:
+        if (count!=22 or not isinstance(routes,dict) or set(routes)!=route_keys or
+                any(k not in maps or not isinstance(routes[k],dict) or routes[k].get("target_id")!=maps[k] for k in route_keys)):
+            block("INVALID_F05_ROUTE_MANIFEST")
+        count=56
     if (not isinstance(maps, dict) or len(maps) != count or
             (count>=10 and "SINNOH_VERITY_LAKEFRONT" not in maps) or
             len(set(maps.values())) != count or
@@ -173,6 +180,11 @@ def audit_maps(qa: Path, data: dict, *, allow_tile_recovery: bool):
         source_ids={row["source_id"] for row in cities.values()}
         if source_ids!={22,77,84,90,96,106,109,123,160,205,219,225}:block("INVALID_F04_SOURCE_IDS")
         files += ["Graphics/Tilesets/SNQA_F04_%03d.png"%mid for mid in sorted(source_ids)]
+    routes=data.get("route_expansion",{})
+    if routes:
+        source_ids={row["source_id"] for row in routes.values()}
+        if source_ids!={42,79,80,91,94,104,105,108,110,116,122,126,140,141,142,146,150,151,155,156,157,164,165,198,199,200,206,218,222,223,224,226,233,234}:block("INVALID_F05_SOURCE_IDS")
+        files += ["Graphics/Tilesets/SNQA_F05_%03d.png"%mid for mid in sorted(source_ids)]
     continuity=data.get("private_continuity",{})
     if continuity:
         if not isinstance(continuity,dict) or len(continuity.get("connections",[]))!=(6 if data.get("private_lake_story") else 3):
