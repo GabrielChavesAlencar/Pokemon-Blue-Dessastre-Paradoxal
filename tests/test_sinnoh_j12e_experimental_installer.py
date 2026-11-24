@@ -22,7 +22,7 @@ import generate_sinnoh_four_exteriors_j11b as four
 import prepare_sinnoh_nine_original_j11c as j11c
 from audit_sinnoh_rxdata import read_marshal
 from audit_sinnoh_twinleaf_events import MAPS
-from server.ruby_marshal import RubyObject
+from server.ruby_marshal import RubyObject, RubyData
 from stage import serialize
 
 class J12EInstallerTests(unittest.TestCase):
@@ -139,6 +139,71 @@ class J12EInstallerTests(unittest.TestCase):
         raw=zlib.decompress(payload)
         self.assertEqual(raw[1:257],rows[0][:256])
         with self.assertRaises(ValueError):pv.compact_atlas(b"",{383})
+
+    def test_private_full_import_rebuilds_nine_maps_and_all_events(self):
+        # Synthetic donor: same structural shape, no downloaded assets in CI.
+        pv=exp.private_visual
+        tables=[None]*26
+        for tid,name in ((24,b"outdoors"),(25,b"indoors")):
+            ts=copy.deepcopy(self.tiles[1]);ts.attrs.update({
+                "@id":tid,"@name":name,"@tileset_name":name,
+                "@autotile_names":[b"A"]*7 if tid==24 else [b""]*7})
+            for key in ("@passages","@priorities","@terrain_tags"):
+                ts.attrs[key]=j11c.table1([0]*7880)
+            tables[tid]=ts
+        infos={}
+        members={}
+        for symbol,(mid,name,(w,h)) in pv.DONOR.items():
+            infos[mid]=RubyObject("RPG::MapInfo",{"@name":name})
+            original=read_marshal(self.empty["Data/Map%03d.rxdata"%self.mapping[symbol]],"SYNTHETIC_DONOR")
+            original.attrs.update({"@width":w,"@height":h,"@tileset_id":24,
+                "@data":RubyData("Table",struct.pack("<5I",3,w,h,3,w*h*3)+
+                       struct.pack("<%dH"%(w*h*3),*([384]*(w*h)+[0]*(2*w*h))))})
+            members[pv.MAP_ROOT+"Data/Map%03d.rxdata"%mid]=serialize(original)
+        members[pv.MAP_ROOT+"Data/MapInfos.rxdata"]=serialize(infos)
+        members[pv.MAP_ROOT+"Data/Tilesets.rxdata"]=serialize(tables)
+        fake_png=exp.visual.png(32,32,bytes(32*32*4))
+        for name in ("Tilesets/outdoors.png","Tilesets/indoors.png","Autotiles/A.png"):
+            members[pv.MAP_ROOT+"Graphics/"+name]=fake_png
+        def compact(raw,ids):
+            remap={t:384+i for i,t in enumerate(sorted(ids))}
+            h=((len(ids)+7)//8)*32
+            return exp.visual.png(256,h,bytes(256*h*4)),remap
+        old=exp.visual.upgrade(self.ready,self.mapping,self.meta["tileset_ids"],self.events,self.start)
+        with patch.object(pv,"verified_archive"),patch.object(pv,"member",side_effect=lambda z,n,*a:members[n]),patch.object(pv,"compact_atlas",side_effect=compact):
+            maps,components,report=pv.apply_maps(old,self.mapping,"synthetic")
+        self.assertEqual(set(report),set(self.mapping))
+        self.assertEqual(set(components),set(self.mapping))
+        self.assertEqual(maps["Data/MapInfos.rxdata"],old["Data/MapInfos.rxdata"])
+        for symbol in pv.INTERIOR_SIZES:
+            self.assertIsNone(report[symbol]["source_id"])
+            self.assertTrue(report[symbol]["authored_layout"])
+        maps,events,start=exp.compile_events(maps,self.mapping,components,{**pv.ANCHORS,**pv.INTERIOR_ANCHORS})
+        self.assertEqual(len(events),24)
+        self.assertEqual(sum(e["kind"]=="warp" for e in events),16)
+        self.assertEqual({e["key"] for e in events},{e["key"] for e in self.events})
+        self.assertIn(start,components["SINNOH_PLAYER_BEDROOM"])
+        for e in events:
+            self.assertIn(tuple(e["position"]),components[e["map"]])
+            if e["kind"]=="warp":self.assertIn(tuple(e["arrival"]),components[e["destination"]])
+        for symbol,mid in self.mapping.items():
+            m=read_marshal(maps["Data/Map%03d.rxdata"%mid],"FINAL_PRIVATE")
+            self.assertEqual(len(m.attrs["@events"]),sum(e["map"]==symbol for e in events))
+        old_tiles=read_marshal(old["Data/Tilesets.rxdata"],"OLD_PRIVATE")
+        new_tiles=read_marshal(maps["Data/Tilesets.rxdata"],"NEW_PRIVATE")
+        self.assertEqual(new_tiles[:len(old_tiles)],old_tiles)
+        self.assertEqual(len(new_tiles),len(old_tiles)+2)
+
+    def test_private_interior_layouts_are_complete_and_in_range(self):
+        pv=exp.private_visual
+        self.assertEqual(len(pv.INTERIOR_SIZES),4)
+        for symbol,(w,h) in pv.INTERIOR_SIZES.items():
+            cells=pv.interior_cells(symbol)
+            self.assertEqual(len(cells),w*h*3)
+            self.assertTrue(all(384<=t<7880 for t in cells[:w*h]))
+            self.assertTrue(all(t==0 or 384<=t<7880 for t in cells))
+            self.assertGreater(len(set(cells)),25)
+            self.assertGreater(sum(t!=0 for t in cells[w*h:]),10)
 
     def test_private_archives_are_hash_pinned_and_not_extracted(self):
         pv=exp.private_visual
