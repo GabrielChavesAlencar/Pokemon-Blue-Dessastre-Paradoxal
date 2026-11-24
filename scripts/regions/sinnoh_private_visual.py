@@ -402,6 +402,11 @@ def apply_sprites(blobs,path):
             raw=member(z,OW_ROOT+name+".png",1_000_000)
             if dims(raw)!=(256,256):fail("SPRITE_DIMENSIONS:"+role)
             out["Graphics/Characters/SNQA_"+role+".png"]=raw
+        for role in ("YOUNGSTER","LASS"):
+            candidates=[i.filename for i in z.infolist() if re.fullmatch(re.escape(OW_ROOT)+r"NPC_\d+_"+role+r"\.png",i.filename,re.I)]
+            if len(candidates)==1:
+                raw=member(z,candidates[0],1_000_000)
+                if dims(raw)==(256,256):out["Graphics/Characters/SNQA_"+role+".png"]=raw
         # The native Decades database already includes Platinum Lucas/Dawn
         # (metadata IDs 9/10). Keep its existing walking/running/bike/Surf/
         # fishing states; these optional sheets are local reference only.
@@ -619,6 +624,136 @@ def route201_encounters(base,mapping):
     # DPPt-style introductory table; levels remain subject to existing runtime scaling.
     block=f"\n# Blue Sinnoh private QA\n[{mid:03d}] # Route 201\nLand,21\n    50,STARLY,2,3\n    50,BIDOOF,2,3\n"
     return raw+block.encode("ascii")
+
+
+# Early-game Platinum roster. Route 201 keeps the Blue pilot's existing
+# balance; Route 202 includes the morning/night Kricketot variation.
+# Surf/fishing tables are prepared but their access remains HM/item gated.
+LAND_ROSTER={
+    "SINNOH_ROUTE_201":{"Land":((50,"STARLY",2,3),(50,"BIDOOF",2,3))},
+    "SINNOH_ROUTE_202":{
+        "Land":((20,"STARLY",2,4),(50,"BIDOOF",2,4),(30,"SHINX",3,4)),
+        "LandMorning":((20,"STARLY",2,4),(40,"BIDOOF",2,4),(30,"SHINX",3,4),(10,"KRICKETOT",4,4)),
+        "LandNight":((10,"STARLY",2,4),(50,"BIDOOF",2,4),(30,"SHINX",3,4),(10,"KRICKETOT",4,4))},
+    "SINNOH_LAKE_VERITY":{"Land":((50,"STARLY",2,4),(50,"BIDOOF",2,4))},
+}
+WATER_ROSTER={
+    "Water":((90,"PSYDUCK",20,30),(10,"GOLDUCK",20,40)),
+    "OldRod":((100,"MAGIKARP",3,15),),
+    "GoodRod":((65,"MAGIKARP",10,25),(35,"GOLDEEN",10,25)),
+    "SuperRod":((65,"GYARADOS",30,55),(35,"SEAKING",30,55)),
+}
+# All first-visit trainer battles in the ten-map early-story scope.
+ROUTE202_TRAINERS=(
+    ("TRISTAN","YOUNGSTER","Tristan","STARLY"),
+    ("NATALIE","LASS","Natalie","BIDOOF"),
+    ("LOGAN","YOUNGSTER","Logan","BURMY"),
+)
+TRAINER_VERSION=202
+
+
+def coverage_encounters(base,mapping,masks):
+    from install_sinnoh_experimental_windows import regular
+    from pbs import catalogue
+    route201_encounters(base,mapping) # checks allocated IDs against baseline
+    raw=(base/"PBS/encounters.txt").read_bytes()
+    roster={k:dict(v) for k,v in LAND_ROSTER.items()}
+    for sym in ("SINNOH_TWINLEAF_TOWN","SINNOH_LAKE_VERITY"):
+        roster.setdefault(sym,{}).update(WATER_ROSTER)
+    report={}
+    species=set()
+    blocks=[]
+    for sym,mid in mapping.items():
+        rows=masks.get(mid,[])
+        grass=sum(row.count("g") for row in rows)
+        methods=roster.get(sym,{})
+        if grass and "Land" not in methods:
+            fail("UNCOVERED_GRASS_MAP:"+sym)
+        if "Land" in methods and not grass:
+            fail("LAND_ROSTER_WITHOUT_GRASS:"+sym)
+        report[sym]={"grass_cells":grass,"methods":sorted(methods),
+                     "water_access_not_verified":bool("Water" in methods)}
+        if not methods:continue
+        blocks.append("[%03d] # %s"%(mid,sym))
+        for method,entries in methods.items():
+            if sum(e[0] for e in entries)!=100:fail("ENCOUNTER_WEIGHT_TOTAL")
+            blocks.append(method+(",21" if method.startswith("Land") else ",2" if method=="Water" else ""))
+            for weight,mon,lo,hi in entries:
+                species.add(mon)
+                blocks.append("    %d,%s,%d,%d"%(weight,mon,lo,hi))
+    if not species<=catalogue(base,"pokemon"):fail("ENCOUNTER_SPECIES_MISSING")
+    return raw+("\n# Blue Sinnoh coverage\n"+"\n".join(blocks)+"\n").encode("ascii"),report
+
+
+def route202_trainer_pbs(base):
+    from pbs import catalogue,read_blocks
+    from install_sinnoh_experimental_windows import regular
+    types=catalogue(base,"trainer_types")
+    mons=catalogue(base,"pokemon")
+    existing=set()
+    for p in (base/"PBS").glob("trainers*.txt"):
+        regular(p)
+        existing.update(read_blocks(p))
+    lines=[]
+    for key,kind,name,mon in ROUTE202_TRAINERS:
+        section=f"{kind},{name},{TRAINER_VERSION}"
+        if kind not in types or mon not in mons:fail("ROUTE202_TRAINER_DATABASE_MISSING:"+key)
+        if section in existing:fail("ROUTE202_TRAINER_ID_COLLISION:"+key)
+        lines.extend(("["+section+"]",f"Pokemon = {mon},5",""))
+    return ("\n".join(lines)+"\n").encode("ascii")
+
+
+def route202_trainer_events(blobs,mapping,components):
+    """Place three authored NPCs on verified ground; preserve every old ID.
+
+    Select positions progressively north from Sandgem's entry using graph
+    distance. Removing the three NPC cells must leave all remaining
+    reachable cells connected, so the player cannot be trapped by an NPC.
+    """
+    from build_johto_events import EVENT_CLASSES,ruby,event_page
+    from compile_sinnoh_playable_j04 import passable_point
+    sym="SINNOH_ROUTE_202";mid=mapping[sym]
+    rel="Data/Map%03d.rxdata"%mid
+    out=dict(blobs)
+    m=read_marshal(out[rel],"TRAINER_MAP")
+    tiles=read_marshal(out["Data/Tilesets.rxdata"],"TRAINER_TILES")
+    rows=movement_masks(out,mapping)[mid]
+    points=components[sym]
+    seed=SEEDS[sym]
+    def distances(blocked):
+        seen={seed:0};queue=deque([seed])
+        while queue:
+            x,y=queue.popleft()
+            for q in ((x-1,y),(x+1,y),(x,y-1),(x,y+1)):
+                if q in points and q not in blocked and q not in seen:
+                    seen[q]=seen[(x,y)]+1;queue.append(q)
+        return seen
+    dist=distances(set())
+    events=m.attrs["@events"]
+    used={(e.attrs["@x"],e.attrs["@y"]) for e in events.values()}
+    chosen=set();positions=[]
+    extent=max(dist.values())
+    for (key,kind,name,mon),fraction in zip(ROUTE202_TRAINERS,(0.30,0.55,0.80)):
+        candidates=sorted((q for q in dist if q not in used|chosen and
+                           1<=q[0]<len(rows[0])-1 and 1<=q[1]<len(rows)-1 and
+                           rows[q[1]][q[0]]=="." and all(abs(q[0]-x)+abs(q[1]-y)>=4 for x,y in chosen)),
+                          key=lambda q:(abs(dist[q]-extent*fraction),q[1],q[0]))
+        xy=next((q for q in candidates if len(distances(chosen|{q}))==len(dist)-len(chosen)-1),None)
+        if xy is None:fail("NO_SAFE_ROUTE202_TRAINER_POSITION:"+key)
+        passable_point(m,tiles,*xy)
+        chosen.add(xy)
+        eid=max(events,default=0)+1
+        page=event_page(script=f'BlueSinnohPilot.route_trainer("{key}")',sprite="SNQA_"+kind)
+        # Action interaction plus native sight trigger. Once defeated, the
+        # empty sight-name condition is handled by the native self switch.
+        page.attrs["@trigger"]=2
+        finished=event_page(script=f'BlueSinnohPilot.route_trainer("{key}")',sprite="SNQA_"+kind)
+        finished.attrs["@condition"].attrs.update({"@self_switch_valid":True,"@self_switch_ch":b"A"})
+        events[eid]=ruby("RPG::Event",id=eid,name=("Trainer(3) SN_ROUTE202_"+key).encode("ascii"),
+                         x=xy[0],y=xy[1],pages=[page,finished])
+        positions.append({"key":key,"map_id":mid,"event_id":eid,"position":list(xy),"species":mon,"type":kind})
+    out[rel]=serialize(m,EVENT_CLASSES)
+    return out,positions
 
 
 def movement_masks(blobs,mapping):

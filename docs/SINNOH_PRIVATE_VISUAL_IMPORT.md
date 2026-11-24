@@ -98,3 +98,16 @@ Cada execução anteriormente criava um novo token de cópia e um novo namespace
 As três bolas recebem páginas vazias condicionadas por self switch B, sincronizado após a escolha confirmada e na entrada do lago. A Rota 201 recebe tabela Land 21, Starly 50% e Bidoof 50%, nível base 2–3, compilada pelo motor e verificada no mesmo bootstrap privado; o balanceamento existente continua em vigor. Rota 202 fica bloqueada na conexão de Sandgem até a entrega real da Pokédex e cinco Poké Bolas por Rowan, após o treino com Barry. A entrega é única por save, inclusive se as bolas forem consumidas. O retorno da Rota 202 não é bloqueado. As rotas e os saves das outras regiões não são modificados.
 
 Testes automatizados verificam namespace compatível, preservação PBS, páginas reais, entrega única e falha com mochila cheia, e gate de conexão. Save/reload e encontros no Game.exe continuam sujeitos a teste nativo.
+
+
+## Cobertura de encontros e treinadores — dez mapas iniciais
+
+Referências de primeira visita: [Route 201](https://www.serebii.net/pokearth/sinnoh/4th/route201.shtml), [Route 202 (Platinum)](https://bulbapedia.bulbagarden.net/wiki/Sinnoh_Route_202#Pok%C3%A9mon_Platinum), [Verity Lakefront](https://www.serebii.net/pokearth/sinnoh/4th/veritylakefront.shtml), [Lake Verity](https://www.serebii.net/pokearth/sinnoh/4th/lakeverity.shtml), [Twinleaf Town](https://www.serebii.net/pokearth/sinnoh/4th/twinleaftown.shtml). Roster adaptado ao Blue, não uma cópia completa de todas as fases de Platinum.
+
+- Rota 201: Starly/Bidoof, preserva tabela do Blue anterior.
+- Rota 202: Starly/Bidoof/Shinx e Kricketot de manhã/noite; três treinadores de primeira visita: Youngster Tristan (Starly), Lass Natalie (Bidoof), Youngster Logan (Burmy). Nível PBS 5, escala dinâmica do Blue permanece responsável pelo nível efetivo. Posicionamento autoral calculado no mapa real, não coordenadas oficiais; três novas IDs sem renumerar eventos anteriores. Vitória individual persistida em estado regional, derrota não marca vitória.
+- Lago Verity: Starly/Bidoof na grama; Barry existente preservado. Os treinadores Galactic de capítulos futuros não são introduzidos antes da história correspondente.
+- Twinleaf e Lago Verity: tabelas de Surf/pesca prontas, acesso às mecânicas não aprovado neste piloto. Sandgem, Lakefront e quatro interiores não devem receber encontros terrestres artificiais.
+- Auditoria de todos os dez mapas exige uma tabela Land para cada mapa com grama caminhável e catálogo nativo das espécies. Compilador verifica todos os métodos e os três novos treinadores. Não afirma teste de batalha em Game.exe. As revanches, fases futuras e outros mapas/regions não fazem parte desta entrega. Se os sprites específicos não estiverem no pack com nome único reconhecido, usa-se sprite local genérico.
+
+A execução real com os ZIPs precisa confirmar os 35 eventos e a conectividade após colocar treinadores. O pipeline não altera a base nem migra saves pessoais; teste manual de continuidade de saves e encontros ainda necessário.

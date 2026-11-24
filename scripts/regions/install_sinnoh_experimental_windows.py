@@ -310,7 +310,7 @@ def runtime_config(base:Path,token:str):
     if count!=1:fail("GAME_INI_TITLE_NOT_UNIQUE")
     return (json.dumps(config,ensure_ascii=False,indent=2)+"\n").encode(),result.encode(),profile
 
-def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile=False,save_token=None,route201=None):
+def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile=False,save_token=None,route201=None,encounter_coverage=None,route_trainers=False):
     """Require real Essentials Compiler and all three Barry PBS data; no fake success."""
     rows=Marshal(raw).read()
     matches=[row for row in rows if isinstance(row,list) and len(row)>=3 and row[1]==b"Main"]
@@ -358,6 +358,20 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile
         if route201 not in map_ids:fail("INVALID_ROUTE201_COMPILE_ID")
         hook=hook.replace("trainers.dat", "trainers.dat encounters.dat")
         verify=verify.replace("        File.write(", f"        GameData::Encounter.load\n        encounter = GameData::Encounter.get({route201},0)\n        unless encounter && encounter.types[:Land] && !encounter.types[:Land].empty?\n          raise \"Sinnoh QA: encontros da Rota 201 ausentes\"\n        end\n        File.write(",1)
+    if encounter_coverage:
+        if any(mid not in map_ids for mid in encounter_coverage):fail("INVALID_ENCOUNTER_COVERAGE_ID")
+        checks=[]
+        for mid,methods in sorted(encounter_coverage.items()):
+            for method in methods:
+                if not re.fullmatch(r"[A-Za-z]+",method):fail("INVALID_ENCOUNTER_METHOD")
+                checks.append(f'        raise "Sinnoh QA: encontro ausente {mid}/{method}" unless GameData::Encounter.get({mid},0)&.types&.fetch(:{method},nil)&.any?')
+        if route201 is None:hook=hook.replace("trainers.dat","trainers.dat encounters.dat")
+        verify=verify.replace("        File.write(", "        GameData::Encounter.load\n"+"\n".join(checks)+"\n        File.write(",1)
+    if route_trainers:
+        checks=[]
+        for key,kind,name,mon in private_visual.ROUTE202_TRAINERS:
+            checks.append(f'        raise "Sinnoh QA: treinador ausente {name}" unless GameData::Trainer.exists?(:{kind}, "{name}", {private_visual.TRAINER_VERSION})')
+        verify=verify.replace("        File.write(", "\n".join(checks)+"\n        File.write(",1)
     # Essentials normalizes transfer events (door SFX/fades) during PBS
     # compilation and rewrites their maps. These authored QA files are pinned
     # byte-for-byte by the title/supervisor. Preserve their verified input bytes
@@ -386,7 +400,7 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile
     guarded=guarded.replace("__QA_PROTECTED__"," ".join(protected))
     late = ""
     if story_profile:
-        late = '\n    if File.basename(Dir.pwd) == "game-sinnoh-experimental-'+token+'" && File.file?("sinnoh-experimental-qa.json")\n      BlueSinnohExperimental.install_fresh_hooks!\n      BlueSinnohSafeMovement.install!\n      if defined?(EventHandlers)\n        EventHandlers.add(:on_enter_map, :blue_sinnoh_hide_starter_balls, proc { |*args| BlueSinnohPilot.hide_starter_balls })\n      end\n    end'
+        late = '\n    if File.basename(Dir.pwd) == "game-sinnoh-experimental-'+token+'" && File.file?("sinnoh-experimental-qa.json")\n      BlueSinnohExperimental.install_fresh_hooks!\n      BlueSinnohSafeMovement.install!\n      if defined?(EventHandlers)\n        EventHandlers.add(:on_enter_map, :blue_sinnoh_hide_starter_balls, proc { |*args| BlueSinnohPilot.hide_starter_balls; BlueSinnohPilot.sync_route_trainers })\n      end\n    end'
     if save_token is not None:
         if not re.fullmatch(r"[a-f0-9]{12}",save_token):fail("INVALID_SAVE_PROFILE_TOKEN")
         # The original Auto Multi Save plugin falls back to "." if the
@@ -656,6 +670,8 @@ def build_files(base:Path,project:Path=ROOT):
     story={}
     continuity={}
     movement=b""
+    encounter_coverage={}
+    route_trainers=[]
     if "maps" in sources:
         extra=next((i for i in range(442,518) if i not in occupied and i not in ids),None)
         if extra is None:fail("NO_FREE_LAKEFRONT_QA_ID")
@@ -668,7 +684,11 @@ def build_files(base:Path,project:Path=ROOT):
         masks=private_visual.movement_masks(maps,mapping)
         private_visual.verify_starter_corridor(masks,mapping)
         movement=private_visual.movement_plugin(masks,mapping["SINNOH_ROUTE_202"])
-        maps["PBS/encounters.txt"]=private_visual.route201_encounters(base,mapping)
+        maps["PBS/encounters.txt"],encounter_coverage=private_visual.coverage_encounters(base,mapping,masks)
+        maps,route_trainers=private_visual.route202_trainer_events(maps,mapping,components)
+        maps["PBS/trainers_sinnoh_route202.txt"]=private_visual.route202_trainer_pbs(base)
+        for role in ("YOUNGSTER","LASS"):
+            maps["Graphics/Characters/SNQA_"+role+".png"]=sprite_png("NPC")
         story["grass_guard"]=True
         story["visual_only_connections_omitted"]=2
         ids=list(mapping.values())
@@ -688,7 +708,7 @@ def build_files(base:Path,project:Path=ROOT):
         "Graphics/Characters/SNQA_NPC.png":sprite_png("NPC"),
         "Graphics/Characters/SNQA_BALL.png":sprite_png("BALL"),
         "Data/System.rxdata":None,
-        "Data/Scripts.rxdata":patch_bootstrap((base/"Data/Scripts.rxdata").read_bytes(),token,ids,connected=bool(continuity),story_profile=bool(story),save_token=save_token,route201=mapping["SINNOH_ROUTE_201"] if story else None),
+        "Data/Scripts.rxdata":patch_bootstrap((base/"Data/Scripts.rxdata").read_bytes(),token,ids,connected=bool(continuity),story_profile=bool(story),save_token=save_token,route201=mapping["SINNOH_ROUTE_201"] if story else None,encounter_coverage={mapping[sym]:v["methods"] for sym,v in encounter_coverage.items() if v["methods"]},route_trainers=bool(route_trainers)),
         "mkxp.json":config,"Game.ini":game_ini,
         # Only inside the NEW private QA copy. Blue-Story source-only sync
         # cannot update the installed main-game title when Kanto is 142/145.
@@ -715,7 +735,7 @@ def build_files(base:Path,project:Path=ROOT):
     final["Data/sinnoh-experimental-compile-request.txt"]=proof.encode("ascii")
     # These hashes do not claim human rights approval, or native gameplay acceptance.
     report={"schema":1,"region":"SINNOH","mode":MODE,
-        "maps_prepared":len(mapping),"static_events_placed":len(events)+story.get("extra_event_count",0),
+        "maps_prepared":len(mapping),"static_events_placed":len(events)+story.get("extra_event_count",0)+len(route_trainers),
         "static_warps":16-len(continuity.get("retired_warp_keys",[]))+(3 if story else 0),"native_seam_pairs":sum(not p.get("visual_only") for p in continuity.get("connections",[])),"static_handlers":5,"static_starter_balls":3,
         "local_reserved_qa_only":True,"independent_r07_approved":False,
         "independent_r08_approved":False,"r09_native_qa_executed":0,
@@ -731,6 +751,7 @@ def build_files(base:Path,project:Path=ROOT):
         "visual_revision":"SINNOH_ORIGINAL_PIXEL_ART_V2",
         "private_continuity":continuity,
         "private_lake_story":story,
+        "encounter_coverage":encounter_coverage,"route202_trainers":route_trainers,
         "visual_native_reviewed":False,
         "human_positions_reviewed":False,"native_collision_verified":False,
         "compile_token":proof,
