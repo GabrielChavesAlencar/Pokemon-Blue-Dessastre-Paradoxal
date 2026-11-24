@@ -461,9 +461,9 @@ def build_files(base:Path,project:Path=ROOT):
     sources=private_visual.discover(project)
     imported={}
     if "maps" in sources:
-        print("SINNOH QA: importando cinco exteriores do ZIP local (sem eventos externos)",flush=True)
+        print("SINNOH QA: importando cinco exteriores e quatro interiores autorais do ZIP local (sem eventos externos)",flush=True)
         maps,components,imported=private_visual.apply_maps(maps,mapping,sources["maps"])
-        maps,events,start=compile_events(maps,mapping,components,private_visual.ANCHORS)
+        maps,events,start=compile_events(maps,mapping,components,{**private_visual.ANCHORS,**private_visual.INTERIOR_ANCHORS})
     if "overworlds" in sources:
         print("SINNOH QA: sprites DPPt locais; creditos PurpleZaffre",flush=True)
         maps=private_visual.apply_sprites(maps,sources["overworlds"])
