@@ -9,7 +9,7 @@
 ## Como testar após integração do código
 1. Manter os dois ZIPs originais, sem descompactar, em Downloads ou junto do Blue-Story.exe atualizado (ou em `.blue-work/sinnoh-private-input` da instalação gerenciada).
 2. Abrir Blue-Story.exe → Testar piloto Sinnoh. O importador usa somente arquivos locais, valida SHA-256 e cria uma nova cópia QA. Sem ZIPs continua o piloto original; um ZIP incorreto bloqueia em vez de ser aceito.
-3. Novo jogo. A base Platinum Lucas usa registro nativo 9 quando metadata e os gráficos de movimento existem. Dawn (registro 10) está na base, mas seleção feminina ainda não implementada no piloto.
+3. Novo jogo. A base Platinum Lucas usa registro nativo 9 quando metadata e os gráficos de movimento existem. Dawn (registro 10) é validada separadamente; quando ambos os cadastros existem, o Novo Jogo do piloto oferece Lucas ou Dawn.
 4. Conferir mãe, Barry e Rowan; testar portas, warp, escolha dos iniciais, batalha, retorno. Não usar saves pessoais.
 
 ## Mapeamento de origem
@@ -21,7 +21,7 @@
 | Route 202 | 191 | 46x31 | 664 |
 | Lake Verity | 196 | 62x50 | 128 |
 
-O registro de origem 24 é Outdoors (256x29984). A união dos cinco mapas usa 291 tiles normais; o atlas compacto é 256x1184 (última linha com preenchimento). No ambiente de análise, a compactação equivalente foi comparada com a imagem original e os 291 recortes coincidiram pixel a pixel. As tabelas de colisão, prioridade e terreno são remapeadas sem mudança de ordem das camadas. O importador verifica sete autotiles associados (nenhum dos cinco mapas usa IDs de autotiles diretamente).
+O registro de origem 24 é Outdoors (256x29984). O registro 25 fornece 95 tiles usados nos novos interiores, compactados em um atlas 256x384. A auditoria local independente verificou todos os recortes e 24 posições de evento/16 chegadas recíprocas em células caminháveis. A união dos cinco mapas usa 291 tiles normais; o atlas compacto é 256x1184 (última linha com preenchimento). No ambiente de análise, a compactação equivalente foi comparada com a imagem original e os 291 recortes coincidiram pixel a pixel. As tabelas de colisão, prioridade e terreno são remapeadas sem mudança de ordem das camadas. O importador verifica sete autotiles associados (nenhum dos cinco mapas usa IDs de autotiles diretamente).
 
 IDs de destino são alocados apenas pela instalação QA, a partir de vagas verificadas na faixa 442–517; não publicar IDs definitivos nem aprovar R07. Os cinco mapas preservam geometria da fonte e recebem novamente os 24 eventos próprios do piloto (não os eventos do pacote). Portas e coordenadas são candidatas modeladas, não homologadas no motor. Lakefront (195) e Verity Cavern (197) ficam para expansão; a transição atual ainda segue a topologia de nove mapas.
 
