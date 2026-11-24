@@ -1,0 +1,677 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "reference": "Platinum",
+  "scope": "Catalogo de areas; submapas e andares devem ser adicionados no inventario F03. Nao equivale a mapas instalados.",
+  "sources": [
+    "data/regions/sinnoh-coverage.json",
+    "https://bulbapedia.bulbagarden.net/wiki/Template:Sinnoh"
+  ],
+  "destinations": [
+    {
+      "symbol": "SINNOH_TWINLEAF_TOWN",
+      "label": "Twinleaf Town",
+      "category": "Cidades e vilarejos"
+    },
+    {
+      "symbol": "SINNOH_PLAYER_BEDROOM",
+      "label": "Player Bedroom",
+      "category": "Casas e interiores"
+    },
+    {
+      "symbol": "SINNOH_PLAYER_HOUSE_1F",
+      "label": "Player House 1F",
+      "category": "Casas e interiores"
+    },
+    {
+      "symbol": "SINNOH_BARRY_HOUSE",
+      "label": "Barry House",
+      "category": "Casas e interiores"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_201",
+      "label": "Route 201",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_LAKE_VERITY",
+      "label": "Lake Verity",
+      "category": "Florestas e lagos"
+    },
+    {
+      "symbol": "SINNOH_SANDGEM_TOWN",
+      "label": "Sandgem Town",
+      "category": "Cidades e vilarejos"
+    },
+    {
+      "symbol": "SINNOH_PROFESSOR_ROWAN_LABORATORY",
+      "label": "Professor Rowan Laboratory",
+      "category": "Casas e interiores"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_202",
+      "label": "Route 202",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_JUBILIFE_CITY",
+      "label": "Jubilife City",
+      "category": "Cidades e vilarejos"
+    },
+    {
+      "symbol": "SINNOH_JUBILIFE_TRAINER_SCHOOL",
+      "label": "Jubilife Trainer School",
+      "category": "Casas e interiores"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_203",
+      "label": "Route 203",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_OREBURGH_GATE",
+      "label": "Oreburgh Gate",
+      "category": "Cavernas e montanhas"
+    },
+    {
+      "symbol": "SINNOH_OREBURGH_CITY",
+      "label": "Oreburgh City",
+      "category": "Cidades e vilarejos"
+    },
+    {
+      "symbol": "SINNOH_OREBURGH_MINE",
+      "label": "Oreburgh Mine",
+      "category": "Cavernas e montanhas"
+    },
+    {
+      "symbol": "SINNOH_OREBURGH_GYM",
+      "label": "Oreburgh Gym",
+      "category": "Ginásios"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_204",
+      "label": "Route 204",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_RAVAGED_PATH",
+      "label": "Ravaged Path",
+      "category": "Cavernas e montanhas"
+    },
+    {
+      "symbol": "SINNOH_FLOAROMA_TOWN",
+      "label": "Floaroma Town",
+      "category": "Cidades e vilarejos"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_205",
+      "label": "Route 205",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_VALLEY_WINDWORKS",
+      "label": "Valley Windworks",
+      "category": "Casas e interiores"
+    },
+    {
+      "symbol": "SINNOH_ETERNA_FOREST",
+      "label": "Eterna Forest",
+      "category": "Florestas e lagos"
+    },
+    {
+      "symbol": "SINNOH_ETERNA_CITY",
+      "label": "Eterna City",
+      "category": "Cidades e vilarejos"
+    },
+    {
+      "symbol": "SINNOH_ETERNA_GYM",
+      "label": "Eterna Gym",
+      "category": "Ginásios"
+    },
+    {
+      "symbol": "SINNOH_GALACTIC_ETERNA_BUILDING",
+      "label": "Galactic Eterna Building",
+      "category": "Casas e interiores"
+    },
+    {
+      "symbol": "SINNOH_CYCLING_ROAD",
+      "label": "Cycling Road",
+      "category": "Casas e interiores"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_206",
+      "label": "Route 206",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_WAYWARD_CAVE",
+      "label": "Wayward Cave",
+      "category": "Cavernas e montanhas"
+    },
+    {
+      "symbol": "SINNOH_MT_CORONET_WEST_APPROACH",
+      "label": "Mt. Coronet West Approach",
+      "category": "Cavernas e montanhas"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_208",
+      "label": "Route 208",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_HEARTHOME_CITY",
+      "label": "Hearthome City",
+      "category": "Cidades e vilarejos"
+    },
+    {
+      "symbol": "SINNOH_HEARTHOME_GYM",
+      "label": "Hearthome Gym",
+      "category": "Ginásios"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_209",
+      "label": "Route 209",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_LOST_TOWER",
+      "label": "Lost Tower",
+      "category": "Casas e interiores"
+    },
+    {
+      "symbol": "SINNOH_SOLACEON_TOWN",
+      "label": "Solaceon Town",
+      "category": "Cidades e vilarejos"
+    },
+    {
+      "symbol": "SINNOH_SOLACEON_RUINS",
+      "label": "Solaceon Ruins",
+      "category": "Cavernas e montanhas"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_210",
+      "label": "Route 210",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_215",
+      "label": "Route 215",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_VEILSTONE_CITY",
+      "label": "Veilstone City",
+      "category": "Cidades e vilarejos"
+    },
+    {
+      "symbol": "SINNOH_VEILSTONE_GYM",
+      "label": "Veilstone Gym",
+      "category": "Ginásios"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_214",
+      "label": "Route 214",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_213",
+      "label": "Route 213",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_VALOR_LAKEFRONT",
+      "label": "Valor Lakefront",
+      "category": "Florestas e lagos"
+    },
+    {
+      "symbol": "SINNOH_PASTORIA_CITY",
+      "label": "Pastoria City",
+      "category": "Cidades e vilarejos"
+    },
+    {
+      "symbol": "SINNOH_GREAT_MARSH",
+      "label": "Great Marsh",
+      "category": "Florestas e lagos"
+    },
+    {
+      "symbol": "SINNOH_PASTORIA_GYM",
+      "label": "Pastoria Gym",
+      "category": "Ginásios"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_218",
+      "label": "Route 218",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_CANALAVE_CITY",
+      "label": "Canalave City",
+      "category": "Cidades e vilarejos"
+    },
+    {
+      "symbol": "SINNOH_CANALAVE_GYM",
+      "label": "Canalave Gym",
+      "category": "Ginásios"
+    },
+    {
+      "symbol": "SINNOH_CANALAVE_LIBRARY",
+      "label": "Canalave Library",
+      "category": "Casas e interiores"
+    },
+    {
+      "symbol": "SINNOH_IRON_ISLAND",
+      "label": "Iron Island",
+      "category": "Áreas especiais"
+    },
+    {
+      "symbol": "SINNOH_MT_CORONET_INTERIOR_ROUTES",
+      "label": "Mt. Coronet Interior Routes",
+      "category": "Cavernas e montanhas"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_216",
+      "label": "Route 216",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_217",
+      "label": "Route 217",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_ACUITY_LAKEFRONT",
+      "label": "Acuity Lakefront",
+      "category": "Florestas e lagos"
+    },
+    {
+      "symbol": "SINNOH_LAKE_ACUITY",
+      "label": "Lake Acuity",
+      "category": "Florestas e lagos"
+    },
+    {
+      "symbol": "SINNOH_SNOWPOINT_CITY",
+      "label": "Snowpoint City",
+      "category": "Cidades e vilarejos"
+    },
+    {
+      "symbol": "SINNOH_SNOWPOINT_GYM",
+      "label": "Snowpoint Gym",
+      "category": "Ginásios"
+    },
+    {
+      "symbol": "SINNOH_VEILSTONE_GALACTIC_HQ",
+      "label": "Veilstone Galactic HQ",
+      "category": "Casas e interiores"
+    },
+    {
+      "symbol": "SINNOH_MT_CORONET_SUMMIT_ASCENT",
+      "label": "Mt. Coronet Summit Ascent",
+      "category": "Cavernas e montanhas"
+    },
+    {
+      "symbol": "SINNOH_SPEAR_PILLAR",
+      "label": "Spear Pillar",
+      "category": "Áreas especiais"
+    },
+    {
+      "symbol": "SINNOH_DISTORTION_WORLD",
+      "label": "Distortion World",
+      "category": "Áreas especiais"
+    },
+    {
+      "symbol": "SINNOH_TURNBACK_CAVE",
+      "label": "Turnback Cave",
+      "category": "Cavernas e montanhas"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_222",
+      "label": "Route 222",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_SUNYSHORE_CITY",
+      "label": "Sunyshore City",
+      "category": "Cidades e vilarejos"
+    },
+    {
+      "symbol": "SINNOH_SUNYSHORE_GYM",
+      "label": "Sunyshore Gym",
+      "category": "Ginásios"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_223",
+      "label": "Route 223",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_VICTORY_ROAD",
+      "label": "Victory Road",
+      "category": "Cavernas e montanhas"
+    },
+    {
+      "symbol": "SINNOH_POKEMON_LEAGUE",
+      "label": "Pokemon League",
+      "category": "Liga Pokémon"
+    },
+    {
+      "symbol": "SINNOH_ELITE_FOUR_AARON_CHAMBER",
+      "label": "Elite Four Aaron Chamber",
+      "category": "Liga Pokémon"
+    },
+    {
+      "symbol": "SINNOH_ELITE_FOUR_BERTHA_CHAMBER",
+      "label": "Elite Four Bertha Chamber",
+      "category": "Liga Pokémon"
+    },
+    {
+      "symbol": "SINNOH_ELITE_FOUR_FLINT_CHAMBER",
+      "label": "Elite Four Flint Chamber",
+      "category": "Liga Pokémon"
+    },
+    {
+      "symbol": "SINNOH_ELITE_FOUR_LUCIAN_CHAMBER",
+      "label": "Elite Four Lucian Chamber",
+      "category": "Liga Pokémon"
+    },
+    {
+      "symbol": "SINNOH_CHAMPION_CYNTHIA_CHAMBER",
+      "label": "Champion Cynthia Chamber",
+      "category": "Liga Pokémon"
+    },
+    {
+      "symbol": "SINNOH_HALL_OF_FAME",
+      "label": "Hall of Fame",
+      "category": "Liga Pokémon"
+    },
+    {
+      "symbol": "SINNOH_FIGHT_AREA",
+      "label": "Fight Area",
+      "category": "Battle Zone e pós-jogo"
+    },
+    {
+      "symbol": "SINNOH_SURVIVAL_AREA",
+      "label": "Survival Area",
+      "category": "Battle Zone e pós-jogo"
+    },
+    {
+      "symbol": "SINNOH_RESORT_AREA",
+      "label": "Resort Area",
+      "category": "Battle Zone e pós-jogo"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_225",
+      "label": "Route 225",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_226",
+      "label": "Route 226",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_227",
+      "label": "Route 227",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_228",
+      "label": "Route 228",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_229",
+      "label": "Route 229",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_230",
+      "label": "Route 230",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_STARK_MOUNTAIN",
+      "label": "Stark Mountain",
+      "category": "Cavernas e montanhas"
+    },
+    {
+      "symbol": "SINNOH_BATTLE_FRONTIER",
+      "label": "Battle Frontier",
+      "category": "Battle Zone e pós-jogo"
+    },
+    {
+      "symbol": "SINNOH_FULLMOON_ISLAND",
+      "label": "Fullmoon Island",
+      "category": "Áreas especiais"
+    },
+    {
+      "symbol": "SINNOH_NEWMOON_ISLAND",
+      "label": "Newmoon Island",
+      "category": "Áreas especiais"
+    },
+    {
+      "symbol": "SINNOH_FLOWER_PARADISE",
+      "label": "Flower Paradise",
+      "category": "Áreas especiais"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_207",
+      "label": "Route 207",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_211",
+      "label": "Route 211",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_212",
+      "label": "Route 212",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_219",
+      "label": "Route 219",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_220",
+      "label": "Route 220",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_221",
+      "label": "Route 221",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_ROUTE_224",
+      "label": "Route 224",
+      "category": "Rotas"
+    },
+    {
+      "symbol": "SINNOH_CELESTIC_TOWN",
+      "label": "Celestic Town",
+      "category": "Cidades e vilarejos"
+    },
+    {
+      "symbol": "SINNOH_VERITY_LAKEFRONT",
+      "label": "Verity Lakefront",
+      "category": "Florestas e lagos"
+    },
+    {
+      "symbol": "SINNOH_LAKE_VALOR",
+      "label": "Lake Valor",
+      "category": "Florestas e lagos"
+    },
+    {
+      "symbol": "SINNOH_VERITY_CAVERN",
+      "label": "Verity Cavern",
+      "category": "Cavernas e montanhas"
+    },
+    {
+      "symbol": "SINNOH_VALOR_CAVERN",
+      "label": "Valor Cavern",
+      "category": "Cavernas e montanhas"
+    },
+    {
+      "symbol": "SINNOH_ACUITY_CAVERN",
+      "label": "Acuity Cavern",
+      "category": "Cavernas e montanhas"
+    },
+    {
+      "symbol": "SINNOH_FLOAROMA_MEADOW",
+      "label": "Floaroma Meadow",
+      "category": "Florestas e lagos"
+    },
+    {
+      "symbol": "SINNOH_OLD_CHATEAU",
+      "label": "Old Chateau",
+      "category": "Casas e interiores"
+    },
+    {
+      "symbol": "SINNOH_SNOWPOINT_TEMPLE",
+      "label": "Snowpoint Temple",
+      "category": "Cavernas e montanhas"
+    },
+    {
+      "symbol": "SINNOH_SENDOFF_SPRING",
+      "label": "Sendoff Spring",
+      "category": "Florestas e lagos"
+    },
+    {
+      "symbol": "SINNOH_MANIAC_TUNNEL",
+      "label": "Maniac Tunnel",
+      "category": "Cavernas e montanhas"
+    },
+    {
+      "symbol": "SINNOH_RUIN_MANIAC_CAVE",
+      "label": "Ruin Maniac Cave",
+      "category": "Cavernas e montanhas"
+    },
+    {
+      "symbol": "SINNOH_TROPHY_GARDEN",
+      "label": "Trophy Garden",
+      "category": "Florestas e lagos"
+    },
+    {
+      "symbol": "SINNOH_POKEMON_MANSION",
+      "label": "Pokémon Mansion",
+      "category": "Casas e interiores"
+    },
+    {
+      "symbol": "SINNOH_FOGO_IRONWORKS",
+      "label": "Fuego Ironworks",
+      "category": "Casas e interiores"
+    },
+    {
+      "symbol": "SINNOH_PAL_PARK",
+      "label": "Pal Park",
+      "category": "Casas e interiores"
+    },
+    {
+      "symbol": "SINNOH_AMITY_SQUARE",
+      "label": "Amity Square",
+      "category": "Casas e interiores"
+    },
+    {
+      "symbol": "SINNOH_JUBILIFE_TV",
+      "label": "Jubilife TV",
+      "category": "Casas e interiores"
+    },
+    {
+      "symbol": "SINNOH_GLOBAL_TERMINAL",
+      "label": "Global Terminal",
+      "category": "Casas e interiores"
+    },
+    {
+      "symbol": "SINNOH_POKETCH_COMPANY",
+      "label": "Pokétch Company",
+      "category": "Casas e interiores"
+    },
+    {
+      "symbol": "SINNOH_OREBURGH_MUSEUM",
+      "label": "Oreburgh Mining Museum",
+      "category": "Casas e interiores"
+    },
+    {
+      "symbol": "SINNOH_VEILSTONE_DEPARTMENT_STORE",
+      "label": "Veilstone Department Store",
+      "category": "Casas e interiores"
+    },
+    {
+      "symbol": "SINNOH_VEILSTONE_GAME_CORNER",
+      "label": "Veilstone Game Corner",
+      "category": "Casas e interiores"
+    },
+    {
+      "symbol": "SINNOH_SOLACEON_DAY_CARE",
+      "label": "Solaceon Day Care",
+      "category": "Casas e interiores"
+    },
+    {
+      "symbol": "SINNOH_SUNYSHORE_MARKET",
+      "label": "Sunyshore Market",
+      "category": "Casas e interiores"
+    },
+    {
+      "symbol": "SINNOH_VISTA_LIGHTHOUSE",
+      "label": "Vista Lighthouse",
+      "category": "Casas e interiores"
+    },
+    {
+      "symbol": "SINNOH_BATTLE_TOWER",
+      "label": "Battle Tower",
+      "category": "Battle Zone e pós-jogo"
+    },
+    {
+      "symbol": "SINNOH_BATTLE_FACTORY",
+      "label": "Battle Factory",
+      "category": "Battle Zone e pós-jogo"
+    },
+    {
+      "symbol": "SINNOH_BATTLE_CASTLE",
+      "label": "Battle Castle",
+      "category": "Battle Zone e pós-jogo"
+    },
+    {
+      "symbol": "SINNOH_BATTLE_HALL",
+      "label": "Battle Hall",
+      "category": "Battle Zone e pós-jogo"
+    },
+    {
+      "symbol": "SINNOH_BATTLE_ARCADE",
+      "label": "Battle Arcade",
+      "category": "Battle Zone e pós-jogo"
+    },
+    {
+      "symbol": "SINNOH_BATTLE_PARK",
+      "label": "Battle Park",
+      "category": "Battle Zone e pós-jogo"
+    },
+    {
+      "symbol": "SINNOH_RIBBON_SYNDICATE",
+      "label": "Ribbon Syndicate",
+      "category": "Battle Zone e pós-jogo"
+    },
+    {
+      "symbol": "SINNOH_VILLA",
+      "label": "Villa",
+      "category": "Battle Zone e pós-jogo"
+    },
+    {
+      "symbol": "SINNOH_SEABREAK_PATH",
+      "label": "Seabreak Path",
+      "category": "Áreas especiais"
+    },
+    {
+      "symbol": "SINNOH_HALL_OF_ORIGIN",
+      "label": "Hall of Origin (evento especial)",
+      "category": "Áreas especiais"
+    },
+    {
+      "symbol": "SINNOH_ANCIENT_TOWER",
+      "label": "Hallowed Tower",
+      "category": "Casas e interiores"
+    }
+  ]
+}
