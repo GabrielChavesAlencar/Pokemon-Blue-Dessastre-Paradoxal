@@ -2,7 +2,7 @@
   "schema": 1,
   "region": "SINNOH",
   "reference": "Platinum",
-  "status": "F01_IMPLEMENTED_PENDING_VALIDATION",
+  "status": "F01_MERGED_F02_IMPLEMENTED_PENDING_VALIDATION",
   "catalog": "data/regions/sinnoh-expansion-destinations.json",
   "prepared_pilot": {
     "maps": 10,
@@ -20,12 +20,14 @@
     {
       "id": "F01",
       "title": "Menu de teleporte QA no menu de pausa",
-      "status": "implemented_pending_ci"
+      "status": "merged_ci_passed",
+      "pr": 279,
+      "merge_commit": "4ad3a74638d8ca75510786e0dd5c36a4d018e189"
     },
     {
       "id": "F02",
       "title": "Correção das bordas pretas com árvores",
-      "status": "pending"
+      "status": "implemented_pending_ci"
     },
     {
       "id": "F03",
