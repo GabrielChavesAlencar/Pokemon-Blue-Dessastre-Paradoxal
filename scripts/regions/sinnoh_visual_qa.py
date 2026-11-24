@@ -165,6 +165,19 @@ def atlas(exterior):
     for i in range(COUNT):c.paste2(tile_art(i,exterior),(i%8)*32,(i//8)*32)
     return png(c.w,c.h,bytes(c.raw))
 
+def animated_water():
+    # RMXP autotile: 96x128 per animation frame, arranged horizontally.
+    # Uniform deep interior water uses the full surrounded shape (ID 48).
+    # The coastline remains a separate static tile with explicit edges.
+    c=Canvas(288,128)
+    for frame in range(3):
+        t=tile_art(42+(frame%2),True)
+        if frame==2:t.rect(3,7,9,1,"90d0df")
+        for row in range(4):
+            for col in range(3):
+                c.paste2(t,frame*96+col*32,row*32)
+    return png(c.w,c.h,bytes(c.raw))
+
 def npc(name):
     # 4 directions x 4 steps; original hand-authored palette/pose.
     colors={"MOTHER":("785346","bb7784"),"BARRY":("d7ad54","d88847"),
@@ -208,7 +221,7 @@ def remap_cells(cells,w,h,outside):
                 elif i in (6,13):
                     edges=[get(z,x,y-1),get(z,x,y+1),get(z,x-1,y),get(z,x+1,y)]
                     k=next(((48 if i==6 else 52)+j for j,a in enumerate(edges) if a!=i),i)
-                result[n]=FIRST+k
+                result[n]=48 if outside and i==18 else FIRST+k
     return result
 
 def upgrade(blobs,mapping,tile_ids,events,start):
@@ -227,6 +240,10 @@ def upgrade(blobs,mapping,tile_ids,events,start):
             # Rock and ordinary water are standard Essentials tags; no new
             # wild encounters, Surf authorization or tall-grass claims here.
             tags.append(4 if outside and i==22 else 6 if outside and i==18 else 0)
+        if outside:
+            a["@autotile_names"]=[b"SNQA_WaterV2"]+[b""]*6
+            for k in range(48,96):tags[k]=6
+            out["Graphics/Autotiles/SNQA_WaterV2.png"]=animated_water()
         a["@passages"]=table1(p);a["@priorities"]=table1(pr);a["@terrain_tags"]=table1(tags)
         out["Graphics/Tilesets/"+GRAPHIC[group][1]+".png"]=atlas(outside)
     out["Data/Tilesets.rxdata"]=serialize(tiles)
