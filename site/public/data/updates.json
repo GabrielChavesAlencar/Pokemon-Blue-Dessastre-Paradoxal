@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7302bcc3345dbb8e649b8d8a63498524f6cd9cc5",
+      "date": "2026-11-24T20:05:14-03:00",
+      "title": "Merge pull request #293 from GabrielChavesAlencar/sinnoh-full-expansion-f10a-trainer-npc-audit",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "93c3365c111bc9028e4f26e281ecc5b1a75257a6",
+      "date": "2026-11-24T19:58:10-03:00",
+      "title": "Sinnoh F10A: audit original trainer and NPC candidates without executing donor events",
+      "category": "Melhorias"
+    },
+    {
       "sha": "902ad2be9517d85ee2df787c5c14565dcab10705",
       "date": "2026-11-24T19:56:59-03:00",
       "title": "Merge pull request #292 from GabrielChavesAlencar/sinnoh-full-expansion-f09d-relative-tables",
