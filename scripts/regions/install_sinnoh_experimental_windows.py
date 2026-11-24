@@ -386,7 +386,7 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile
     guarded=guarded.replace("__QA_PROTECTED__"," ".join(protected))
     late = ""
     if story_profile:
-        late = '\n    if File.basename(Dir.pwd) == "game-sinnoh-experimental-'+token+'" && File.file?("sinnoh-experimental-qa.json")\n      BlueSinnohExperimental.install_fresh_hooks!\n      BlueSinnohSafeMovement.install!\n    end'
+        late = '\n    if File.basename(Dir.pwd) == "game-sinnoh-experimental-'+token+'" && File.file?("sinnoh-experimental-qa.json")\n      BlueSinnohExperimental.install_fresh_hooks!\n      BlueSinnohSafeMovement.install!\n      if defined?(EventHandlers)\n        EventHandlers.add(:on_enter_map, :blue_sinnoh_hide_starter_balls, proc { |*args| BlueSinnohPilot.hide_starter_balls })\n      end\n    end'
     if save_token is not None:
         if not re.fullmatch(r"[a-f0-9]{12}",save_token):fail("INVALID_SAVE_PROFILE_TOKEN")
         # The original Auto Multi Save plugin falls back to "." if the
