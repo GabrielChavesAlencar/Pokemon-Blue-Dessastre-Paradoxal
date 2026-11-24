@@ -6,6 +6,7 @@ import hashlib
 import json
 import re
 from collections import deque
+from contextlib import nullcontext
 from pathlib import Path
 import sinnoh_f10a_inventory as f10a
 import sinnoh_connection_expansion as conn
@@ -41,7 +42,7 @@ ALIASES={
 CALL=re.compile(rb"^\s*(?:if\s+)?(?:pbTrainerBattle(?:100)?|TrainerBattle\s*\.\s*start)\s*\(\s*(?::|PBTrainers::)?([A-Za-z][A-Za-z0-9_]*)\s*,\s*(?:(_I|_INTL)\s*\(\s*)?(['\"])([A-Za-z]+)\3\s*(?=[,)])")
 ASSET=re.compile(rb"[A-Za-z0-9_ -]{1,80}")
 
-def identity(event,sid):
+def literal_identity(event):
     found=set()
     for page in event.attrs.get("@pages",[]):
         for command in page.attrs.get("@list",[]):
@@ -56,10 +57,17 @@ def identity(event,sid):
                     # Multiple statements are not trusted as a first-battle identity.
                     if b";" in value: return None,"multiple_script_statements"
     if len(found)!=1:return None,"missing_or_ambiguous_literal_identity"
-    kind,name=next(iter(found))
-    ref=REFERENCES.get(sid,{}).get(name)
-    if ref is None or kind not in ALIASES[ref[0]]:return None,"identity_not_in_reviewed_first_battles"
-    return (kind,name,ref[0],ref[1]),None
+    return next(iter(found)),None
+
+def identity(event,sid):
+    literal,reason=literal_identity(event)
+    if literal is None:return None,reason
+    kind,name=literal
+    matches=[(n,ref) for n,ref in REFERENCES.get(sid,{}).items() if n.casefold()==name.casefold()]
+    if len(matches)!=1:return None,"identity_not_in_reviewed_first_battles"
+    canonical,ref=matches[0]
+    if kind not in ALIASES[ref[0]]:return None,"class_not_in_reviewed_aliases"
+    return (kind,canonical,ref[0],ref[1]),None
 
 def component(points,seed):
     if seed not in points:return set()
@@ -75,12 +83,16 @@ def non_cut(points,xy):
     if len(adjacent)<2:return False
     return set(adjacent)<=component(points-{xy},adjacent[0])
 
-def sprite(z,event,base=None):
+def sprite_names(event):
     names=set()
     for page in event.attrs.get("@pages",[]):
         graphic=getattr(page.attrs.get("@graphic"),"attrs",{})
         name=graphic.get("@character_name",b"")
         if name:names.add(name)
+    return names
+
+def sprite(z,event,base=None):
+    names=sprite_names(event)
     if len(names)!=1:return None
     name=next(iter(names))
     if not isinstance(name,bytes) or not ASSET.fullmatch(name):return None
@@ -99,7 +111,47 @@ def sprite(z,event,base=None):
     if w%4 or h%4 or not (32<=w<=512 and 32<=h<=512):return None
     return data
 
-def build(blobs,mapping,masks,components,path,types,species,existing,base=None,root=ROOT):
+# Explicit class tokens, not fuzzy substring matching or an arbitrary NPC.
+# Replacement is identified in the report as a class-equivalent sprite,
+# never as the original donor asset. Multiple exact class sheets remain pending.
+CLASS_ART={
+    "HIKER":("Hiker",),"YOUNGSTER":("Youngster",),
+    "BATTLEGIRL":("BattleGirl","Battle Girl","Battle_Girl"),
+    "NINJABOY":("NinjaBoy","Ninja Boy","Ninja_Boy"),
+    "BLACKBELT":("BlackBelt","Black Belt","Black_Belt"),
+    "BIRDKEEPER":("BirdKeeper","Bird Keeper","Bird_Keeper"),
+    "RUINMANIAC":("RuinManiac","Ruin Maniac","Ruin_Maniac")
+}
+
+def class_art_candidates(z,kind):
+    if z is None or kind not in CLASS_ART:return []
+    pattern=re.compile(re.escape(pv.OW_ROOT)+r"NPC_\d+_(?:"+"|".join(re.escape(s) for s in CLASS_ART[kind])+r")\.png",re.I)
+    return sorted(i.filename for i in z.infolist() if not i.is_dir() and pattern.fullmatch(i.filename))
+
+def resolve_sprite(maps,ow,event,kind,base=None):
+    exact=sprite(maps,event,base)
+    if exact:return exact,"EXACT_DONOR_OR_LOCAL_SHEET",[]
+    candidates=class_art_candidates(ow,kind)
+    labels=[n.rsplit("/",1)[-1] for n in candidates]
+    if len(candidates)!=1:return None,None,labels
+    raw=pv.member(ow,candidates[0],1_000_000)
+    try:
+        if pv.dims(raw)!=(256,256):return None,None,labels
+    except ValueError:return None,None,labels
+    return raw,"CLASS_EQUIVALENT_DPPt_OVERWORLD",labels
+
+def diagnostics(event,sid,ow):
+    literal,reason=literal_identity(event)
+    # Only constrained identifiers, never source dialogue or script bodies.
+    # Character names are filenames, not save/player names.
+    names=sorted(n.decode("ascii") for n in sprite_names(event) if isinstance(n,bytes) and ASSET.fullmatch(n))
+    spec,why=identity(event,sid)
+    return {"literal_type":literal[0] if literal else None,"literal_name":literal[1] if literal else None,
+            "identity_status":why or "reviewed_historical_match",
+            "source_sprite_labels":names,
+            "class_art_candidates":[n.rsplit("/",1)[-1] for n in class_art_candidates(ow,spec[2])] if spec else []}
+
+def build(blobs,mapping,masks,components,path,types,species,existing,base=None,root=ROOT,overworlds=None):
     inventory=f10a.audit(blobs,mapping,masks,components,path,root)
     eligible={(q["source_id"],q["source_event_id"]):q for q in inventory["queue"]
               if q["kind"]=="trainer_candidate" and not q["geometry_blockers"]}
@@ -119,14 +171,26 @@ def build(blobs,mapping,masks,components,path,types,species,existing,base=None,r
                         reserved.add(tuple(args[1:4]))
     out=dict(blobs);accepted=[];rejected=[];rows=[];used=set();changed=set()
     source,_,_=conn.graph(root)
-    with pv.verified_archive(path,"maps") as z:
+    all_trainers=[q for q in inventory["queue"] if q["kind"]=="trainer_candidate"]
+    if len(all_trainers)!=12:raise ValueError("F10B2_SOURCE_TRAINER_COUNT_CHANGED")
+    expanded=[]
+    with pv.verified_archive(path,"maps") as z, (pv.verified_archive(overworlds,"overworlds") if overworlds else nullcontext()) as ow:
+        # Audit all 12 source events, including the seven geometry-blocked
+        # candidates. Only the five established positions may be installed.
+        for q in all_trainers:
+            sid,eid=q["source_id"],q["source_event_id"]
+            raw=pv.member(z,pv.MAP_ROOT+"Data/Map%03d.rxdata"%sid)
+            if hashlib.sha256(raw).hexdigest()!=source[sid]["sha256"]:raise ValueError("F10B2_SOURCE_HASH")
+            donor=conn.read_marshal(raw,"F10B2_DONOR").attrs["@events"][eid]
+            expanded.append({"source_id":sid,"source_event_id":eid,"map_id":q["qa_map_id"],
+                "position":q["position"],"geometry_blockers":q["geometry_blockers"],**diagnostics(donor,sid,ow)})
         for sid,eid in sorted(PIN):
             q=eligible[sid,eid];mid=q["qa_map_id"];xy=PIN[sid,eid]
             raw=pv.member(z,pv.MAP_ROOT+"Data/Map%03d.rxdata"%sid)
             if hashlib.sha256(raw).hexdigest()!=source[sid]["sha256"]:raise ValueError("F10B_SOURCE_HASH")
             donor=conn.read_marshal(raw,"F10B_DONOR").attrs["@events"][eid]
             spec,reason=identity(donor,sid)
-            data=None
+            data=None;sprite_provenance=None;art_candidates=[]
             if spec:
                 src_kind,name,kind,team=spec
                 local=next((k for k in (src_kind,*ALIASES[kind]) if k in types),None)
@@ -135,17 +199,21 @@ def build(blobs,mapping,masks,components,path,types,species,existing,base=None,r
                 elif any(m not in species for m,l in team):reason="local_species_missing"
                 elif (local,name,version) in existing:reason="local_pbs_collision"
                 elif (sid,name) in used:reason="duplicate_identity"
-                elif not (data:=sprite(z,donor,base)):reason="exact_sprite_missing_or_invalid"
+                else:
+                    data,sprite_provenance,art_candidates=resolve_sprite(z,ow,donor,kind,base)
+                    if not data:reason="exact_and_unique_class_sprite_unavailable"
             m=worlds[mid];events=m.attrs["@events"]
             occupied={(e.attrs["@x"],e.attrs["@y"]) for e in events.values()}
             grid=masks[mid]
             points={(x,y) for x,y in components[q["symbol"]] if 0<=y<len(grid) and 0<=x<len(grid[y]) and grid[y][x] in (".","g")}-occupied
-            if not reason:
-                if any(a==mid and abs(x-xy[0])+abs(y-xy[1])<=1 for a,x,y in reserved):reason="reserved_arrival"
-                elif not (0<xy[0]<len(grid[0])-1 and 0<xy[1]<len(grid)-1) or not non_cut(points,xy):reason="route_connectivity"
+            geometry_reason=None
+            if any(a==mid and abs(x-xy[0])+abs(y-xy[1])<=1 for a,x,y in reserved):geometry_reason="reserved_arrival"
+            elif not (0<xy[0]<len(grid[0])-1 and 0<xy[1]<len(grid)-1) or not non_cut(points,xy):geometry_reason="route_connectivity"
+            reason=reason or geometry_reason
             if reason:
                 rejected.append({"source_id":sid,"source_event_id":eid,"reason":reason,
-                    "literal_identity_confirmed":spec is not None})
+                    "literal_identity_confirmed":spec is not None,
+                    "geometry_reason":geometry_reason,"class_art_candidates":art_candidates})
                 continue
             key="F10B_%d_%d"%(sid,eid)
             sprite_name="SNQA_"+key
@@ -158,7 +226,8 @@ def build(blobs,mapping,masks,components,path,types,species,existing,base=None,r
             rows.append([key,[local,name,version,mid,team]])
             accepted.append({"key":key,"source_id":sid,"source_event_id":eid,"map_id":mid,"event_id":event_id,
                              "position":list(xy),"type":local,"name":name,"version":version,
-                             "team":team,"sprite_sha256":hashlib.sha256(data).hexdigest(),"team_source":"PLATINUM_HISTORICAL_REFERENCE"})
+                             "team":team,"sprite_sha256":hashlib.sha256(data).hexdigest(),"sprite_provenance":sprite_provenance,
+                             "team_source":"PLATINUM_HISTORICAL_REFERENCE"})
     for mid in changed:
         out["Data/Map%03d.rxdata"%mid]=serialize(worlds[mid],EVENT_CLASSES)
     if teleport.build(out,mapping,components,root)!=entries:raise ValueError("F10B_QA_SPAWN_CHANGED")
@@ -175,10 +244,11 @@ def build(blobs,mapping,masks,components,path,types,species,existing,base=None,r
     report={"maps_audited":131,"pinned_candidates":5,"accepted":accepted,"rejected":rejected,
             "new_trainers":len(accepted),"native_verified":False,"water_enabled":False,
             "team_reference":["https://bulbapedia.bulbagarden.net/wiki/Sinnoh_Route_207","https://bulbapedia.bulbagarden.net/wiki/Sinnoh_Route_211"],
-            "source_pbs_present":False,"action_only":True}
+            "source_pbs_present":False,"action_only":True,"all_trainer_diagnostics":expanded,
+            "all_source_trainer_candidates":len(expanded),"overworld_archive_checked":overworlds is not None}
     return out,report,plugin
 
-def append(blobs,mapping,masks,components,path,base,root=ROOT):
+def append(blobs,mapping,masks,components,path,base,root=ROOT,overworlds=None):
     existing=set()
     for p in (base/"PBS").glob("trainers*.txt"):
         if p.is_symlink():raise ValueError("F10B_UNSAFE_PBS")
@@ -186,6 +256,6 @@ def append(blobs,mapping,masks,components,path,base,root=ROOT):
             fields=[v.strip() for v in header.split(",")]
             if len(fields) in (2,3) and (len(fields)==2 or fields[2].isdigit()):
                 existing.add((fields[0],fields[1],int(fields[2]) if len(fields)==3 else 0))
-    out,report,plugin=build(blobs,mapping,masks,components,path,catalogue(base,"trainer_types"),catalogue(base,"pokemon"),existing,base,root)
+    out,report,plugin=build(blobs,mapping,masks,components,path,catalogue(base,"trainer_types"),catalogue(base,"pokemon"),existing,base,root,overworlds)
     print("SINNOH_F10B_TRAINER_REPORT "+json.dumps(report,sort_keys=True),flush=True)
     return out,report,plugin

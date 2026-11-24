@@ -774,7 +774,7 @@ def build_files(base:Path,project:Path=ROOT):
         maps["PBS/encounters.txt"],encounter_coverage,f09d_report,encounter_expected=f09d_relative.append(
             maps["PBS/encounters.txt"],encounter_coverage,base,mapping,masks,sources["maps"],f09c_report,project)
         pre_f10b_maps=maps
-        maps,f10b_report,f10b_plugin=f10b_trainers.append(maps,mapping,masks,components,sources["maps"],base,project)
+        maps,f10b_report,f10b_plugin=f10b_trainers.append(maps,mapping,masks,components,sources["maps"],base,project,overworlds=sources.get("overworlds"))
         movement=private_visual.movement_plugin(masks,mapping["SINNOH_ROUTE_202"])
         teleport_entries=qa_teleport.build(maps,mapping,components,project)
         teleport=qa_teleport.plugin(teleport_entries,project)
