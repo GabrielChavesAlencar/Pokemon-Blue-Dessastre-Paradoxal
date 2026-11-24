@@ -947,6 +947,19 @@ raise "duplicate battle" unless $calls==4
         proc=subprocess.run([shutil.which("ruby"),"-e",script,str(ROOT/"scripts/regions/SinnohPilot.rb")],capture_output=True,text=True,timeout=30)
         self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
 
+    def test_f04_component_prefers_safe_arrival_over_largest_grass_area(self):
+        w,h=12,10
+        cells=[0]*(w*h*3)
+        for y in range(1,9):
+            for x in range(1,6):
+                cells[y*w+x]=2
+        for y in range(2,7):
+            for x in range(8,11):
+                cells[y*w+x]=1
+        self.assertEqual(len(exp.city_expansion.component(cells,w,h,[0,0,0],[0,0,2])),15)
+        with self.assertRaisesRegex(ValueError,"NO_SAFE_WALKABLE_COMPONENT"):
+            exp.city_expansion.component(cells,w,h,[0,0,0],[0,2,2])
+
     def test_f04_save_namespace_append_only(self):
         city=exp.city_expansion
         old={k:442+i for i,k in enumerate(sorted(city.OLD))}
