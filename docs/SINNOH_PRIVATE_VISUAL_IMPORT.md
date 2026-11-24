@@ -54,3 +54,13 @@ Os seis eventos de transferência desses pares conservam seus IDs, mas não exec
 O ZIP também contém quatro BGM de ambiente e três variantes noturnas: Twinleaf Town, Route 201, Lake e Sandgem Town. O importador usa nomes exclusivos SNQA_*, conserva os bytes OGG, ativa autoplay nos nove mapas e verifica seus hashes na supervisão. A auditoria local decodificou as sete faixas até o fim com FFmpeg sem erros. Não são adicionadas trilhas de batalha/vitória que não existam na fonte; as regras atuais de batalha são preservadas. O teste real do CI usa exclusivamente uma fixture de mapas e cache temporário dos ZIPs originais, sem executar Game.exe ou publicar recursos.
 
 A atualização será usada ao abrir o Blue-Story já existente e clicar em Testar piloto Sinnoh, depois do merge. QA visual/sonora nativa ainda necessária; não declarar R09 aprovado.
+
+
+## Extensão Verity Lakefront e abertura da história
+
+- Importação do Map195 real, 26 × 22, com um MapID provisório adicional livre na cópia QA. O corredor inferior contém 103 células caminháveis no modelo; quatro células comuns alinham a conexão original 195,E,0,193,W,4.
+- Duas ligações visuais do próprio PBS alinham a floresta do lago a Verity Lakefront e Rota 201, sem passagem caminhável comum. Não são rotas alternativas de acesso.
+- As duas entradas reais de Lakefront (10,2) e (11,2) levam a Lake Verity (44,42) e (45,42). Os retornos (44,43)/(45,43) levam a (10,3)/(11,3). São eventos Blue novos com coordenadas do doador, sem copiar scripts. Entrada depende da conversa com mãe e Barry; retorno sempre aberto.
+- A abertura apresenta seleção Lucas/Dawn e entrada de nome pelo pbTrainerName após a inicialização real do quarto. O estado de perfil só é marcado após sucesso. Cinco cenas de execução única apresentam perfil, mãe, Barry, Rowan no lago e Pokédex no laboratório; NPCs manuais continuam presentes, e a escolha de Pokémon exige confirmação e tenta a batalha Barry somente pelo guard nativo existente.
+- Escopo: 10 mapas, 32 eventos (incluindo IDs dos warps desativados), 4 costuras caminháveis, 2 ligações visuais, 2 pares de portais e 7 BGM. Sem ampliar até Jubilife ou Verity Cavern e sem declarar recriação integral das cutscenes oficiais. A história permanece a versão autoral Blue.
+- O CI repete a importação do ZIP real e executa testes Ruby isolados. Testes de Game.exe, visual, áudio e R09 continuam pendentes. Os saves das cópias anteriores ficam intactos; para testar a abertura é necessário novo jogo em nova cópia QA.
