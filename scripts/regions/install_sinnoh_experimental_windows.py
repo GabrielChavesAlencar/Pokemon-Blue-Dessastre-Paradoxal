@@ -310,7 +310,7 @@ def runtime_config(base:Path,token:str):
     if count!=1:fail("GAME_INI_TITLE_NOT_UNIQUE")
     return (json.dumps(config,ensure_ascii=False,indent=2)+"\n").encode(),result.encode(),profile
 
-def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile=False):
+def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile=False,save_token=None,route201=None):
     """Require real Essentials Compiler and all three Barry PBS data; no fake success."""
     rows=Marshal(raw).read()
     matches=[row for row in rows if isinstance(row,list) and len(row)>=3 and row[1]==b"Main"]
@@ -354,6 +354,10 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile
       exit
     end
 """
+    if route201 is not None:
+        if route201 not in map_ids:fail("INVALID_ROUTE201_COMPILE_ID")
+        hook=hook.replace("trainers.dat", "trainers.dat encounters.dat")
+        verify=verify.replace("        File.write(", f"        GameData::Encounter.load\n        encounter = GameData::Encounter.get({route201},0)\n        unless encounter && encounter.types[:Land] && !encounter.types[:Land].empty?\n          raise \"Sinnoh QA: encontros da Rota 201 ausentes\"\n        end\n        File.write(",1)
     # Essentials normalizes transfer events (door SFX/fades) during PBS
     # compilation and rewrites their maps. These authored QA files are pinned
     # byte-for-byte by the title/supervisor. Preserve their verified input bytes
@@ -383,6 +387,32 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile
     late = ""
     if story_profile:
         late = '\n    if File.basename(Dir.pwd) == "game-sinnoh-experimental-'+token+'" && File.file?("sinnoh-experimental-qa.json")\n      BlueSinnohExperimental.install_fresh_hooks!\n      BlueSinnohSafeMovement.install!\n    end'
+    if save_token is not None:
+        if not re.fullmatch(r"[a-f0-9]{12}",save_token):fail("INVALID_SAVE_PROFILE_TOKEN")
+        # The original Auto Multi Save plugin falls back to "." if the
+        # platform directory is absent. Resolve a private persistent path
+        # before loading plugins; pin the plugin constant after loading.
+        prepare = """    if File.basename(Dir.pwd) == "game-sinnoh-experimental-__COPY__" && File.file?("sinnoh-experimental-qa.json")
+      begin
+        candidate = File.expand_path(System.data_directory)
+        parts = candidate.tr("\\\\", "/").split("/")
+        expected = ["Sinnoh-QA-__SAVE__", "Dessastre-Sinnoh-QA-__SAVE__", "Sinnoh QA __SAVE__"]
+        raise "non-private native path" unless (parts & expected).any?
+        require "fileutils"
+        FileUtils.mkdir_p(candidate)
+        raise "unsafe save path" if File.symlink?(candidate) || !File.directory?(candidate)
+        $blue_sinnoh_save_dir = candidate
+      rescue StandardError, LoadError
+        # Stable fallback, exclusive to the first compatible QA namespace.
+        candidate = File.expand_path("../sinnoh-private-saves-__SAVE__")
+        Dir.mkdir(candidate) unless File.directory?(candidate)
+        raise "Sinnoh QA: pasta de saves insegura" if File.symlink?(candidate) || !File.directory?(candidate)
+        $blue_sinnoh_save_dir = candidate
+      end
+    end
+"""
+        hook+=prepare.replace("__COPY__",token).replace("__SAVE__",save_token)
+        late += '\n    if $blue_sinnoh_save_dir && defined?(SaveData) && SaveData.const_defined?(:SAVE_DIR, false)\n      SaveData.send(:remove_const, :SAVE_DIR)\n      SaveData.const_set(:SAVE_DIR, $blue_sinnoh_save_dir)\n    end'
     code=code.replace(anchor,hook+anchor+late).replace(compiler,guarded+verify)
     code=code.replace("__QA_SCOPE__",scope)
     main[2]=RubyString(zlib.compress(code.encode("utf-8")))
@@ -569,6 +599,33 @@ end
     code=code.replace("__PLATINUM_PLAYER__",player_code)
     return code.encode("utf-8")
 
+def compatible_save_token(project,mapping,base_hash):
+    # Read manifests/config only; never enumerate or open save files.
+    work=safe_path(project/REPO_OUTPUT)
+    candidates=[]
+    for folder in work.glob(QA_DIR+"-*"):
+        if not re.fullmatch(QA_DIR+r"-[a-f0-9]{12}",folder.name):continue
+        try:
+            safe_path(folder)
+            path=folder/"sinnoh-experimental-qa.json";regular(path)
+            data=json.loads(path.read_text("utf-8"))
+            copy_token=folder.name.rsplit("-",1)[-1]
+            token=data.get("save_profile_token",copy_token)
+            if (data.get("schema")!=1 or data.get("region")!="SINNOH" or
+                data.get("mode")!=MODE or data.get("profile_token")!=copy_token or
+                data.get("main_game_modified") is not False or
+                data.get("personal_saves_copied") is not False or
+                data.get("mapids")!=mapping or data.get("base_mapinfos_sha256")!=base_hash or
+                data.get("save_profile")!=namespace(token)):continue
+            config_path=folder/"mkxp.json";regular(config_path)
+            conf=jsonc(config_path.read_text("utf-8-sig"))
+            profile=namespace(token)
+            if any(conf.get(k)!=profile[k] for k in ("dataPathApp","dataPathOrg")):continue
+            candidates.append((path.stat().st_mtime_ns,copy_token,token))
+        except (OSError,ValueError,TypeError,KeyError):continue
+    return max(candidates)[2] if candidates else None
+
+
 def build_files(base:Path,project:Path=ROOT):
     base=safe_path(base)
     if not base.is_dir():fail("GAME_FOLDER_NOT_FOUND")
@@ -610,7 +667,8 @@ def build_files(base:Path,project:Path=ROOT):
         maps,story=private_visual.extend_lake_story(maps,mapping,components)
         masks=private_visual.movement_masks(maps,mapping)
         private_visual.verify_starter_corridor(masks,mapping)
-        movement=private_visual.movement_plugin(masks)
+        movement=private_visual.movement_plugin(masks,mapping["SINNOH_ROUTE_202"])
+        maps["PBS/encounters.txt"]=private_visual.route201_encounters(base,mapping)
         story["grass_guard"]=True
         story["visual_only_connections_omitted"]=2
         ids=list(mapping.values())
@@ -620,7 +678,9 @@ def build_files(base:Path,project:Path=ROOT):
     platinum_player=private_visual.has_platinum_player(base)
     platinum_dawn=private_visual.has_platinum_player(base,10)
     token=secrets.token_hex(6)
-    config,game_ini,profile=runtime_config(base,token)
+    base_hash=sha((base/"Data/MapInfos.rxdata").read_bytes())
+    save_token=compatible_save_token(project,mapping,base_hash) or token
+    config,game_ini,profile=runtime_config(base,save_token)
     # This is an isolated copy, never the installed game:
     final=dict(maps)
     final.update(barry_files)
@@ -628,7 +688,7 @@ def build_files(base:Path,project:Path=ROOT):
         "Graphics/Characters/SNQA_NPC.png":sprite_png("NPC"),
         "Graphics/Characters/SNQA_BALL.png":sprite_png("BALL"),
         "Data/System.rxdata":None,
-        "Data/Scripts.rxdata":patch_bootstrap((base/"Data/Scripts.rxdata").read_bytes(),token,ids,connected=bool(continuity),story_profile=bool(story)),
+        "Data/Scripts.rxdata":patch_bootstrap((base/"Data/Scripts.rxdata").read_bytes(),token,ids,connected=bool(continuity),story_profile=bool(story),save_token=save_token,route201=mapping["SINNOH_ROUTE_201"] if story else None),
         "mkxp.json":config,"Game.ini":game_ini,
         # Only inside the NEW private QA copy. Blue-Story source-only sync
         # cannot update the installed main-game title when Kanto is 142/145.
@@ -661,7 +721,7 @@ def build_files(base:Path,project:Path=ROOT):
         "independent_r08_approved":False,"r09_native_qa_executed":0,
         "game_exe_executed":False,"runtime_playable_verified":False,
         "main_game_modified":False,"personal_saves_copied":False,
-        "save_profile":profile,"profile_token":token,
+        "save_profile":profile,"profile_token":token,"save_profile_token":save_token,
         "mapids":mapping,"start":[mapping["SINNOH_PLAYER_BEDROOM"],*start],
         "coordinates_provenance":"PRIVATE_DONOR_GEOMETRY_AND_MODEL_PASSABILITY_ONLY" if imported else "ORIGINAL_GENERATED_GEOMETRY_AND_MODEL_PASSABILITY_ONLY",
         "private_visual_import":{"maps":imported,"overworlds":"overworlds" in sources,
