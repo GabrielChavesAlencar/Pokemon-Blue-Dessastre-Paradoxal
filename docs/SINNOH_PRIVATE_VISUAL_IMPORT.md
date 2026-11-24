@@ -7,10 +7,15 @@
 - Créditos: PhantomFae, Game Freak, autores originais dos tilessets e PurpleZaffre (overworlds). A nota do pacote proíbe redistribuição. R08 continua pendente.
 
 ## Como testar após integração do código
-1. Manter os dois ZIPs originais, sem descompactar, em Downloads ou junto do Blue-Story.exe atualizado (ou em `.blue-work/sinnoh-private-input` da instalação gerenciada).
-2. Abrir Blue-Story.exe → Testar piloto Sinnoh. O importador usa somente arquivos locais, valida SHA-256 e cria uma nova cópia QA. Sem ZIPs continua o piloto original; um ZIP incorreto bloqueia em vez de ser aceito.
-3. Novo jogo. A base Platinum Lucas usa registro nativo 9 quando metadata e os gráficos de movimento existem. Dawn (registro 10) é validada separadamente; quando ambos os cadastros existem, o Novo Jogo do piloto oferece Lucas ou Dawn.
-4. Conferir mãe, Barry e Rowan; testar portas, warp, escolha dos iniciais, batalha, retorno. Não usar saves pessoais.
+
+1. Use o Blue-Story.exe que já possui a opção **Testar piloto Sinnoh**. Ele sincroniza os scripts da main antes de abrir o menu; não é necessário baixar outra versão do executável para esta mudança.
+2. Clique em Testar piloto Sinnoh. O launcher procura os arquivos originais em cache, ao lado do instalador e em Downloads. Se faltarem, baixa diretamente dos links publicados por PhantomFae e PurpleZaffre (Eevee Expo → MEGA/MediaFire), sem espelhos ou redistribuição.
+3. Os arquivos baixados ficam em `.blue-work/sinnoh-private-input/` (apenas os ZIPs validados por tamanho e SHA-256). Arquivos parciais são removidos. Arquivos válidos são reutilizados. Se a fonte estiver indisponível, exigir login, mudar ou devolver conteúdo divergente, a operação para antes de preparar o piloto, sem regressar silenciosamente aos sprites provisórios. Não há tentativa de contornar autenticação ou restrições dos provedores.
+4. O importador cria uma cópia QA separada e posiciona mapas, tilesets e personagens nos caminhos adequados, sem tocar no jogo principal nem em saves pessoais.
+5. Novo jogo: seleção dos registros Platinum Lucas/Dawn quando ambos estiverem disponíveis. Conferir mãe, Barry e Rowan, portas, warps, iniciais, batalha e retorno.
+
+**Limite de verificação:** testes automatizados usam fontes sintéticas e vetores de AES no Windows. A obtenção real dos dois ZIPs pelos provedores depende da rede e disponibilidade pública; não declarar aprovação nativa nem download real sem evidência.
+
 
 ## Mapeamento de origem
 | Área | MapID de origem | Dimensão | Células na componente caminhável do modelo |

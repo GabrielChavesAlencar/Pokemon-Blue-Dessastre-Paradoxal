@@ -4,6 +4,11 @@ These tests use temporary synthetic folders and never access Game.exe or saves.
 """
 from __future__ import annotations
 import json
+import base64
+import hashlib
+import io
+import os
+import zipfile
 from pathlib import Path
 import tempfile
 import unittest
@@ -249,5 +254,86 @@ class BlueStorySinnohMenuTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,"INSTALLATION_STATE_PRESERVED"):
                 ui.ensure_first_run_base(self.root,game)
             run.assert_not_called()
+
+
+    def test_existing_exe_cli_enables_automatic_sources(self):
+        with patch.object(ui,"prepare",return_value={"qa_directory":"fixture"}) as prepare:
+            self.assertEqual(ui.main(["--project-root",str(self.root),"--game-dir",str(self.root/"game"),"--receipt",str(self.receipt)]),0)
+            prepare.assert_called_once_with(self.root,self.root/"game",self.receipt,download_sources=True)
+
+    def test_source_failure_prevents_qa_and_game_writes(self):
+        with patch.object(ui.sources,"ensure_sources",side_effect=ValueError("SOURCE_OFFLINE")),patch.object(ui,"ensure_first_run_base") as base,patch.object(ui.installer,"build_files") as build:
+            with self.assertRaisesRegex(ValueError,"SOURCE_OFFLINE"):
+                ui.prepare(self.root,self.root/"game",self.receipt,download_sources=True)
+            base.assert_not_called();build.assert_not_called()
+        self.assertFalse(self.receipt.exists())
+
+    def test_local_archive_cache_is_verified_reused_and_never_extracted(self):
+        d=ui.sources
+        raw=io.BytesIO()
+        with zipfile.ZipFile(raw,"w") as z:z.writestr("fixture.txt","not a game asset")
+        blob=raw.getvalue()
+        pins={k:("test-private-"+k+".zip",hashlib.sha256(blob).hexdigest()) for k in d.PACKS}
+        calls=[]
+        def fetch(kind,out):
+            calls.append(kind);out.write(blob)
+        with patch.dict(d.PACKS,pins,clear=True):
+            paths=d.ensure_sources(self.root,fetch=fetch)
+            self.assertEqual(set(paths),set(pins))
+            self.assertEqual(set(calls),set(pins))
+            for path in paths.values():
+                self.assertEqual(path.read_bytes(),blob)
+                self.assertEqual(path.parent,self.root/".blue-work/sinnoh-private-input")
+            self.assertEqual(d.ensure_sources(self.root,fetch=lambda *a:self.fail("network retry")),paths)
+            self.assertFalse((paths["maps"].parent/"fixture.txt").exists())
+            self.assertEqual(list(paths["maps"].parent.glob("*.part")),[])
+
+    def test_bad_download_never_published_to_cache(self):
+        d=ui.sources
+        pins={k:("test-invalid-"+k+".zip","0"*64) for k in d.PACKS}
+        with patch.dict(d.PACKS,pins,clear=True):
+            with self.assertRaisesRegex(ValueError,"DOWNLOAD_FAILED"):
+                d.ensure_sources(self.root,fetch=lambda kind,out:out.write(b"wrong"))
+        cache=self.root/".blue-work/sinnoh-private-input"
+        self.assertEqual(list(cache.iterdir()),[])
+
+    def test_stream_rejects_wrong_size_and_hash(self):
+        d=ui.sources;raw=b"test bytes"
+        with patch.dict(d.SIZES,{"maps":len(raw)}),patch.dict(d.PACKS,{"maps":("test.zip",hashlib.sha256(raw).hexdigest())}):
+            out=io.BytesIO();d.stream_to_file(io.BytesIO(raw),out,"maps")
+            self.assertEqual(out.getvalue(),raw)
+            for bad in (raw[:-1],raw+b"!",b"x"*len(raw)):
+                with self.assertRaises(ValueError):d.stream_to_file(io.BytesIO(bad),io.BytesIO(),"maps")
+
+    def test_author_links_and_public_key_parsing(self):
+        d=ui.sources
+        raw=bytes(range(32));key=base64.urlsafe_b64encode(raw).decode().rstrip("=")
+        self.assertEqual(d.mega_key("https://mega.nz/file/"+d.MEGA_ID+"#"+key),(bytes([16])*16,raw[16:24]))
+        for url in ("http://mega.nz/file/"+d.MEGA_ID+"#"+key,"https://mega.nz.evil.test/file/"+d.MEGA_ID+"#"+key,"https://mega.nz/file/other#"+key,"https://mega.nz/file/"+d.MEGA_ID):
+            with self.assertRaises(ValueError):d.mega_key(url)
+        self.assertFalse(d.provider_host("https://mediafire.com.evil.test/file","overworlds"))
+        p=d.DownloadLink();p.feed('<a href="https://evil.test/">Ad</a><a id="downloadButton" href="https://download1.mediafire.com/example">Download</a>')
+        self.assertEqual(p.links,["https://download1.mediafire.com/example"])
+
+    def test_counter_offsets_and_partial_final_block(self):
+        d=ui.sources;nonce=b"12345678"
+        seen=[]
+        def identity(blocks):
+            seen.append(blocks);return blocks
+        plain=bytes(19)
+        self.assertEqual(d.decrypt_ctr(identity,nonce,32,plain),nonce+(2).to_bytes(8,"big")+nonce[:3])
+        self.assertEqual(seen[0],nonce+(2).to_bytes(8,"big")+nonce+(3).to_bytes(8,"big"))
+        with self.assertRaises(ValueError):d.decrypt_ctr(identity,nonce,1,plain)
+
+    @unittest.skipUnless(os.name=="nt","CNG is the Windows system AES provider")
+    def test_windows_aes_nist_ctr_known_answer(self):
+        d=ui.sources
+        # NIST SP800-38A F.5.1 AES-128 CTR known-answer test.
+        key=bytes.fromhex("2b7e151628aed2a6abf7158809cf4f3c")
+        block=bytes.fromhex("f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff")
+        plain=bytes.fromhex("6bc1bee22e409f96e93d7e117393172a")
+        with d.WindowsAES(key) as aes:
+            encrypted=d.decrypt_ctr(aes.encrypt,block[:8],int.from_bytes(block[8:],"big")*16,plain)
+            self.assertEqual(encrypted.hex(),"874d6191b620e3261bef6864990db6ce")
 
 if __name__=="__main__":unittest.main()

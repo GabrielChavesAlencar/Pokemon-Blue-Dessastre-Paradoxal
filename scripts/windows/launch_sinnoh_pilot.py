@@ -16,6 +16,7 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts" / "regions"))
 import install_sinnoh_experimental_windows as installer
+import sinnoh_source_download as sources
 
 RECEIPT_NAME = "blue-story-sinnoh-launch.json"
 MODE = "SINNOH_PRIVATE_EXPERIMENTAL_COPY_NOT_APPROVED"
@@ -50,7 +51,7 @@ def ensure_first_run_base(project: Path, game: Path):
     marker.unlink()
 
 
-def prepare(project: Path, game: Path, receipt: Path) -> dict:
+def prepare(project: Path, game: Path, receipt: Path, *, download_sources=False) -> dict:
     project = installer.safe_path(Path(project).absolute())
     game = installer.safe_path(Path(game).absolute())
     receipt = installer.safe_path(Path(receipt).absolute())
@@ -61,6 +62,10 @@ def prepare(project: Path, game: Path, receipt: Path) -> dict:
         installer.fail("BLUE_STORY_ONLY_MANAGED_READONLY_GAME")
     if receipt != work / RECEIPT_NAME or receipt.exists() or receipt.is_symlink():
         installer.fail("BLUE_STORY_RECEIPT_NOT_NEW_OR_UNSAFE")
+    if download_sources:
+        # Only the explicit launcher CLI requests network access. Fail before
+        # provisioning a game or creating a QA copy if a source is unavailable.
+        sources.ensure_sources(project)
     ensure_first_run_base(project, game)
     # J12-E's source preflight validates MapInfos/Tilesets/PBS and allocates
     # private, collision-free, provisional MapIDs. No writes to the source.
@@ -109,7 +114,7 @@ def main(argv=None) -> int:
     p.add_argument("--receipt", type=Path, required=True)
     args = p.parse_args(argv)
     try:
-        result = prepare(args.project_root, args.game_dir, args.receipt)
+        result = prepare(args.project_root, args.game_dir, args.receipt, download_sources=True)
     except (OSError, ValueError, TypeError, KeyError, OverflowError, subprocess.CalledProcessError) as exc:
         print("BLUE_STORY_SINNOH_BLOQUEADO: " + str(exc), file=sys.stderr)
         return 2
