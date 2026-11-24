@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "scope": "PRIVATE_QA_ONLY",
+  "source_maps": [
+    {
+      "symbol": "SINNOH_RESORT_AREA",
+      "source_id": 139,
+      "source_name": "Resort Area",
+      "label": "Resort Area",
+      "parent_id": 0,
+      "width": 48,
+      "height": 35,
+      "sha256": "0af733682818358225eb85d1774676ed89a3a850b20d81c20275bfa59269f998",
+      "source_tileset_id": 24,
+      "outdoor": true,
+      "category": "Areas adicionais",
+      "targets": [
+        143
+      ]
+    },
+    {
+      "symbol": "SINNOH_CYCLING_ROAD",
+      "source_id": 147,
+      "source_name": "Cycling Road",
+      "label": "Cycling Road",
+      "parent_id": 146,
+      "width": 40,
+      "height": 141,
+      "sha256": "2ab8b244757441ad3e758ead008ff4e7eb0f8f9b732247f9043a577ba3257bf7",
+      "source_tileset_id": 24,
+      "outdoor": true,
+      "category": "Areas adicionais",
+      "targets": [
+        148,
+        149
+      ]
+    },
+    {
+      "symbol": "SINNOH_SURVIVAL_AREA",
+      "source_id": 163,
+      "source_name": "Survival Area",
+      "label": "Survival Area",
+      "parent_id": 0,
+      "width": 33,
+      "height": 39,
+      "sha256": "21c2602f3f628ad88c709f03fd7ccb190d8f23e1681ea4508ad240e2d918e3df",
+      "source_tileset_id": 24,
+      "outdoor": true,
+      "category": "Areas adicionais",
+      "targets": [
+        168,
+        171
+      ]
+    },
+    {
+      "symbol": "SINNOH_FIGHT_AREA",
+      "source_id": 166,
+      "source_name": "Fight Area",
+      "label": "Fight Area",
+      "parent_id": 0,
+      "width": 64,
+      "height": 38,
+      "sha256": "29699f1ce15991a0e66ec5d6c4dbc7312ded93824d02f5c102ef2a820fd3efbe",
+      "source_tileset_id": 24,
+      "outdoor": true,
+      "category": "Areas adicionais",
+      "targets": [
+        160,
+        169,
+        172,
+        188
+      ]
+    }
+  ]
+}
