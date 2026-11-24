@@ -323,7 +323,7 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False):
         fail("ESSENTIALS_MAIN_BOOTSTRAP_NOT_RECOGNIZED")
     if "sinnoh-experimental-compile-request" in code:fail("QA_ALREADY_PATCHED")
     if not re.fullmatch(r"[a-f0-9]{12}",token):fail("INVALID_QA_TOKEN")
-    if map_ids and (len(map_ids)!=9 or len(set(map_ids))!=9 or
+    if map_ids and (len(map_ids) not in (9,10) or len(set(map_ids))!=len(map_ids) or
                     any(type(n) is not int or not 442<=n<=517 for n in map_ids)):
         fail("INVALID_QA_COMPILE_MAP_IDS")
     scope='File.basename(Dir.pwd) == "game-sinnoh-experimental-'+token+'" && '
@@ -385,7 +385,7 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False):
     main[2]=RubyString(zlib.compress(code.encode("utf-8")))
     return b"\x04\x08"+dump(rows)
 
-def experiment_plugin(start,token,platinum_player=False,platinum_dawn=False):
+def experiment_plugin(start,token,platinum_player=False,platinum_dawn=False,story_profile=False):
     code="""# Only for one isolated experimental copy; no main-game hooks.
 module BlueSinnohExperimental
   START = [__START__].freeze
@@ -434,6 +434,8 @@ end
     if platinum_dawn:
         choose = 'choice = pbMessage("Escolha seu protagonista de Sinnoh:", ["Lucas", "Dawn"], 1); pbChangePlayer(choice == 1 ? 10 : 9)' if platinum_player else 'pbChangePlayer(10)'
         player_code = 'if $game_player && defined?(pbChangePlayer); ' + choose + '; $game_player.refresh_charset; $game_player.transparent = false; end'
+    if story_profile:
+        player_code = '# Character and name are selected in the bedroom autorun after map initialization.'
     code=code.replace("__PLATINUM_PLAYER__",player_code)
     return code.encode("utf-8")
 
@@ -464,12 +466,18 @@ def build_files(base:Path,project:Path=ROOT):
     maps=visual.upgrade(maps,mapping,manifest["tileset_ids"],events,start)
     sources=private_visual.discover(project)
     imported={}
+    story={}
     continuity={}
     if "maps" in sources:
+        extra=next((i for i in range(442,518) if i not in occupied and i not in ids),None)
+        if extra is None:fail("NO_FREE_LAKEFRONT_QA_ID")
+        mapping[private_visual.LAKEFRONT]=extra
         print("SINNOH QA: importando cinco exteriores e quatro interiores autorais do ZIP local (sem eventos externos)",flush=True)
         maps,components,imported=private_visual.apply_maps(maps,mapping,sources["maps"])
         maps,events,start=compile_events(maps,mapping,components,{**private_visual.ANCHORS,**private_visual.INTERIOR_ANCHORS})
         maps,continuity=private_visual.bind_audio_and_connections(maps,mapping,components,sources["maps"],base)
+        maps,story=private_visual.extend_lake_story(maps,mapping,components)
+        ids=list(mapping.values())
     if "overworlds" in sources:
         print("SINNOH QA: sprites DPPt locais; creditos PurpleZaffre",flush=True)
         maps=private_visual.apply_sprites(maps,sources["overworlds"])
@@ -494,7 +502,7 @@ def build_files(base:Path,project:Path=ROOT):
         f"{INTRO_PLUGIN}/SinnohPilot.rb":(project/"scripts/regions/SinnohPilot.rb").read_bytes(),
         f"{INTRO_PLUGIN}/meta.txt":b"Name = Blue Sinnoh Intro\nVersion = 0.1\nEssentials = 21.1\nScripts = SinnohPilot.rb\n",
         f"{EXPERIMENT_PLUGIN}/SinnohExperimentalStart.rb":experiment_plugin(
-                  [mapping["SINNOH_PLAYER_BEDROOM"],*start],token,platinum_player,platinum_dawn),
+                  [mapping["SINNOH_PLAYER_BEDROOM"],*start],token,platinum_player,platinum_dawn,story_profile=bool(story)),
         f"{EXPERIMENT_PLUGIN}/meta.txt":b"Name = Blue Sinnoh Experimental\nVersion = 0.1\nEssentials = 21.1\nRequires = Blue Sinnoh Intro\nScripts = SinnohExperimentalStart.rb\n",
     })
     sysdata=read_marshal((base/"Data/System.rxdata").read_bytes(),"BASE_SYSTEM")
@@ -511,8 +519,8 @@ def build_files(base:Path,project:Path=ROOT):
     final["Data/sinnoh-experimental-compile-request.txt"]=proof.encode("ascii")
     # These hashes do not claim human rights approval, or native gameplay acceptance.
     report={"schema":1,"region":"SINNOH","mode":MODE,
-        "maps_prepared":9,"static_events_placed":len(events),
-        "static_warps":16-len(continuity.get("retired_warp_keys",[])),"native_seam_pairs":len(continuity.get("connections",[])),"static_handlers":5,"static_starter_balls":3,
+        "maps_prepared":len(mapping),"static_events_placed":len(events)+story.get("extra_event_count",0),
+        "static_warps":16-len(continuity.get("retired_warp_keys",[]))+(3 if story else 0),"native_seam_pairs":len(continuity.get("connections",[])),"static_handlers":5,"static_starter_balls":3,
         "local_reserved_qa_only":True,"independent_r07_approved":False,
         "independent_r08_approved":False,"r09_native_qa_executed":0,
         "game_exe_executed":False,"runtime_playable_verified":False,
@@ -526,6 +534,7 @@ def build_files(base:Path,project:Path=ROOT):
                                  "native_approved":False,"distribution_approved":False},
         "visual_revision":"SINNOH_ORIGINAL_PIXEL_ART_V2",
         "private_continuity":continuity,
+        "private_lake_story":story,
         "visual_native_reviewed":False,
         "human_positions_reviewed":False,"native_collision_verified":False,
         "compile_token":proof,
