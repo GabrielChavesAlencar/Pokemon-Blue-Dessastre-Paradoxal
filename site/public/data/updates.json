@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cc6dba50e99c4535a75f24983f677f84f60d84d2",
+      "date": "2026-11-24T19:46:28-03:00",
+      "title": "Merge pull request #291 from GabrielChavesAlencar/sinnoh-full-expansion-f09c-relative-weights",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "aad4f4c17d342deae5c70bc340ca262c4a60e473",
+      "date": "2026-11-24T19:39:50-03:00",
+      "title": "feat(Sinnoh F09C): exact weight normalization and aquatic terrain evidence",
+      "category": "Novidades"
+    },
+    {
       "sha": "97c52e299ed0fb5305a9a15192586b76c37c3674",
       "date": "2026-11-24T19:38:45-03:00",
       "title": "Merge pull request #290 from GabrielChavesAlencar/sinnoh-full-expansion-f09b-original-encounters",
