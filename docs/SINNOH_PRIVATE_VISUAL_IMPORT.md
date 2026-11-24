@@ -28,7 +28,7 @@ IDs de destino são alocados apenas pela instalação QA, a partir de vagas veri
 Overworlds locais (folhas 256x256; 4x4 quadros de 64x64):
 - NPC_126_Mom.png (candidata para mãe), NPC_140_Barry.png, NPC_138_Prof_Rowan.png.
 - NPC_199_Lucas.png e NPC_202_Dawn.png encontrados na fonte; preferir o cadastro de jogador já existente no jogo-base e suas animações.
-- Interiores (quarto, casa, casa de Barry e laboratório) permanecem provisórios: não foram identificados interiores específicos de Sinnoh no inventário. Não importar salas de outro projeto como se fossem os interiores corretos.
+- Interiores específicos não vieram no ZIP. Quarto 12x10, casa 16x12, casa de Barry 14x12 e laboratório 18x13 são novos layouts autorais compostos com o tileset real 25 (indoors.png), preservando 24 eventos próprios e as tabelas originais de colisão/prioridade/terreno. Componentes caminháveis do modelo local: 47, 106, 91 e 118 células, respectivamente. A revisão visual nativa continua pendente.
 
 ## Limites
-A ferramenta é código original, não distribui os ZIPs/PNGs/RXDATA da fonte. Não importa scripts, eventos doador, áudio, encontros, conexões PBS ou metadados globais. A auditoria local dos arquivos não é execução do Game.exe. A validação nativa do novo piloto, revisão dos interiores, correspondência de tags no runtime, R07/R08/R09 e Android continuam pendentes. Não usar a campanha principal para QA.
+A ferramenta é código original, não distribui os ZIPs/PNGs/RXDATA da fonte. Não importa scripts, eventos doador, áudio, encontros, conexões PBS ou metadados globais. A auditoria local dos arquivos não é execução do Game.exe. A validação nativa do novo piloto, revisão nativa dos interiores, correspondência de tags no runtime, R07/R08/R09 e Android continuam pendentes. Não usar a campanha principal para QA.
