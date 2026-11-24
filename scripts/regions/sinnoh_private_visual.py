@@ -538,7 +538,9 @@ def merge_connections(base,plans,mapping):
     pbs=pbs_path.read_bytes()
     if any(row[0] in ids or row[3] in ids for row in parse_connections(pbs)):
         fail("BASE_PBS_CONNECTION_ID_COLLISION")
-    records=[p["record"] for p in plans]
+    # Forest-only connections are source evidence, not traversable links.
+    # Never let MapFactory choose the lake as an alternate seam destination.
+    records=[p["record"] for p in plans if not p.get("visual_only")]
     rows=[[r[0],r[1].encode("ascii"),r[2],r[3],r[4].encode("ascii"),r[5]] for r in records]
     addition=("\n# Blue Sinnoh private QA - native seamless connections\n"+
               "\n".join(",".join(map(str,r)) for r in records)+"\n").encode("ascii")
@@ -604,6 +606,120 @@ def bind_audio_and_connections(blobs,mapping,components,path,base):
     return out,{"connections":plans,"retired_warp_keys":sorted(removed),
                 "audio_files":sorted(audio_files),"map_music":{**MAP_MUSIC,**({LAKEFRONT:"Route201"} if LAKEFRONT in mapping else {})},
                 "native_reviewed":False}
+
+
+def movement_masks(blobs,mapping):
+    """Derive conservative ground collision and tall-grass masks from actual maps."""
+    tiles=read_marshal(blobs["Data/Tilesets.rxdata"],"MOVEMENT_TILES")
+    result={}
+    for sym in donor_maps(mapping):
+        mid=mapping[sym]
+        m=read_marshal(blobs["Data/Map%03d.rxdata"%mid],"MOVEMENT_MAP").attrs
+        w,h=m["@width"],m["@height"]
+        attrs=tiles[m["@tileset_id"]].attrs
+        passages=attrs["@passages"].data[20:]
+        tags=attrs["@terrain_tags"].data[20:]
+        p=struct.unpack("<%dH"%(len(passages)//2),passages)
+        t=struct.unpack("<%dH"%(len(tags)//2),tags)
+        cells=struct.unpack_from("<%dH"%(w*h*3),m["@data"].data,20)
+        rows=[]
+        for y in range(h):
+            row=[]
+            for x in range(w):
+                stack=[cells[z*w*h+y*w+x] for z in range(3) if cells[z*w*h+y*w+x]]
+                if not stack or any(p[i]&15 for i in stack):row.append("#")
+                elif any(t[i]==2 for i in stack):row.append("g")
+                else:row.append(".")
+            rows.append("".join(row))
+        result[mid]=rows
+    return result
+
+
+def safe_grassless_component(rows,seed):
+    w,h=len(rows[0]),len(rows)
+    if not (0<=seed[0]<w and 0<=seed[1]<h and rows[seed[1]][seed[0]]=="."):
+        fail("SAFE_START_BLOCKED")
+    seen={seed};queue=deque([seed])
+    while queue:
+        x,y=queue.popleft()
+        for xx,yy in ((x-1,y),(x+1,y),(x,y-1),(x,y+1)):
+            if 0<=xx<w and 0<=yy<h and rows[yy][xx]=="." and (xx,yy) not in seen:
+                seen.add((xx,yy));queue.append((xx,yy))
+    return seen
+
+
+def verify_starter_corridor(masks,mapping):
+    route=masks[mapping["SINNOH_ROUTE_201"]]
+    front=masks[mapping[LAKEFRONT]]
+    lake=masks[mapping["SINNOH_LAKE_VERITY"]]
+    r=safe_grassless_component(route,(16,28))
+    f=safe_grassless_component(front,(25,13))
+    if not any((0,y) in r and (25,y-4) in f for y in range(4,26)):
+        fail("NO_GRASSLESS_ROUTE_TO_LAKEFRONT")
+    if not {(10,2),(11,2)}<=f:fail("NO_GRASSLESS_LAKEFRONT_PORTAL")
+    for seed in ((44,42),(45,42)):
+        l=safe_grassless_component(lake,seed)
+        if not {(44,43),(45,43),(45,40)}<=l:
+            fail("NO_GRASSLESS_LAKE_RETURN_OR_ROWAN")
+        for x in (44,45,46):
+            if not any(q in l for q in ((x,37),(x,39),(x-1,38),(x+1,38))):
+                fail("NO_GRASSLESS_STARTER_ACCESS")
+
+
+def movement_plugin(masks):
+    # Embedded immutable rows from verified local RXDATA. No assets published.
+    # Scope is the isolated QA and its allocated map IDs, not global gameplay.
+    import json
+    rows="{"+",".join(str(mid)+"=>"+json.dumps(grid) for mid,grid in sorted(masks.items()))+"}"
+    return ("""module BlueSinnohSafeMovement
+  MASKS = __ROWS__.freeze
+  def self.cell(id,x,y)
+    rows=MASKS[id]
+    return nil unless rows && x.is_a?(Integer) && y.is_a?(Integer) &&
+      y>=0 && y<rows.length && x>=0 && x<rows[y].length
+    rows[y][x,1]
+  end
+
+  def self.has_pokemon?
+    $player && $player.respond_to?(:party) && $player.party.any? { |p|
+      p && (!p.respond_to?(:egg?) || !p.egg?)
+    }
+  end
+
+  module PlayerMovement
+    def move_generic(dir,*args,&block)
+      if BlueSinnohExperimental.private_copy? && $game_map &&
+         BlueSinnohSafeMovement::MASKS.key?($game_map.map_id) &&
+         [2,4,6,8].include?(dir)
+        facing = $map_factory && $map_factory.getFacingTile(dir,self)
+        if facing && BlueSinnohSafeMovement::MASKS.key?(facing[0])
+          cell=BlueSinnohSafeMovement.cell(*facing)
+          return if cell.nil? || cell=="#"
+          if cell=="g" && !BlueSinnohSafeMovement.has_pokemon?
+            unless @blue_sinnoh_grass_warning
+              @blue_sinnoh_grass_warning=true
+              pbMessage(_INTL("E perigoso entrar na grama alta sem um Pokemon!"))
+            end
+            return
+          end
+        elsif !facing || !BlueSinnohSafeMovement::MASKS.key?(facing[0])
+          # Outdoor map edges cannot escape the isolated pilot.
+          return
+        end
+        @blue_sinnoh_grass_warning=false
+      end
+      super(dir,*args,&block)
+    end
+  end
+
+  def self.install!
+    return unless BlueSinnohExperimental.private_copy?
+    raise "Sinnoh QA: API de movimento ausente" unless defined?(Game_Player) &&
+      Game_Player.method_defined?(:move_generic)
+    Game_Player.prepend(PlayerMovement) unless Game_Player.ancestors.include?(PlayerMovement)
+  end
+end
+""").replace("__ROWS__",rows).encode("utf-8")
 
 
 def extend_lake_story(blobs,mapping,components):
