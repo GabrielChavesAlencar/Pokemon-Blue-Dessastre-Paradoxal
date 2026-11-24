@@ -7,6 +7,7 @@ from __future__ import annotations
 from collections import deque
 import copy
 import hashlib
+import io
 import os
 import re
 from pathlib import Path
@@ -81,6 +82,18 @@ def discover(project):
             found[kind] = path
             break
     return found
+
+
+def verified_archive(path, kind):
+    """Read the exact approved input bytes, then open them inertly in memory."""
+    path=Path(path)
+    if path.is_symlink() or not path.is_file() or path.stat().st_size>120_000_000:
+        fail("UNSAFE_ARCHIVE:"+kind)
+    with path.open("rb") as f:
+        raw=f.read(120_000_001)
+    if len(raw)>120_000_000 or hashlib.sha256(raw).hexdigest()!=PACKS[kind][1]:
+        fail("ARCHIVE_SHA256_MISMATCH:"+kind)
+    return zipfile.ZipFile(io.BytesIO(raw))
 
 
 def member(archive, name, max_bytes=32_000_000):
@@ -207,7 +220,7 @@ def connected(cells,w,h,passages,seed):
 
 def apply_maps(blobs,mapping,path):
     out=dict(blobs);components={};imported={}
-    with zipfile.ZipFile(path) as z:
+    with verified_archive(path,"maps") as z:
         infos=read_marshal(member(z,MAP_ROOT+"Data/MapInfos.rxdata"),"PRIVATE_INFOS")
         source=read_marshal(member(z,MAP_ROOT+"Data/Tilesets.rxdata"),"PRIVATE_TILESETS")[24]
         if source.attrs["@tileset_name"]!=b"outdoors":fail("SOURCE_TILESET_NAME")
@@ -267,7 +280,7 @@ def apply_maps(blobs,mapping,path):
 
 def apply_sprites(blobs,path):
     out=dict(blobs)
-    with zipfile.ZipFile(path) as z:
+    with verified_archive(path,"overworlds") as z:
         for role,name in SPRITES.items():
             raw=member(z,OW_ROOT+name+".png",1_000_000)
             if dims(raw)!=(256,256):fail("SPRITE_DIMENSIONS:"+role)
