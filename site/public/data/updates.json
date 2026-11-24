@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b33d57d2ee199b404ad7e53424ee573b83d1bf56",
+      "date": "2026-11-24T17:30:20-03:00",
+      "title": "Merge pull request #284 from GabrielChavesAlencar/sinnoh-full-expansion-f06-natural-areas",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "c10c3686b07d4b602182c5c1bf7f728874481ef3",
+      "date": "2026-11-24T17:23:25-03:00",
+      "title": "fix(F06): accept only verified passable rock-floor pockets in 21 natural interiors",
+      "category": "Correções"
+    },
+    {
+      "sha": "9dabb6dccaad9a50b2b97b870dbc30064639c779",
+      "date": "2026-11-24T17:18:41-03:00",
+      "title": "feat(Sinnoh F06): append 35 pinned natural maps in isolated QA and preserve F05 saves",
+      "category": "Novidades"
+    },
+    {
       "sha": "09409e01dd89d57b74b334cb2826077791d5c3c0",
       "date": "2026-11-24T17:17:14-03:00",
       "title": "Merge pull request #283 from GabrielChavesAlencar/sinnoh-full-expansion-f05-routes",
