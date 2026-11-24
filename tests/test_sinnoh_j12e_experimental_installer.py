@@ -1201,6 +1201,25 @@ raise "duplicate battle" unless $calls==4
         page.attrs["@list"].insert(0,c.ruby("RPG::EventCommand",code=355,indent=0,parameters=[b"never run"]))
         self.assertIsNone(c.simple_transfer(event))
 
+    def test_f08_classify_cosmetics_and_action_without_bypassing_conditions(self):
+        c=exp.connection_expansion
+        page=c.event_page(warp=(555,4,5),touch=False)
+        event=c.ruby("RPG::Event",id=1,name=b"test",x=2,y=3,pages=[page])
+        ops=page.attrs["@list"]
+        ops.insert(0,c.ruby("RPG::EventCommand",code=106,indent=0,parameters=[8]))
+        ops.insert(0,c.ruby("RPG::EventCommand",code=250,indent=0,parameters=[c.ruby("RPG::AudioFile",name=b"Door",volume=80,pitch=100)]))
+        self.assertEqual(c.classify_transfer(event),((2,3,555,4,5,2,0),"accepted"))
+        self.assertEqual(c.event_shape(event)[0]["codes"],[250,106,201,0])
+        for code in (101,111,121,122,209,355,655):
+            ops.insert(0,c.ruby("RPG::EventCommand",code=code,indent=0,parameters=[]))
+            self.assertEqual(c.classify_transfer(event),(None,"unsupported_commands"))
+            ops.pop(0)
+        page.attrs["@condition"].attrs["@self_switch_valid"]=True
+        self.assertEqual(c.classify_transfer(event),(None,"page_conditions"))
+        page.attrs["@condition"].attrs["@self_switch_valid"]=False
+        event.attrs["@pages"].append(page)
+        self.assertEqual(c.classify_transfer(event),(None,"multiple_pages"))
+
     def test_f07_capacity_and_save_namespace_append_only(self):
         city=exp.city_expansion
         route=exp.route_expansion
