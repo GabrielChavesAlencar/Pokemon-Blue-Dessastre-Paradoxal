@@ -96,8 +96,15 @@ def load_qa(project: Path, qa: Path) -> dict:
     maps = data.get("mapids")
     story=data.get("private_lake_story",{})
     count=10 if isinstance(story,dict) and story.get("portal_pairs")==2 else 9
+    cities={"SINNOH_"+k for k in ("JUBILIFE_CITY","OREBURGH_CITY","FLOAROMA_TOWN","ETERNA_CITY","HEARTHOME_CITY","SOLACEON_TOWN","VEILSTONE_CITY","PASTORIA_CITY","CELESTIC_TOWN","CANALAVE_CITY","SNOWPOINT_CITY","SUNYSHORE_CITY")}
+    city_report=data.get("city_expansion",{})
+    if city_report:
+        if (count!=10 or not isinstance(maps,dict) or not isinstance(city_report,dict) or set(city_report)!=cities or
+                any(k not in maps or not isinstance(city_report[k],dict) or city_report[k].get("target_id")!=maps[k] for k in cities)):
+            block("INVALID_F04_CITY_MANIFEST")
+        count=22
     if (not isinstance(maps, dict) or len(maps) != count or
-            (count==10 and "SINNOH_VERITY_LAKEFRONT" not in maps) or
+            (count>=10 and "SINNOH_VERITY_LAKEFRONT" not in maps) or
             len(set(maps.values())) != count or
             not all(type(n) is int and 442 <= n <= 517 for n in maps.values())):
         block("INVALID_NINE_QA_MAPIDS")
@@ -161,6 +168,11 @@ def audit_maps(qa: Path, data: dict, *, allow_tile_recovery: bool):
     if isinstance(private,dict) and private.get("maps"):
         files += ["Graphics/Tilesets/SNQA_Private_Outdoors.png","Graphics/Tilesets/SNQA_Private_Indoors.png"]
         files += ["Graphics/Autotiles/SNQA_Private_Auto_%d.png"%i for i in range(1,8)]
+    cities=data.get("city_expansion",{})
+    if cities:
+        source_ids={row["source_id"] for row in cities.values()}
+        if source_ids!={22,77,84,90,96,106,109,123,160,205,219,225}:block("INVALID_F04_SOURCE_IDS")
+        files += ["Graphics/Tilesets/SNQA_F04_%03d.png"%mid for mid in sorted(source_ids)]
     continuity=data.get("private_continuity",{})
     if continuity:
         if not isinstance(continuity,dict) or len(continuity.get("connections",[]))!=(6 if data.get("private_lake_story") else 3):

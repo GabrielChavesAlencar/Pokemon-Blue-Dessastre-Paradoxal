@@ -1,0 +1,102 @@
+{
+  "schema": 1,
+  "source": "F03 live job 138719583390",
+  "cities": [
+    {
+      "symbol": "SINNOH_OREBURGH_CITY",
+      "label": "Oreburgh City",
+      "source_id": 22,
+      "width": 72,
+      "height": 55,
+      "sha256": "fab6f204b93464225c98655ef87360cdde8be228ad4fb1901773129dfa1736ec"
+    },
+    {
+      "symbol": "SINNOH_CELESTIC_TOWN",
+      "label": "Celestic Town",
+      "source_id": 77,
+      "width": 33,
+      "height": 40,
+      "sha256": "f28abb90942cf08054758234d0c174f8c2167c192f6394cb7d49d571dcc1c87a"
+    },
+    {
+      "symbol": "SINNOH_SOLACEON_TOWN",
+      "label": "Solaceon Town",
+      "source_id": 84,
+      "width": 71,
+      "height": 31,
+      "sha256": "cdd3489dc608be5582573c2a07228619c6832bec9068bff334ae4bc732250dcd"
+    },
+    {
+      "symbol": "SINNOH_ETERNA_CITY",
+      "label": "Eterna City",
+      "source_id": 90,
+      "width": 64,
+      "height": 63,
+      "sha256": "b28d2a456cc4cb4218fa1c4387cd3159ed84ef8b945585597ee98ac10be4139e"
+    },
+    {
+      "symbol": "SINNOH_FLOAROMA_TOWN",
+      "label": "Floaroma Town",
+      "source_id": 96,
+      "width": 40,
+      "height": 55,
+      "sha256": "d2c2c8dcf61a987908dd390a596766f814dee726aacb17e8b9aea4d9bb1bfabf"
+    },
+    {
+      "symbol": "SINNOH_JUBILIFE_CITY",
+      "label": "Jubilife City",
+      "source_id": 106,
+      "width": 65,
+      "height": 64,
+      "sha256": "27ea714a8d79414b47eb4f57cc247d7605fe99f1c90864bd1a868929f32b20e5"
+    },
+    {
+      "symbol": "SINNOH_CANALAVE_CITY",
+      "label": "Canalave City",
+      "source_id": 109,
+      "width": 41,
+      "height": 63,
+      "sha256": "050a24cd517beb9083abeff74be497826a42b475e33724307b53c9d6a8f50ccb"
+    },
+    {
+      "symbol": "SINNOH_HEARTHOME_CITY",
+      "label": "Hearthome City",
+      "source_id": 123,
+      "width": 64,
+      "height": 59,
+      "sha256": "0021443f7724f7768ff3366eccf7cb5bd58b9a2acd2018376aa9b6fb56ae4d71"
+    },
+    {
+      "symbol": "SINNOH_SNOWPOINT_CITY",
+      "label": "Snowpoint City",
+      "source_id": 160,
+      "width": 38,
+      "height": 68,
+      "sha256": "c60ca3907f4e79a80454a53f0b3332408abde2d5111f426a9a0b7e10cef2ebce"
+    },
+    {
+      "symbol": "SINNOH_VEILSTONE_CITY",
+      "label": "Veilstone City",
+      "source_id": 205,
+      "width": 73,
+      "height": 70,
+      "sha256": "26dc8faefce3476c85fb675fb8f6b14e1df598424a5d16a8913f6d8fb0909c10"
+    },
+    {
+      "symbol": "SINNOH_PASTORIA_CITY",
+      "label": "Pastoria City",
+      "source_id": 219,
+      "width": 64,
+      "height": 67,
+      "sha256": "7aa39abbf594db53c1e95a87707132b3c7b1282a62ba91b6f0958062ca8dcd41"
+    },
+    {
+      "symbol": "SINNOH_SUNYSHORE_CITY",
+      "label": "Sunyshore City",
+      "source_id": 225,
+      "width": 85,
+      "height": 64,
+      "sha256": "b53a53281ef5ba114e204a8681869b4deedc182c9e92772fc83bb6227380340c"
+    }
+  ]
+}

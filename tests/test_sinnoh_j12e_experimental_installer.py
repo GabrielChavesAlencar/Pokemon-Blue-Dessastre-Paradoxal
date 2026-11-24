@@ -590,6 +590,43 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
             self.assertEqual(result.returncode,0,result.stdout+result.stderr)
         print("SINNOH_REAL_6_FOREST_EDGES_10_MAPS_35_EVENTS_UNCHANGED_OK",flush=True)
         print("SINNOH_F02_TEXTURE_SOURCE "+forest["art"],flush=True)
+        # F04 is append-only: compare all ten original maps, their tile
+        # tables, movement masks, connections, and 22 safe destinations.
+        city=exp.city_expansion
+        all_maps,all_ids,all_components,city_report=city.append(expanded,mapping,components,source,{2})
+        self.assertEqual(len(all_ids),22)
+        self.assertEqual(len(city_report),12)
+        self.assertTrue(all(all_ids[k]==v for k,v in mapping.items()))
+        for mid in mapping.values():
+            rel="Data/Map%03d.rxdata"%mid
+            self.assertEqual(all_maps[rel],expanded[rel])
+        self.assertEqual(all_maps["Data/map_connections.dat"],expanded["Data/map_connections.dat"])
+        old_tiles=read_marshal(expanded["Data/Tilesets.rxdata"],"OLD_TILES")
+        new_tiles=read_marshal(all_maps["Data/Tilesets.rxdata"],"NEW_TILES")
+        self.assertEqual(serialize(new_tiles[:len(old_tiles)]),serialize(old_tiles))
+        self.assertEqual(len(new_tiles)-len(old_tiles),12)
+        all_entries=exp.qa_teleport.build(all_maps,all_ids,all_components)
+        self.assertEqual(sum(r[3] is not None for r in all_entries),22)
+        self.assertEqual(sum(r[3] is not None and r[2]=="Cidades e vilarejos" for r in all_entries),14)
+        previous={r[0]:r[3] for r in entries if r[3] is not None}
+        self.assertEqual({r[0]:r[3] for r in all_entries if r[0] in previous},previous)
+        self.assertEqual(sum(len(read_marshal(all_maps["Data/Map%03d.rxdata"%mid],"F04_MAP").attrs["@events"]) for mid in all_ids.values()),35)
+        all_masks=pv.movement_masks(all_maps,all_ids,extra_symbols=city.CITIES)
+        self.assertEqual({mid:all_masks[mid] for mid in masks},masks)
+        self.assertEqual(len(all_masks),18)
+        for row in all_entries:
+            if row[0] in city.CITIES:
+                mid,x,y=row[3]
+                self.assertEqual(all_masks[mid][y][x],".")
+                self.assertEqual(row[3],city_report[row[0]]["safe_spawn"])
+        _,all_forest,all_forest_report=exp.forest_edge.build(all_maps,all_ids,extra_symbols=city.CITIES)
+        self.assertEqual(len(all_forest_report["map_ids"]),18)
+        if shutil.which("ruby"):
+            for script in (all_forest,exp.qa_teleport.plugin(all_entries),pv.movement_plugin(all_masks,all_ids["SINNOH_ROUTE_202"])):
+                run=subprocess.run([shutil.which("ruby"),"-c"],input=script,capture_output=True,timeout=30)
+                self.assertEqual(run.returncode,0,run.stdout+run.stderr)
+        print("SINNOH_REAL_F04_14_CITIES_22_TELEPORTS_35_EVENTS_18_EXTERIORS_OK",flush=True)
+
 
 
 
@@ -909,6 +946,46 @@ raise "duplicate battle" unless $calls==4
 '''
         proc=subprocess.run([shutil.which("ruby"),"-e",script,str(ROOT/"scripts/regions/SinnohPilot.rb")],capture_output=True,text=True,timeout=30)
         self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
+
+    def test_f04_component_prefers_safe_arrival_over_largest_grass_area(self):
+        w,h=12,10
+        cells=[0]*(w*h*3)
+        for y in range(1,9):
+            for x in range(1,6):
+                cells[y*w+x]=2
+        for y in range(2,7):
+            for x in range(8,11):
+                cells[y*w+x]=1
+        self.assertEqual(len(exp.city_expansion.component(cells,w,h,[0,0,0],[0,0,2])),15)
+        with self.assertRaisesRegex(ValueError,"NO_SAFE_WALKABLE_COMPONENT"):
+            exp.city_expansion.component(cells,w,h,[0,0,0],[0,2,2])
+
+    def test_f04_save_namespace_append_only(self):
+        city=exp.city_expansion
+        old={k:442+i for i,k in enumerate(sorted(city.OLD))}
+        new=city.allocate(old,{2})
+        self.assertEqual(len(new),22)
+        self.assertEqual({k:new[k] for k in old},old)
+        with self.assertRaises(ValueError):city.allocate(old,set(range(452,518)))
+        with self.assertRaises(ValueError):city.allocate(old,{442})
+        token="abc123abc123"
+        folder=self.proj/exp.REPO_OUTPUT/(exp.QA_DIR+"-"+token)
+        folder.mkdir(parents=True)
+        profile=exp.namespace(token)
+        files={"Data/Map%03d.rxdata"%mid:("map-%s"%mid).encode() for mid in old.values()}
+        data={"schema":1,"region":"SINNOH","mode":exp.MODE,"profile_token":token,
+              "main_game_modified":False,"personal_saves_copied":False,
+              "mapids":old,"base_mapinfos_sha256":"a"*64,"save_profile":profile,
+              "file_sha256":{k:exp.sha(v) for k,v in files.items()}}
+        (folder/"sinnoh-experimental-qa.json").write_text(json.dumps(data))
+        (folder/"mkxp.json").write_text(json.dumps(profile))
+        self.assertEqual(exp.compatible_save_token(self.proj,new,"a"*64,files),token)
+        self.assertIsNone(exp.compatible_save_token(self.proj,new,"b"*64,files))
+        self.assertIsNone(exp.compatible_save_token(self.proj,new,"a"*64,{}))
+        key=next(iter(files))
+        self.assertIsNone(exp.compatible_save_token(self.proj,new,"a"*64,{**files,key:b"changed"}))
+        bad=dict(new);a,b=list(old)[:2];bad[a],bad[b]=bad[b],bad[a]
+        self.assertIsNone(exp.compatible_save_token(self.proj,bad,"a"*64,files))
 
     def test_save_namespace_reused_only_for_compatible_private_manifest(self):
         token="abc123abc123"

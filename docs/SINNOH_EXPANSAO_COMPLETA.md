@@ -5,7 +5,7 @@ Referência Platinum. Progresso de preparação (não aprovação nativa):
 - Rotas: **2/30**, Rota 201 e 202.
 - Cidades: **2/14**, Twinleaf e Sandgem.
 - Piloto privado: **10 mapas preparados**.
-- Fases novas: **2/15 concluídas**, F01 e F02 integradas (11/11 cada); F03 implementada, aguarda inventário real e CI.
+- Fases novas: **3/15 concluídas**, F01/F02 integradas (11/11 cada), F03 integrada (9/9); F04 implementada, aguarda CI.
 
 ## Progresso das cidades
 
@@ -34,8 +34,8 @@ Referência Platinum. Progresso de preparação (não aprovação nativa):
 
 - [x] F01 — Menu de teleporte QA no menu de pausa (PR #279, 11/11)
 - [x] F02 — Correção das bordas pretas com árvores (PR #280, 11/11)
-- [ ] F03 — Inventário completo dos mapas, sprites e MapIDs (auditor implementado, recibo real pendente)
-- [ ] F04 — Importação de todas as cidades e vilarejos
+- [x] F03 — Inventário completo dos mapas, sprites e MapIDs (PR #281, 9/9)
+- [ ] F04 — Importação de todas as cidades e vilarejos (22 mapas candidatos, aguardando CI)
 - [ ] F05 — Importação de todas as rotas 201–230
 - [ ] F06 — Importação de florestas, lagos e cavernas
 - [ ] F07 — Importação dos interiores e edifícios
@@ -76,3 +76,9 @@ python scripts/regions/audit_sinnoh_expansion_f03.py --maps "Sinnoh Maps.zip" --
 ```
 
 Opcionalmente informar --base game e --prior-manifest com o manifesto privado anterior. O relatório vai para stdout; nenhum save é lido ou alterado. Contagens físicas serão registradas somente após o recibo original do CI.
+
+## F04 — 12 cidades adicionais
+
+F03 confirmou 238 mapas de origem (224 não vazios e sem problemas geométricos detectados), 25 tilesets e 495 PNGs de overworlds. As 12 cidades adicionais são identificadas por MapInfo raiz, tileset 24, dimensões e SHA-256 fixados em data/regions/sinnoh-f04-city-sources.json. O instalador prepara 22 mapas somente na cópia privada, sem copiar eventos ou scripts externos. As cidades novas recebem atlases independentes para manter intactos os índices dos dez mapas anteriores; pontos seguros de chegada, máscaras de movimento e bordas F02 são derivados dos mapas reais. Os novos exteriores são acessíveis pelo menu de teleporte QA, sem conexões ou interiores novos nesta fase. BGM temporário de Sandgem até a fase de músicas/progressão. Os 35 eventos anteriores permanecem; NPCs e história das novas cidades não são implementados nesta fase.
+
+A compatibilidade com saves antigos exige exatamente a mesma base MapInfos e os dez MapIDs anteriores intactos, além dos SHA-256 dos dez mapas gerados iguais ao manifesto anterior. O namespace é então reutilizado, sem abrir/copiar saves. Base ou mapas incompatíveis mantêm o perfil isolado anterior intacto; nenhuma migração forçada. A QA nativa, R07/R08/R09 e a validação visual continuam pendentes. O CI real deve demonstrar 14 cidades, 22 destinos, 18 exteriores e 35 eventos preservados antes de qualquer merge.

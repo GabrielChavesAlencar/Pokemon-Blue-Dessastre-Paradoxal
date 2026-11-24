@@ -318,6 +318,12 @@ module BlueKantoTitle
       files = data["file_sha256"]
       lake_story = data["private_lake_story"]
       expected_count = lake_story.is_a?(Hash) && lake_story["portal_pairs"] == 2 ? 10 : 9
+      city_keys = %w[SINNOH_JUBILIFE_CITY SINNOH_OREBURGH_CITY SINNOH_FLOAROMA_TOWN SINNOH_ETERNA_CITY SINNOH_HEARTHOME_CITY SINNOH_SOLACEON_TOWN SINNOH_VEILSTONE_CITY SINNOH_PASTORIA_CITY SINNOH_CELESTIC_TOWN SINNOH_CANALAVE_CITY SINNOH_SNOWPOINT_CITY SINNOH_SUNYSHORE_CITY]
+      city_report = data["city_expansion"]
+      if city_report.is_a?(Hash) && !city_report.empty?
+        return sinnoh_qa_block("Manifesto F04 de cidades invalido.") unless expected_count == 10 && ids.is_a?(Hash) && city_report.keys.sort == city_keys.sort && city_keys.all? { |k| ids.key?(k) && city_report[k].is_a?(Hash) && city_report[k]["target_id"] == ids[k] }
+        expected_count = 22
+      end
       return sinnoh_qa_block("MapIDs QA invalidos ou colisao entre mapas.") unless
         ids.is_a?(Hash) && ids.length == expected_count &&
         (expected_count == 9 || ids.key?("SINNOH_VERITY_LAKEFRONT")) &&
@@ -331,6 +337,11 @@ module BlueKantoTitle
         start[1] >= 0 && start[2] >= 0
       required = ["Data/MapInfos.rxdata", "Data/Tilesets.rxdata"] +
                  ids.values.map { |id| sprintf("Data/Map%03d.rxdata", id) }
+      if expected_count == 22
+        source_ids = city_report.values.map { |r| r["source_id"] }
+        return sinnoh_qa_block("Fontes das cidades F04 invalidas.") unless source_ids.all? { |id| id.is_a?(Integer) } && source_ids.sort == [22,77,84,90,96,106,109,123,160,205,219,225]
+        required += source_ids.map { |id| sprintf("Graphics/Tilesets/SNQA_F04_%03d.png",id) }
+      end
       required.each do |file|
         hash = files[file]
         return sinnoh_qa_block("Manifesto SHA-256 incompleto: " + file) unless
