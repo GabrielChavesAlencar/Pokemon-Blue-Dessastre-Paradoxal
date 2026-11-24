@@ -60,6 +60,25 @@ def component(cells,w,h,p,tags=None):
         fail("NO_SAFE_WALKABLE_COMPONENT:ordinary_ground=%d:arrival_candidates=%d"%(len(ground),len(arrivals)))
     return best
 
+def terrain_diagnostics(cells,w,h,passages,tags):
+    # Metadata only. Count passage patterns and terrain stacks across every
+    # occupied cell. No guessed terrain meanings and no mutation.
+    from collections import Counter
+    walkable=Counter();blocked=Counter();empty=0;land=set()
+    for y in range(h):
+        for x in range(w):
+            stack=[cells[z*w*h+y*w+x] for z in range(3) if cells[z*w*h+y*w+x]]
+            if not stack:
+                empty+=1;continue
+            key=",".join(str(t) for t in sorted({tags[t] for t in stack}))
+            if all(not passages[t]&15 for t in stack):
+                walkable[key]+=1
+                if key=="0" and 0<x<w-1 and 0<y<h-1:land.add((x,y))
+            else:blocked[key]+=1
+    arrivals=sum(sum(q in land for q in ((x-1,y),(x+1,y),(x,y-1),(x,y+1)))>=2 for x,y in land)
+    return {"walkable_stacks":dict(sorted(walkable.items())),"blocked_stacks":dict(sorted(blocked.items())),
+            "empty_cells":empty,"ordinary_ground_cells":len(land),"ordinary_arrival_candidates":arrivals}
+
 def city_atlases(raw,sets):
     """Decode pinned source once, produce independent compact city atlases."""
     groups={};out={};remaps={}
@@ -102,7 +121,7 @@ def append_exteriors(blobs,mapping,components,path,expanded,source_rows,phase):
         source=read_marshal(pv.member(z,pv.MAP_ROOT+"Data/Tilesets.rxdata"),"F04_SOURCE_TILES")[24]
         if source.attrs["@tileset_name"]!=b"outdoors":fail("SOURCE_TILESET")
         tables={k:pv.table(source.attrs[k],7880) for k in ("@passages","@priorities","@terrain_tags")}
-        sets={};source_cells={}
+        sets={};source_cells={};component_failures=[]
         for row in source_rows:
             sym,mid=row["symbol"],row["source_id"]
             info=donor_infos[mid].attrs
@@ -123,7 +142,14 @@ def append_exteriors(blobs,mapping,components,path,expanded,source_rows,phase):
             try:
                 comps[sym]=component(cells,w,h,tables["@passages"],tables["@terrain_tags"])
             except ValueError as exc:
-                raise ValueError("F04_CITY:"+sym+":"+str(exc)) from exc
+                component_failures.append({"symbol":sym,"source_id":mid,"error":str(exc)})
+            if phase=="F05":
+                print("SINNOH_F05_TERRAIN "+json.dumps({"symbol":sym,"source_id":mid,
+                      **terrain_diagnostics(cells,w,h,tables["@passages"],tables["@terrain_tags"])},sort_keys=True),flush=True)
+        if component_failures:
+            # Report ALL blocked routes in the same run, rather than failing
+            # at the first one. Do not generate maps or a success marker.
+            raise ValueError("SINNOH_"+phase+"_UNSAFE_ARRIVALS:"+json.dumps(component_failures,sort_keys=True))
         atlases=city_atlases(pv.member(z,pv.MAP_ROOT+"Graphics/Tilesets/outdoors.png"),sets)
     order=max(v.attrs["@order"] for v in infos.values())
     for row in source_rows:
