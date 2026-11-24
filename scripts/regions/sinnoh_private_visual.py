@@ -319,6 +319,14 @@ def apply_interiors(out,mapping,archive,components,imported):
                           "model_connected_cells":len(components[symbol])}
 
 
+LAKEFRONT="SINNOH_VERITY_LAKEFRONT"
+LAKEFRONT_SOURCE=(195,b"Verity Lakefront",(26,22))
+
+
+def donor_maps(mapping):
+    return {**DONOR,**({LAKEFRONT:LAKEFRONT_SOURCE} if LAKEFRONT in mapping else {})}
+
+
 def apply_maps(blobs,mapping,path):
     out=dict(blobs);components={};imported={}
     with verified_archive(path,"maps") as z:
@@ -327,12 +335,12 @@ def apply_maps(blobs,mapping,path):
         if source.attrs["@tileset_name"]!=b"outdoors":fail("SOURCE_TILESET_NAME")
         tables={k:table(source.attrs[k],7880) for k in ("@passages","@priorities","@terrain_tags")}
         used=set();source_cells={}
-        for symbol,(mid,name,size) in DONOR.items():
+        for symbol,(mid,name,size) in donor_maps(mapping).items():
             if infos[mid].attrs["@name"]!=name:fail("SOURCE_MAP_NAME:"+symbol)
             m=read_marshal(member(z,MAP_ROOT+"Data/Map%03d.rxdata"%mid),"PRIVATE_MAP")
             cells=map_cells(m,size)
             source_cells[symbol]=cells;used.update(t for t in cells if t)
-            components[symbol]=connected(cells,*size,tables["@passages"],SEEDS[symbol])
+            components[symbol]=connected(cells,*size,tables["@passages"],(25,13) if symbol==LAKEFRONT else SEEDS[symbol])
         atlas,remap=compact_atlas(member(z,MAP_ROOT+"Graphics/Tilesets/outdoors.png"),used)
         tiles=read_marshal(out["Data/Tilesets.rxdata"],"QA_TILESETS")
         tid=len(tiles)
@@ -358,9 +366,10 @@ def apply_maps(blobs,mapping,path):
         tiles.append(candidate)
         out["Data/Tilesets.rxdata"]=serialize(tiles)
         out["Graphics/Tilesets/"+TILESET+".png"]=atlas
-        for symbol,(mid,name,size) in DONOR.items():
+        for symbol,(mid,name,size) in donor_maps(mapping).items():
             target="Data/Map%03d.rxdata"%mapping[symbol]
-            m=read_marshal(out[target],"QA_DONOR_DESTINATION");w,h=size;n=w*h*3
+            template=target if symbol!=LAKEFRONT else "Data/Map%03d.rxdata"%mapping["SINNOH_LAKE_VERITY"]
+            m=read_marshal(out[template],"QA_DONOR_DESTINATION");w,h=size;n=w*h*3
             cells=source_cells[symbol]
             m.attrs.update({"@width":w,"@height":h,"@tileset_id":tid,"@events":{},
                             "@data":RubyData("Table",struct.pack("<5I",3,w,h,3,n)+
@@ -370,6 +379,12 @@ def apply_maps(blobs,mapping,path):
                               "target_tileset_id":tid,"width":w,"height":h,
                               "model_connected_cells":len(components[symbol])}
         apply_interiors(out,mapping,z,components,imported)
+        if LAKEFRONT in mapping:
+            idx=read_marshal(out["Data/MapInfos.rxdata"],"QA_EXTRA_MAPINFO")
+            mid=mapping[LAKEFRONT]
+            if mid in idx:fail("LAKEFRONT_ID_COLLISION")
+            info=copy.deepcopy(idx[mapping["SINNOH_LAKE_VERITY"]]);info.attrs["@name"]=b"Verity Lakefront";info.attrs["@order"]=max(i.attrs["@order"] for i in idx.values())+1
+            idx[mid]=info;out["Data/MapInfos.rxdata"]=serialize(idx)
     # Only the pilot's generated events are rebuilt. No donor event or global
     # source file is ever copied into the destination.
     for symbol in mapping:
@@ -411,7 +426,9 @@ def has_platinum_player(base, player_id=9):
             k,v=line.split("=",1);fields[k.strip()]=v.strip()
     if fields.get("TrainerType")!=names[player_id]:
         return False
-    for key in ("WalkCharset","RunCharset","CycleCharset","SurfCharset","FishCharset"):
+    # Selection only requires the native walking sheet. Optional movement
+    # animations may have a different canvas size; do not hide the profile.
+    for key in ("WalkCharset",):
         name=fields.get(key,"")
         if not re.fullmatch(r"[A-Za-z0-9_]+",name):
             return False
@@ -475,16 +492,32 @@ def edge_axis(points,size,direction,offset):
 
 def connection_plan(mapping,components,source_rows):
     result=[]
-    for a,da,oa,b,db,ob,wa,wb in CONTINUOUS:
-        source=(DONOR[a][0],da,oa,DONOR[b][0],db,ob)
+    donors=donor_maps(mapping)
+    pairs=CONTINUOUS+(((LAKEFRONT,"E",0,"SINNOH_ROUTE_201","W",4,"SN_ROUTE201_TO_LAKE",None),) if LAKEFRONT in mapping else ())
+    for a,da,oa,b,db,ob,wa,wb in pairs:
+        source=(donors[a][0],da,oa,donors[b][0],db,ob)
         reverse=(source[3],db,ob,source[0],da,oa)
         if source_rows.count(source)+source_rows.count(reverse)!=1:
             fail("SOURCE_CONNECTION_MISSING_OR_DUPLICATE")
-        shared=edge_axis(components[a],DONOR[a][2],da,oa)&edge_axis(components[b],DONOR[b][2],db,ob)
+        shared=edge_axis(components[a],donors[a][2],da,oa)&edge_axis(components[b],donors[b][2],db,ob)
         if not shared:fail("SOURCE_CONNECTION_NO_REACHABLE_SEAM")
         result.append({"record":[mapping[a],da,oa,mapping[b],db,ob],
                        "source_ids":[source[0],source[3]],"reachable_seam_tiles":len(shared),
-                       "warp_keys":[wa,wb]})
+                       "warp_keys":[k for k in (wa,wb) if k]})
+    # The donor also aligns the two forest/water borders visually. Neither
+    # border has a traversable common cell; actual lake access uses portals.
+    if LAKEFRONT in mapping:
+        for a,da,oa,b,db,ob in (("SINNOH_LAKE_VERITY","S",36,LAKEFRONT,"N",0),
+                                 ("SINNOH_LAKE_VERITY","E",46,"SINNOH_ROUTE_201","W",0)):
+            source=(donors[a][0],da,oa,donors[b][0],db,ob)
+            reverse=(source[3],db,ob,source[0],da,oa)
+            if source_rows.count(source)+source_rows.count(reverse)!=1:
+                fail("SOURCE_VISUAL_CONNECTION_MISSING")
+            if edge_axis(components[a],donors[a][2],da,oa)&edge_axis(components[b],donors[b][2],db,ob):
+                fail("SOURCE_VISUAL_CONNECTION_UNEXPECTED_WALKABLE_EDGE")
+            result.append({"record":[mapping[a],da,oa,mapping[b],db,ob],
+                           "source_ids":[source[0],source[3]],"reachable_seam_tiles":0,
+                           "warp_keys":[],"visual_only":True})
     return result
 
 
@@ -537,8 +570,8 @@ def bind_audio_and_connections(blobs,mapping,components,path,base):
     if existing & set(mapping.values()):fail("BASE_MAP_METADATA_ID_COLLISION")
     meta=[]
     for symbol,mid in mapping.items():
-        outside=symbol in DONOR
-        area_name=DONOR[symbol][1].decode("ascii") if outside else {"SINNOH_PLAYER_BEDROOM":"Twinleaf Town","SINNOH_PLAYER_HOUSE_1F":"Twinleaf Town","SINNOH_BARRY_HOUSE":"Twinleaf Town","SINNOH_PROFESSOR_ROWAN_LABORATORY":"Sandgem Town"}[symbol]
+        outside=symbol in donor_maps(mapping)
+        area_name=donor_maps(mapping)[symbol][1].decode("ascii") if outside else {"SINNOH_PLAYER_BEDROOM":"Twinleaf Town","SINNOH_PLAYER_HOUSE_1F":"Twinleaf Town","SINNOH_BARRY_HOUSE":"Twinleaf Town","SINNOH_PROFESSOR_ROWAN_LABORATORY":"Sandgem Town"}[symbol]
         lines=["[%03d]"%mid, "Name = "+area_name, "Outdoor = "+("true" if outside else "false"),
                "ShowArea = "+("true" if outside else "false")]
         if outside:lines.append("Bicycle = true")
@@ -552,7 +585,7 @@ def bind_audio_and_connections(blobs,mapping,components,path,base):
         m=read_marshal(out[rel],"QA_BGM_MAP")
         a=m.attrs
         a["@autoplay_bgm"]=True
-        a["@bgm"]=ruby("RPG::AudioFile",name=("SNQA_"+MAP_MUSIC[symbol]).encode("ascii"),volume=100,pitch=100)
+        a["@bgm"]=ruby("RPG::AudioFile",name=("SNQA_"+("Route201" if symbol==LAKEFRONT else MAP_MUSIC[symbol])).encode("ascii"),volume=100,pitch=100)
         # Retain the authored event IDs/names, but retire their transfer pages:
         # otherwise touch warps jump before the seamless map boundary.
         for event in a["@events"].values():
@@ -569,5 +602,82 @@ def bind_audio_and_connections(blobs,mapping,components,path,base):
         out[rel]=serialize(m,EVENT_CLASSES)
     if removed!=obsolete:fail("SEAM_WARP_KEYS_INCOMPLETE")
     return out,{"connections":plans,"retired_warp_keys":sorted(removed),
-                "audio_files":sorted(audio_files),"map_music":dict(MAP_MUSIC),
+                "audio_files":sorted(audio_files),"map_music":{**MAP_MUSIC,**({LAKEFRONT:"Route201"} if LAKEFRONT in mapping else {})},
+                "native_reviewed":False}
+
+
+def extend_lake_story(blobs,mapping,components):
+    """Add original authored story scenes; never import donor scripts."""
+    from build_johto_events import EVENT_CLASSES,ruby,event_page,command
+    from compile_sinnoh_playable_j04 import passable_point
+    if LAKEFRONT not in mapping:fail("STORY_REQUIRES_LAKEFRONT")
+    out=dict(blobs)
+    tiles=read_marshal(out["Data/Tilesets.rxdata"],"STORY_TILES")
+    worlds={sym:read_marshal(out["Data/Map%03d.rxdata"%mid],"STORY_MAP") for sym,mid in mapping.items()}
+    lake="SINNOH_LAKE_VERITY"
+    def world(sym):return worlds[sym].attrs["@events"]
+    def point(sym,xy):
+        if xy not in components[sym]:fail("STORY_POINT_NOT_REACHABLE:"+sym)
+        passable_point(worlds[sym],tiles,*xy)
+    def event(sym,key,xy,page,existing=None,pages=None):
+        point(sym,xy);events=world(sym)
+        eid=existing if existing is not None else max(events,default=0)+1
+        if any((e.attrs["@x"],e.attrs["@y"])==xy and i!=eid for i,e in events.items()):
+            fail("STORY_EVENT_POSITION_COLLISION:"+key)
+        events[eid]=ruby("RPG::Event",id=eid,name=key.encode("ascii"),
+                         x=xy[0],y=xy[1],pages=pages or [page])
+    # Use the donor's actual reciprocal portal coordinates, not a warp
+    # invented from nearest generic terrain. The two entry lanes match.
+    old_exit=[i for i,e in world(lake).items() if e.attrs["@name"]==b"SN_LAKE_TO_ROUTE201"]
+    if len(old_exit)!=1:fail("STORY_OLD_LAKE_WARP_MISSING")
+    # The lake entrance is story-gated; exit is always available.
+    def entry_page(dest,xy):
+        p=event_page(warp=(mapping[dest],*xy),touch=True)
+        ops=p.attrs["@list"]
+        test=command(111,12,b"BlueSinnohPilot.lake_entry_allowed?")
+        transfer=ops[0];transfer.attrs["@indent"]=1;transfer.attrs["@parameters"][4]=8
+        ending=command(0);ending.attrs["@indent"]=1
+        p.attrs["@list"]=[test,transfer,ending,command(412),command(0)]
+        return p
+    for lane in range(2):
+        a=(10+lane,2);b=(44+lane,43)
+        point(lake,(44+lane,42));point(LAKEFRONT,(10+lane,3))
+        event(LAKEFRONT,"SN_LAKEFRONT_TO_LAKE_"+str(lane+1),a,entry_page(lake,(44+lane,42)))
+        event(lake,"SN_LAKE_TO_LAKEFRONT_"+str(lane+1),b,
+              event_page(warp=(mapping[LAKEFRONT],10+lane,3),touch=True),
+              existing=old_exit[0] if lane==0 else None)
+    # A one-time autorun on entering each map, with a self switch and a
+    # blank second page, avoids looping and leaves action NPCs available.
+    scenes=(
+        ("SINNOH_PLAYER_BEDROOM","SN_PROFILE_SETUP","BlueSinnohPilot.setup_profile"),
+        ("SINNOH_PLAYER_HOUSE_1F","SN_MOTHER_SCENE","BlueSinnohPilot.mother"),
+        ("SINNOH_BARRY_HOUSE","SN_BARRY_SCENE","BlueSinnohPilot.barry_intro"),
+        (lake,"SN_ROWAN_SCENE","BlueSinnohPilot.rowan_briefcase"),
+        ("SINNOH_PROFESSOR_ROWAN_LABORATORY","SN_DEX_SCENE","BlueSinnohPilot.rowan_pokedex"),
+    )
+    for sym,key,script in scenes:
+        used={(e.attrs["@x"],e.attrs["@y"]) for e in world(sym).values()}
+        xy=min(components[sym]-used,key=lambda p:(p[1],p[0]))
+        active=event_page(script=script)
+        active.attrs["@trigger"]=3
+        active.attrs["@through"]=True
+        active.attrs["@list"]=[command(355,script.encode("ascii")),command(123,b"A",0),command(0)]
+        finished=copy.deepcopy(active)
+        finished.attrs["@trigger"]=0
+        finished.attrs["@condition"].attrs.update({"@self_switch_valid":True,"@self_switch_ch":b"A"})
+        finished.attrs["@list"]=[command(0)]
+        event(sym,key,xy,active,pages=[active,finished])
+    for e in world(lake).values():
+        key=e.attrs["@name"]
+        if not key.startswith(b"SN_BALL_"):continue
+        page=e.attrs["@pages"][0].attrs
+        for op in page["@list"]:
+            if op.attrs["@code"]==355:
+                script=op.attrs["@parameters"][0]
+                if not script.startswith(b"BlueSinnohPilot.choose_starter_from_ball("):
+                    fail("STORY_STARTER_HANDLER_UNEXPECTED")
+                op.attrs["@parameters"][0]=script.replace(b"choose_starter_from_ball",b"choose_starter_scene")
+    for sym,mid in mapping.items():
+        out["Data/Map%03d.rxdata"%mid]=serialize(worlds[sym],EVENT_CLASSES)
+    return out,{"portal_pairs":2,"autoruns":len(scenes),"extra_event_count":8,
                 "native_reviewed":False}

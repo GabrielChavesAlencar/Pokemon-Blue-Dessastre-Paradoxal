@@ -12,6 +12,61 @@ module BlueSinnohPilot
   RIVAL_READY = "Data/blue-sinnoh-rival-ready.txt".freeze
   RIVAL_PROOF = "BLUE_SINNOH_BARRY_V1_READY".freeze
 
+
+  # Runs from a bedroom autorun after the native map and player exist.
+  # The profile flag is separate from the six story checkpoints.
+  def self.setup_profile
+    state = regional_state
+    raise "Sinnoh QA: perfil regional ausente" unless state
+    return true if state["sinnoh_profile_complete"] == true
+    raise "Sinnoh QA: tela de personagem indisponivel" unless
+      defined?($player) && $player && defined?($game_player) && $game_player &&
+      defined?(pbChangePlayer) && defined?(pbTrainerName)
+    pbMessage(_INTL("Rowan: Bem-vindo ao mundo dos Pokémon! Esta é a região de Sinnoh."))
+    choice = pbMessage(_INTL("Qual será seu personagem?"), ["Lucas", "Dawn"], 1)
+    id = choice == 1 ? 10 : 9
+    pbChangePlayer(id)
+    raise "Sinnoh QA: cadastro Platinum nao carregado" unless
+      $player.respond_to?(:character_ID) && $player.character_ID == id
+    $game_player.refresh_charset if $game_player.respond_to?(:refresh_charset)
+    $game_player.transparent = false if $game_player.respond_to?(:transparent=)
+    pbMessage(_INTL("Rowan: E como você se chama?"))
+    pbTrainerName
+    raise "Sinnoh QA: nome do jogador ausente" unless
+      $player.respond_to?(:name) && !$player.name.to_s.strip.empty?
+    state["sinnoh_profile_complete"] = true
+    pbMessage(_INTL("Rowan: {1}, sua aventura está prestes a começar!", $player.name))
+    true
+  end
+
+  def self.lake_entry_allowed?
+    flags = progress
+    return false unless flags
+    unless flags["mother_intro"] == true
+      pbMessage(_INTL("Antes de ir ao lago, fale com sua mãe em Twinleaf Town."))
+      return false
+    end
+    unless flags["barry_intro"] == true
+      pbMessage(_INTL("Barry ainda está em casa. Encontre-o antes de ir ao lago."))
+      return false
+    end
+    true
+  end
+
+  def self.choose_starter_scene(species)
+    flags = progress
+    return false unless flags
+    return choose_starter_from_ball(species) if flags["starter_received"] ||
+      !flags["rowan_briefcase_seen"]
+    name = defined?(GameData::Species) ? GameData::Species.get(species).name : species.to_s
+    return false unless pbConfirmMessage(_INTL("Deseja escolher {1} como seu parceiro?",name))
+    return false unless choose_starter_from_ball(species)
+    # The existing guarded native battle cannot mark success unless all
+    # three compiled Barry teams are valid. The action NPC remains available.
+    barry_rival
+    true
+  end
+
   # All state lives ONLY in the active Sinnoh region-scoped save record.
   # Never initialize/replace the BlueRegions global state for other regions.
   def self.regional_state
