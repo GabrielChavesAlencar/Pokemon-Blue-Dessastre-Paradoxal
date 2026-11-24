@@ -411,6 +411,82 @@ puts "SINNOH_PROFILE_NATIVE_FAILURE_CANCEL_RETRY_OK"
         self.assertIn("SINNOH_PROFILE_2_CHOICES_NAME_AND_GATE_OK",proc.stdout)
         self.assertIn("SINNOH_PROFILE_NATIVE_FAILURE_CANCEL_RETRY_OK",proc.stdout)
 
+    @unittest.skipUnless(shutil.which("ruby"),"Requires Ruby runtime")
+    def test_private_new_game_bootstrap_initializes_without_legacy_region_hook(self):
+        generated=exp.experiment_plugin([442,10,8],"abc123abc123",True,True,story_profile=True)
+        self.assertIn(b"install_fresh_hooks!",generated)
+        script=r'''
+require "tmpdir"
+load ARGV[0]
+module BlueKantoTitle
+  def self.sinnoh_experimental_maps_ready?; true; end
+end
+class Meta
+  attr_accessor :blue_regions
+end
+class OldMeta; end
+SystemData = Struct.new(:start_map_id,:start_x,:start_y)
+$data_system=SystemData.new(1,0,0)
+module SaveData
+  def self.load_new_game_values
+    $PokemonGlobal = $use_old ? OldMeta.new : Meta.new
+    $PokemonGlobal.blue_regions = BlueSinnohExperimental.state_template("DECADES") if $default
+    :values
+  end
+end
+module Game
+  def self.start_new
+    SaveData.load_new_game_values
+    raise "map factory before regional initialization" unless $PokemonGlobal.blue_regions["current"]=="SINNOH"
+    raise "wrong start" unless $data_system.start_map_id==442
+    :native_new_game
+  end
+  def self.load
+    $PokemonGlobal = Meta.new
+    $PokemonGlobal.blue_regions = {"version"=>1,"current"=>"KANTO"}
+  end
+end
+Dir.mktmpdir do |tmp|
+  qa=File.join(tmp,"game-sinnoh-experimental-abc123abc123")
+  Dir.mkdir(qa)
+  Dir.chdir(qa) do
+    File.write("sinnoh-experimental-qa.json","{}")
+    BlueSinnohExperimental.install_fresh_hooks!
+    BlueSinnohExperimental.install_fresh_hooks!
+    $PokemonGlobal=Meta.new
+    old=$PokemonGlobal
+    old.blue_regions={"version"=>1,"current"=>"KANTO"}
+    $use_old=true
+    raise "native result lost" unless Game.start_new==:native_new_game
+    raise "old save changed" unless old.blue_regions["current"]=="KANTO"
+    raise "missing Sinnoh state" unless $PokemonGlobal.blue_regions["initial"]=="SINNOH"
+    raise "fresh scope leaked" if BlueSinnohExperimental.fresh?
+    $use_old=false; $default=true
+    raise "default initial state not replaced" unless Game.start_new==:native_new_game
+    raise "default replacement wrong" unless $PokemonGlobal.blue_regions["current"]=="SINNOH"
+    Game.load
+    raise "load mutated" unless $PokemonGlobal.blue_regions["current"]=="KANTO"
+    raise "load activated fresh" if BlueSinnohExperimental.fresh?
+    SaveData.load_new_game_values
+    raise "out of scope changed" unless $PokemonGlobal.blue_regions["current"]=="DECADES"
+  end
+end
+puts "SINNOH_NATIVE_FRESH_STATE_WITHOUT_LEGACY_HOOK_OK"
+'''
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/"generated.rb";path.write_bytes(generated)
+            proc=subprocess.run([shutil.which("ruby"),"-e",script,str(path)],text=True,capture_output=True,timeout=30)
+        self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
+        self.assertIn("SINNOH_NATIVE_FRESH_STATE_WITHOUT_LEGACY_HOOK_OK",proc.stdout)
+
+    def test_late_fresh_hook_only_in_private_story_bootstrap(self):
+        raw=self.base.joinpath("Data/Scripts.rxdata").read_bytes()
+        rows=exp.Marshal(exp.patch_bootstrap(raw,"abc123abc123",self.ids,story_profile=True)).read()
+        main=zlib.decompress(next(row[2] for row in rows if row[1]==b"Main")).decode()
+        self.assertIn("BlueSinnohExperimental.install_fresh_hooks!",main)
+        self.assertLess(main.index("PluginManager.runPlugins"),main.index("BlueSinnohExperimental.install_fresh_hooks!"))
+        self.assertLess(main.index("BlueSinnohExperimental.install_fresh_hooks!"),main.index("Compiler.main"))
+
     def test_expanded_profile_only_runs_after_map_initialization(self):
         code=exp.experiment_plugin([442,10,8],"abc123abc123",True,True,story_profile=True).decode()
         self.assertNotIn("pbChangePlayer(",code)
