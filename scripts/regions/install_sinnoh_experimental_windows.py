@@ -382,7 +382,7 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile
     guarded=guarded.replace("__QA_PROTECTED__"," ".join(protected))
     late = ""
     if story_profile:
-        late = '\n    if File.basename(Dir.pwd) == "game-sinnoh-experimental-'+token+'" && File.file?("sinnoh-experimental-qa.json")\n      BlueSinnohExperimental.install_fresh_hooks!\n    end'
+        late = '\n    if File.basename(Dir.pwd) == "game-sinnoh-experimental-'+token+'" && File.file?("sinnoh-experimental-qa.json")\n      BlueSinnohExperimental.install_fresh_hooks!\n      BlueSinnohSafeMovement.install!\n    end'
     code=code.replace(anchor,hook+anchor+late).replace(compiler,guarded+verify)
     code=code.replace("__QA_SCOPE__",scope)
     main[2]=RubyString(zlib.compress(code.encode("utf-8")))
@@ -598,6 +598,7 @@ def build_files(base:Path,project:Path=ROOT):
     imported={}
     story={}
     continuity={}
+    movement=b""
     if "maps" in sources:
         extra=next((i for i in range(442,518) if i not in occupied and i not in ids),None)
         if extra is None:fail("NO_FREE_LAKEFRONT_QA_ID")
@@ -607,6 +608,11 @@ def build_files(base:Path,project:Path=ROOT):
         maps,events,start=compile_events(maps,mapping,components,{**private_visual.ANCHORS,**private_visual.INTERIOR_ANCHORS})
         maps,continuity=private_visual.bind_audio_and_connections(maps,mapping,components,sources["maps"],base)
         maps,story=private_visual.extend_lake_story(maps,mapping,components)
+        masks=private_visual.movement_masks(maps,mapping)
+        private_visual.verify_starter_corridor(masks,mapping)
+        movement=private_visual.movement_plugin(masks)
+        story["grass_guard"]=True
+        story["visual_only_connections_omitted"]=2
         ids=list(mapping.values())
     if "overworlds" in sources:
         print("SINNOH QA: sprites DPPt locais; creditos PurpleZaffre",flush=True)
@@ -632,7 +638,7 @@ def build_files(base:Path,project:Path=ROOT):
         f"{INTRO_PLUGIN}/SinnohPilot.rb":(project/"scripts/regions/SinnohPilot.rb").read_bytes(),
         f"{INTRO_PLUGIN}/meta.txt":b"Name = Blue Sinnoh Intro\nVersion = 0.1\nEssentials = 21.1\nScripts = SinnohPilot.rb\n",
         f"{EXPERIMENT_PLUGIN}/SinnohExperimentalStart.rb":experiment_plugin(
-                  [mapping["SINNOH_PLAYER_BEDROOM"],*start],token,platinum_player,platinum_dawn,story_profile=bool(story)),
+                  [mapping["SINNOH_PLAYER_BEDROOM"],*start],token,platinum_player,platinum_dawn,story_profile=bool(story))+b"\n"+movement,
         f"{EXPERIMENT_PLUGIN}/meta.txt":b"Name = Blue Sinnoh Experimental\nVersion = 0.1\nEssentials = 21.1\nRequires = Blue Sinnoh Intro\nScripts = SinnohExperimentalStart.rb\n",
     })
     sysdata=read_marshal((base/"Data/System.rxdata").read_bytes(),"BASE_SYSTEM")
@@ -650,7 +656,7 @@ def build_files(base:Path,project:Path=ROOT):
     # These hashes do not claim human rights approval, or native gameplay acceptance.
     report={"schema":1,"region":"SINNOH","mode":MODE,
         "maps_prepared":len(mapping),"static_events_placed":len(events)+story.get("extra_event_count",0),
-        "static_warps":16-len(continuity.get("retired_warp_keys",[]))+(3 if story else 0),"native_seam_pairs":len(continuity.get("connections",[])),"static_handlers":5,"static_starter_balls":3,
+        "static_warps":16-len(continuity.get("retired_warp_keys",[]))+(3 if story else 0),"native_seam_pairs":sum(not p.get("visual_only") for p in continuity.get("connections",[])),"static_handlers":5,"static_starter_balls":3,
         "local_reserved_qa_only":True,"independent_r07_approved":False,
         "independent_r08_approved":False,"r09_native_qa_executed":0,
         "game_exe_executed":False,"runtime_playable_verified":False,
