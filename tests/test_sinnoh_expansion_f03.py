@@ -29,11 +29,17 @@ class ExpansionF03(unittest.TestCase):
         self.assertEqual(f.reconcile(rows,[{**m,"name":"Route 203 East"}])[0]["source_status"],"no_exact_match")
     def test_invalid_zip_names(self):
         for names in (["A.png","a.PNG"],["../x"],["/x"],["C:/x"],["a\\x"]):
-            with tempfile.TemporaryDirectory() as d:
+            with self.subTest(names=names),tempfile.TemporaryDirectory() as d:
                 p=Path(d)/"bad.zip"
                 with zipfile.ZipFile(p,"w") as z:
-                    for n in names:z.writestr(n,b"x")
-                with zipfile.ZipFile(p) as z,self.assertRaises(ValueError):f.index(z)
+                    for n in names:
+                        # Force raw bytes into both ZIP headers even on Windows.
+                        info=zipfile.ZipInfo("fixture")
+                        info.filename=n
+                        z.writestr(info,b"x")
+                with zipfile.ZipFile(p) as z:
+                    self.assertEqual([i.orig_filename for i in z.infolist()],list(names))
+                    with self.assertRaises(ValueError):f.index(z)
     def test_table_shape(self):
         raw=RubyData("Table",struct.pack("<5I2H",1,2,1,1,2,0,15))
         self.assertEqual(f.table1(raw),(0,15))
