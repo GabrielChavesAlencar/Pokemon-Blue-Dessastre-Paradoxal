@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "753e5d682e1d5ef74d406617825577194bd1c889",
+      "date": "2026-11-24T09:45:08-03:00",
+      "title": "Sinnoh V2: improve pilot visuals and first-run Blue-Story setup",
+      "category": "Melhorias"
+    },
+    {
       "sha": "8b35bb5d5be569d1ad28d7e79888a04239e5559c",
       "date": "2026-11-19T19:53:57-03:00",
       "title": "fix(sinnoh): preservar mapas QA durante compilacao de eventos",
