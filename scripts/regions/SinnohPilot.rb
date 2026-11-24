@@ -101,8 +101,11 @@ module BlueSinnohPilot
   def self.choose_starter_scene(species)
     flags = progress
     return false unless flags
-    return choose_starter_from_ball(species) if flags["starter_received"] ||
-      !flags["rowan_briefcase_seen"]
+    if flags["starter_received"]
+      hide_starter_balls
+      return false
+    end
+    return choose_starter_from_ball(species) unless flags["rowan_briefcase_seen"]
     name = defined?(GameData::Species) ? GameData::Species.get(species).name : species.to_s
     return false unless pbConfirmMessage(_INTL("Deseja escolher {1} como seu parceiro?",name))
     return false unless choose_starter_from_ball(species)
@@ -512,6 +515,8 @@ module BlueSinnohPilot
       next unless event.respond_to?(:name) && %w[SN_BALL_TURTWIG SN_BALL_CHIMCHAR SN_BALL_PIPLUP].include?(event.name)
       $game_self_switches[[$game_map.map_id,id,"B"]] = true
       event.refresh if event.respond_to?(:refresh)
+      # Old saves can still hold pre-update event pages in their map factory.
+      event.erase if event.respond_to?(:erase)
     end
     true
   end
@@ -539,12 +544,13 @@ module BlueSinnohPilot
       return true
     end
     return false if @lab_reward_in_progress
+    return false unless $player && $player.respond_to?(:has_pokedex) && $player.respond_to?(:has_pokedex=)
     return false unless defined?($bag) && $bag && $bag.respond_to?(:quantity) &&
       $bag.respond_to?(:add) && $bag.respond_to?(:remove) && $bag.respond_to?(:can_add?)
-    @lab_reward_in_progress = true
     before = $bag.quantity(:POKEBALL)
     original_dex = $player.has_pokedex
     saved_flags = flags.dup
+    @lab_reward_in_progress = true
     committed = false
     begin
       unless state["sinnoh_lab_supplies"] == true
