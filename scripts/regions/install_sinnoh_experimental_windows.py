@@ -46,6 +46,7 @@ import sinnoh_f09_encounters as f09_encounters
 import sinnoh_f09b_original as f09b_original
 import sinnoh_f09c_refinement as f09c_refinement
 import sinnoh_f09d_relative as f09d_relative
+import sinnoh_f10b_trainers as f10b_trainers
 from audit_sinnoh_rxdata import read_marshal
 from audit_sinnoh_twinleaf_events import MAPS,HANDLERS as CH06_HANDLERS,BALLS as CH06_BALLS
 from build_sinnoh_twinleaf_events import HANDLERS as SCRIPT_HANDLERS
@@ -322,7 +323,7 @@ def runtime_config(base:Path,token:str):
     if count!=1:fail("GAME_INI_TITLE_NOT_UNIQUE")
     return (json.dumps(config,ensure_ascii=False,indent=2)+"\n").encode(),result.encode(),profile
 
-def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile=False,save_token=None,route201=None,encounter_coverage=None,route_trainers=False,encounter_expected=None):
+def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile=False,save_token=None,route201=None,encounter_coverage=None,route_trainers=False,encounter_expected=None,f10b=False):
     """Require real Essentials Compiler and all three Barry PBS data; no fake success."""
     rows=Marshal(raw).read()
     matches=[row for row in rows if isinstance(row,list) and len(row)>=3 and row[1]==b"Main"]
@@ -396,6 +397,8 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile
         for key,kind,name,mon in private_visual.ROUTE202_TRAINERS:
             checks.append(f'        raise "Sinnoh QA: treinador ausente {name}" unless GameData::Trainer.exists?(:{kind}, "{name}", {private_visual.TRAINER_VERSION})')
         verify=verify.replace("        File.write(", "\n".join(checks)+"\n        File.write(",1)
+    if f10b:
+        verify=verify.replace("        File.write(", "        BlueSinnohF10B.verify_compiled!\n        File.write(",1)
     # Essentials normalizes transfer events (door SFX/fades) during PBS
     # compilation and rewrites their maps. These authored QA files are pinned
     # byte-for-byte by the title/supervisor. Preserve their verified input bytes
@@ -637,7 +640,7 @@ end
     code=code.replace("__PLATINUM_PLAYER__",player_code)
     return code.encode("utf-8")
 
-def compatible_save_token(project,mapping,base_hash,generated_maps=None,previous_maps=None,intermediate_maps=None,refined_maps=None):
+def compatible_save_token(project,mapping,base_hash,generated_maps=None,previous_maps=None,intermediate_maps=None,refined_maps=None,pre_f10b_maps=None):
     # Read manifests/config only; never enumerate or open save files.
     work=safe_path(project/REPO_OUTPUT)
     candidates=[]
@@ -668,10 +671,10 @@ def compatible_save_token(project,mapping,base_hash,generated_maps=None,previous
                         all(mapping.get(k)==v for k,v in prior.items())):continue
                 hashes=data.get("file_sha256",{})
                 if not isinstance(hashes,dict):continue
-                if not any(all(hashes.get(f"Data/Map{mid:03d}.rxdata")==sha(candidate.get(f"Data/Map{mid:03d}.rxdata",b"")) for mid in prior.values()) for candidate in (generated_maps,previous_maps,intermediate_maps,refined_maps) if candidate):continue
+                if not any(all(hashes.get(f"Data/Map{mid:03d}.rxdata")==sha(candidate.get(f"Data/Map{mid:03d}.rxdata",b"")) for mid in prior.values()) for candidate in (generated_maps,previous_maps,intermediate_maps,refined_maps,pre_f10b_maps) if candidate):continue
             elif set(mapping) in (interior_expansion.ALL,f08c_expansion.ALL):
                 hashes=data.get("file_sha256",{})
-                if not isinstance(hashes,dict) or not any(all(hashes.get(f"Data/Map{mid:03d}.rxdata")==sha(candidate.get(f"Data/Map{mid:03d}.rxdata",b"")) for mid in mapping.values()) for candidate in (generated_maps,previous_maps,intermediate_maps,refined_maps) if candidate):continue
+                if not isinstance(hashes,dict) or not any(all(hashes.get(f"Data/Map{mid:03d}.rxdata")==sha(candidate.get(f"Data/Map{mid:03d}.rxdata",b"")) for mid in mapping.values()) for candidate in (generated_maps,previous_maps,intermediate_maps,refined_maps,pre_f10b_maps) if candidate):continue
             config_path=folder/"mkxp.json";regular(config_path)
             conf=jsonc(config_path.read_text("utf-8-sig"))
             profile=namespace(token)
@@ -728,6 +731,9 @@ def build_files(base:Path,project:Path=ROOT):
     f09b_report={}
     f09c_report={}
     f09d_report={}
+    f10b_report={}
+    f10b_plugin=b""
+    pre_f10b_maps=None
     encounter_expected={}
     encounter_coverage={}
     route_trainers=[]
@@ -767,6 +773,8 @@ def build_files(base:Path,project:Path=ROOT):
             maps["PBS/encounters.txt"],encounter_coverage,base,mapping,masks,maps,sources["maps"],f09b_report,project)
         maps["PBS/encounters.txt"],encounter_coverage,f09d_report,encounter_expected=f09d_relative.append(
             maps["PBS/encounters.txt"],encounter_coverage,base,mapping,masks,sources["maps"],f09c_report,project)
+        pre_f10b_maps=maps
+        maps,f10b_report,f10b_plugin=f10b_trainers.append(maps,mapping,masks,components,sources["maps"],base,project)
         movement=private_visual.movement_plugin(masks,mapping["SINNOH_ROUTE_202"])
         teleport_entries=qa_teleport.build(maps,mapping,components,project)
         teleport=qa_teleport.plugin(teleport_entries,project)
@@ -782,7 +790,7 @@ def build_files(base:Path,project:Path=ROOT):
     platinum_dawn=private_visual.has_platinum_player(base,10)
     token=secrets.token_hex(6)
     base_hash=sha((base/"Data/MapInfos.rxdata").read_bytes())
-    save_token=compatible_save_token(project,mapping,base_hash,maps,previous_maps,intermediate_maps,refined_maps) or token
+    save_token=compatible_save_token(project,mapping,base_hash,maps,previous_maps,intermediate_maps,refined_maps,pre_f10b_maps) or token
     config,game_ini,profile=runtime_config(base,save_token)
     # This is an isolated copy, never the installed game:
     final=dict(maps)
@@ -791,7 +799,7 @@ def build_files(base:Path,project:Path=ROOT):
         "Graphics/Characters/SNQA_NPC.png":sprite_png("NPC"),
         "Graphics/Characters/SNQA_BALL.png":sprite_png("BALL"),
         "Data/System.rxdata":None,
-        "Data/Scripts.rxdata":patch_bootstrap((base/"Data/Scripts.rxdata").read_bytes(),token,ids,connected=bool(continuity),story_profile=bool(story),save_token=save_token,route201=mapping["SINNOH_ROUTE_201"] if story else None,encounter_coverage={mapping[sym]:v["methods"] for sym,v in encounter_coverage.items() if v["methods"]},route_trainers=bool(route_trainers),encounter_expected=encounter_expected),
+        "Data/Scripts.rxdata":patch_bootstrap((base/"Data/Scripts.rxdata").read_bytes(),token,ids,connected=bool(continuity),story_profile=bool(story),save_token=save_token,route201=mapping["SINNOH_ROUTE_201"] if story else None,encounter_coverage={mapping[sym]:v["methods"] for sym,v in encounter_coverage.items() if v["methods"]},route_trainers=bool(route_trainers),encounter_expected=encounter_expected,f10b=bool(f10b_report.get("new_trainers"))),
         "mkxp.json":config,"Game.ini":game_ini,
         # Only inside the NEW private QA copy. Blue-Story source-only sync
         # cannot update the installed main-game title when Kanto is 142/145.
@@ -801,7 +809,7 @@ def build_files(base:Path,project:Path=ROOT):
         f"{INTRO_PLUGIN}/SinnohPilot.rb":(project/"scripts/regions/SinnohPilot.rb").read_bytes(),
         f"{INTRO_PLUGIN}/meta.txt":b"Name = Blue Sinnoh Intro\nVersion = 0.1\nEssentials = 21.1\nScripts = SinnohPilot.rb\n",
         f"{EXPERIMENT_PLUGIN}/SinnohExperimentalStart.rb":experiment_plugin(
-                  [mapping["SINNOH_PLAYER_BEDROOM"],*start],token,platinum_player,platinum_dawn,story_profile=bool(story))+b"\n"+movement+b"\n"+teleport+b"\n"+forest_code,
+                  [mapping["SINNOH_PLAYER_BEDROOM"],*start],token,platinum_player,platinum_dawn,story_profile=bool(story))+b"\n"+movement+b"\n"+teleport+b"\n"+forest_code+b"\n"+f10b_plugin,
         f"{EXPERIMENT_PLUGIN}/meta.txt":b"Name = Blue Sinnoh Experimental\nVersion = 0.1\nEssentials = 21.1\nRequires = Blue Sinnoh Intro\nScripts = SinnohExperimentalStart.rb\n",
     })
     sysdata=read_marshal((base/"Data/System.rxdata").read_bytes(),"BASE_SYSTEM")
@@ -818,7 +826,7 @@ def build_files(base:Path,project:Path=ROOT):
     final["Data/sinnoh-experimental-compile-request.txt"]=proof.encode("ascii")
     # These hashes do not claim human rights approval, or native gameplay acceptance.
     report={"schema":1,"region":"SINNOH","mode":MODE,
-        "maps_prepared":len(mapping),"static_events_placed":len(events)+story.get("extra_event_count",0)+len(route_trainers)+len(connection_report.get("portals",[]))+len(f08c_report.get("portals",[])),
+        "maps_prepared":len(mapping),"static_events_placed":len(events)+story.get("extra_event_count",0)+len(route_trainers)+len(connection_report.get("portals",[]))+len(f08c_report.get("portals",[]))+f10b_report.get("new_trainers",0),
         "static_warps":16-len(continuity.get("retired_warp_keys",[]))+(3 if story else 0)+len(connection_report.get("portals",[]))+len(f08c_report.get("portals",[])),"native_seam_pairs":sum(not p.get("visual_only") for p in continuity.get("connections",[]))+len(connection_report.get("seams",[])),"static_handlers":5,"static_starter_balls":3,
         "local_reserved_qa_only":True,"independent_r07_approved":False,
         "independent_r08_approved":False,"r09_native_qa_executed":0,
@@ -846,6 +854,7 @@ def build_files(base:Path,project:Path=ROOT):
         "f09b_original_encounters":f09b_report,
         "f09c_refinement":f09c_report,
         "f09d_relative":f09d_report,
+        "f10b_trainers":f10b_report,
         "qa_teleport":{"catalog_count":len(teleport_entries),"available_count":sum(row[3] is not None for row in teleport_entries),"destinations":teleport_entries,"native_verified":False},
         "encounter_coverage":encounter_coverage,"route202_trainers":route_trainers,
         "visual_native_reviewed":False,
