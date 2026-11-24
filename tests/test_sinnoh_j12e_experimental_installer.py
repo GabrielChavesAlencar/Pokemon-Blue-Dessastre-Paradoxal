@@ -890,6 +890,28 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
         relative_stats["species_validation"]="SYNTHETIC_DONOR_SPECIES_FIXTURE_NOT_LOCAL_DATABASE"
         print("SINNOH_F09D_RELATIVE_REPORT "+json.dumps(relative_stats,sort_keys=True),flush=True)
         print("SINNOH_REAL_F09D_131_MAPS_100_BASELINE_METHODS_20_RELATIVE_CANDIDATES_AUDITED_OK",flush=True)
+        # F10A: read-only source event inventory, no donor text or script output.
+        import sinnoh_f10a_inventory as f10a
+        before=dict(f08c_maps)
+        before_ids=dict(f08c_ids)
+        report=f10a.audit(f08c_maps,f08c_ids,masks,f08c_components,source)
+        self.assertEqual(report["maps_audited"],131)
+        self.assertEqual(report["source_maps_audited"],127)
+        self.assertEqual(len(report["without_direct_source_event_mapping"]),4)
+        self.assertEqual(report["new_trainers"],0)
+        self.assertEqual(report["new_npcs"],0)
+        self.assertFalse(report["native_verified"])
+        self.assertEqual(f08c_maps,before)
+        self.assertEqual(f08c_ids,before_ids)
+        self.assertEqual(relative_stats["new_methods"],20)
+        self.assertEqual(relative_stats["time_fallback_gaps"],[])
+        summary={k:v for k,v in report.items() if k not in ("queue","maps")}
+        print("SINNOH_F10A_EVENT_REPORT "+json.dumps(summary,sort_keys=True),flush=True)
+        for row in report["maps"]:
+            print("SINNOH_F10A_MAP "+json.dumps(row,sort_keys=True),flush=True)
+        for row in report["queue"]:
+            print("SINNOH_F10A_CANDIDATE "+json.dumps(row,sort_keys=True),flush=True)
+        print("SINNOH_REAL_F10A_131_MAPS_127_SOURCE_EVENT_MAPS_AUDITED_BASELINE_PRESERVED_OK",flush=True)
 
 
 
@@ -1417,6 +1439,28 @@ raise "duplicate battle" unless $calls==4
         self.assertEqual({r["symbol"] for r in rows}&c.EXTERIORS,c.EXTERIORS)
         self.assertEqual(c.connected_ground({(1,1),(2,1),(3,1),(8,8)},(1,1)),{(1,1),(2,1),(3,1)})
         self.assertEqual(c.connected_ground({(1,1)},(2,1)),set())
+
+    def test_f10a_inert_event_classification(self):
+        import sinnoh_f10a_inventory as f
+        def obj(**attrs):
+            return RubyObject("fixture",{"@"+k:v for k,v in attrs.items()})
+        condition=obj(switch1_valid=False,switch2_valid=False,variable_valid=False,self_switch_valid=False)
+        def ev(codes,name=b"NPC",trigger=0,cond=condition,sprite=b"fixture"):
+            page=obj(condition=cond,move_type=0,trigger=trigger,graphic=obj(character_name=sprite),
+                     list=[obj(code=c,indent=0,parameters=p) for c,p in codes])
+            return obj(name=name,pages=[page],x=1,y=1)
+        dialogue=f.classify(ev([(101,[b"PRIVATE_TEXT"]),(0,[])]))
+        self.assertEqual(dialogue["kind"],"simple_dialogue_candidate")
+        self.assertNotIn("PRIVATE_TEXT",json.dumps(dialogue))
+        trainer=f.classify(ev([(355,[b"pbTrainerBattle(:LASS, 'PRIVATE_NAME')"]),(0,[])]))
+        self.assertEqual(trainer["kind"],"trainer_candidate")
+        self.assertNotIn("PRIVATE_NAME",json.dumps(trainer))
+        self.assertEqual(f.classify(ev([(201,[0,2,3,4,2,0]),(0,[])]))["kind"],"transfer_or_story")
+        self.assertEqual(f.classify(ev([(101,[]),(0,[])],trigger=3))["kind"],"other_sprite_event")
+        self.assertEqual(f.classify(ev([(101,[]),(0,[])],sprite=b""))["kind"],"other_event")
+        self.assertEqual(f.classify(ev([(355,[b"give_item()"]),(0,[])]))["kind"],"other_sprite_event")
+        self.assertEqual(f.classify(ev([(101,[]),(0,[])],cond=obj(switch1_valid=True)))["kind"],"other_sprite_event")
+        self.assertEqual(f.classify(ev([(0,[])],name=b"Trainer(3)"))["kind"],"trainer_candidate")
 
     def test_f09d_relative_weights_preserve_slots_and_reject_invalid_species(self):
         f=exp.f09d_relative
