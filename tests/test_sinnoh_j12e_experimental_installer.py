@@ -346,6 +346,35 @@ class J12EInstallerTests(unittest.TestCase):
         handlers=[c.attrs["@parameters"][0] for e in lab.attrs["@events"].values() for p in e.attrs["@pages"] for c in p.attrs["@list"] if c.attrs["@code"]==355]
         self.assertEqual(handlers.count(b"BlueSinnohPilot.lab_reward"),2)
         print("SINNOH_REAL_STARTER_PAGES_AND_LAB_HANDLERS_OK",flush=True)
+        # Exercise the new coverage layer after preserving all old checks.
+        (self.base/"PBS/encounters.txt").write_bytes(b"[002]\nLand,21\n    100,PIDGEY,5\n")
+        roster={m for methods in pv.LAND_ROSTER.values() for rows in methods.values() for _,m,_,_ in rows}
+        roster.update(m for rows in pv.WATER_ROSTER.values() for _,m,_,_ in rows)
+        roster.update(t[3] for t in pv.ROUTE202_TRAINERS)
+        with patch("pbs.catalogue",side_effect=lambda base,kind: roster if kind=="pokemon" else {"YOUNGSTER","LASS"}):
+            pbs,coverage=pv.coverage_encounters(self.base,mapping,masks)
+            trainers=pv.route202_trainer_pbs(self.base)
+        self.assertEqual(len(coverage),10)
+        self.assertTrue(pbs.startswith(b"[002]\n"))
+        self.assertEqual({sym for sym,v in coverage.items() if "Land" in v["methods"]},set(pv.LAND_ROSTER))
+        self.assertTrue(all(v["grass_cells"]==0 or "Land" in v["methods"] for v in coverage.values()))
+        self.assertIn(b"[YOUNGSTER,Tristan,202]",trainers)
+        self.assertIn(b"[LASS,Natalie,202]",trainers)
+        self.assertIn(b"[YOUNGSTER,Logan,202]",trainers)
+        self.assertIn(b"Pokemon = BURMY,5",trainers)
+        expanded,positions=pv.route202_trainer_events(out,mapping,components)
+        self.assertEqual(len(positions),3)
+        self.assertEqual(len({tuple(t["position"]) for t in positions}),3)
+        route=read_marshal(expanded["Data/Map%03d.rxdata"%mapping["SINNOH_ROUTE_202"]],"LIVE_TRAINERS")
+        self.assertEqual(len(route.attrs["@events"]),4)
+        for t in positions:
+            self.assertIn(tuple(t["position"]),components["SINNOH_ROUTE_202"])
+            page=route.attrs["@events"][t["event_id"]].attrs["@pages"][0].attrs
+            self.assertEqual(page["@trigger"],2)
+            self.assertIn(t["key"].encode(),page["@list"][0].attrs["@parameters"][0])
+        self.assertEqual(sum(len(read_marshal(expanded["Data/Map%03d.rxdata"%mid],"COVERAGE_MAP").attrs["@events"]) for mid in mapping.values()),35)
+        print("SINNOH_REAL_10_MAP_COVERAGE_3_TRAINERS_35_EVENTS_OK",flush=True)
+
         print("SINNOH_REAL_10_MAPS_4_WALK_SEAMS_2_VISUAL_2_PORTALS_32_EVENTS_OK",flush=True)
 
     @unittest.skipUnless(shutil.which("ruby"),"Requires Ruby runtime")
@@ -613,6 +642,54 @@ raise "return blocked" unless p.moves==[8,2]
         with tempfile.TemporaryDirectory() as tmp:
             path=Path(tmp)/"guard.rb";path.write_bytes(code)
             proc=subprocess.run([shutil.which("ruby"),"-e",script,str(path)],capture_output=True,text=True,timeout=30)
+        self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
+
+    @unittest.skipUnless(shutil.which("ruby"),"Requires Ruby runtime")
+    def test_route_trainers_require_lab_and_record_only_wins(self):
+        script=r'''
+load ARGV[0]
+def _INTL(s,*args); s; end
+def pbMessage(*args); end
+module BlueSinnohExperimental
+  def self.private_copy?; $private; end
+end
+module BlueKantoTitle
+  def self.sinnoh_experimental_barry_compiled?; $compiled; end
+end
+module GameData
+  class Trainer
+    def self.get(type,name,version)
+      raise "wrong version" unless version==202
+      mon={"Tristan"=>:STARLY,"Natalie"=>:BIDOOF,"Logan"=>:BURMY}.fetch(name)
+      Struct.new(:pokemon).new([{species:mon}])
+    end
+  end
+end
+module TrainerBattle
+  def self.start(*args); $calls+=1; $result; end
+end
+Global=Struct.new(:blue_regions)
+Player=Struct.new(:has_pokedex)
+flags={"mother_intro"=>true,"barry_intro"=>true,"rowan_briefcase_seen"=>true,"starter_received"=>true,
+"starter"=>"TURTWIG","rival_fought"=>true,"pokedex_received"=>true}
+state={"version"=>1,"initial"=>"SINNOH","current"=>"SINNOH","sinnoh_pilot"=>flags}
+$PokemonGlobal=Global.new(state);$player=Player.new(true)
+$private=true;$compiled=true;$calls=0;$result=true
+raise "gate bypassed" if BlueSinnohPilot.route_trainer("TRISTAN")
+state["sinnoh_lab_supplies"]=true
+$compiled=false
+raise "uncompiled battle" if BlueSinnohPilot.route_trainer("TRISTAN")
+$compiled=true;$result=false
+raise "loss counted" if BlueSinnohPilot.route_trainer("TRISTAN")
+raise "loss persisted" if state["sinnoh_route202_victories"]
+$result=true
+%w[TRISTAN NATALIE LOGAN].each { |key| raise "battle failed" unless BlueSinnohPilot.route_trainer(key) }
+raise "wrong victories" unless state["sinnoh_route202_victories"]==%w[TRISTAN NATALIE LOGAN]
+$PokemonGlobal=Marshal.load(Marshal.dump($PokemonGlobal))
+raise "repeat dialog failed" unless BlueSinnohPilot.route_trainer("TRISTAN")
+raise "duplicate battle" unless $calls==4
+'''
+        proc=subprocess.run([shutil.which("ruby"),"-e",script,str(ROOT/"scripts/regions/SinnohPilot.rb")],capture_output=True,text=True,timeout=30)
         self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
 
     def test_save_namespace_reused_only_for_compatible_private_manifest(self):
