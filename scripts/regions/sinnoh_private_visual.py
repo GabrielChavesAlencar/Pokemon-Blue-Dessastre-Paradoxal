@@ -681,8 +681,8 @@ def extend_lake_story(blobs,mapping,components):
             # The inline rescue catches failures before the handler is entered
             # (e.g. a missing compiled plugin), without losing the cause.
             code=('begin; BlueSinnohPilot.setup_profile; rescue StandardError => e; '
-                  'File.open("sinnoh-profile-error.txt","wb"){|f| f.write("PROFILE_EVENT_DISPATCH\\n"+e.class.to_s+": "+e.message.to_s+"\\n"+Array(e.backtrace).first(12).join("\\n"))}; '
-                  'pbMessage("Sinnoh QA: erro ao iniciar perfil. Consulte sinnoh-profile-error.txt."); end')
+                  'begin; File.open("sinnoh-profile-error.txt","wb"){|f| f.write("PROFILE_EVENT_DISPATCH\\n"+e.class.to_s+": "+e.message.to_s+"\\n"+Array(e.backtrace).first(12).join("\\n"))}; rescue StandardError; end; '
+                  'begin; pbMessage("Sinnoh QA: erro ao iniciar perfil. Consulte sinnoh-profile-error.txt."); rescue StandardError; end; end')
             active.attrs["@list"][0]=command(355,code.encode("ascii"))
         finished=copy.deepcopy(active)
         finished.attrs["@trigger"]=0
