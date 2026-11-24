@@ -1080,6 +1080,38 @@ raise "duplicate battle" unless $calls==4
         with self.assertRaisesRegex(ValueError,"NO_SAFE_WALKABLE_COMPONENT"):
             city.component(cells,w,h,p,tags,"SINNOH_ROUTE_228")
 
+    def test_f06_rock_arrival_allowlist_and_negative_terrain(self):
+        qa=exp.qa_teleport
+        city=exp.city_expansion
+        natural=exp.natural_expansion
+        self.assertEqual(len(qa.F06_ROCK_ARRIVALS),21)
+        self.assertTrue(qa.F06_ROCK_ARRIVALS<=natural.NATURAL-natural.OUTDOORS)
+        self.assertFalse(qa.F06_ROCK_ARRIVALS&exp.route_expansion.ALL)
+        w=h=8
+        cells=[0]*(w*h*3)
+        for y in range(1,7):
+            for x in range(1,7):cells[y*w+x]=1
+        # Rock floor allowed; water, ice, grass and a blocked overlay never allowed.
+        cells[w+1]=2
+        cells[w+2]=3
+        cells[w+3]=4
+        cells[w+4+w*h]=5
+        p=[0,0,0,0,0,15]
+        tags=[0,4,7,12,2,0]
+        original=list(cells)
+        for sym in qa.F06_ROCK_ARRIVALS:
+            component=city.component(cells,w,h,p,tags,sym)
+            self.assertEqual(len(component),32)
+            self.assertTrue({(1,1),(2,1),(3,1),(4,1)}.isdisjoint(component))
+        self.assertEqual(cells,original)
+        for sym in ("SINNOH_ETERNA_FOREST","SINNOH_ROUTE_228","SINNOH_OREBURGH_MINE",None):
+            with self.assertRaisesRegex(ValueError,"NO_SAFE_WALKABLE_COMPONENT"):
+                city.component(cells,w,h,p,tags,sym)
+        cells=[0]*(w*h*3)
+        cells[3*w+3]=1
+        with self.assertRaisesRegex(ValueError,"NO_SAFE_WALKABLE_COMPONENT"):
+            city.component(cells,w,h,p,tags,"SINNOH_WAYWARD_CAVE")
+
     def test_f06_capacity_and_save_namespace_append_only(self):
         city=exp.city_expansion
         route=exp.route_expansion

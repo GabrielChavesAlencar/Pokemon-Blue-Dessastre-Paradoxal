@@ -47,7 +47,7 @@ def component(cells,w,h,p,tags=None,symbol=None):
             if tags is None else teleport.arrival_ground(cells,w,h,p,tags,symbol))
     # Exception pockets must be connected without crossing grass, water,
     # ledges, or any other disallowed terrain. Preserve F04 behavior.
-    if symbol in ("SINNOH_ROUTE_225_SEGMENT_2","SINNOH_ROUTE_228_SEGMENT_2"):
+    if symbol in ("SINNOH_ROUTE_225_SEGMENT_2","SINNOH_ROUTE_228_SEGMENT_2") or symbol in teleport.F06_ROCK_ARRIVALS:
         free=set(ground)
     arrivals={q for q in ground if sum(n in ground for n in teleport.neighbours(*q))>=min_neighbours}
     best=set()
@@ -143,7 +143,7 @@ def append_exteriors(blobs,mapping,components,path,expanded,source_rows,phase):
             if any(0<t<48 for t in cells):fail("SOURCE_RESERVED_TILE")
             sets[sym]={t for t in cells if t>=384};source_cells[sym]=cells
             try:
-                comps[sym]=component(cells,w,h,tables["@passages"],tables["@terrain_tags"],sym if phase=="F05" else None)
+                comps[sym]=component(cells,w,h,tables["@passages"],tables["@terrain_tags"],sym if phase in ("F05","F06") else None)
             except ValueError as exc:
                 component_failures.append({"symbol":sym,"source_id":mid,"error":str(exc)})
             if phase in ("F05","F06"):
@@ -179,7 +179,7 @@ def append_exteriors(blobs,mapping,components,path,expanded,source_rows,phase):
         rel="Data/Map%03d.rxdata"%mid
         out[rel]=serialize(m,EVENT_CLASSES)
         try:
-            x,y=teleport.safe_spawn(out[rel],tiles,comps[sym],sym if phase=="F05" else None)
+            x,y=teleport.safe_spawn(out[rel],tiles,comps[sym],sym if phase in ("F05","F06") else None)
         except ValueError as exc:
             raise ValueError("F04_CITY:"+sym+":"+str(exc)) from exc
         if phase in ("F05","F06"):
