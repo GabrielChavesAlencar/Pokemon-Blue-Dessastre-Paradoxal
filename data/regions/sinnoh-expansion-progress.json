@@ -2,7 +2,7 @@
   "schema": 1,
   "region": "SINNOH",
   "reference": "Platinum",
-  "status": "F01_F02_MERGED_F03_IMPLEMENTED_PENDING_LIVE_INVENTORY",
+  "status": "F01_F02_F03_MERGED_F04_IMPLEMENTED_PENDING_CI",
   "catalog": "data/regions/sinnoh-expansion-destinations.json",
   "prepared_pilot": {
     "maps": 10,
@@ -34,16 +34,27 @@
     {
       "id": "F03",
       "title": "Inventário completo dos mapas, sprites e MapIDs",
-      "status": "implemented_pending_ci",
+      "status": "merged_ci_passed",
       "inventory": "scripts/regions/audit_sinnoh_expansion_f03.py",
-      "source_counts": null,
-      "source_counts_status": "PENDING_REAL_ZIP_AUDIT",
-      "new_maps_installed": 0
+      "source_counts": {
+        "map_records": 238,
+        "map_files": 238,
+        "geometry_candidates": 224,
+        "tilesets": 25,
+        "sprites": 495,
+        "valid_sprite_headers": 495
+      },
+      "source_counts_status": "VERIFIED_PINNED_SOURCE_CI",
+      "new_maps_installed": 0,
+      "pr": 281,
+      "merge_commit": "e05a8aa80b47233ab2687d1ce0b4f7ff5403aa41"
     },
     {
       "id": "F04",
       "title": "Importação de todas as cidades e vilarejos",
-      "status": "pending"
+      "status": "implemented_pending_ci",
+      "planned_new_city_maps": 12,
+      "target_maps": 22
     },
     {
       "id": "F05",
@@ -103,10 +114,12 @@
   ],
   "note": "Fases só contam concluídas após merge e checks. Mapas preparados não representam aprovação nativa.",
   "f04": {
-    "status": "awaiting_f03_source_receipt_and_local_mapid_capacity",
+    "status": "implemented_pending_ci",
     "cities_prepared": 2,
     "cities_pending": 12,
     "total": 14,
+    "target_maps": 22,
+    "source_cities": 14,
     "destination_ids_allocated": 0
   }
 }
