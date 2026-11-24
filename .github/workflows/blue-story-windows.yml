@@ -73,6 +73,8 @@ jobs:
         run: python -m unittest discover -s tests -p test_blue_story_github_cli.py -v
       - name: Testar escolha do piloto Sinnoh no Blue-Story e isolamento de saves
         run: python -m unittest discover -s tests -p test_blue_story_sinnoh_menu.py -v
+      - name: Validar inventario F03 e bloqueios de MapIDs
+        run: python -m unittest discover -s tests -p test_sinnoh_expansion_f03.py -v
       - name: Revalidar preparador J12-E em fixtures Windows
         run: python -m unittest discover -s tests -p test_sinnoh_j12e_experimental_installer.py -v
       - name: Validar reinicio automatico e integridade da copia QA Sinnoh
@@ -163,7 +165,16 @@ jobs:
                       print("SINNOH_F03_MAP",src.json.dumps(row,ensure_ascii=True),flush=True)
                   for row in report["tilesets"]:
                       print("SINNOH_F03_TILESET",src.json.dumps(row,ensure_ascii=True),flush=True)
+                  (Path(os.environ["RUNNER_TEMP"])/"sinnoh-f03-inventory.json").write_text(src.json.dumps(report,ensure_ascii=True,indent=2),"utf-8")
                   print("SINNOH_F03_FULL_PINNED_INVENTORY_OK",flush=True)
           assert not project.exists()
           '@ | python -
           if ($LASTEXITCODE -ne 0) {throw "Falha no download real de Sinnoh; nao autorizar merge"}
+      - name: Publicar somente metadados do inventario F03
+        if: github.head_ref == 'sinnoh-full-expansion-f03-inventory'
+        uses: actions/upload-artifact@v4
+        with:
+          name: sinnoh-f03-inventory-metadata
+          path: ${{ runner.temp }}/sinnoh-f03-inventory.json
+          if-no-files-found: error
+          retention-days: 14
