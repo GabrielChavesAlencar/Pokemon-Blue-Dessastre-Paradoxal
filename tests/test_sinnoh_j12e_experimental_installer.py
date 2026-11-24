@@ -198,6 +198,80 @@ class J12EInstallerTests(unittest.TestCase):
         self.assertEqual(new_tiles[:len(old_tiles)],old_tiles)
         self.assertEqual(len(new_tiles),len(old_tiles)+2)
 
+
+    def test_private_connections_and_audio_preserve_pilot_and_base(self):
+        pv=exp.private_visual
+        # Only synthetic tracks and edges; no third-party media in CI.
+        base_rows=[[2,b"N",0,3,b"S",0]]
+        old_pbs=b"# original region\n2,N,0,3,S,0\n"
+        old_meta=b"[002]\nName = Original\n"
+        (self.base/"Data/map_connections.dat").write_bytes(serialize(base_rows))
+        (self.base/"PBS/map_connections.txt").write_bytes(old_pbs)
+        (self.base/"PBS/map_metadata.txt").write_bytes(old_meta)
+        components={}
+        for symbol,(_,_,(w,h)) in pv.DONOR.items():
+            components[symbol]={(x,y) for x in range(w) for y in range(h)}
+        donor_rows=b"194,North,2,193,South,0\n193,East,0,192,West,4\n192,North,0,191,South,6\n191,North,0,106,South,27\n"
+        fake_audio=b"OggS"+b"\x01vorbis"+bytes(64)
+        def get_member(z,name,*args):
+            if name.endswith("map_connections.txt"):return donor_rows
+            if name.endswith(".ogg"):return fake_audio
+            self.fail(name)
+        with patch.object(pv,"verified_archive"),patch.object(pv,"member",side_effect=get_member):
+            out,report=pv.bind_audio_and_connections(self.ready,self.mapping,components,"fixture",self.base)
+        self.assertEqual(len(report["connections"]),3)
+        self.assertEqual(len(report["retired_warp_keys"]),6)
+        self.assertEqual(len(report["audio_files"]),7)
+        self.assertEqual(set(report["map_music"]),set(self.mapping))
+        compiled=read_marshal(out["Data/map_connections.dat"],"FIXTURE_CONNECTIONS")
+        self.assertEqual(compiled[0],base_rows[0])
+        self.assertEqual(len(compiled),4)
+        self.assertTrue(all(row[0] in self.ids and row[3] in self.ids for row in compiled[1:]))
+        self.assertTrue(out["PBS/map_connections.txt"].startswith(old_pbs))
+        self.assertTrue(out["PBS/map_metadata.txt"].startswith(old_meta))
+        self.assertEqual((self.base/"Data/map_connections.dat").read_bytes(),serialize(base_rows))
+        self.assertEqual((self.base/"PBS/map_connections.txt").read_bytes(),old_pbs)
+        self.assertEqual((self.base/"PBS/map_metadata.txt").read_bytes(),old_meta)
+        self.assertEqual(out["Data/MapInfos.rxdata"],self.ready["Data/MapInfos.rxdata"])
+        for rel in report["audio_files"]:self.assertEqual(out[rel],fake_audio)
+        still_active=0
+        for symbol,mid in self.mapping.items():
+            path="Data/Map%03d.rxdata"%mid
+            old=read_marshal(self.ready[path],"OLD").attrs
+            new=read_marshal(out[path],"NEW").attrs
+            self.assertEqual(new["@data"],old["@data"])
+            self.assertTrue(new["@autoplay_bgm"])
+            self.assertEqual(new["@bgm"].attrs["@name"],("SNQA_"+pv.MAP_MUSIC[symbol]).encode())
+            self.assertEqual(set(new["@events"]),set(old["@events"]))
+            for eid,event in new["@events"].items():
+                if event.attrs["@name"].decode() in report["retired_warp_keys"]:
+                    self.assertEqual([c.attrs["@code"] for c in event.attrs["@pages"][0].attrs["@list"]],[0])
+                else:
+                    self.assertEqual(event,old["@events"][eid])
+                    still_active+=sum(c.attrs["@code"]==201 for c in event.attrs["@pages"][0].attrs["@list"])
+        self.assertEqual(still_active,10)
+
+    def test_private_connection_plan_rejects_missing_duplicate_and_blocked_edges(self):
+        pv=exp.private_visual
+        raw=b"194,N,2,193,S,0\n193,E,0,192,W,4\n192,N,0,191,S,6\n"
+        rows=pv.parse_connections(raw)
+        components={s:{(x,y) for x in range(w) for y in range(h)}
+                    for s,(_,_,(w,h)) in pv.DONOR.items()}
+        self.assertEqual(len(pv.connection_plan(self.mapping,components,rows)),3)
+        for bad in (rows[:-1],rows+[rows[0]]):
+            with self.assertRaisesRegex(ValueError,"SOURCE_CONNECTION_MISSING_OR_DUPLICATE"):
+                pv.connection_plan(self.mapping,components,bad)
+        components["SINNOH_TWINLEAF_TOWN"]={(18,1)}
+        with self.assertRaisesRegex(ValueError,"SOURCE_CONNECTION_NO_REACHABLE_SEAM"):
+            pv.connection_plan(self.mapping,components,rows)
+
+    def test_private_connection_merge_rejects_collision_with_existing_map_ids(self):
+        pv=exp.private_visual
+        (self.base/"Data/map_connections.dat").write_bytes(serialize([[self.ids[0],b"N",0,2,b"S",0]]))
+        (self.base/"PBS/map_connections.txt").write_bytes(b"")
+        with self.assertRaisesRegex(ValueError,"BASE_CONNECTION_ID_COLLISION"):
+            pv.merge_connections(self.base,[],self.mapping)
+
     def test_private_interior_layouts_are_complete_and_in_range(self):
         pv=exp.private_visual
         self.assertEqual(len(pv.INTERIOR_SIZES),4)
