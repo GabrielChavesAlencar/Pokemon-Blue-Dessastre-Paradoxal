@@ -2,6 +2,36 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "974706db5ccb976ac3d45da07f290b85578ff268",
+      "date": "2026-11-24T18:56:45-03:00",
+      "title": "Merge pull request #286 from GabrielChavesAlencar/sinnoh-full-expansion-f08-connections",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "46bf9f7fe3e2a0695a2c8097629cea6fd2ea8dd3",
+      "date": "2026-11-24T18:50:01-03:00",
+      "title": "fix(F08): recover door approaches from reciprocal original landing coordinates",
+      "category": "Correções"
+    },
+    {
+      "sha": "ea919135abb7cac490af1dbf0fa2b75266d16274",
+      "date": "2026-11-24T18:43:14-03:00",
+      "title": "fix(F08): support verified RMXP tone transitions and diagnose portal geometry",
+      "category": "Correções"
+    },
+    {
+      "sha": "8f82b9e48fd8d3080b9a308b0e4021b3959de897",
+      "date": "2026-11-24T18:34:40-03:00",
+      "title": "fix(F08): diagnose rejected portal shapes and admit bounded cosmetic-only transfers",
+      "category": "Correções"
+    },
+    {
+      "sha": "fd964ee865f5daeef9222ad8e3ccf496bdf89957",
+      "date": "2026-11-24T18:09:07-03:00",
+      "title": "feat(Sinnoh F08): verify donor graph and reconstruct conservative private map links",
+      "category": "Novidades"
+    },
+    {
       "sha": "2770a91f790a2ae904caff83bd92f6f2595b35f2",
       "date": "2026-11-24T18:06:40-03:00",
       "title": "Merge pull request #285 from GabrielChavesAlencar/sinnoh-full-expansion-f07-interiors",
