@@ -4,8 +4,8 @@ Referência Platinum. Progresso de preparação (não aprovação nativa):
 
 - Rotas: **30/30**, Rota 201–230 e seis segmentos adicionais.
 - Cidades: **14/14**, todas preparadas na F04.
-- Piloto privado: **91 mapas preparados**.
-- Fases novas: **6/15 concluídas**, F01/F02/F04/F05/F06 integradas (11/11 cada), F03 integrada (9/9); F07 implementada, aguarda CI.
+- Piloto privado: **127 mapas preparados**.
+- Fases novas: **7/15 concluídas**, F01/F02/F04/F05/F06/F07 integradas (11/11 cada), F03 integrada (9/9); F08 subconjunto seguro implementado, aguarda CI.
 
 ## Progresso das cidades
 
@@ -38,8 +38,8 @@ Referência Platinum. Progresso de preparação (não aprovação nativa):
 - [x] F04 — Importação de todas as cidades e vilarejos (PR #282, 11/11; 22 mapas preparados)
 - [x] F05 — Importação de todas as rotas 201–230 (PR #283, 11/11; 56 mapas preparados)
 - [x] F06 — Importação de florestas, lagos e cavernas (PR #284, 11/11; 91 mapas preparados)
-- [ ] F07 — Importação dos interiores e edifícios (36 mapas candidatos, aguardando CI)
-- [ ] F08 — Conexões entre mapas e colisões
+- [x] F07 — Importação dos interiores e edifícios (PR #285, 11/11; 127 mapas preparados)
+- [ ] F08 — Conexões entre mapas e colisões (subconjunto seguro, aguarda CI)
 - [ ] F09 — Pokémon selvagens de todas as áreas
 - [ ] F10 — Todos os treinadores e NPCs
 - [ ] F11 — Oito ginásios e insígnias
@@ -114,3 +114,12 @@ PR #284 integrado em b33d57d2ee199b404ad7e53424ee573b83d1bf56; 11/11 workflows e
 ### F07 — diagnóstico de identidade do mapa 148
 
 O rerun do job 138765931080 baixou e verificou os dois ZIPs, reconfirmou os marcadores F05/F06 e encontrou componentes transitáveis nos primeiros 24 interiores. Falhou em SOURCE_EXTERIOR_IDENTITY antes de emitir o diagnóstico de terreno do próximo mapa (148). O inventário F03 usa strip() nos nomes; F07 passa a comparar somente com esse ajuste de espaços externos. Parent ID, hash do mapa, hash do ZIP, dimensões e tileset continuam obrigatórios; fases anteriores mantêm comparação literal. A hipótese de espaços externos precisa ser confirmada pelo novo job real; não há marcador F07 aprovado nesta execução.
+
+
+## F07 — aceite CI
+
+PR #285 integrado em 2770a91f790a2ae904caff83bd92f6f2595b35f2; 11/11 workflows, 26/26 checks. Marcador SINNOH_REAL_F07_36_INTERIORS_127_TELEPORTS_35_EVENTS_64_EXTERIORS_OK confirmado no job 138773135299. Mapa 148 -> 557 (10,7), 53 células. 36 interiores, 91 mapas anteriores preservados.
+
+## F08 — conexões privadas, subconjunto seguro
+
+Catálogo de 123 mapas físicos e 145 relações dirigidas distintas, 69 pares recíprocos, extraídos do inventário F03. Reabre o ZIP pinado local, verifica hashes e alvos estáticos, analisa páginas e coordenadas sem executar ou copiar scripts. Reconstrói somente transferências simples recíprocas sem condições, com origem/destino transitáveis, sem conflitos de eventos ou teleporte QA. Anexa eventos autorais mínimos apenas nos mapas novos, sem mudar os 35 eventos anteriores, geometria, MapIDs, atlas ou máscaras. Conexões seamless apenas exteriores com lados únicos e eixo transitável. Preserva abertura autoral, bloqueia conexões ambíguas, destinos ausentes e páginas condicionais. Reutiliza namespace apenas com hashes completos da geração F07 anterior ou F08 atual; nenhum save aberto. Saves nativos ainda não testados; mapas salvos podem precisar ser recarregados para receber novos eventos. O marcador F08 confirma um subconjunto seguro, não aprovação dos 145 vínculos nem QA nativa; vínculos rejeitados ficam pendentes para implementação específica. Sem distribuição de assets.

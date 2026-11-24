@@ -731,6 +731,24 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                 run=subprocess.run([shutil.which("ruby"),"-c"],input=script,capture_output=True,timeout=30)
                 self.assertEqual(run.returncode,0,run.stdout+run.stderr)
         print("SINNOH_REAL_F07_36_INTERIORS_127_TELEPORTS_35_EVENTS_64_EXTERIORS_OK",flush=True)
+        connection=exp.connection_expansion
+        f08_maps,cr=connection.append(f07_maps,f07_ids,f07_components,source)
+        self.assertEqual((cr["directed_candidates"],cr["reciprocal_candidates"]),(145,69))
+        self.assertGreater(len(cr["portals"])+len(cr["seams"]),0)
+        self.assertEqual(f08_maps["Data/Tilesets.rxdata"],f07_maps["Data/Tilesets.rxdata"])
+        self.assertEqual(f08_maps["Data/MapInfos.rxdata"],f07_maps["Data/MapInfos.rxdata"])
+        self.assertEqual(exp.qa_teleport.build(f08_maps,f07_ids,f07_components),f07_entries)
+        self.assertEqual(pv.movement_masks(f08_maps,f07_ids,extra_symbols=city.CITIES|routes.ROUTES|natural.NATURAL|interior.INTERIORS),f07_masks)
+        for sym,mid in f07_ids.items():
+            rel="Data/Map%03d.rxdata"%mid
+            old=read_marshal(f07_maps[rel],"F08_OLD");new=read_marshal(f08_maps[rel],"F08_NEW")
+            if sym in city.OLD:self.assertEqual(f08_maps[rel],f07_maps[rel])
+            previous=old.attrs.pop("@events");current=new.attrs.pop("@events")
+            self.assertEqual(serialize(old,connection.EVENT_CLASSES),serialize(new,connection.EVENT_CLASSES))
+            for eid,event in previous.items():
+                self.assertEqual(serialize(event,connection.EVENT_CLASSES),serialize(current[eid],connection.EVENT_CLASSES))
+        self.assertTrue(f08_maps["PBS/map_connections.txt"].startswith(f07_maps["PBS/map_connections.txt"]))
+        print("SINNOH_REAL_F08_145_DIRECTED_69_RECIPROCAL_CANDIDATES_127_MAPS_SAFE_SUBSET_OK",flush=True)
 
 
 
@@ -1163,6 +1181,25 @@ raise "duplicate battle" unless $calls==4
                 city.source_identity({"@name":actual,"@parent_id":actual_parent},row,"F07")
         with self.assertRaisesRegex(ValueError,"SOURCE_EXTERIOR_IDENTITY"):
             city.source_identity({"@name":name+b" ","@parent_id":parent},row,"F06")
+
+    def test_f08_graph_and_portal_fail_closed(self):
+        c=exp.connection_expansion
+        source,directed,reciprocal=c.graph()
+        self.assertEqual((len(source),len(directed),len(reciprocal)),(123,145,69))
+        page=c.event_page(warp=(555,4,5),touch=True)
+        event=c.ruby("RPG::Event",id=1,name=b"test",x=2,y=3,pages=[page])
+        self.assertEqual(c.simple_transfer(event),(2,3,555,4,5,2,0))
+        page.attrs["@condition"].attrs["@switch1_valid"]=True
+        self.assertIsNone(c.simple_transfer(event))
+        page.attrs["@condition"].attrs["@switch1_valid"]=False
+        page.attrs["@trigger"]=3
+        self.assertIsNone(c.simple_transfer(event))
+        page.attrs["@trigger"]=1
+        page.attrs["@list"][0].attrs["@parameters"][0]=1
+        self.assertIsNone(c.simple_transfer(event))
+        page.attrs["@list"][0].attrs["@parameters"][0]=0
+        page.attrs["@list"].insert(0,c.ruby("RPG::EventCommand",code=355,indent=0,parameters=[b"never run"]))
+        self.assertIsNone(c.simple_transfer(event))
 
     def test_f07_capacity_and_save_namespace_append_only(self):
         city=exp.city_expansion
