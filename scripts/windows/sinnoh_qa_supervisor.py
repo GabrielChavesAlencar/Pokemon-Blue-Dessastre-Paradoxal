@@ -91,8 +91,11 @@ def load_qa(project: Path, qa: Path) -> dict:
     if secure_file(qa / "Game.ini").read_text("utf-8-sig").splitlines().count(title) != 1:
         block("GAME_INI_TITLE_MISMATCH")
     maps = data.get("mapids")
-    if (not isinstance(maps, dict) or len(maps) != 9 or
-            len(set(maps.values())) != 9 or
+    story=data.get("private_lake_story",{})
+    count=10 if isinstance(story,dict) and story.get("portal_pairs")==2 else 9
+    if (not isinstance(maps, dict) or len(maps) != count or
+            (count==10 and "SINNOH_VERITY_LAKEFRONT" not in maps) or
+            len(set(maps.values())) != count or
             not all(type(n) is int and 442 <= n <= 517 for n in maps.values())):
         block("INVALID_NINE_QA_MAPIDS")
     start = data.get("start")
@@ -157,7 +160,7 @@ def audit_maps(qa: Path, data: dict, *, allow_tile_recovery: bool):
         files += ["Graphics/Autotiles/SNQA_Private_Auto_%d.png"%i for i in range(1,8)]
     continuity=data.get("private_continuity",{})
     if continuity:
-        if not isinstance(continuity,dict) or len(continuity.get("connections",[]))!=3:
+        if not isinstance(continuity,dict) or len(continuity.get("connections",[]))!=(4 if data.get("private_lake_story") else 3):
             block("INVALID_PRIVATE_CONTINUITY")
         audio=continuity.get("audio_files")
         expected_audio=["Audio/BGM/SNQA_"+name+".ogg" for name in ("Twinleaf","Twinleaf_n","Route201","Route201_n","Lake","Sandgem","Sandgem_n")]
