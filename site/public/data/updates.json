@@ -2,9 +2,27 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f28ad9e06e02cf45133b63bc60fdcc169f064d5c",
+      "date": "2026-11-24T20:41:12-03:00",
+      "title": "Merge pull request #296 from GabrielChavesAlencar/sinnoh-full-expansion-f10b3-trainer-variants",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "b7d13da7fb5a99cee2a37636d2d4f773da0b60fc",
+      "date": "2026-11-24T20:34:26-03:00",
+      "title": "Record real F10B3 evidence and validate full main-target regression suite",
+      "category": "Melhorias"
+    },
+    {
       "sha": "b0a5868130429ed2cdcf05f5c8688bc8d42227e3",
       "date": "2026-11-24T20:33:23-03:00",
       "title": "Merge pull request #295 from GabrielChavesAlencar/sinnoh-full-expansion-f10b2-trainer-assets",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "fd2e7908e70490b6c718aa7cc8b36655fd3ed5a6",
+      "date": "2026-11-24T20:27:21-03:00",
+      "title": "Sinnoh F10B3: explicit Sean sprite variant and stable F10B2 save compatibility",
       "category": "Melhorias"
     },
     {
