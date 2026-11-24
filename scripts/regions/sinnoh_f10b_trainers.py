@@ -172,8 +172,26 @@ def diagnostics(event,sid,ow,revision=2):
             "source_sprite_labels":names,
             "class_art_candidates":[n.rsplit("/",1)[-1] for n in class_art_candidates(ow,spec[2])] if spec else []}
 
-def build(blobs,mapping,masks,components,path,types,species,existing,base=None,root=ROOT,overworlds=None,revision=3):
-    if revision not in (2,3):raise ValueError("F10B_UNSUPPORTED_REVISION")
+# F10B4: the original pair is atomic; Harry is an explicitly authored
+# stationary alternative, not a copy of the donor's autonomous move route.
+EXTRA_ART={"CAMPER":("Camper",),"PICNICKER":("Picnicker","Picnic_Ker"),
+           "BIRDKEEPER":("Bird Keeper F","Bird_Keeper_F","BirdKeeper_F","Bird Keeper Female","Bird_Keeper_Female")}
+def extra_sprite(maps,ow,event,kind,base=None):
+    data,provenance,labels=resolve_sprite(maps,ow,event,kind,base)
+    if data:return data,provenance,labels
+    if ow is None or kind not in EXTRA_ART:return None,None,labels
+    pattern=re.compile(re.escape(pv.OW_ROOT)+r"NPC_\d+_(?:"+"|".join(re.escape(s) for s in EXTRA_ART[kind])+r")\.png",re.I)
+    candidates=sorted(i.filename for i in ow.infolist() if not i.is_dir() and pattern.fullmatch(i.filename))
+    labels=sorted(set(labels+[n.rsplit("/",1)[-1] for n in candidates]))
+    if len(candidates)!=1 or len(labels)!=1:return None,None,labels
+    raw=pv.member(ow,candidates[0],1_000_000)
+    try:
+        if pv.dims(raw)!=(256,256):return None,None,labels
+    except ValueError:return None,None,labels
+    return raw,"CLASS_EQUIVALENT_DPPt_OVERWORLD",labels
+
+def build(blobs,mapping,masks,components,path,types,species,existing,base=None,root=ROOT,overworlds=None,revision=4):
+    if revision not in (2,3,4):raise ValueError("F10B_UNSUPPORTED_REVISION")
     inventory=f10a.audit(blobs,mapping,masks,components,path,root)
     eligible={(q["source_id"],q["source_event_id"]):q for q in inventory["queue"]
               if q["kind"]=="trainer_candidate" and not q["geometry_blockers"]}
@@ -232,6 +250,8 @@ def build(blobs,mapping,masks,components,path,types,species,existing,base=None,r
                 else:
                     choice=SEAN_ART[0] if revision>=3 and (sid,eid)==(79,34) and (src_kind,name)==("BLACKBELT","Sean") else None
                     data,sprite_provenance,art_candidates=resolve_sprite(z,ow,donor,kind,base,choice)
+                    if not data and revision>=4 and (sid,eid)==(79,35):
+                        data,sprite_provenance,art_candidates=extra_sprite(z,ow,donor,kind,base)
                     if not data:reason="exact_and_unique_class_sprite_unavailable"
             m=worlds[mid];events=m.attrs["@events"]
             occupied={(e.attrs["@x"],e.attrs["@y"]) for e in events.values()}
@@ -262,6 +282,93 @@ def build(blobs,mapping,masks,components,path,types,species,existing,base=None,r
                              "team":team,"sprite_sha256":hashlib.sha256(data).hexdigest(),"sprite_provenance":sprite_provenance,
                              "team_source":"PLATINUM_HISTORICAL_REFERENCE",
                              "historical_reference_name":REVIEWED_NAME_ALIASES.get((sid,src_kind,name),name) if revision>=3 else name})
+        extra_report=[]
+        if revision>=4:
+            lookup={(q["source_id"],q["source_event_id"]):q for q in all_trainers}
+            # Both pair members must be accepted together. Harry may be
+            # reconstructed as a stationary action event on his original cell.
+            groups=[("ROUTE207_DOUBLE",[(42,29),(42,30)]),("HARRY_STATIONARY",[(79,37)])]
+            for group,keys in groups:
+                staged=[];blockers=[];reserved_cells=set()
+                for sid,eid in keys:
+                    q=lookup[sid,eid];mid=q["qa_map_id"];xy=tuple(q["position"])
+                    allowed=[] if group=="ROUTE207_DOUBLE" else ["moving_event"]
+                    if q["geometry_blockers"]!=allowed:
+                        blockers.append([sid,eid,"source_geometry_changed"]);continue
+                    raw=pv.member(z,pv.MAP_ROOT+"Data/Map%03d.rxdata"%sid)
+                    if hashlib.sha256(raw).hexdigest()!=source[sid]["sha256"]:raise ValueError("F10B4_SOURCE_HASH")
+                    donor=conn.read_marshal(raw,"F10B4_DONOR").attrs["@events"][eid]
+                    literal,_=literal_identity(donor)
+                    if group=="ROUTE207_DOUBLE":
+                        kind,name,team=PAIR_TEAMS[sid,eid]
+                    else:
+                        spec,why=identity(donor,sid,revision)
+                        if not spec:
+                            blockers.append([sid,eid,why]);continue
+                        _,name,kind,team=spec
+                    if literal!=(kind,name):
+                        blockers.append([sid,eid,"literal_identity_changed"]);continue
+                    version=1000+sid*100+eid
+                    if kind not in types or any(mon not in species for mon,level in team):
+                        blockers.append([sid,eid,"local_pbs_catalogue"]);continue
+                    if (kind,name,version) in existing or (sid,name) in used:
+                        blockers.append([sid,eid,"local_pbs_collision"]);continue
+                    data,provenance,labels=extra_sprite(z,ow,donor,kind,base)
+                    if not data:
+                        blockers.append([sid,eid,"class_sprite_missing_or_ambiguous",labels]);continue
+                    events=worlds[mid].attrs["@events"]
+                    grid=masks[mid]
+                    occupied={(e.attrs["@x"],e.attrs["@y"]) for e in events.values()}|{(x,y) for a,x,y in reserved_cells if a==mid}
+                    points={(x,y) for x,y in components[q["symbol"]] if 0<=y<len(grid) and 0<=x<len(grid[y]) and grid[y][x] in (".","g")}-occupied
+                    if any(a==mid and abs(x-xy[0])+abs(y-xy[1])<=1 for a,x,y in reserved):
+                        blockers.append([sid,eid,"reserved_arrival"]);continue
+                    if not (0<xy[0]<len(grid[0])-1 and 0<xy[1]<len(grid)-1) or not non_cut(points,xy):
+                        blockers.append([sid,eid,"route_connectivity"]);continue
+                    # Stable reserved slots after all F10B3 IDs; no renumbering.
+                    event_id=original_max[mid]+({29:2,30:3,37:3}[eid])
+                    if event_id in events:
+                        blockers.append([sid,eid,"event_id_collision"]);continue
+                    reserved_cells.add((mid,*xy))
+                    key="F10B_%d_%d"%(sid,eid);sprite_name="SNQA_"+key
+                    page=event_page(script='BlueSinnohF10B.battle("%s")'%key,sprite=sprite_name)
+                    event=ruby("RPG::Event",id=event_id,name=("SN_"+key).encode("ascii"),x=xy[0],y=xy[1],pages=[page])
+                    row={"key":key,"source_id":sid,"source_event_id":eid,"map_id":mid,"event_id":event_id,
+                         "position":list(xy),"type":kind,"name":name,"version":version,"team":team,
+                         "sprite_sha256":hashlib.sha256(data).hexdigest(),"sprite_provenance":provenance,
+                         "team_source":"PLATINUM_HISTORICAL_REFERENCE","historical_reference_name":name,
+                         "battle_group":group,"placement_policy":"AUTHORED_STATIONARY" if group=="HARRY_STATIONARY" else "ORIGINAL_POSITION_ACTION_DOUBLE"}
+                    staged.append((mid,event_id,event,sprite_name,data,row))
+                if not blockers and len(staged)==len(keys):
+                    # Re-run the actual teleport planner with all additions.
+                    # Roll back the entire group if ANY prior spawn changes.
+                    candidate=dict(out)
+                    trial={}
+                    for mid,eid,event,sn,data,row in staged:
+                        trial.setdefault(mid,dict(worlds[mid].attrs["@events"]))[eid]=event
+                    previous={}
+                    for mid,events in trial.items():
+                        previous[mid]=worlds[mid].attrs["@events"]
+                        worlds[mid].attrs["@events"]=events
+                        candidate["Data/Map%03d.rxdata"%mid]=serialize(worlds[mid],EVENT_CLASSES)
+                    for mid in changed-set(trial):
+                        candidate["Data/Map%03d.rxdata"%mid]=serialize(worlds[mid],EVENT_CLASSES)
+                    try:
+                        safe=teleport.build(candidate,mapping,components,root)==entries
+                    except ValueError:
+                        safe=False
+                    if not safe:
+                        for mid,events in previous.items():worlds[mid].attrs["@events"]=events
+                        blockers.append(["GROUP","ALL","qa_spawn_changed"])
+                    else:
+                        for mid,eid,event,sn,data,row in staged:
+                            out["Graphics/Characters/"+sn+".png"]=data
+                            changed.add(mid);used.add((row["source_id"],row["name"]))
+                            rows.append([row["key"],[row["type"],row["name"],row["version"],mid,row["team"]]])
+                            accepted.append(row)
+                        if group=="ROUTE207_DOUBLE":
+                            rejected[:]=[row for row in rejected if (row["source_id"],row["source_event_id"]) not in keys]
+                extra_report.append({"group":group,"source_events":[list(k) for k in keys],
+                                     "accepted":not blockers and len(staged)==len(keys),"blockers":blockers})
     for mid in changed:
         out["Data/Map%03d.rxdata"%mid]=serialize(worlds[mid],EVENT_CLASSES)
     if teleport.build(out,mapping,components,root)!=entries:raise ValueError("F10B_QA_SPAWN_CHANGED")
@@ -280,10 +387,10 @@ def build(blobs,mapping,masks,components,path,types,species,existing,base=None,r
             "team_reference":["https://bulbapedia.bulbagarden.net/wiki/Sinnoh_Route_207","https://bulbapedia.bulbagarden.net/wiki/Sinnoh_Route_211"],
             "source_pbs_present":False,"action_only":True,"all_trainer_diagnostics":expanded,
             "all_source_trainer_candidates":len(expanded),"overworld_archive_checked":overworlds is not None,
-            "revision":revision}
+            "revision":revision,"f10b4_groups":extra_report if revision>=4 else []}
     return out,report,plugin
 
-def append(blobs,mapping,masks,components,path,base,root=ROOT,overworlds=None,revision=3):
+def append(blobs,mapping,masks,components,path,base,root=ROOT,overworlds=None,revision=4):
     existing=set()
     for p in (base/"PBS").glob("trainers*.txt"):
         if p.is_symlink():raise ValueError("F10B_UNSAFE_PBS")
@@ -292,5 +399,5 @@ def append(blobs,mapping,masks,components,path,base,root=ROOT,overworlds=None,re
             if len(fields) in (2,3) and (len(fields)==2 or fields[2].isdigit()):
                 existing.add((fields[0],fields[1],int(fields[2]) if len(fields)==3 else 0))
     out,report,plugin=build(blobs,mapping,masks,components,path,catalogue(base,"trainer_types"),catalogue(base,"pokemon"),existing,base,root,overworlds,revision)
-    print(("SINNOH_F10B3_TRAINER_REPORT " if revision>=3 else "SINNOH_F10B2_ASSET_REPORT ")+json.dumps(report,sort_keys=True),flush=True)
+    print(("SINNOH_F10B4_TRAINER_REPORT " if revision>=4 else "SINNOH_F10B3_TRAINER_REPORT " if revision==3 else "SINNOH_F10B2_ASSET_REPORT ")+json.dumps(report,sort_keys=True),flush=True)
     return out,report,plugin

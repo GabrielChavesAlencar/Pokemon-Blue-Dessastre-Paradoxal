@@ -977,6 +977,33 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
             report3["species_and_types_validation"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
             print("SINNOH_F10B3_TRAINER_REPORT "+json.dumps(report3,sort_keys=True),flush=True)
             print("SINNOH_REAL_F10B3_131_MAPS_JUSTIN_SEAN_BASELINE_PRESERVED_OK",flush=True)
+            pair_types={kind for kind,name,team in f10b.PAIR_TEAMS.values()}
+            pair_species={mon for kind,name,team in f10b.PAIR_TEAMS.values() for mon,level in team}
+            more,report4,plugin4=f10b.build(baseline,f08c_ids,masks,f08c_components,source,types|pair_types,species|pair_species,set(),overworlds=Path(ow),revision=4)
+            by_key={row["key"]:row for row in report4["accepted"]}
+            self.assertTrue(set(new_by_key)<=set(by_key))
+            self.assertEqual(len(report4["f10b4_groups"]),2)
+            self.assertEqual(len({"F10B_42_29","F10B_42_30"}&set(by_key)) in (0,2),True)
+            for key,row in new_by_key.items():
+                for field in ("event_id","map_id","position","type","name","version","team","sprite_sha256"):
+                    self.assertEqual(row[field],by_key[key][field])
+            for path,raw in expanded.items():
+                if path=="PBS/trainers_sinnoh_f10b.txt":continue
+                if path.startswith("Data/Map") and path.endswith(".rxdata") and path!="Data/MapInfos.rxdata":
+                    old=read_marshal(raw,"F10B3_OLD");new=read_marshal(more[path],"F10B4_NEW")
+                    before=old.attrs.pop("@events");after=new.attrs.pop("@events")
+                    self.assertEqual(serialize(old,connection.EVENT_CLASSES),serialize(new,connection.EVENT_CLASSES))
+                    for eid,event in before.items():
+                        self.assertEqual(serialize(event,connection.EVENT_CLASSES),serialize(after[eid],connection.EVENT_CLASSES))
+                else:self.assertEqual(more[path],raw)
+            self.assertEqual(exp.qa_teleport.build(more,f08c_ids,f08c_components),entries)
+            self.assertFalse(report4["native_verified"])
+            self.assertFalse(report4["water_enabled"])
+            self.assertIn(b"TrainerBattle.start_core",plugin4)
+            report4["species_and_types_validation"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
+            print("SINNOH_F10B4_TRAINER_REPORT "+json.dumps(report4,sort_keys=True),flush=True)
+            print("SINNOH_REAL_F10B4_131_MAPS_DOUBLE_ATOMIC_AND_SAFE_ACCESS_AUDITED_OK",flush=True)
+
 
 
 
@@ -1591,6 +1618,86 @@ puts "F10B_RUBY_VICTORY_PERSISTENCE_OK"
             self.assertEqual(len(labels),2)
         with archive([]) as donor,archive(["NPC_123_HikerB.png"]) as ow:
             self.assertIsNone(f.resolve_sprite(donor,ow,e,"HIKER")[0])
+
+    @unittest.skipUnless(shutil.which("ruby"),"Requires Ruby runtime")
+    def test_f10b4_double_battle_atomic_victory_and_master_offsets(self):
+        source=(ROOT/"scripts/regions/SinnohF10B.rb").read_text("utf-8").replace(
+            "__F10B_ROWS__", '[["F10B_42_29",["CAMPER","Anthony",5229,469,[["CHIMCHAR",22]]]],["F10B_42_30",["PICNICKER","Lauren",5230,469,[["PACHIRISU",22]]]]]')
+        fixture=r'''
+module BlueSinnohExperimental
+  def self.private_copy?; $private; end
+end
+module BlueSinnohPilot
+  def self.regional_state; $state; end
+  def self.profile_error(*args); raise args.last; end
+end
+module BlueKantoTitle
+  def self.sinnoh_experimental_barry_compiled?; true; end
+end
+module BlueCampaign
+  def self.active?; $scaled; end
+  module Teams; end
+end
+class Battle
+  attr_accessor :party2starts
+  def initialize
+    @opponent=[Struct.new(:party).new([1,2,3]),Struct.new(:party).new([4,5,6])]
+    @party2=[1,2,3,4,5,6]
+  end
+  prepend BlueCampaign::Teams
+end
+module GameData
+  class Trainer
+    def self.get(kind,*args)
+      Struct.new(:pokemon).new([{species: kind==:CAMPER ? :CHIMCHAR : :PACHIRISU,level:22}])
+    end
+  end
+end
+module TrainerBattle
+  def self.start_core(*args)
+    raise "not double" unless args==[[:CAMPER,"Anthony",5229],[:PICNICKER,"Lauren",5230]]
+    $calls+=1
+    b=Battle.new
+    b.party2starts=[0,1]
+    raise "stale offsets" unless b.party2starts==[0,3]
+    $outcome
+  end
+end
+def _INTL(s,*args); s; end
+def pbMessage(*args); end
+Mon=Struct.new(:hp) { def egg?; false; end }
+$player=Struct.new(:party).new([Mon.new(10)])
+$game_map=Struct.new(:map_id).new(469)
+$game_temp=Struct.new(:waiting_trainer,:battle_rules).new(nil,{})
+$private=true;$scaled=true;$calls=0;$outcome=2;$state={}
+load ARGV[0]
+a,b=BlueSinnohF10B::PAIR_KEYS
+raise "compile proof" unless BlueSinnohF10B.verify_compiled!
+raise "one Pokemon allowed" if BlueSinnohF10B.battle(a)
+raise "battle called" unless $calls==0
+$player.party << Mon.new(10)
+raise "defeat accepted" if BlueSinnohF10B.battle(a)
+raise "defeat persisted" if $state.key?("sinnoh_f10b_victories")
+$scaled=false
+raise "unscaled" if BlueSinnohF10B.battle(a)
+$scaled=true;$outcome=1
+raise "win rejected" unless BlueSinnohF10B.battle(b)
+raise "partial victory" unless $state["sinnoh_f10b_victories"]==[a,b]
+$state=Marshal.load(Marshal.dump($state))
+raise "repeat dialogue" unless BlueSinnohF10B.battle(a)
+raise "repeat battle" unless $calls==2
+raise "pair scope leak" if BlueSinnohF10B.pair_active?
+battle=Battle.new;battle.party2starts=[0,1]
+raise "global offsets modified" unless battle.party2starts==[0,1]
+$private=false
+raise "outside QA" if BlueSinnohF10B.battle(a)
+puts "F10B4_DOUBLE_ATOMIC_VICTORY_OK"
+'''
+        with tempfile.TemporaryDirectory() as td:
+            path=Path(td)/"F10B.rb";path.write_text(source,encoding="utf-8")
+            result=subprocess.run(["ruby","-e",fixture,str(path)],capture_output=True,text=True,encoding="utf-8")
+            self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+            self.assertIn("F10B4_DOUBLE_ATOMIC_VICTORY_OK",result.stdout)
 
     def test_f10b3_sean_explicit_variant_and_kath_alias(self):
         import io,zipfile
