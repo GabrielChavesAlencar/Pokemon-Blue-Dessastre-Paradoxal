@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0b540a2ddb422561161c57bebd446b056f36a318",
+      "date": "2026-11-24T12:57:16-03:00",
+      "title": "Sinnoh: persistent private saves and early route progression",
+      "category": "Melhorias"
+    },
+    {
       "sha": "3d9d865258404e6965acdd74f89b6df3dd87c719",
       "date": "2026-11-24T12:38:41-03:00",
       "title": "Sinnoh: safe lake movement and pre-starter grass guard",
