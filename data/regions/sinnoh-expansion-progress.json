@@ -2,7 +2,7 @@
   "schema": 1,
   "region": "SINNOH",
   "reference": "Platinum",
-  "status": "F01_MERGED_F02_IMPLEMENTED_PENDING_VALIDATION",
+  "status": "F01_F02_MERGED_F03_IMPLEMENTED_PENDING_LIVE_INVENTORY",
   "catalog": "data/regions/sinnoh-expansion-destinations.json",
   "prepared_pilot": {
     "maps": 10,
@@ -27,12 +27,18 @@
     {
       "id": "F02",
       "title": "Correção das bordas pretas com árvores",
-      "status": "implemented_pending_ci"
+      "status": "merged_ci_passed",
+      "pr": 280,
+      "merge_commit": "1b526539595395a87ca206c6c2c4593febc99fa9"
     },
     {
       "id": "F03",
       "title": "Inventário completo dos mapas, sprites e MapIDs",
-      "status": "pending"
+      "status": "implemented_pending_ci",
+      "inventory": "scripts/regions/audit_sinnoh_expansion_f03.py",
+      "source_counts": null,
+      "source_counts_status": "PENDING_REAL_ZIP_AUDIT",
+      "new_maps_installed": 0
     },
     {
       "id": "F04",
@@ -95,5 +101,12 @@
       "status": "pending"
     }
   ],
-  "note": "Fases só contam concluídas após merge e checks. Mapas preparados não representam aprovação nativa."
+  "note": "Fases só contam concluídas após merge e checks. Mapas preparados não representam aprovação nativa.",
+  "f04": {
+    "status": "awaiting_f03_source_receipt_and_local_mapid_capacity",
+    "cities_prepared": 2,
+    "cities_pending": 12,
+    "total": 14,
+    "destination_ids_allocated": 0
+  }
 }
