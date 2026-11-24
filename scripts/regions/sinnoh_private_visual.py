@@ -218,6 +218,107 @@ def connected(cells,w,h,passages,seed):
     return seen
 
 
+
+# Authored four-room geometry using actual donor interior tiles (not copied
+# maps). Source slot 25 was inspected; no specific Sinnoh interiors exist.
+INTERIOR_SIZES={"SINNOH_PLAYER_BEDROOM":(12,10),"SINNOH_PLAYER_HOUSE_1F":(16,12),
+                "SINNOH_BARRY_HOUSE":(14,12),"SINNOH_PROFESSOR_ROWAN_LABORATORY":(18,13)}
+INTERIOR_ANCHORS={"SN_BEDROOM_TO_1F":(10,8),"SN_1F_TO_BEDROOM":(13,3),
+                  "SN_1F_TO_TWINLEAF":(8,11),"SN_NPC_MOTHER":(8,7),
+                  "SN_BARRY_HOME_TO_TOWN":(7,11),"SN_NPC_BARRY_INTRO":(7,7),
+                  "SN_ROWAN_LAB_TO_TOWN":(9,12),"SN_NPC_ROWAN_POKEDEX":(9,5)}
+INTERIOR_TILESET="SNQA_Private_Indoors"
+
+
+def interior_cells(symbol):
+    w,h=INTERIOR_SIZES[symbol]
+    lab=symbol.endswith("LABORATORY");bedroom=symbol.endswith("BEDROOM")
+    area=w*h;cells=[0]*(area*3)
+    def put(x,y,t,z=1):
+        if not (0<=x<w and 0<=y<h):fail("INTERIOR_COORDINATE")
+        cells[z*area+y*w+x]=t
+    def patch(x,y,rows,z=1):
+        for dy,row in enumerate(rows):
+            for dx,t in enumerate(row):
+                if t:put(x+dx,y+dy,t,z)
+    for y in range(h):
+        for x in range(w):
+            put(x,y,(1795,1796,1797)[x%3] if lab else (1355,1356,1357)[(x+y)%3],0)
+    for x in range(w):
+        put(x,0,1608 if lab else 1371);put(x,1,1616 if lab else 1379)
+    for y in range(2,h):
+        put(0,y,1617 if lab else 1378);put(w-1,y,1617 if lab else 1380)
+    for x in range(1,w-1):
+        if bedroom or x!=w//2:put(x,h-1,1616 if lab else 1379)
+    def rug(x,y,width,height,top,mid,bottom):
+        for yy in range(height):
+            row=top if yy==0 else bottom if yy==height-1 else mid
+            for xx in range(width):
+                put(x+xx,y+yy,row[0 if xx==0 else 2 if xx==width-1 else 1],0)
+    def shelf(x,y):
+        patch(x,y,[[1464,1465,1466],[1472,1473,1474],[1480,1481,1482]])
+    def plant(x,y):
+        put(x,y,1084,2);put(x,y+1,1092)
+    if bedroom:
+        patch(1,2,[[1288,1289],[1296,1297]])
+        patch(7,2,[[1504,1505,1506],[1512,1513,1514],[1520,1521,1522]])
+        put(8,2,1488,2);shelf(1,5);plant(10,2)
+        rug(4,4,4,3,[1096,1097,1098],[1104,1105,1106],[1112,1113,1114])
+        put(10,8,1637,0)
+    elif lab:
+        for x in (2,12):
+            patch(x,2,[[1144,1145,1146,1145],[1152,1153,1154,1153],[1160,1161,1162,1161]])
+            put(x+1,3,1488,2);put(x+2,3,1489,2)
+        patch(2,7,[[1564,1565,1566],[1572,1573,1574]])
+        patch(13,7,[[1309,1310,1311],[1317,1318,1319]])
+        shelf(7,2);plant(16,9)
+        rug(7,7,4,4,[1771,1772,1773],[1779,1780,1781],[1787,1788,1789])
+    else:
+        shelf(1,2);plant(w-2,2)
+        patch(5,2,[[1256,1257,1258],[1264,1265,1266]])
+        rug(4,5,5,4,[1099,1100,1101],[1107,1108,1109],[1115,1116,1117])
+        if w>=16:
+            patch(11,5,[[1504,1505,1506],[1512,1513,1514],[1520,1521,1522]])
+            put(13,3,1638,0)
+        else:
+            patch(10,5,[[1504,1505],[1512,1513],[1520,1521]])
+    return cells
+
+
+def apply_interiors(out,mapping,archive,components,imported):
+    source=read_marshal(member(archive,MAP_ROOT+"Data/Tilesets.rxdata"),"PRIVATE_INTERIOR_TILESETS")[25]
+    if source.attrs["@tileset_name"]!=b"indoors" or any(source.attrs["@autotile_names"]):
+        fail("INTERIOR_SOURCE_TILESET")
+    tables={k:table(source.attrs[k],7880) for k in ("@passages","@priorities","@terrain_tags")}
+    layers={symbol:interior_cells(symbol) for symbol in INTERIOR_SIZES}
+    used={t for cells in layers.values() for t in cells if t}
+    atlas,remap=compact_atlas(member(archive,MAP_ROOT+"Graphics/Tilesets/indoors.png"),used)
+    tiles=read_marshal(out["Data/Tilesets.rxdata"],"QA_INTERIOR_TILESETS")
+    tid=len(tiles)
+    if tid>=5000:fail("QA_INTERIOR_TILESET_CAPACITY")
+    candidate=copy.deepcopy(source);a=candidate.attrs
+    a.update({"@id":tid,"@name":b"Sinnoh private interiors QA","@tileset_name":INTERIOR_TILESET.encode()})
+    total=384+((len(remap)+7)//8)*8
+    for key,values in tables.items():
+        entries=list(values[:384])+[15 if key=="@passages" else 0]*(total-384)
+        for old,new in remap.items():entries[new]=values[old]
+        a[key]=table1(entries)
+    tiles.append(candidate);out["Data/Tilesets.rxdata"]=serialize(tiles)
+    out["Graphics/Tilesets/"+INTERIOR_TILESET+".png"]=atlas
+    for symbol,(w,h) in INTERIOR_SIZES.items():
+        cells=layers[symbol];n=w*h*3
+        components[symbol]=connected(cells,w,h,tables["@passages"],(w//2,h-2))
+        target="Data/Map%03d.rxdata"%mapping[symbol]
+        m=read_marshal(out[target],"QA_INTERIOR_MAP")
+        m.attrs.update({"@width":w,"@height":h,"@tileset_id":tid,"@events":{},
+                        "@data":RubyData("Table",struct.pack("<5I",3,w,h,3,n)+
+                              struct.pack("<%dH"%n,*(remap[t] if t else 0 for t in cells)))})
+        out[target]=serialize(m)
+        imported[symbol]={"source_id":None,"target_id":mapping[symbol],"source_tileset_id":25,
+                          "target_tileset_id":tid,"width":w,"height":h,"authored_layout":True,
+                          "model_connected_cells":len(components[symbol])}
+
+
 def apply_maps(blobs,mapping,path):
     out=dict(blobs);components={};imported={}
     with verified_archive(path,"maps") as z:
@@ -268,6 +369,7 @@ def apply_maps(blobs,mapping,path):
             imported[symbol]={"source_id":mid,"target_id":mapping[symbol],"source_tileset_id":24,
                               "target_tileset_id":tid,"width":w,"height":h,
                               "model_connected_cells":len(components[symbol])}
+        apply_interiors(out,mapping,z,components,imported)
     # Only the pilot's generated events are rebuilt. No donor event or global
     # source file is ever copied into the destination.
     for symbol in mapping:
