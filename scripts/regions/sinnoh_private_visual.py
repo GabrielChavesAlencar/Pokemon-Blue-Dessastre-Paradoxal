@@ -393,13 +393,15 @@ def apply_sprites(blobs,path):
     return out
 
 
-def has_platinum_player(base):
+def has_platinum_player(base, player_id=9):
     """Use the native Platinum player registration, not a global sprite overwrite."""
+    names={9:"PLAYER_TRAINER_PL_Lucas",10:"PLAYER_TRAINER_PL_Dawn"}
+    if player_id not in names:fail("INVALID_PLATINUM_PLAYER_ID")
     metadata=base/"PBS/metadata.txt"
     if not metadata.is_file() or metadata.is_symlink():
         return False
     raw=metadata.read_text("utf-8-sig")
-    block=re.search(r"(?m)^\[9\]\s*(?:#[^\n]*)?\n([\s\S]*?)(?=^\[\d+\]|\Z)",raw)
+    block=re.search(r"(?m)^\["+str(player_id)+r"\][ \t]*(?:#[^\n]*)?\n([\s\S]*?)(?=^\[\d+\]|\Z)",raw)
     if not block:
         return False
     fields={}
@@ -407,7 +409,7 @@ def has_platinum_player(base):
         line=line.split("#",1)[0]
         if "=" in line:
             k,v=line.split("=",1);fields[k.strip()]=v.strip()
-    if fields.get("TrainerType")!="PLAYER_TRAINER_PL_Lucas":
+    if fields.get("TrainerType")!=names[player_id]:
         return False
     for key in ("WalkCharset","RunCharset","CycleCharset","SurfCharset","FishCharset"):
         name=fields.get(key,"")
