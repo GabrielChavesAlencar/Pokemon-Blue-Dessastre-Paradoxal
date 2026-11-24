@@ -319,6 +319,14 @@ def apply_interiors(out,mapping,archive,components,imported):
                           "model_connected_cells":len(components[symbol])}
 
 
+LAKEFRONT="SINNOH_VERITY_LAKEFRONT"
+LAKEFRONT_SOURCE=(195,b"Verity Lakefront",(26,22))
+
+
+def donor_maps(mapping):
+    return {**DONOR,**({LAKEFRONT:LAKEFRONT_SOURCE} if LAKEFRONT in mapping else {})}
+
+
 def apply_maps(blobs,mapping,path):
     out=dict(blobs);components={};imported={}
     with verified_archive(path,"maps") as z:
@@ -327,12 +335,12 @@ def apply_maps(blobs,mapping,path):
         if source.attrs["@tileset_name"]!=b"outdoors":fail("SOURCE_TILESET_NAME")
         tables={k:table(source.attrs[k],7880) for k in ("@passages","@priorities","@terrain_tags")}
         used=set();source_cells={}
-        for symbol,(mid,name,size) in DONOR.items():
+        for symbol,(mid,name,size) in donor_maps(mapping).items():
             if infos[mid].attrs["@name"]!=name:fail("SOURCE_MAP_NAME:"+symbol)
             m=read_marshal(member(z,MAP_ROOT+"Data/Map%03d.rxdata"%mid),"PRIVATE_MAP")
             cells=map_cells(m,size)
             source_cells[symbol]=cells;used.update(t for t in cells if t)
-            components[symbol]=connected(cells,*size,tables["@passages"],SEEDS[symbol])
+            components[symbol]=connected(cells,*size,tables["@passages"],(25,13) if symbol==LAKEFRONT else SEEDS[symbol])
         atlas,remap=compact_atlas(member(z,MAP_ROOT+"Graphics/Tilesets/outdoors.png"),used)
         tiles=read_marshal(out["Data/Tilesets.rxdata"],"QA_TILESETS")
         tid=len(tiles)
@@ -358,9 +366,10 @@ def apply_maps(blobs,mapping,path):
         tiles.append(candidate)
         out["Data/Tilesets.rxdata"]=serialize(tiles)
         out["Graphics/Tilesets/"+TILESET+".png"]=atlas
-        for symbol,(mid,name,size) in DONOR.items():
+        for symbol,(mid,name,size) in donor_maps(mapping).items():
             target="Data/Map%03d.rxdata"%mapping[symbol]
-            m=read_marshal(out[target],"QA_DONOR_DESTINATION");w,h=size;n=w*h*3
+            template=target if symbol!=LAKEFRONT else "Data/Map%03d.rxdata"%mapping["SINNOH_LAKE_VERITY"]
+            m=read_marshal(out[template],"QA_DONOR_DESTINATION");w,h=size;n=w*h*3
             cells=source_cells[symbol]
             m.attrs.update({"@width":w,"@height":h,"@tileset_id":tid,"@events":{},
                             "@data":RubyData("Table",struct.pack("<5I",3,w,h,3,n)+
@@ -370,6 +379,12 @@ def apply_maps(blobs,mapping,path):
                               "target_tileset_id":tid,"width":w,"height":h,
                               "model_connected_cells":len(components[symbol])}
         apply_interiors(out,mapping,z,components,imported)
+        if LAKEFRONT in mapping:
+            idx=read_marshal(out["Data/MapInfos.rxdata"],"QA_EXTRA_MAPINFO")
+            mid=mapping[LAKEFRONT]
+            if mid in idx:fail("LAKEFRONT_ID_COLLISION")
+            info=copy.deepcopy(idx[mapping["SINNOH_LAKE_VERITY"]]);info.attrs["@name"]=b"Verity Lakefront";info.attrs["@order"]=max(i.attrs["@order"] for i in idx.values())+1
+            idx[mid]=info;out["Data/MapInfos.rxdata"]=serialize(idx)
     # Only the pilot's generated events are rebuilt. No donor event or global
     # source file is ever copied into the destination.
     for symbol in mapping:
@@ -475,16 +490,18 @@ def edge_axis(points,size,direction,offset):
 
 def connection_plan(mapping,components,source_rows):
     result=[]
-    for a,da,oa,b,db,ob,wa,wb in CONTINUOUS:
-        source=(DONOR[a][0],da,oa,DONOR[b][0],db,ob)
+    donors=donor_maps(mapping)
+    pairs=CONTINUOUS+(((LAKEFRONT,"E",0,"SINNOH_ROUTE_201","W",4,"SN_ROUTE201_TO_LAKE",None),) if LAKEFRONT in mapping else ())
+    for a,da,oa,b,db,ob,wa,wb in pairs:
+        source=(donors[a][0],da,oa,donors[b][0],db,ob)
         reverse=(source[3],db,ob,source[0],da,oa)
         if source_rows.count(source)+source_rows.count(reverse)!=1:
             fail("SOURCE_CONNECTION_MISSING_OR_DUPLICATE")
-        shared=edge_axis(components[a],DONOR[a][2],da,oa)&edge_axis(components[b],DONOR[b][2],db,ob)
+        shared=edge_axis(components[a],donors[a][2],da,oa)&edge_axis(components[b],donors[b][2],db,ob)
         if not shared:fail("SOURCE_CONNECTION_NO_REACHABLE_SEAM")
         result.append({"record":[mapping[a],da,oa,mapping[b],db,ob],
                        "source_ids":[source[0],source[3]],"reachable_seam_tiles":len(shared),
-                       "warp_keys":[wa,wb]})
+                       "warp_keys":[k for k in (wa,wb) if k]})
     return result
 
 
@@ -537,8 +554,8 @@ def bind_audio_and_connections(blobs,mapping,components,path,base):
     if existing & set(mapping.values()):fail("BASE_MAP_METADATA_ID_COLLISION")
     meta=[]
     for symbol,mid in mapping.items():
-        outside=symbol in DONOR
-        area_name=DONOR[symbol][1].decode("ascii") if outside else {"SINNOH_PLAYER_BEDROOM":"Twinleaf Town","SINNOH_PLAYER_HOUSE_1F":"Twinleaf Town","SINNOH_BARRY_HOUSE":"Twinleaf Town","SINNOH_PROFESSOR_ROWAN_LABORATORY":"Sandgem Town"}[symbol]
+        outside=symbol in donor_maps(mapping)
+        area_name=donor_maps(mapping)[symbol][1].decode("ascii") if outside else {"SINNOH_PLAYER_BEDROOM":"Twinleaf Town","SINNOH_PLAYER_HOUSE_1F":"Twinleaf Town","SINNOH_BARRY_HOUSE":"Twinleaf Town","SINNOH_PROFESSOR_ROWAN_LABORATORY":"Sandgem Town"}[symbol]
         lines=["[%03d]"%mid, "Name = "+area_name, "Outdoor = "+("true" if outside else "false"),
                "ShowArea = "+("true" if outside else "false")]
         if outside:lines.append("Bicycle = true")
@@ -552,7 +569,7 @@ def bind_audio_and_connections(blobs,mapping,components,path,base):
         m=read_marshal(out[rel],"QA_BGM_MAP")
         a=m.attrs
         a["@autoplay_bgm"]=True
-        a["@bgm"]=ruby("RPG::AudioFile",name=("SNQA_"+MAP_MUSIC[symbol]).encode("ascii"),volume=100,pitch=100)
+        a["@bgm"]=ruby("RPG::AudioFile",name=("SNQA_"+("Route201" if symbol==LAKEFRONT else MAP_MUSIC[symbol])).encode("ascii"),volume=100,pitch=100)
         # Retain the authored event IDs/names, but retire their transfer pages:
         # otherwise touch warps jump before the seamless map boundary.
         for event in a["@events"].values():
@@ -569,5 +586,5 @@ def bind_audio_and_connections(blobs,mapping,components,path,base):
         out[rel]=serialize(m,EVENT_CLASSES)
     if removed!=obsolete:fail("SEAM_WARP_KEYS_INCOMPLETE")
     return out,{"connections":plans,"retired_warp_keys":sorted(removed),
-                "audio_files":sorted(audio_files),"map_music":dict(MAP_MUSIC),
+                "audio_files":sorted(audio_files),"map_music":{**MAP_MUSIC,**({LAKEFRONT:"Route201"} if LAKEFRONT in mapping else {})},
                 "native_reviewed":False}
