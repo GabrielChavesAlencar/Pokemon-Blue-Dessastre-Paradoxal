@@ -402,6 +402,11 @@ def apply_sprites(blobs,path):
             raw=member(z,OW_ROOT+name+".png",1_000_000)
             if dims(raw)!=(256,256):fail("SPRITE_DIMENSIONS:"+role)
             out["Graphics/Characters/SNQA_"+role+".png"]=raw
+        for role in ("YOUNGSTER","LASS"):
+            candidates=[i.filename for i in z.infolist() if re.fullmatch(re.escape(OW_ROOT)+r"NPC_\d+_"+role+r"\.png",i.filename,re.I)]
+            if len(candidates)==1:
+                raw=member(z,candidates[0],1_000_000)
+                if dims(raw)==(256,256):out["Graphics/Characters/SNQA_"+role+".png"]=raw
         # The native Decades database already includes Platinum Lucas/Dawn
         # (metadata IDs 9/10). Keep its existing walking/running/bike/Surf/
         # fishing states; these optional sheets are local reference only.
@@ -650,8 +655,7 @@ TRAINER_VERSION=202
 def coverage_encounters(base,mapping,masks):
     from install_sinnoh_experimental_windows import regular
     from pbs import catalogue
-    raw=route201_encounters(base,mapping)
-    # Rebuild from the unchanged source rather than append a duplicate 201.
+    route201_encounters(base,mapping) # checks allocated IDs against baseline
     raw=(base/"PBS/encounters.txt").read_bytes()
     roster={k:dict(v) for k,v in LAND_ROSTER.items()}
     for sym in ("SINNOH_TWINLEAF_TOWN","SINNOH_LAKE_VERITY"):
@@ -695,8 +699,8 @@ def route202_trainer_pbs(base):
         section=f"{kind},{name},{TRAINER_VERSION}"
         if kind not in types or mon not in mons:fail("ROUTE202_TRAINER_DATABASE_MISSING:"+key)
         if section in existing:fail("ROUTE202_TRAINER_ID_COLLISION:"+key)
-        lines.extend(("[ "+section+"]",f"Pokemon = {mon},5",""))
-    return ("\n".join(lines).replace("[ ","[")+"\n").encode("ascii")
+        lines.extend(("["+section+"]",f"Pokemon = {mon},5",""))
+    return ("\n".join(lines)+"\n").encode("ascii")
 
 
 def route202_trainer_events(blobs,mapping,components):
