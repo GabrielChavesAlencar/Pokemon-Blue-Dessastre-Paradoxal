@@ -472,7 +472,7 @@ def build_files(base:Path,project:Path=ROOT):
         extra=next((i for i in range(442,518) if i not in occupied and i not in ids),None)
         if extra is None:fail("NO_FREE_LAKEFRONT_QA_ID")
         mapping[private_visual.LAKEFRONT]=extra
-        print("SINNOH QA: importando cinco exteriores e quatro interiores autorais do ZIP local (sem eventos externos)",flush=True)
+        print("SINNOH QA: importando seis exteriores e quatro interiores autorais do ZIP local (sem eventos externos)",flush=True)
         maps,components,imported=private_visual.apply_maps(maps,mapping,sources["maps"])
         maps,events,start=compile_events(maps,mapping,components,{**private_visual.ANCHORS,**private_visual.INTERIOR_ANCHORS})
         maps,continuity=private_visual.bind_audio_and_connections(maps,mapping,components,sources["maps"],base)
@@ -638,7 +638,7 @@ def install_copy(base:Path,outputs:dict,report:dict,project:Path=ROOT):
           "PILOTO EXPERIMENTAL SINNOH - SOMENTE COPIA PRIVADA\n"
           "Duplo clique INICIAR_SINNOH_EXPERIMENTAL.bat.\n"
           "Primeira execucao tenta compilar PBS Barry; sem compilacao, apenas exploracao QA.\n"
-          "Nove mapas foram adicionados a esta copia; nunca ao seu game original.\n"
+          "Mapas privados foram adicionados a esta copia; nunca ao seu game original.\n"
           "Coordenadas verificadas SOMENTE pelo modelo estatico, nao por Game.exe.\n"
           "R07/R08/R09 pendentes; nenhum teste nativo relatado pelo GitHub.\n",encoding="utf-8")
         # Proof only for what Python actually generated; no gameplay-ready marker.
