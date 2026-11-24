@@ -608,6 +608,19 @@ def bind_audio_and_connections(blobs,mapping,components,path,base):
                 "native_reviewed":False}
 
 
+def route201_encounters(base,mapping):
+    """Authored early-route roster, using native Essentials 21.1 Land PBS."""
+    from install_sinnoh_experimental_windows import regular
+    path=base/"PBS/encounters.txt";regular(path)
+    raw=path.read_bytes()
+    mid=mapping["SINNOH_ROUTE_201"]
+    occupied={int(m) for m in re.findall(rb"(?m)^\s*\[(\d+)(?:,\d+)?\]",raw)}
+    if occupied & set(mapping.values()):fail("BASE_ENCOUNTER_ID_COLLISION")
+    # DPPt-style introductory table; levels remain subject to existing runtime scaling.
+    block=f"\n# Blue Sinnoh private QA\n[{mid:03d}] # Route 201\nLand,21\n    50,STARLY,2,3\n    50,BIDOOF,2,3\n"
+    return raw+block.encode("ascii")
+
+
 def movement_masks(blobs,mapping):
     """Derive conservative ground collision and tall-grass masks from actual maps."""
     tiles=read_marshal(blobs["Data/Tilesets.rxdata"],"MOVEMENT_TILES")
@@ -666,13 +679,14 @@ def verify_starter_corridor(masks,mapping):
                 fail("NO_GRASSLESS_STARTER_ACCESS")
 
 
-def movement_plugin(masks):
+def movement_plugin(masks,route202=None):
     # Embedded immutable rows from verified local RXDATA. No assets published.
     # Scope is the isolated QA and its allocated map IDs, not global gameplay.
     import json
     rows="{"+",".join(str(mid)+"=>"+json.dumps(grid) for mid,grid in sorted(masks.items()))+"}"
     return ("""module BlueSinnohSafeMovement
   MASKS = __ROWS__.freeze
+  ROUTE202 = __ROUTE202__
   def self.cell(id,x,y)
     rows=MASKS[id]
     return nil unless rows && x.is_a?(Integer) && y.is_a?(Integer) &&
@@ -693,6 +707,14 @@ def movement_plugin(masks):
          [2,4,6,8].include?(dir)
         facing = $map_factory && $map_factory.getFacingTile(dir,self)
         if facing && BlueSinnohSafeMovement::MASKS.key?(facing[0])
+          if BlueSinnohSafeMovement::ROUTE202 && facing[0]==BlueSinnohSafeMovement::ROUTE202 &&
+             $game_map.map_id!=BlueSinnohSafeMovement::ROUTE202 && !BlueSinnohPilot.route202_allowed?
+            unless @blue_sinnoh_lab_warning
+              @blue_sinnoh_lab_warning=true
+              pbMessage(_INTL("Antes de seguir, visite Rowan no laboratorio de Sandgem e receba a Pokedex e cinco Poke Bolas."))
+            end
+            return
+          end
           cell=BlueSinnohSafeMovement.cell(*facing)
           return if cell.nil? || cell=="#"
           if cell=="g" && !BlueSinnohSafeMovement.has_pokemon?
@@ -707,6 +729,7 @@ def movement_plugin(masks):
           return
         end
         @blue_sinnoh_grass_warning=false
+        @blue_sinnoh_lab_warning=false
       end
       super(dir,*args,&block)
     end
@@ -719,7 +742,7 @@ def movement_plugin(masks):
     Game_Player.prepend(PlayerMovement) unless Game_Player.ancestors.include?(PlayerMovement)
   end
 end
-""").replace("__ROWS__",rows).encode("utf-8")
+""").replace("__ROWS__",rows).replace("__ROUTE202__",str(route202) if route202 is not None else "nil").encode("utf-8")
 
 
 def extend_lake_story(blobs,mapping,components):
@@ -782,7 +805,7 @@ def extend_lake_story(blobs,mapping,components):
         ("SINNOH_PLAYER_HOUSE_1F","SN_MOTHER_SCENE","BlueSinnohPilot.mother"),
         ("SINNOH_BARRY_HOUSE","SN_BARRY_SCENE","BlueSinnohPilot.barry_intro"),
         (lake,"SN_ROWAN_SCENE","BlueSinnohPilot.rowan_briefcase"),
-        ("SINNOH_PROFESSOR_ROWAN_LABORATORY","SN_DEX_SCENE","BlueSinnohPilot.rowan_pokedex"),
+        ("SINNOH_PROFESSOR_ROWAN_LABORATORY","SN_DEX_SCENE","BlueSinnohPilot.lab_reward"),
     )
     for sym,key,script in scenes:
         used={(e.attrs["@x"],e.attrs["@y"]) for e in world(sym).values()}
@@ -805,6 +828,11 @@ def extend_lake_story(blobs,mapping,components):
         finished.attrs["@condition"].attrs.update({"@self_switch_valid":True,"@self_switch_ch":b"A"})
         finished.attrs["@list"]=[command(0)]
         event(sym,key,xy,active,pages=[active,finished])
+    for e in world("SINNOH_PROFESSOR_ROWAN_LABORATORY").values():
+        if e.attrs["@name"]==b"SN_NPC_ROWAN_POKEDEX":
+            for op in e.attrs["@pages"][0].attrs["@list"]:
+                if op.attrs["@code"]==355:
+                    op.attrs["@parameters"][0]=b"BlueSinnohPilot.lab_reward"
     for e in world(lake).values():
         key=e.attrs["@name"]
         if not key.startswith(b"SN_BALL_"):continue
@@ -815,6 +843,11 @@ def extend_lake_story(blobs,mapping,components):
                 if not script.startswith(b"BlueSinnohPilot.choose_starter_from_ball("):
                     fail("STORY_STARTER_HANDLER_UNEXPECTED")
                 op.attrs["@parameters"][0]=script.replace(b"choose_starter_from_ball",b"choose_starter_scene")
+        hidden=event_page(script="nil")
+        hidden.attrs["@list"]=[command(0)]
+        hidden.attrs["@through"]=True
+        hidden.attrs["@condition"].attrs.update({"@self_switch_valid":True,"@self_switch_ch":b"B"})
+        e.attrs["@pages"].append(hidden)
     for sym,mid in mapping.items():
         out["Data/Map%03d.rxdata"%mid]=serialize(worlds[sym],EVENT_CLASSES)
     return out,{"portal_pairs":2,"autoruns":len(scenes),"extra_event_count":8,

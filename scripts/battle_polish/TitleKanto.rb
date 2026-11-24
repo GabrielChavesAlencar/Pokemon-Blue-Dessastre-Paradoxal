@@ -294,12 +294,14 @@ module BlueKantoTitle
         data["r09_native_qa_executed"] == 0 &&
         data["runtime_playable_verified"] == false
       token = data["profile_token"]
+      save_token = data.fetch("save_profile_token", token)
+      return sinnoh_qa_block("Token de saves QA invalido.") unless save_token.is_a?(String) && save_token.match?(/\A[a-f0-9]{12}\z/)
       namespace = data["save_profile"]
       return sinnoh_qa_block("Perfil de saves QA inconsistente.") unless
         namespace.is_a?(Hash) &&
-        namespace["title"] == "Sinnoh QA " + token &&
-        namespace["dataPathApp"] == "Sinnoh-QA-" + token &&
-        namespace["dataPathOrg"] == "Dessastre-Sinnoh-QA-" + token
+        namespace["title"] == "Sinnoh QA " + save_token &&
+        namespace["dataPathApp"] == "Sinnoh-QA-" + save_token &&
+        namespace["dataPathOrg"] == "Dessastre-Sinnoh-QA-" + save_token
       return sinnoh_qa_block("Arquivos mkxp.json/Game.ini ausentes ou links inseguros.") unless
         File.file?("mkxp.json") && !File.symlink?("mkxp.json") &&
         File.file?("Game.ini") && !File.symlink?("Game.ini")

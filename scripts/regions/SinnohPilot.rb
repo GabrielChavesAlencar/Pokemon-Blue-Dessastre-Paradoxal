@@ -101,11 +101,15 @@ module BlueSinnohPilot
   def self.choose_starter_scene(species)
     flags = progress
     return false unless flags
-    return choose_starter_from_ball(species) if flags["starter_received"] ||
-      !flags["rowan_briefcase_seen"]
+    if flags["starter_received"]
+      hide_starter_balls
+      return false
+    end
+    return choose_starter_from_ball(species) unless flags["rowan_briefcase_seen"]
     name = defined?(GameData::Species) ? GameData::Species.get(species).name : species.to_s
     return false unless pbConfirmMessage(_INTL("Deseja escolher {1} como seu parceiro?",name))
     return false unless choose_starter_from_ball(species)
+    hide_starter_balls
     # The existing guarded native battle cannot mark success unless all
     # three compiled Barry teams are valid. The action NPC remains available.
     barry_rival
@@ -500,4 +504,82 @@ module BlueSinnohPilot
       @pokedex_grant_in_progress = false
     end
   end
+  # Private pilot only. Self-switch B is persisted by Essentials, including
+  # after leaving the lake and reopening a saved game.
+  def self.hide_starter_balls
+    flags = progress
+    return false unless flags && flags["starter_received"] == true
+    return false unless defined?($game_map) && $game_map && $game_map.respond_to?(:events) &&
+      defined?($game_self_switches) && $game_self_switches
+    $game_map.events.each do |id,event|
+      next unless event.respond_to?(:name) && %w[SN_BALL_TURTWIG SN_BALL_CHIMCHAR SN_BALL_PIPLUP].include?(event.name)
+      $game_self_switches[[$game_map.map_id,id,"B"]] = true
+      event.refresh if event.respond_to?(:refresh)
+      # Old saves can still hold pre-update event pages in their map factory.
+      event.erase if event.respond_to?(:erase)
+    end
+    true
+  end
+
+  def self.route202_allowed?
+    flags = progress
+    state = regional_state
+    !!(flags && state && flags["pokedex_received"] == true &&
+       state["sinnoh_lab_supplies"] == true && $player &&
+       $player.respond_to?(:has_pokedex) && $player.has_pokedex == true)
+  end
+
+  # Keep the existing dex transition contract intact. Supplies are tracked
+  # separately for compatibility with older saves that already have the dex.
+  def self.lab_reward
+    flags = progress
+    state = regional_state
+    return false unless flags && state
+    unless flags["rival_fought"] == true && starter
+      pbMessage(_INTL("Rowan: Primeiro conheca seu parceiro e complete o treino com Barry."))
+      return false
+    end
+    if route202_allowed?
+      pbMessage(_INTL("Rowan: Registre suas descobertas na Pokedex. Boa viagem!"))
+      return true
+    end
+    return false if @lab_reward_in_progress
+    return false unless $player && $player.respond_to?(:has_pokedex) && $player.respond_to?(:has_pokedex=)
+    return false unless defined?($bag) && $bag && $bag.respond_to?(:quantity) &&
+      $bag.respond_to?(:add) && $bag.respond_to?(:remove) && $bag.respond_to?(:can_add?)
+    before = $bag.quantity(:POKEBALL)
+    original_dex = $player.has_pokedex
+    saved_flags = flags.dup
+    @lab_reward_in_progress = true
+    committed = false
+    begin
+      unless state["sinnoh_lab_supplies"] == true
+        unless $bag.can_add?(:POKEBALL,5)
+          pbMessage(_INTL("Rowan: Libere espaco na mochila para cinco Poke Bolas."))
+          return false
+        end
+        return false unless $bag.add(:POKEBALL,5) && $bag.quantity(:POKEBALL)==before+5
+      end
+      return false unless (flags["pokedex_received"] == true && $player.has_pokedex == true) || rowan_pokedex
+      return false unless regional_state.equal?(state) && $player.has_pokedex == true &&
+        progress && progress["pokedex_received"] == true
+      state["sinnoh_lab_supplies"] = true
+      committed = true
+      pbMessage(_INTL("Rowan: Aqui estao cinco Poke Bolas! Agora voce pode seguir pela Rota 202."))
+      true
+    rescue StandardError
+      committed
+    ensure
+      unless committed
+        delta = $bag.quantity(:POKEBALL)-before
+        $bag.remove(:POKEBALL,delta) if delta>0 && delta<=5
+        if regional_state.equal?(state) && state["sinnoh_pilot"].equal?(flags) && !flags.frozen?
+          flags.replace(saved_flags)
+          $player.has_pokedex = original_dex
+        end
+      end
+      @lab_reward_in_progress = false
+    end
+  end
+
 end
