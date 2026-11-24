@@ -38,7 +38,7 @@ ALIASES={
  "BLACKBELT":("BLACKBELT","BLACK_BELT"),
  "BIRDKEEPER":("BIRDKEEPER","BIRD_KEEPER","BIRDKEEPER_F"),
  "RUINMANIAC":("RUINMANIAC","RUIN_MANIAC")}
-CALL=re.compile(rb"\b(?:pbTrainerBattle(?:100)?|TrainerBattle\s*\.\s*start)\s*\(\s*(?::|PBTrainers::)?([A-Za-z][A-Za-z0-9_]*)\s*,\s*(['\"])([A-Za-z]+)\2\s*(?=[,)])")
+CALL=re.compile(rb"^\s*(?:if\s+)?(?:pbTrainerBattle(?:100)?|TrainerBattle\s*\.\s*start)\s*\(\s*(?::|PBTrainers::)?([A-Za-z][A-Za-z0-9_]*)\s*,\s*(?:(_I|_INTL)\s*\(\s*)?(['\"])([A-Za-z]+)\3\s*(?=[,)])")
 ASSET=re.compile(rb"[A-Za-z0-9_ -]{1,80}")
 
 def identity(event,sid):
@@ -47,10 +47,14 @@ def identity(event,sid):
         for command in page.attrs.get("@list",[]):
             # RMXP conditional scripts are code 111, not just 355/655.
             if command.attrs.get("@code") not in (111,355,655):continue
-            for value in command.attrs.get("@parameters",[]):
+            params=command.attrs.get("@parameters",[])
+            if command.attrs.get("@code")==111 and (len(params)<2 or params[0]!=12):continue
+            for value in params:
                 if not isinstance(value,bytes):continue
                 for m in CALL.finditer(value):
-                    found.add((m[1].decode().upper(),m[3].decode()))
+                    found.add((m[1].decode().upper(),m[4].decode()))
+                    # Multiple statements are not trusted as a first-battle identity.
+                    if b";" in value: return None,"multiple_script_statements"
     if len(found)!=1:return None,"missing_or_ambiguous_literal_identity"
     kind,name=next(iter(found))
     ref=REFERENCES.get(sid,{}).get(name)

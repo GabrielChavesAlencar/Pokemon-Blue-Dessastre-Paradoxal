@@ -1466,6 +1466,67 @@ raise "duplicate battle" unless $calls==4
         self.assertEqual(c.connected_ground({(1,1),(2,1),(3,1),(8,8)},(1,1)),{(1,1),(2,1),(3,1)})
         self.assertEqual(c.connected_ground({(1,1)},(2,1)),set())
 
+    @unittest.skipUnless(shutil.which("ruby"),"Requires Ruby runtime")
+    def test_f10b_ruby_persist_only_after_win_and_scale_guard(self):
+        source=(ROOT/"scripts/regions/SinnohF10B.rb").read_text("utf-8").replace(
+            "__F10B_ROWS__", '[["F10B_42_29",["HIKER","Kevin",5229,469,[["GEODUDE",17]]]]]')
+        fixture=r'''
+module BlueSinnohExperimental
+  def self.private_copy?; $private; end
+end
+module BlueSinnohPilot
+  def self.regional_state; $state; end
+  def self.profile_error(*args); raise args.last; end
+end
+module BlueKantoTitle
+  def self.sinnoh_experimental_barry_compiled?; $compiled; end
+end
+module BlueCampaign
+  def self.active?; $scaled; end
+end
+module GameData
+  class Trainer
+    def self.get(*args); Struct.new(:pokemon).new([{species: :GEODUDE,level: $level}]); end
+  end
+end
+module TrainerBattle
+  def self.start(*args); $calls+=1; $result; end
+end
+def _INTL(s,*args); s; end
+def pbMessage(*args); end
+Mon=Struct.new(:hp) { def egg?; false; end }
+$player=Struct.new(:party).new([Mon.new(10)])
+$game_map=Struct.new(:map_id).new(469)
+$private=true;$compiled=true;$scaled=true;$level=17;$calls=0;$result=false;$state={}
+load ARGV[0]
+key="F10B_42_29"
+raise "compile proof" unless BlueSinnohF10B.verify_compiled!
+raise "defeat accepted" if BlueSinnohF10B.battle(key)
+raise "defeat persisted" if $state.key?("sinnoh_f10b_victories")
+$scaled=false;$result=true
+raise "unscaled battle" if BlueSinnohF10B.battle(key)
+raise "unscaled called" unless $calls==1
+$scaled=true;$level=18
+raise "wrong compiled team" if BlueSinnohF10B.battle(key)
+raise "wrong team called" unless $calls==1
+$level=17;$game_map.map_id=468
+raise "wrong map" if BlueSinnohF10B.battle(key)
+$game_map.map_id=469
+raise "win rejected" unless BlueSinnohF10B.battle(key)
+raise "not persisted" unless $state["sinnoh_f10b_victories"]==[key]
+$state=Marshal.load(Marshal.dump($state))
+raise "repeat dialogue rejected" unless BlueSinnohF10B.battle(key)
+raise "repeat battle" unless $calls==2
+$private=false
+raise "outside QA" if BlueSinnohF10B.battle(key)
+puts "F10B_RUBY_VICTORY_PERSISTENCE_OK"
+'''
+        with tempfile.TemporaryDirectory() as td:
+            path=Path(td)/"F10B.rb";path.write_text(source,encoding="utf-8")
+            result=subprocess.run(["ruby","-e",fixture,str(path)],capture_output=True,text=True,encoding="utf-8")
+            self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+            self.assertIn("F10B_RUBY_VICTORY_PERSISTENCE_OK",result.stdout)
+
     def test_f10b_identity_and_connectivity(self):
         import sinnoh_f10b_trainers as f
         from build_johto_events import ruby
