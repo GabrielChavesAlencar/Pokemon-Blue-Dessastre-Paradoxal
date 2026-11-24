@@ -59,15 +59,25 @@ def literal_identity(event):
     if len(found)!=1:return None,"missing_or_ambiguous_literal_identity"
     return next(iter(found)),None
 
-def identity(event,sid):
+# Source literal aliases, never fuzzy. Kath is retained as the displayed name;
+# the historical reference is Katherine, a distinct provenance field.
+REVIEWED_NAME_ALIASES={(79,"BIRDKEEPER","Kath"):"Katherine"}
+# Explicit project art choice, NOT an assertion of the original sprite.
+SEAN_ART=("NPC_007_Black_Belt.png","NPC_008_Black_Belt.png")
+# Historical pair rosters; installation waits for a verified double battle.
+PAIR_TEAMS={(42,29):("CAMPER","Anthony",[("CHIMCHAR",22)]),
+            (42,30):("PICNICKER","Lauren",[("PACHIRISU",22)])}
+
+def identity(event,sid,revision=2):
     literal,reason=literal_identity(event)
     if literal is None:return None,reason
     kind,name=literal
-    matches=[(n,ref) for n,ref in REFERENCES.get(sid,{}).items() if n.casefold()==name.casefold()]
+    reference_name=REVIEWED_NAME_ALIASES.get((sid,kind,name),name) if revision>=3 else name
+    matches=[(n,ref) for n,ref in REFERENCES.get(sid,{}).items() if n.casefold()==reference_name.casefold()]
     if len(matches)!=1:return None,"identity_not_in_reviewed_first_battles"
     canonical,ref=matches[0]
     if kind not in ALIASES[ref[0]]:return None,"class_not_in_reviewed_aliases"
-    return (kind,canonical,ref[0],ref[1]),None
+    return (kind,name if reference_name!=name else canonical,ref[0],ref[1]),None
 
 def component(points,seed):
     if seed not in points:return set()
@@ -128,30 +138,41 @@ def class_art_candidates(z,kind):
     pattern=re.compile(re.escape(pv.OW_ROOT)+r"NPC_\d+_(?:"+"|".join(re.escape(s) for s in CLASS_ART[kind])+r")\.png",re.I)
     return sorted(i.filename for i in z.infolist() if not i.is_dir() and pattern.fullmatch(i.filename))
 
-def resolve_sprite(maps,ow,event,kind,base=None):
+def resolve_sprite(maps,ow,event,kind,base=None,selected_variant=None):
     exact=sprite(maps,event,base)
     if exact:return exact,"EXACT_DONOR_OR_LOCAL_SHEET",[]
     candidates=class_art_candidates(ow,kind)
     labels=[n.rsplit("/",1)[-1] for n in candidates]
-    if len(candidates)!=1:return None,None,labels
+    provenance="CLASS_EQUIVALENT_DPPt_OVERWORLD"
+    if selected_variant:
+        # Limit the exception to precisely the two audited Black Belt sheets.
+        if kind!="BLACKBELT" or tuple(labels)!=SEAN_ART or selected_variant!=SEAN_ART[0]:
+            return None,None,labels
+        chosen=[n for n in candidates if n.rsplit("/",1)[-1]==selected_variant]
+        if len(chosen)!=1:return None,None,labels
+        candidates=chosen
+        provenance="CLASS_EQUIVALENT_PROJECT_SELECTED"
+    elif len(candidates)!=1:return None,None,labels
     raw=pv.member(ow,candidates[0],1_000_000)
     try:
         if pv.dims(raw)!=(256,256):return None,None,labels
     except ValueError:return None,None,labels
-    return raw,"CLASS_EQUIVALENT_DPPt_OVERWORLD",labels
+    return raw,provenance,labels
 
-def diagnostics(event,sid,ow):
+def diagnostics(event,sid,ow,revision=2):
     literal,reason=literal_identity(event)
     # Only constrained identifiers, never source dialogue or script bodies.
     # Character names are filenames, not save/player names.
     names=sorted(n.decode("ascii") for n in sprite_names(event) if isinstance(n,bytes) and ASSET.fullmatch(n))
-    spec,why=identity(event,sid)
+    spec,why=identity(event,sid,revision)
     return {"literal_type":literal[0] if literal else None,"literal_name":literal[1] if literal else None,
             "identity_status":why or "reviewed_historical_match",
+            "historical_reference_name":REVIEWED_NAME_ALIASES.get((sid,*literal)) if revision>=3 and literal else None,
             "source_sprite_labels":names,
             "class_art_candidates":[n.rsplit("/",1)[-1] for n in class_art_candidates(ow,spec[2])] if spec else []}
 
-def build(blobs,mapping,masks,components,path,types,species,existing,base=None,root=ROOT,overworlds=None):
+def build(blobs,mapping,masks,components,path,types,species,existing,base=None,root=ROOT,overworlds=None,revision=3):
+    if revision not in (2,3):raise ValueError("F10B_UNSUPPORTED_REVISION")
     inventory=f10a.audit(blobs,mapping,masks,components,path,root)
     eligible={(q["source_id"],q["source_event_id"]):q for q in inventory["queue"]
               if q["kind"]=="trainer_candidate" and not q["geometry_blockers"]}
@@ -169,6 +190,7 @@ def build(blobs,mapping,masks,components,path,types,species,existing,base=None,r
                     args=c.attrs.get("@parameters",[])
                     if c.attrs.get("@code")==201 and len(args)==6 and args[0]==0 and all(type(v) is int for v in args):
                         reserved.add(tuple(args[1:4]))
+    original_max={mid:max(world.attrs["@events"],default=0) for mid,world in worlds.items()}
     out=dict(blobs);accepted=[];rejected=[];rows=[];used=set();changed=set()
     source,_,_=conn.graph(root)
     all_trainers=[q for q in inventory["queue"] if q["kind"]=="trainer_candidate"]
@@ -182,14 +204,21 @@ def build(blobs,mapping,masks,components,path,types,species,existing,base=None,r
             raw=pv.member(z,pv.MAP_ROOT+"Data/Map%03d.rxdata"%sid)
             if hashlib.sha256(raw).hexdigest()!=source[sid]["sha256"]:raise ValueError("F10B2_SOURCE_HASH")
             donor=conn.read_marshal(raw,"F10B2_DONOR").attrs["@events"][eid]
+            d=diagnostics(donor,sid,ow,revision)
+            if revision>=3 and (sid,eid) in PAIR_TEAMS:
+                pk,pn,pt=PAIR_TEAMS[sid,eid]
+                if (d["literal_type"],d["literal_name"])!=(pk,pn):raise ValueError("F10B3_PAIR_IDENTITY_CHANGED")
+                d["historical_pair_team"]=pt
+                d["identity_status"]="reviewed_pair_pending_double_battle"
             expanded.append({"source_id":sid,"source_event_id":eid,"map_id":q["qa_map_id"],
-                "position":q["position"],"geometry_blockers":q["geometry_blockers"],**diagnostics(donor,sid,ow)})
+                "position":q["position"],"geometry_blockers":q["geometry_blockers"],**d})
         for sid,eid in sorted(PIN):
             q=eligible[sid,eid];mid=q["qa_map_id"];xy=PIN[sid,eid]
             raw=pv.member(z,pv.MAP_ROOT+"Data/Map%03d.rxdata"%sid)
             if hashlib.sha256(raw).hexdigest()!=source[sid]["sha256"]:raise ValueError("F10B_SOURCE_HASH")
             donor=conn.read_marshal(raw,"F10B_DONOR").attrs["@events"][eid]
-            spec,reason=identity(donor,sid)
+            spec,reason=identity(donor,sid,revision)
+            if revision>=3 and (sid,eid) in PAIR_TEAMS:reason="double_battle_pending"
             data=None;sprite_provenance=None;art_candidates=[]
             if spec:
                 src_kind,name,kind,team=spec
@@ -200,7 +229,8 @@ def build(blobs,mapping,masks,components,path,types,species,existing,base=None,r
                 elif (local,name,version) in existing:reason="local_pbs_collision"
                 elif (sid,name) in used:reason="duplicate_identity"
                 else:
-                    data,sprite_provenance,art_candidates=resolve_sprite(z,ow,donor,kind,base)
+                    choice=SEAN_ART[0] if revision>=3 and (sid,eid)==(79,34) and (src_kind,name)==("BLACKBELT","Sean") else None
+                    data,sprite_provenance,art_candidates=resolve_sprite(z,ow,donor,kind,base,choice)
                     if not data:reason="exact_and_unique_class_sprite_unavailable"
             m=worlds[mid];events=m.attrs["@events"]
             occupied={(e.attrs["@x"],e.attrs["@y"]) for e in events.values()}
@@ -217,7 +247,9 @@ def build(blobs,mapping,masks,components,path,types,species,existing,base=None,r
                 continue
             key="F10B_%d_%d"%(sid,eid)
             sprite_name="SNQA_"+key
-            event_id=max(events,default=0)+1
+            # Keep Justin and Sean's F10B2 IDs even when other assets vary.
+            event_id=original_max[mid]+2 if revision>=3 and (sid,eid)==(79,35) else max(events,default=0)+1
+            if event_id in events:raise ValueError("F10B3_EVENT_ID_COLLISION")
             page=event_page(script='BlueSinnohF10B.battle("%s")'%key,sprite=sprite_name)
             # Action-only until sight paths receive native collision QA.
             events[event_id]=ruby("RPG::Event",id=event_id,name=("SN_"+key).encode("ascii"),x=xy[0],y=xy[1],pages=[page])
@@ -227,7 +259,8 @@ def build(blobs,mapping,masks,components,path,types,species,existing,base=None,r
             accepted.append({"key":key,"source_id":sid,"source_event_id":eid,"map_id":mid,"event_id":event_id,
                              "position":list(xy),"type":local,"name":name,"version":version,
                              "team":team,"sprite_sha256":hashlib.sha256(data).hexdigest(),"sprite_provenance":sprite_provenance,
-                             "team_source":"PLATINUM_HISTORICAL_REFERENCE"})
+                             "team_source":"PLATINUM_HISTORICAL_REFERENCE",
+                             "historical_reference_name":REVIEWED_NAME_ALIASES.get((sid,src_kind,name),name) if revision>=3 else name})
     for mid in changed:
         out["Data/Map%03d.rxdata"%mid]=serialize(worlds[mid],EVENT_CLASSES)
     if teleport.build(out,mapping,components,root)!=entries:raise ValueError("F10B_QA_SPAWN_CHANGED")
@@ -245,10 +278,11 @@ def build(blobs,mapping,masks,components,path,types,species,existing,base=None,r
             "new_trainers":len(accepted),"native_verified":False,"water_enabled":False,
             "team_reference":["https://bulbapedia.bulbagarden.net/wiki/Sinnoh_Route_207","https://bulbapedia.bulbagarden.net/wiki/Sinnoh_Route_211"],
             "source_pbs_present":False,"action_only":True,"all_trainer_diagnostics":expanded,
-            "all_source_trainer_candidates":len(expanded),"overworld_archive_checked":overworlds is not None}
+            "all_source_trainer_candidates":len(expanded),"overworld_archive_checked":overworlds is not None,
+            "revision":revision}
     return out,report,plugin
 
-def append(blobs,mapping,masks,components,path,base,root=ROOT,overworlds=None):
+def append(blobs,mapping,masks,components,path,base,root=ROOT,overworlds=None,revision=3):
     existing=set()
     for p in (base/"PBS").glob("trainers*.txt"):
         if p.is_symlink():raise ValueError("F10B_UNSAFE_PBS")
@@ -256,6 +290,6 @@ def append(blobs,mapping,masks,components,path,base,root=ROOT,overworlds=None):
             fields=[v.strip() for v in header.split(",")]
             if len(fields) in (2,3) and (len(fields)==2 or fields[2].isdigit()):
                 existing.add((fields[0],fields[1],int(fields[2]) if len(fields)==3 else 0))
-    out,report,plugin=build(blobs,mapping,masks,components,path,catalogue(base,"trainer_types"),catalogue(base,"pokemon"),existing,base,root,overworlds)
-    print("SINNOH_F10B_TRAINER_REPORT "+json.dumps(report,sort_keys=True),flush=True)
+    out,report,plugin=build(blobs,mapping,masks,components,path,catalogue(base,"trainer_types"),catalogue(base,"pokemon"),existing,base,root,overworlds,revision)
+    print(("SINNOH_F10B3_TRAINER_REPORT " if revision>=3 else "SINNOH_F10B2_ASSET_REPORT ")+json.dumps(report,sort_keys=True),flush=True)
     return out,report,plugin
