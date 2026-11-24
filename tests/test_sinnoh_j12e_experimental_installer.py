@@ -1003,6 +1003,33 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
             report4["species_and_types_validation"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
             print("SINNOH_F10B4_TRAINER_REPORT "+json.dumps(report4,sort_keys=True),flush=True)
             print("SINNOH_REAL_F10B4_131_MAPS_DOUBLE_ATOMIC_AND_SAFE_ACCESS_AUDITED_OK",flush=True)
+            final5,report5,plugin5=f10b.build(baseline,f08c_ids,masks,f08c_components,source,types|pair_types|{"CRUSHGIRL"},species|pair_species,set(),overworlds=Path(ow),revision=5)
+            by_key5={row["key"]:row for row in report5["accepted"]}
+            self.assertTrue(set(by_key)<=set(by_key5))
+            self.assertEqual(len(report5["f10b5_access_report"]),7)
+            for key,row in by_key.items():
+                for field in ("event_id","map_id","position","type","name","version","team","sprite_sha256"):
+                    self.assertEqual(row[field],by_key5[key][field])
+            for path,raw in more.items():
+                if path=="PBS/trainers_sinnoh_f10b.txt":continue
+                if path.startswith("Data/Map") and path.endswith(".rxdata") and path!="Data/MapInfos.rxdata":
+                    old=read_marshal(raw,"F10B4_OLD");new=read_marshal(final5[path],"F10B5_NEW")
+                    before=old.attrs.pop("@events");after=new.attrs.pop("@events")
+                    self.assertEqual(serialize(old,connection.EVENT_CLASSES),serialize(new,connection.EVENT_CLASSES))
+                    for eid,event in before.items():
+                        self.assertEqual(serialize(event,connection.EVENT_CLASSES),serialize(after[eid],connection.EVENT_CLASSES))
+                else:self.assertEqual(final5[path],raw)
+            self.assertEqual(exp.qa_teleport.build(final5,f08c_ids,f08c_components),entries)
+            self.assertFalse(report5["native_verified"])
+            self.assertFalse(report5["water_enabled"])
+            for key,row in by_key5.items():
+                if key not in by_key:self.assertIn(row["access_witness"]["kind"],("QA_EXISTING_ARRIVAL","EXISTING_STATIC_PORTAL","EXISTING_CONTINUOUS_EDGE"))
+            self.assertNotIn("F10B_79_33",by_key5)
+            self.assertNotIn("F10B_80_1",by_key5)
+            report5["species_and_types_validation"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
+            print("SINNOH_F10B5_TRAINER_REPORT "+json.dumps(report5,sort_keys=True),flush=True)
+            print("SINNOH_REAL_F10B5_131_MAPS_7_REMAINING_ACCESS_WITNESSES_AUDITED_OK",flush=True)
+
 
 
 
@@ -1698,6 +1725,32 @@ puts "F10B4_DOUBLE_ATOMIC_VICTORY_OK"
             result=subprocess.run(["ruby","-e",fixture,str(path)],capture_output=True,text=True,encoding="utf-8")
             self.assertEqual(result.returncode,0,result.stdout+result.stderr)
             self.assertIn("F10B4_DOUBLE_ATOMIC_VICTORY_OK",result.stdout)
+
+    def test_f10b5_access_witness_requires_actual_entry_and_non_cut_cell(self):
+        import sinnoh_f10b_trainers as f
+        points={(0,0),(1,0),(0,1),(1,1),(5,5),(6,5),(5,6),(6,6)}
+        self.assertIsNone(f.witness_component(points,[("QA_EXISTING_ARRIVAL",(0,0))],(5,5))[0])
+        witness,reached=f.witness_component(points,[("EXISTING_STATIC_PORTAL",(6,6))],(5,5))
+        self.assertEqual(witness["entry"],[6,6])
+        self.assertEqual(len(reached),4)
+        self.assertIsNone(f.witness_component({(0,0),(1,0),(2,0)},[("QA_EXISTING_ARRIVAL",(0,0))],(1,0))[0])
+        self.assertIsNone(f.witness_component(points,[("EXISTING_STATIC_PORTAL",(5,4))],(5,5))[0])
+        self.assertIsNone(f.witness_component(points,[("EXISTING_STATIC_PORTAL",(6,6))],(4,5))[0])
+
+    def test_f10b5_local_art_rejects_ambiguous_and_invalid_files(self):
+        import sinnoh_f10b_trainers as f
+        raw=b"\x89PNG\r\n\x1a\n"+struct.pack(">I",13)+b"IHDR"+struct.pack(">II",256,256)+b"\x08\x06\x00\x00\x00"+b"\x00"*4
+        with tempfile.TemporaryDirectory() as td:
+            base=Path(td);folder=base/"Graphics"/"Characters";folder.mkdir(parents=True)
+            (folder/"trainer_BIRDKEEPER_F.png").write_bytes(raw)
+            data,provenance,labels=f.strict_local_art(base,"BIRDKEEPER")
+            self.assertEqual(data,raw)
+            self.assertEqual(provenance,"CLASS_EQUIVALENT_LOCAL_VERIFIED_FILENAME")
+            (folder/"trainer_BIRDKEEPER.png").write_bytes(raw)
+            self.assertIsNone(f.strict_local_art(base,"BIRDKEEPER")[0])
+            (folder/"trainer_BIRDKEEPER_F.png").unlink()
+            (folder/"trainer_BIRDKEEPER.png").write_bytes(b"not png")
+            self.assertIsNone(f.strict_local_art(base,"BIRDKEEPER")[0])
 
     def test_f10b3_sean_explicit_variant_and_kath_alias(self):
         import io,zipfile
