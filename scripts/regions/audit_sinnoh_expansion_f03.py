@@ -35,10 +35,14 @@ def norm(s):
 def index(z):
     result={}
     for i in z.infolist():
-        if i.is_dir():continue
-        name=i.filename
+        # ZipInfo normalizes separators on Windows. Inspect the raw name
+        # before trusting the normalized filename or skipping directories.
+        name=i.orig_filename
+        if name!=i.filename or "\x00" in name:
+            raise ValueError("F03_UNSAFE_MEMBER")
         if name.startswith("/") or "\\" in name or ".." in name.split("/") or re.match(r"^[A-Za-z]:",name) or ((i.external_attr>>16)&0o170000)==0o120000:
             raise ValueError("F03_UNSAFE_MEMBER")
+        if i.is_dir():continue
         key=name.casefold()
         if key in result:raise ValueError("F03_DUPLICATE_MEMBER")
         result[key]=name
