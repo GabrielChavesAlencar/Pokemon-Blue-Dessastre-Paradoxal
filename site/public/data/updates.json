@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "97c52e299ed0fb5305a9a15192586b76c37c3674",
+      "date": "2026-11-24T19:38:45-03:00",
+      "title": "Merge pull request #290 from GabrielChavesAlencar/sinnoh-full-expansion-f09b-original-encounters",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "43c3e283f77564bd25e3ec1d0b0abe5e2b651d3d",
+      "date": "2026-11-24T19:26:31-03:00",
+      "title": "feat(Sinnoh F09B): validate pinned original encounter PBS and append supported methods",
+      "category": "Novidades"
+    },
+    {
       "sha": "efd414ed8ec4d2f4ed225aa249de019b6a441967",
       "date": "2026-11-24T19:25:36-03:00",
       "title": "Merge pull request #289 from GabrielChavesAlencar/sinnoh-full-expansion-f09-encounters",
