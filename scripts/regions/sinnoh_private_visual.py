@@ -646,6 +646,19 @@ def extend_lake_story(blobs,mapping,components):
         event(lake,"SN_LAKE_TO_LAKEFRONT_"+str(lane+1),b,
               event_page(warp=(mapping[LAKEFRONT],10+lane,3),touch=True),
               existing=old_exit[0] if lane==0 else None)
+    # The profile autorun must release the interpreter even if the native
+    # name screen fails. The bedroom exit retries setup before transferring;
+    # neither cancellation nor a failed API call can grant completion.
+    bedroom="SINNOH_PLAYER_BEDROOM"
+    exits=[e for e in world(bedroom).values() if e.attrs["@name"]==b"SN_BEDROOM_TO_1F"]
+    if len(exits)!=1:fail("PROFILE_BEDROOM_EXIT_MISSING")
+    exit_page=exits[0].attrs["@pages"][0].attrs
+    transfer=exit_page["@list"][0]
+    if transfer.attrs["@code"]!=201:fail("PROFILE_BEDROOM_EXIT_NOT_WARP")
+    transfer.attrs["@indent"]=1
+    ending=command(0);ending.attrs["@indent"]=1
+    exit_page["@list"]=[command(111,12,b"defined?(BlueSinnohPilot) && BlueSinnohPilot.respond_to?(:setup_profile) && BlueSinnohPilot.setup_profile"),transfer,ending,command(412),command(0)]
+
     # A one-time autorun on entering each map, with a self switch and a
     # blank second page, avoids looping and leaves action NPCs available.
     scenes=(
@@ -662,6 +675,15 @@ def extend_lake_story(blobs,mapping,components):
         active.attrs["@trigger"]=3
         active.attrs["@through"]=True
         active.attrs["@list"]=[command(355,script.encode("ascii")),command(123,b"A",0),command(0)]
+        if key=="SN_PROFILE_SETUP":
+            # A means the initial attempt ran, not profile completion.
+            # The saved profile flag is the authority; stairs retry if false.
+            # The inline rescue catches failures before the handler is entered
+            # (e.g. a missing compiled plugin), without losing the cause.
+            code=('begin; BlueSinnohPilot.setup_profile; rescue StandardError => e; '
+                  'begin; File.open("sinnoh-profile-error.txt","wb"){|f| f.write("PROFILE_EVENT_DISPATCH\\n"+e.class.to_s+": "+e.message.to_s+"\\n"+Array(e.backtrace).first(12).join("\\n"))}; rescue StandardError; end; '
+                  'begin; pbMessage("Sinnoh QA: erro ao iniciar perfil. Consulte sinnoh-profile-error.txt."); rescue StandardError; end; end')
+            active.attrs["@list"][0]=command(355,code.encode("ascii"))
         finished=copy.deepcopy(active)
         finished.attrs["@trigger"]=0
         finished.attrs["@condition"].attrs.update({"@self_switch_valid":True,"@self_switch_ch":b"A"})

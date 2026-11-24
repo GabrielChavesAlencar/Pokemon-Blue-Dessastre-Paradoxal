@@ -306,10 +306,18 @@ class J12EInstallerTests(unittest.TestCase):
                 xy=(event.attrs["@x"],event.attrs["@y"])
                 self.assertIn(xy,components[sym])
                 pages=event.attrs["@pages"]
+                if event.attrs["@name"]==b"SN_BEDROOM_TO_1F":
+                    ops=pages[0].attrs["@list"]
+                    self.assertEqual([c.attrs["@code"] for c in ops],[111,201,0,412,0])
+                    self.assertIn(b"BlueSinnohPilot.setup_profile",ops[0].attrs["@parameters"][1])
                 if pages[0].attrs["@trigger"]==3:
                     self.assertEqual(len(pages),2)
                     self.assertTrue(pages[1].attrs["@condition"].attrs["@self_switch_valid"])
                     autoruns.append(event.attrs["@name"])
+                    if event.attrs["@name"]==b"SN_PROFILE_SETUP" and shutil.which("ruby"):
+                        script=pages[0].attrs["@list"][0].attrs["@parameters"][0].decode("ascii")
+                        run=subprocess.run([shutil.which("ruby"),"-c"],input=script,text=True,capture_output=True,timeout=15)
+                        self.assertEqual(run.returncode,0,run.stdout+run.stderr)
             if sym==pv.LAKEFRONT:
                 self.assertEqual({(e.attrs["@x"],e.attrs["@y"]) for e in es.values()},{(10,2),(11,2)})
                 for e in es.values():
@@ -325,6 +333,13 @@ class J12EInstallerTests(unittest.TestCase):
     def test_new_profile_dialogue_selects_both_characters_and_names_once(self):
         script=r'''
 load ARGV[0]
+require "tmpdir"
+module BlueSinnohExperimental; TOKEN = "012345abcdef"; end
+module GameData
+  module PlayerMetadata
+    def self.try_get(id); [9,10].include?(id) ? Object.new : nil; end
+  end
+end
 Player = Struct.new(:character_ID,:name)
 Global = Struct.new(:blue_regions)
 class GamePlayer
@@ -340,7 +355,12 @@ def pbMessage(text,*args)
   $choice
 end
 def pbChangePlayer(id); $player.character_ID = id; end
-def pbTrainerName; $named += 1; $player.name = "Teste Sinnoh"; end
+module Settings; MAX_PLAYER_NAME_SIZE=12; end
+def pbEnterPlayerName(prompt,min,max)
+  raise "wrong name limits" unless min==1 && max==12
+  $name_failure ? (raise "native name entry failed") : ($cancel_name ? "" : "Teste Sinnoh")
+end
+def pbTrainerName(name); $named += 1; $player.name = name; end
 [0,1].each do |choice|
   $choice=choice; $asked=0; $named=0
   $PokemonGlobal=Global.new({"version"=>1,"initial"=>"SINNOH","current"=>"SINNOH"})
@@ -356,12 +376,40 @@ def pbTrainerName; $named += 1; $player.name = "Teste Sinnoh"; end
   BlueSinnohPilot.barry_intro
   raise "gate did not open" unless BlueSinnohPilot.lake_entry_allowed?
 end
+
+$choice=0; $asked=0; $named=0
+$PokemonGlobal=Global.new({"version"=>1,"initial"=>"SINNOH","current"=>"SINNOH"})
+$player=Player.new(1,"Red"); $game_player=GamePlayer.new
+$name_failure=true
+Dir.mktmpdir do |tmp|
+  qa=File.join(tmp,"game-sinnoh-experimental-012345abcdef")
+  Dir.mkdir(qa)
+  Dir.chdir(qa) do
+    File.write("sinnoh-experimental-qa.json","{}")
+    raise "exception escaped" if BlueSinnohPilot.setup_profile
+    raise "failure marked complete" if $PokemonGlobal.blue_regions["sinnoh_profile_complete"]
+    log=File.read("sinnoh-profile-error.txt")
+    raise "missing real error context" unless log.include?("SINNOH_PROFILE_STAGE=name_entry") &&
+      log.include?("native name entry failed")
+  end
+end
+$name_failure=false; $cancel_name=true
+raise "cancel advanced" if BlueSinnohPilot.setup_profile
+raise "cancel marked complete" if $PokemonGlobal.blue_regions["sinnoh_profile_complete"]
+$cancel_name=false
+raise "retry failed" unless BlueSinnohPilot.setup_profile
+raise "retry name missing" unless $player.name=="Teste Sinnoh" && $named==1
+$PokemonGlobal=Global.new({"version"=>1,"initial"=>"KANTO","current"=>"KANTO"})
+raise "foreign save accepted" if BlueSinnohPilot.setup_profile
+raise "foreign save changed" if $PokemonGlobal.blue_regions.key?("sinnoh_profile_complete")
 puts "SINNOH_PROFILE_2_CHOICES_NAME_AND_GATE_OK"
+puts "SINNOH_PROFILE_NATIVE_FAILURE_CANCEL_RETRY_OK"
 '''
         proc=subprocess.run([shutil.which("ruby"),"-e",script,str(ROOT/"scripts/regions/SinnohPilot.rb")],
                             text=True,capture_output=True,timeout=30)
         self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
         self.assertIn("SINNOH_PROFILE_2_CHOICES_NAME_AND_GATE_OK",proc.stdout)
+        self.assertIn("SINNOH_PROFILE_NATIVE_FAILURE_CANCEL_RETRY_OK",proc.stdout)
 
     def test_expanded_profile_only_runs_after_map_initialization(self):
         code=exp.experiment_plugin([442,10,8],"abc123abc123",True,True,story_profile=True).decode()
