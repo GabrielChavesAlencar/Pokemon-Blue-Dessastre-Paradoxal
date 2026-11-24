@@ -178,6 +178,68 @@ def animated_water():
                 c.paste2(t,frame*96+col*32,row*32)
     return png(c.w,c.h,bytes(c.raw))
 
+# RMXP standard 48-pattern ordering. Missing cardinal neighbours are
+# encoded N/E/S/W = 1/2/4/8; missing diagonals NW/NE/SE/SW = 1/2/4/8.
+# The four corner cut-outs are relevant only when both adjoining sides exist.
+def autotile_shape(sides, corners):
+    if not 0 <= sides <= 15 or not 0 <= corners <= 15:
+        raise ValueError("SINNOH_INVALID_AUTOTILE_NEIGHBOURS")
+    if sides==0:return corners
+    if sides==8:return 16+bool(corners&2)+2*bool(corners&4)
+    if sides==1:return 20+bool(corners&4)+2*bool(corners&8)
+    if sides==2:return 24+bool(corners&8)+2*bool(corners&1)
+    if sides==4:return 28+bool(corners&1)+2*bool(corners&2)
+    if sides==10:return 32
+    if sides==5:return 33
+    if sides==9:return 34+bool(corners&4)
+    if sides==3:return 36+bool(corners&8)
+    if sides==6:return 38+bool(corners&1)
+    if sides==12:return 40+bool(corners&2)
+    return {11:42,13:43,14:44,7:45,15:46}[sides]
+
+def ground_autotile(kind):
+    # Original 96x128 XP sheet: representative tile, inner-corner quarters,
+    # then the three-by-three outer-edge field. Draw in 2x logical pixels.
+    if kind not in ("path","grass"):raise ValueError("UNKNOWN_GROUND_AUTOTILE")
+    c=Canvas(48,64)
+    inside="dcc397" if kind=="path" else "79aa57"
+    edge="bfa779" if kind=="path" else "67964a"
+    outside="86b963"
+    c.rect(0,16,48,48,inside)
+    for y in range(16,64):
+        for x in range(48):
+            if (x*13+y*17)%31==0:c.dot(x,y,edge)
+    c.rect(0,16,48,3,outside);c.rect(0,61,48,3,outside)
+    c.rect(0,16,3,48,outside);c.rect(45,16,3,48,outside)
+    for x,y in ((3,19),(44,19),(3,60),(44,60)):c.dot(x,y,outside)
+    c.rect(0,0,16,16,inside)
+    c.rect(32,0,16,16,inside)
+    # Four inner corners, one per 8x8 logical quarter.
+    for qx,qy,dx,dy in ((32,0,0,0),(40,0,1,0),(32,8,0,1),(40,8,1,1)):
+        for y in range(4):
+            for x in range(4):
+                if x+y<4:
+                    c.dot(qx+(7-x if dx else x),qy+(7-y if dy else y),outside)
+    out=Canvas(96,128);out.paste2(c,0,0)
+    return png(out.w,out.h,bytes(out.raw))
+
+def route_grass(cells,w,h,protected):
+    # Decorative taller-looking grass patches in routes only. Terrain tag
+    # stays neutral until encounters are integrated and tested; no battle claim.
+    area=w*h;mask=set()
+    for y in range(2,h-2):
+        for x in range(2,w-2):
+            n=y*w+x
+            if (x,y) in protected or cells[n]!=400 or any(cells[z*area+n] for z in (1,2)):
+                continue
+            if (x//5+2*(y//4))%5 in (1,2):mask.add((x,y))
+    return mask
+
+def ground_shape_at(x,y,matches):
+    sides=sum(1<<i for i,(dx,dy) in enumerate(((0,-1),(1,0),(0,1),(-1,0))) if not matches(x+dx,y+dy))
+    corners=sum(1<<i for i,(dx,dy) in enumerate(((-1,-1),(1,-1),(1,1),(-1,1))) if not matches(x+dx,y+dy))
+    return autotile_shape(sides,corners)
+
 def npc(name):
     # 4 directions x 4 steps; original hand-authored palette/pose.
     colors={"MOTHER":("785346","bb7784"),"BARRY":("d7ad54","d88847"),
@@ -199,8 +261,8 @@ def npc(name):
             c.paste2(f,step*32,d*32)
     return png(c.w,c.h,bytes(c.raw))
 
-def remap_cells(cells,w,h,outside):
-    result=list(cells);area=w*h
+def remap_cells(cells,w,h,outside,grass=()):
+    result=list(cells);area=w*h;grass=set(grass)
     def get(z,x,y):
         return cells[z*area+y*w+x]-FIRST if 0<=x<w and 0<=y<h else -1
     for z in range(3):
@@ -221,7 +283,11 @@ def remap_cells(cells,w,h,outside):
                 elif i in (6,13):
                     edges=[get(z,x,y-1),get(z,x,y+1),get(z,x-1,y),get(z,x+1,y)]
                     k=next(((48 if i==6 else 52)+j for j,a in enumerate(edges) if a!=i),i)
-                result[n]=48 if outside and i==18 else FIRST+k
+                if outside and z==0 and i==17:
+                    result[n]=96+ground_shape_at(x,y,lambda a,b:get(0,a,b)==17)
+                elif outside and z==0 and i==16 and (x,y) in grass:
+                    result[n]=144+ground_shape_at(x,y,lambda a,b:(a,b) in grass)
+                else:result[n]=48 if outside and i==18 else FIRST+k
     return result
 
 def upgrade(blobs,mapping,tile_ids,events,start):
@@ -241,8 +307,11 @@ def upgrade(blobs,mapping,tile_ids,events,start):
             # wild encounters, Surf authorization or tall-grass claims here.
             tags.append(4 if outside and i==22 else 6 if outside and i==18 else 0)
         if outside:
-            a["@autotile_names"]=[b"SNQA_WaterV2"]+[b""]*6
+            a["@autotile_names"]=[b"SNQA_WaterV2",b"SNQA_PathV2",b"SNQA_GrassV2"]+[b""]*4
             for k in range(48,96):tags[k]=6
+            for k in range(96,192):p[k]=0
+            for kind in ("path","grass"):
+                out["Graphics/Autotiles/SNQA_"+kind.title()+"V2.png"]=ground_autotile(kind)
             out["Graphics/Autotiles/SNQA_WaterV2.png"]=animated_water()
         a["@passages"]=table1(p);a["@priorities"]=table1(pr);a["@terrain_tags"]=table1(tags)
         out["Graphics/Tilesets/"+GRAPHIC[group][1]+".png"]=atlas(outside)
@@ -252,7 +321,10 @@ def upgrade(blobs,mapping,tile_ids,events,start):
         m=read_marshal(out[path],"VISUAL_MAP");a=m.attrs
         w,h=a["@width"],a["@height"];raw=a["@data"];n=w*h*3
         cells=struct.unpack_from("<"+str(n)+"H",raw.data,20)
-        new=remap_cells(cells,w,h,symbol in OUTSIDE)
+        protected={tuple(e["position"]) for e in events if e["map"]==symbol}
+        protected.update(tuple(e["arrival"]) for e in events if e.get("destination")==symbol)
+        grass=route_grass(cells,w,h,protected) if symbol in ("SINNOH_ROUTE_201","SINNOH_ROUTE_202") else ()
+        new=remap_cells(cells,w,h,symbol in OUTSIDE,grass)
         a["@tileset_id"]=tile_ids["J11B_EXTERIORS" if symbol in OUTSIDE else "J10A_INTERIORS"]
         a["@data"]=RubyData("Table",raw.data[:20]+struct.pack("<"+str(n)+"H",*new))
         for event in events:
