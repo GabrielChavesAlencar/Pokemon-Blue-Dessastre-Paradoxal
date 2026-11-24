@@ -35,11 +35,18 @@ def allocate(mapping,occupied,root=ROOT):
     if len(free)<12:fail("INSUFFICIENT_FREE_CITY_MAPIDS")
     return {**mapping,**{r["symbol"]:mid for r,mid in zip(rows(root),free)}}
 
-def component(cells,w,h,p):
-    # Conservative movement model; pick largest connected component.
+def component(cells,w,h,p,tags=None):
+    # Choose the largest conservative walking component that contains an
+    # ordinary-ground arrival AND two ordinary-ground neighbours, rather
+    # than the largest component regardless of terrain.
     free={(x,y) for y in range(h) for x in range(w)
           if (stack:=[cells[z*w*h+y*w+x] for z in range(3) if cells[z*w*h+y*w+x]])
           and all(t<len(p) and not p[t]&15 for t in stack)}
+    ground={q for q in free if 0<q[0]<w-1 and 0<q[1]<h-1 and
+            (tags is None or all(tags[t]==0 for z in range(3)
+            if (t:=cells[z*w*h+q[1]*w+q[0]])))}
+    arrivals={q for q in ground if sum(n in ground for n in
+              ((q[0]-1,q[1]),(q[0]+1,q[1]),(q[0],q[1]-1),(q[0],q[1]+1)))>=2}
     best=set()
     while free:
         seed=min(free,key=lambda q:(q[1],q[0]))
@@ -48,8 +55,9 @@ def component(cells,w,h,p):
             x,y=todo.popleft()
             for q in ((x-1,y),(x+1,y),(x,y-1),(x,y+1)):
                 if q in free:free.remove(q);part.add(q);todo.append(q)
-        if len(part)>len(best):best=part
-    if len(best)<12:fail("NO_WALKABLE_COMPONENT")
+        if len(part)>len(best) and part & arrivals:best=part
+    if len(best)<12:
+        fail("NO_SAFE_WALKABLE_COMPONENT:ordinary_ground=%d:arrival_candidates=%d"%(len(ground),len(arrivals)))
     return best
 
 def city_atlases(raw,sets):
@@ -104,7 +112,10 @@ def append(blobs,mapping,components,path,occupied,root=ROOT):
             if any(48<=t<384 and not source.attrs["@autotile_names"][t//48-1] for t in cells):fail("SOURCE_AUTOTILE_MISSING")
             if any(0<t<48 for t in cells):fail("SOURCE_RESERVED_TILE")
             sets[sym]={t for t in cells if t>=384};source_cells[sym]=cells
-            comps[sym]=component(cells,w,h,tables["@passages"])
+            try:
+                comps[sym]=component(cells,w,h,tables["@passages"],tables["@terrain_tags"])
+            except ValueError as exc:
+                raise ValueError("F04_CITY:"+sym+":"+str(exc)) from exc
         atlases=city_atlases(pv.member(z,pv.MAP_ROOT+"Graphics/Tilesets/outdoors.png"),sets)
     order=max(v.attrs["@order"] for v in infos.values())
     for row in rows(root):
@@ -128,7 +139,10 @@ def append(blobs,mapping,components,path,occupied,root=ROOT):
         # Deliberately retain the already verified Sandgem BGM as temporary fallback.
         rel="Data/Map%03d.rxdata"%mid
         out[rel]=serialize(m,EVENT_CLASSES)
-        x,y=teleport.safe_spawn(out[rel],tiles,comps[sym])
+        try:
+            x,y=teleport.safe_spawn(out[rel],tiles,comps[sym])
+        except ValueError as exc:
+            raise ValueError("F04_CITY:"+sym+":"+str(exc)) from exc
         info=copy.deepcopy(infos[mapping["SINNOH_SANDGEM_TOWN"]]);order+=1
         info.attrs.update({"@name":row["label"].encode("ascii"),"@parent_id":0,"@order":order})
         infos[mid]=info
