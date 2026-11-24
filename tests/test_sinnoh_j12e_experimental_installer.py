@@ -1536,7 +1536,7 @@ raise "duplicate battle" unless $calls==4
     @unittest.skipUnless(shutil.which("ruby"),"Requires Ruby runtime")
     def test_f10b_ruby_persist_only_after_win_and_scale_guard(self):
         source=(ROOT/"scripts/regions/SinnohF10B.rb").read_text("utf-8").replace(
-            "__F10B_ROWS__", '[["F10B_42_29",["HIKER","Kevin",5229,469,[["GEODUDE",17]]]]]')
+            "__F10B_ROWS__", '[["F10B_42_33",["HIKER","Kevin",5233,469,[["GEODUDE",17]]]]]')
         fixture=r'''
 module BlueSinnohExperimental
   def self.private_copy?; $private; end
