@@ -1,0 +1,787 @@
+{
+  "schema": 1,
+  "job": 138823887883,
+  "source_sha256": "e812fb6413b410a8c9ce4380cd02c0e1f8a5d257f5793cf87182201d6e6d7990",
+  "fixture_species_only": true,
+  "methods": [
+    {
+      "source_id": 42,
+      "symbol": "SINNOH_ROUTE_207",
+      "method": "LandMorning",
+      "slots": 4,
+      "rate": 21
+    },
+    {
+      "source_id": 42,
+      "symbol": "SINNOH_ROUTE_207",
+      "method": "Land",
+      "slots": 3,
+      "rate": 21
+    },
+    {
+      "source_id": 42,
+      "symbol": "SINNOH_ROUTE_207",
+      "method": "LandNight",
+      "slots": 5,
+      "rate": 21
+    },
+    {
+      "source_id": 76,
+      "symbol": "SINNOH_OREBURGH_GATE",
+      "method": "Cave",
+      "slots": 3,
+      "rate": 5
+    },
+    {
+      "source_id": 79,
+      "symbol": "SINNOH_ROUTE_211",
+      "method": "LandMorning",
+      "slots": 5,
+      "rate": 21
+    },
+    {
+      "source_id": 79,
+      "symbol": "SINNOH_ROUTE_211",
+      "method": "Land",
+      "slots": 5,
+      "rate": 21
+    },
+    {
+      "source_id": 79,
+      "symbol": "SINNOH_ROUTE_211",
+      "method": "LandNight",
+      "slots": 7,
+      "rate": 21
+    },
+    {
+      "source_id": 82,
+      "symbol": "SINNOH_MT_CORONET_WEST_APPROACH",
+      "method": "CaveDay",
+      "slots": 7,
+      "rate": 5
+    },
+    {
+      "source_id": 82,
+      "symbol": "SINNOH_MT_CORONET_WEST_APPROACH",
+      "method": "CaveMorning",
+      "slots": 8,
+      "rate": 5
+    },
+    {
+      "source_id": 82,
+      "symbol": "SINNOH_MT_CORONET_WEST_APPROACH",
+      "method": "CaveNight",
+      "slots": 8,
+      "rate": 5
+    },
+    {
+      "source_id": 89,
+      "symbol": "SINNOH_SOLACEON_RUINS",
+      "method": "Cave",
+      "slots": 28,
+      "rate": 5
+    },
+    {
+      "source_id": 91,
+      "symbol": "SINNOH_ROUTE_205",
+      "method": "LandMorning",
+      "slots": 8,
+      "rate": 21
+    },
+    {
+      "source_id": 91,
+      "symbol": "SINNOH_ROUTE_205",
+      "method": "Land",
+      "slots": 7,
+      "rate": 21
+    },
+    {
+      "source_id": 91,
+      "symbol": "SINNOH_ROUTE_205",
+      "method": "LandNight",
+      "slots": 8,
+      "rate": 21
+    },
+    {
+      "source_id": 93,
+      "symbol": "SINNOH_ETERNA_FOREST_SOURCE_093",
+      "method": "LandMorning",
+      "slots": 11,
+      "rate": 21
+    },
+    {
+      "source_id": 93,
+      "symbol": "SINNOH_ETERNA_FOREST_SOURCE_093",
+      "method": "Land",
+      "slots": 10,
+      "rate": 21
+    },
+    {
+      "source_id": 93,
+      "symbol": "SINNOH_ETERNA_FOREST_SOURCE_093",
+      "method": "LandNight",
+      "slots": 11,
+      "rate": 21
+    },
+    {
+      "source_id": 94,
+      "symbol": "SINNOH_ROUTE_205_SEGMENT_2",
+      "method": "Land",
+      "slots": 4,
+      "rate": 21
+    },
+    {
+      "source_id": 104,
+      "symbol": "SINNOH_ROUTE_209",
+      "method": "LandMorning",
+      "slots": 5,
+      "rate": 21
+    },
+    {
+      "source_id": 104,
+      "symbol": "SINNOH_ROUTE_209",
+      "method": "LandNight",
+      "slots": 7,
+      "rate": 21
+    },
+    {
+      "source_id": 105,
+      "symbol": "SINNOH_ROUTE_203",
+      "method": "LandMorning",
+      "slots": 5,
+      "rate": 21
+    },
+    {
+      "source_id": 108,
+      "symbol": "SINNOH_ROUTE_218",
+      "method": "LandMorning",
+      "slots": 4,
+      "rate": 21
+    },
+    {
+      "source_id": 108,
+      "symbol": "SINNOH_ROUTE_218",
+      "method": "Land",
+      "slots": 4,
+      "rate": 21
+    },
+    {
+      "source_id": 108,
+      "symbol": "SINNOH_ROUTE_218",
+      "method": "LandNight",
+      "slots": 3,
+      "rate": 21
+    },
+    {
+      "source_id": 110,
+      "symbol": "SINNOH_ROUTE_204",
+      "method": "LandMorning",
+      "slots": 6,
+      "rate": 21
+    },
+    {
+      "source_id": 110,
+      "symbol": "SINNOH_ROUTE_204",
+      "method": "Land",
+      "slots": 5,
+      "rate": 21
+    },
+    {
+      "source_id": 110,
+      "symbol": "SINNOH_ROUTE_204",
+      "method": "LandNight",
+      "slots": 6,
+      "rate": 21
+    },
+    {
+      "source_id": 116,
+      "symbol": "SINNOH_ROUTE_210_SEGMENT_2",
+      "method": "LandMorning",
+      "slots": 6,
+      "rate": 21
+    },
+    {
+      "source_id": 116,
+      "symbol": "SINNOH_ROUTE_210_SEGMENT_2",
+      "method": "Land",
+      "slots": 6,
+      "rate": 21
+    },
+    {
+      "source_id": 116,
+      "symbol": "SINNOH_ROUTE_210_SEGMENT_2",
+      "method": "LandNight",
+      "slots": 8,
+      "rate": 21
+    },
+    {
+      "source_id": 121,
+      "symbol": "SINNOH_MT_CORONET_INTERIOR_ROUTES",
+      "method": "CaveMorning",
+      "slots": 8,
+      "rate": 5
+    },
+    {
+      "source_id": 121,
+      "symbol": "SINNOH_MT_CORONET_INTERIOR_ROUTES",
+      "method": "CaveNight",
+      "slots": 8,
+      "rate": 5
+    },
+    {
+      "source_id": 122,
+      "symbol": "SINNOH_ROUTE_208",
+      "method": "LandMorning",
+      "slots": 6,
+      "rate": 21
+    },
+    {
+      "source_id": 122,
+      "symbol": "SINNOH_ROUTE_208",
+      "method": "LandNight",
+      "slots": 6,
+      "rate": 21
+    },
+    {
+      "source_id": 126,
+      "symbol": "SINNOH_ROUTE_215",
+      "method": "LandMorning",
+      "slots": 6,
+      "rate": 21
+    },
+    {
+      "source_id": 126,
+      "symbol": "SINNOH_ROUTE_215",
+      "method": "LandNight",
+      "slots": 6,
+      "rate": 21
+    },
+    {
+      "source_id": 140,
+      "symbol": "SINNOH_ROUTE_229",
+      "method": "LandMorning",
+      "slots": 7,
+      "rate": 21
+    },
+    {
+      "source_id": 140,
+      "symbol": "SINNOH_ROUTE_229",
+      "method": "LandNight",
+      "slots": 7,
+      "rate": 21
+    },
+    {
+      "source_id": 141,
+      "symbol": "SINNOH_ROUTE_228",
+      "method": "LandMorning",
+      "slots": 6,
+      "rate": 21
+    },
+    {
+      "source_id": 141,
+      "symbol": "SINNOH_ROUTE_228",
+      "method": "Land",
+      "slots": 6,
+      "rate": 21
+    },
+    {
+      "source_id": 141,
+      "symbol": "SINNOH_ROUTE_228",
+      "method": "LandNight",
+      "slots": 6,
+      "rate": 21
+    },
+    {
+      "source_id": 145,
+      "symbol": "SINNOH_RAVAGED_PATH",
+      "method": "Cave",
+      "slots": 2,
+      "rate": 5
+    },
+    {
+      "source_id": 146,
+      "symbol": "SINNOH_ROUTE_206",
+      "method": "LandMorning",
+      "slots": 5,
+      "rate": 21
+    },
+    {
+      "source_id": 146,
+      "symbol": "SINNOH_ROUTE_206",
+      "method": "LandNight",
+      "slots": 6,
+      "rate": 21
+    },
+    {
+      "source_id": 150,
+      "symbol": "SINNOH_ROUTE_226",
+      "method": "Land",
+      "slots": 6,
+      "rate": 21
+    },
+    {
+      "source_id": 150,
+      "symbol": "SINNOH_ROUTE_226",
+      "method": "LandNight",
+      "slots": 6,
+      "rate": 21
+    },
+    {
+      "source_id": 151,
+      "symbol": "SINNOH_ROUTE_227",
+      "method": "Land",
+      "slots": 8,
+      "rate": 21
+    },
+    {
+      "source_id": 152,
+      "symbol": "SINNOH_STARK_MOUNTAIN",
+      "method": "Land",
+      "slots": 8,
+      "rate": 21
+    },
+    {
+      "source_id": 153,
+      "symbol": "SINNOH_STARK_MOUNTAIN_SOURCE_153",
+      "method": "Cave",
+      "slots": 7,
+      "rate": 5
+    },
+    {
+      "source_id": 155,
+      "symbol": "SINNOH_ROUTE_230",
+      "method": "Land",
+      "slots": 7,
+      "rate": 21
+    },
+    {
+      "source_id": 155,
+      "symbol": "SINNOH_ROUTE_230",
+      "method": "LandNight",
+      "slots": 7,
+      "rate": 21
+    },
+    {
+      "source_id": 156,
+      "symbol": "SINNOH_ROUTE_216",
+      "method": "LandNight",
+      "slots": 7,
+      "rate": 21
+    },
+    {
+      "source_id": 159,
+      "symbol": "SINNOH_ACUITY_LAKEFRONT",
+      "method": "Land",
+      "slots": 3,
+      "rate": 21
+    },
+    {
+      "source_id": 161,
+      "symbol": "SINNOH_LAKE_ACUITY",
+      "method": "Land",
+      "slots": 7,
+      "rate": 21
+    },
+    {
+      "source_id": 164,
+      "symbol": "SINNOH_ROUTE_225",
+      "method": "Land",
+      "slots": 6,
+      "rate": 21
+    },
+    {
+      "source_id": 164,
+      "symbol": "SINNOH_ROUTE_225",
+      "method": "LandNight",
+      "slots": 7,
+      "rate": 21
+    },
+    {
+      "source_id": 165,
+      "symbol": "SINNOH_ROUTE_225_SEGMENT_2",
+      "method": "Land",
+      "slots": 6,
+      "rate": 21
+    },
+    {
+      "source_id": 165,
+      "symbol": "SINNOH_ROUTE_225_SEGMENT_2",
+      "method": "LandNight",
+      "slots": 7,
+      "rate": 21
+    },
+    {
+      "source_id": 173,
+      "symbol": "SINNOH_SNOWPOINT_TEMPLE",
+      "method": "Cave",
+      "slots": 3,
+      "rate": 5
+    },
+    {
+      "source_id": 174,
+      "symbol": "SINNOH_MT_CORONET_SOURCE_174",
+      "method": "CaveMorning",
+      "slots": 8,
+      "rate": 5
+    },
+    {
+      "source_id": 182,
+      "symbol": "SINNOH_MT_CORONET_SOURCE_182",
+      "method": "CaveMorning",
+      "slots": 8,
+      "rate": 5
+    },
+    {
+      "source_id": 182,
+      "symbol": "SINNOH_MT_CORONET_SOURCE_182",
+      "method": "CaveNight",
+      "slots": 8,
+      "rate": 5
+    },
+    {
+      "source_id": 183,
+      "symbol": "SINNOH_MT_CORONET_SOURCE_183",
+      "method": "Land",
+      "slots": 7,
+      "rate": 21
+    },
+    {
+      "source_id": 183,
+      "symbol": "SINNOH_MT_CORONET_SOURCE_183",
+      "method": "LandNight",
+      "slots": 9,
+      "rate": 21
+    },
+    {
+      "source_id": 184,
+      "symbol": "SINNOH_MT_CORONET_SOURCE_184",
+      "method": "CaveMorning",
+      "slots": 8,
+      "rate": 5
+    },
+    {
+      "source_id": 184,
+      "symbol": "SINNOH_MT_CORONET_SOURCE_184",
+      "method": "CaveNight",
+      "slots": 8,
+      "rate": 5
+    },
+    {
+      "source_id": 190,
+      "symbol": "SINNOH_WAYWARD_CAVE_SOURCE_190",
+      "method": "Cave",
+      "slots": 6,
+      "rate": 5
+    },
+    {
+      "source_id": 200,
+      "symbol": "SINNOH_ROUTE_221",
+      "method": "LandNight",
+      "slots": 5,
+      "rate": 21
+    },
+    {
+      "source_id": 206,
+      "symbol": "SINNOH_ROUTE_214",
+      "method": "LandMorning",
+      "slots": 6,
+      "rate": 21
+    },
+    {
+      "source_id": 206,
+      "symbol": "SINNOH_ROUTE_214",
+      "method": "Land",
+      "slots": 6,
+      "rate": 21
+    },
+    {
+      "source_id": 206,
+      "symbol": "SINNOH_ROUTE_214",
+      "method": "LandNight",
+      "slots": 6,
+      "rate": 21
+    },
+    {
+      "source_id": 207,
+      "symbol": "SINNOH_MANIAC_TUNNEL",
+      "method": "Cave",
+      "slots": 2,
+      "rate": 5
+    },
+    {
+      "source_id": 209,
+      "symbol": "SINNOH_SENDOFF_SPRING",
+      "method": "LandMorning",
+      "slots": 5,
+      "rate": 21
+    },
+    {
+      "source_id": 209,
+      "symbol": "SINNOH_SENDOFF_SPRING",
+      "method": "Land",
+      "slots": 5,
+      "rate": 21
+    },
+    {
+      "source_id": 209,
+      "symbol": "SINNOH_SENDOFF_SPRING",
+      "method": "LandNight",
+      "slots": 6,
+      "rate": 21
+    },
+    {
+      "source_id": 211,
+      "symbol": "SINNOH_TURNBACK_CAVE_SOURCE_211",
+      "method": "CaveMorning",
+      "slots": 8,
+      "rate": 5
+    },
+    {
+      "source_id": 211,
+      "symbol": "SINNOH_TURNBACK_CAVE_SOURCE_211",
+      "method": "Cave",
+      "slots": 8,
+      "rate": 5
+    },
+    {
+      "source_id": 211,
+      "symbol": "SINNOH_TURNBACK_CAVE_SOURCE_211",
+      "method": "CaveNight",
+      "slots": 8,
+      "rate": 5
+    },
+    {
+      "source_id": 212,
+      "symbol": "SINNOH_TURNBACK_CAVE_SOURCE_212",
+      "method": "CaveMorning",
+      "slots": 10,
+      "rate": 5
+    },
+    {
+      "source_id": 212,
+      "symbol": "SINNOH_TURNBACK_CAVE_SOURCE_212",
+      "method": "Cave",
+      "slots": 10,
+      "rate": 5
+    },
+    {
+      "source_id": 212,
+      "symbol": "SINNOH_TURNBACK_CAVE_SOURCE_212",
+      "method": "CaveNight",
+      "slots": 10,
+      "rate": 5
+    },
+    {
+      "source_id": 213,
+      "symbol": "SINNOH_TURNBACK_CAVE_SOURCE_213",
+      "method": "CaveMorning",
+      "slots": 8,
+      "rate": 5
+    },
+    {
+      "source_id": 213,
+      "symbol": "SINNOH_TURNBACK_CAVE_SOURCE_213",
+      "method": "Cave",
+      "slots": 8,
+      "rate": 5
+    },
+    {
+      "source_id": 213,
+      "symbol": "SINNOH_TURNBACK_CAVE_SOURCE_213",
+      "method": "CaveNight",
+      "slots": 8,
+      "rate": 5
+    },
+    {
+      "source_id": 215,
+      "symbol": "SINNOH_LAKE_VALOR",
+      "method": "Land",
+      "slots": 4,
+      "rate": 21
+    },
+    {
+      "source_id": 218,
+      "symbol": "SINNOH_ROUTE_213",
+      "method": "LandMorning",
+      "slots": 4,
+      "rate": 21
+    },
+    {
+      "source_id": 218,
+      "symbol": "SINNOH_ROUTE_213",
+      "method": "LandNight",
+      "slots": 3,
+      "rate": 21
+    },
+    {
+      "source_id": 222,
+      "symbol": "SINNOH_ROUTE_212",
+      "method": "LandMorning",
+      "slots": 4,
+      "rate": 21
+    },
+    {
+      "source_id": 222,
+      "symbol": "SINNOH_ROUTE_212",
+      "method": "Land",
+      "slots": 5,
+      "rate": 21
+    },
+    {
+      "source_id": 222,
+      "symbol": "SINNOH_ROUTE_212",
+      "method": "LandNight",
+      "slots": 4,
+      "rate": 21
+    },
+    {
+      "source_id": 223,
+      "symbol": "SINNOH_ROUTE_212_SEGMENT_2",
+      "method": "Land",
+      "slots": 4,
+      "rate": 21
+    },
+    {
+      "source_id": 224,
+      "symbol": "SINNOH_ROUTE_222",
+      "method": "LandMorning",
+      "slots": 8,
+      "rate": 21
+    },
+    {
+      "source_id": 224,
+      "symbol": "SINNOH_ROUTE_222",
+      "method": "LandNight",
+      "slots": 8,
+      "rate": 21
+    },
+    {
+      "source_id": 233,
+      "symbol": "SINNOH_ROUTE_224",
+      "method": "LandMorning",
+      "slots": 9,
+      "rate": 21
+    },
+    {
+      "source_id": 233,
+      "symbol": "SINNOH_ROUTE_224",
+      "method": "Land",
+      "slots": 9,
+      "rate": 21
+    },
+    {
+      "source_id": 233,
+      "symbol": "SINNOH_ROUTE_224",
+      "method": "LandNight",
+      "slots": 9,
+      "rate": 21
+    },
+    {
+      "source_id": 234,
+      "symbol": "SINNOH_ROUTE_224_SEGMENT_2",
+      "method": "LandMorning",
+      "slots": 9,
+      "rate": 21
+    },
+    {
+      "source_id": 234,
+      "symbol": "SINNOH_ROUTE_224_SEGMENT_2",
+      "method": "Land",
+      "slots": 9,
+      "rate": 21
+    },
+    {
+      "source_id": 234,
+      "symbol": "SINNOH_ROUTE_224_SEGMENT_2",
+      "method": "LandNight",
+      "slots": 9,
+      "rate": 21
+    }
+  ],
+  "weight_candidates": [
+    [
+      80,
+      "LandMorning"
+    ],
+    [
+      80,
+      "LandNight"
+    ],
+    [
+      105,
+      "LandNight"
+    ],
+    [
+      121,
+      "CaveDay"
+    ],
+    [
+      140,
+      "Land"
+    ],
+    [
+      151,
+      "LandNight"
+    ],
+    [
+      152,
+      "LandNight"
+    ],
+    [
+      157,
+      "LandNight"
+    ],
+    [
+      159,
+      "LandNight"
+    ],
+    [
+      161,
+      "LandNight"
+    ],
+    [
+      174,
+      "Cave"
+    ],
+    [
+      174,
+      "CaveNight"
+    ],
+    [
+      182,
+      "Cave"
+    ],
+    [
+      184,
+      "Cave"
+    ],
+    [
+      200,
+      "LandMorning"
+    ],
+    [
+      200,
+      "Land"
+    ],
+    [
+      214,
+      "LandMorning"
+    ],
+    [
+      214,
+      "Land"
+    ],
+    [
+      214,
+      "LandNight"
+    ],
+    [
+      221,
+      "LandMorning"
+    ],
+    [
+      221,
+      "LandNight"
+    ]
+  ]
+}
