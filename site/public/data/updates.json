@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "46f0131bec418e7b12c7c526034362c7b940b487",
+      "date": "2026-11-24T19:03:26-03:00",
+      "title": "Merge pull request #287 from GabrielChavesAlencar/sinnoh-full-expansion-f08b-portals",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "5a4b95e15824404b33ccfac06325ed2db6ae6c41",
+      "date": "2026-11-24T18:57:34-03:00",
+      "title": "feat(Sinnoh F08B): preserve 49 approved portals and recover unique diagonal gate approaches",
+      "category": "Novidades"
+    },
+    {
       "sha": "974706db5ccb976ac3d45da07f290b85578ff268",
       "date": "2026-11-24T18:56:45-03:00",
       "title": "Merge pull request #286 from GabrielChavesAlencar/sinnoh-full-expansion-f08-connections",
