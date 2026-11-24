@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "92d51fedd5f94d8c8b18ba9ccc91afeaccd4c959",
+      "date": "2026-11-24T12:01:58-03:00",
+      "title": "Sinnoh: recover native profile event and preserve diagnostic context",
+      "category": "Melhorias"
+    },
+    {
       "sha": "179c44957dcb22eb75e1a71fb4a7a97bf470430f",
       "date": "2026-11-24T11:41:39-03:00",
       "title": "Sinnoh: Lakefront, lake portals and introductory character profile",
