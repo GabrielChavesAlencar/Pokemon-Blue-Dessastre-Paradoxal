@@ -2,6 +2,96 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "09409e01dd89d57b74b334cb2826077791d5c3c0",
+      "date": "2026-11-24T17:17:14-03:00",
+      "title": "Merge pull request #283 from GabrielChavesAlencar/sinnoh-full-expansion-f05-routes",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "51c5675e5f5003d3323ef5b19bad6076f651f922",
+      "date": "2026-11-24T17:09:38-03:00",
+      "title": "fix(F05): scope safe arrival policy to real narrow and rocky route segments",
+      "category": "Correções"
+    },
+    {
+      "sha": "4b7ffb0e4d8ed0dee85d63f36afcd19e8a81319f",
+      "date": "2026-11-24T17:01:38-03:00",
+      "title": "test(F05): verify terrain diagnostics preserve distinction between land and special or blocked cells",
+      "category": "Testes"
+    },
+    {
+      "sha": "5ba89e1d15cb30979eae12317eaf2dd1042477ac",
+      "date": "2026-11-24T17:01:30-03:00",
+      "title": "fix(F05): audit every route terrain stack and aggregate unsafe arrival blockers before import",
+      "category": "Correções"
+    },
+    {
+      "sha": "bbe723900d923716836766188bd40d4be23648c2",
+      "date": "2026-11-24T16:57:17-03:00",
+      "title": "docs(F05): explain route source segments, safe teleports, save guards and limitations",
+      "category": "Documentação"
+    },
+    {
+      "sha": "de1fec36c40884619cefb0728e5ce43c8b9ac5dd",
+      "date": "2026-11-24T16:57:14-03:00",
+      "title": "docs(F05): record F04 approval and pending 56-map route expansion",
+      "category": "Documentação"
+    },
+    {
+      "sha": "157eb925db855e7086360a6812c0392969e4747b",
+      "date": "2026-11-24T16:57:00-03:00",
+      "title": "ci(F05): run live original-source route and regression acceptance",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "c43ae20b3190c50a192cd9babab1eaad603abedc",
+      "date": "2026-11-24T16:56:52-03:00",
+      "title": "test(F05): verify all route segments, 56 arrivals, immutable prior maps and save compatibility",
+      "category": "Testes"
+    },
+    {
+      "sha": "b5d1d56124f8ef5fd9eb5872ea98d5ee907f5231",
+      "date": "2026-11-24T16:56:26-03:00",
+      "title": "feat(F05): validate route manifests and all appended atlas hashes before QA launch",
+      "category": "Novidades"
+    },
+    {
+      "sha": "ff820095d155c74786821526ad3936dc2fd311a8",
+      "date": "2026-11-24T16:56:24-03:00",
+      "title": "feat(F05): validate route manifests and all appended atlas hashes before QA launch",
+      "category": "Novidades"
+    },
+    {
+      "sha": "ad189f794eb70a5a4ed83bc99ee4c7455a473d5b",
+      "date": "2026-11-24T16:56:12-03:00",
+      "title": "feat(F05): expose individual route segments in QA teleport catalog",
+      "category": "Novidades"
+    },
+    {
+      "sha": "73d776cf1dcaf85c9ea5a45f97d76023372aab78",
+      "date": "2026-11-24T16:56:08-03:00",
+      "title": "feat(F05): prepare 56 maps and reuse verified prior QA save namespaces",
+      "category": "Novidades"
+    },
+    {
+      "sha": "762ff5c89561518af680c724d6932f3c8f57d799",
+      "date": "2026-11-24T16:55:59-03:00",
+      "title": "feat(F05): append 34 route exteriors with local collision-free IDs",
+      "category": "Novidades"
+    },
+    {
+      "sha": "2f2aaf506135fb75ac9d7b66fa11f993b89bb907",
+      "date": "2026-11-24T16:55:50-03:00",
+      "title": "refactor(F05): reuse append-only exterior importer with pinned source identity",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "80668ede7f906703e5d644be6f3514b950503c03",
+      "date": "2026-11-24T16:55:38-03:00",
+      "title": "data(F05): pin all 34 exterior route maps for routes 203–230, including six additional segments",
+      "category": "Melhorias"
+    },
+    {
       "sha": "5f8f20d809653c0cef0b2d6108beb642b77049b3",
       "date": "2026-11-24T16:55:02-03:00",
       "title": "Sinnoh F04: expand private QA to all fourteen cities, preserving ten previous maps",
