@@ -37,3 +37,20 @@ Overworlds locais (folhas 256x256; 4x4 quadros de 64x64):
 
 ## Limites
 A ferramenta é código original, não distribui os ZIPs/PNGs/RXDATA da fonte. Não importa scripts, eventos doador, áudio, encontros, conexões PBS ou metadados globais. A auditoria local dos arquivos não é execução do Game.exe. A validação nativa do novo piloto, revisão nativa dos interiores, correspondência de tags no runtime, R07/R08/R09 e Android continuam pendentes. Não usar a campanha principal para QA.
+
+
+## Correção de continuidade e áudio (24/11/2026)
+
+A importação anterior conservava somente a geometria de cinco mapas e os warps locais; por isso o limite norte de Twinleaf podia aparecer preto e os mapas não tinham BGM. A correção usa o PBS de conexões do ZIP fixado por SHA-256 e preserva os registros já existentes do jogo-base.
+
+| Conexão nativa | Registro da fonte | Células de passagem comuns alcançáveis (modelo) |
+|---|---|---:|
+| Twinleaf → Rota 201 | 194,N,2,193,S,0 | 8 |
+| Rota 201 → Sandgem | 193,E,0,192,W,4 | 5 |
+| Sandgem → Rota 202 | 192,N,0,191,S,6 | 6 |
+
+Os seis eventos de transferência desses pares conservam seus IDs, mas não executam warp redundante; os dez demais warps, cinco handlers e três Poké Bolas permanecem. O índice compilado e PBS são acrescentados somente na cópia QA, com proteção contra reescrita pelo compilador. A metadata regional inclui área externa e snap de câmera nos interiores e lago, sem bloquear as três conexões. Não é uma expansão do piloto para Jubilife/Verity Lakefront: os mapas adicionais ainda não foram alocados. A passagem para Lake Verity permanece por warp (não há costura caminhável entre os mapas atuais do lago e Rota 201).
+
+O ZIP também contém quatro BGM de ambiente e três variantes noturnas: Twinleaf Town, Route 201, Lake e Sandgem Town. O importador usa nomes exclusivos SNQA_*, conserva os bytes OGG, ativa autoplay nos nove mapas e verifica seus hashes na supervisão. A auditoria local decodificou as sete faixas até o fim com FFmpeg sem erros. Não são adicionadas trilhas de batalha/vitória que não existam na fonte; as regras atuais de batalha são preservadas. O teste real do CI usa exclusivamente uma fixture de mapas e cache temporário dos ZIPs originais, sem executar Game.exe ou publicar recursos.
+
+A atualização será usada ao abrir o Blue-Story já existente e clicar em Testar piloto Sinnoh, depois do merge. QA visual/sonora nativa ainda necessária; não declarar R09 aprovado.
