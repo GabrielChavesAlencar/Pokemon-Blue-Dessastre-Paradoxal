@@ -39,6 +39,53 @@ class J12EInstallerTests(unittest.TestCase):
             cls.infos,cls.tiles,cls.ids,occupied={2},protected=set(),
             synthetic_fixture=True)
         cls.ready,cls.events,cls.start=exp.compile_events(cls.empty,cls.mapping)
+    def test_visual_upgrade_all_nine_and_metadata(self):
+        visual=exp.visual
+        out=visual.upgrade(self.ready,self.mapping,self.meta["tileset_ids"],self.events,self.start)
+        ts=read_marshal(out["Data/Tilesets.rxdata"],"VISUAL_TEST")
+        old=read_marshal(self.ready["Data/Tilesets.rxdata"],"OLD_TEST")
+        self.assertEqual(serialize(ts[1]),serialize(old[1]))
+        self.assertEqual(out["Data/MapInfos.rxdata"],self.ready["Data/MapInfos.rxdata"])
+        for sym,mid in self.mapping.items():
+            rel="Data/Map%03d.rxdata"%mid
+            a=read_marshal(out[rel],"VISUAL_MAP_TEST").attrs
+            b=read_marshal(self.ready[rel],"ORIGINAL_MAP_TEST").attrs
+            self.assertEqual((a["@width"],a["@height"]),(b["@width"],b["@height"]))
+            self.assertEqual(set(a["@events"]),set(b["@events"]))
+            self.assertNotEqual(a["@data"].data,b["@data"].data)
+            group="J11B_EXTERIORS" if sym in visual.OUTSIDE else "J10A_INTERIORS"
+            self.assertEqual(a["@tileset_id"],self.meta["tileset_ids"][group])
+            tile=ts[a["@tileset_id"]].attrs
+            for table in ("@passages","@priorities","@terrain_tags"):
+                self.assertEqual(struct.unpack_from("<5I",tile[table].data),(1,448,1,1,448))
+            ids=struct.unpack_from("<"+str(a["@width"]*a["@height"]*3)+"H",a["@data"].data,20)
+            self.assertTrue(all(t==0 or t==48 or 384<=t<448 for t in ids))
+        self.assertEqual(struct.unpack_from(">II",out["Graphics/Autotiles/SNQA_WaterV2.png"],16),(288,128))
+        for group,(_,name) in j11c.GRAPHIC.items():
+            self.assertEqual(struct.unpack_from(">II",out["Graphics/Tilesets/"+name+".png"],16),(256,256))
+        sprites=[out["Graphics/Characters/SNQA_"+n+".png"] for n in ("MOTHER","BARRY","ROWAN")]
+        self.assertEqual(len(set(sprites)),3)
+        self.assertEqual(set(e["sprite"] for e in self.events if e["kind"]=="handler"),
+                         {"SNQA_MOTHER","SNQA_BARRY","SNQA_ROWAN"})
+
+    def test_visual_reciprocal_portals_land_near_other_end(self):
+        for e in self.events:
+            if e["kind"]!="warp":continue
+            other=next(x for x in self.events if x["kind"]=="warp" and
+                       x["map"]==e["destination"] and x["destination"]==e["map"])
+            reach=exp.component(exp.all_scenes()[e["destination"]])
+            used={tuple(x["position"]) for x in self.events if x["map"]==e["destination"]}
+            self.assertEqual(tuple(e["arrival"]),exp.choose_point(reach,tuple(other["position"]),used))
+
+    def test_visual_variants_keep_semantics_and_water_animation(self):
+        visual=exp.visual
+        self.assertEqual(visual.parent(35),16)
+        self.assertEqual(visual.parent(48),6)
+        self.assertNotEqual(visual.atlas(False),visual.atlas(True))
+        self.assertEqual(visual.atlas(True),visual.atlas(True))
+        self.assertEqual(visual.remap_cells([402,0,0],1,1,True),[48,0,0])
+        with self.assertRaises(ValueError):visual.remap_cells([999,0,0],1,1,True)
+
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory(prefix="sinnoh-experimental-synthetic-")
         self.addCleanup(self.tmp.cleanup)
