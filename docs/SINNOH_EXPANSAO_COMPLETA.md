@@ -329,3 +329,10 @@ F12B3 integrada em bf88d490d9c125d6399d4abc24f7192d51dbde2b (11 workflows / 26 j
 ### F12B4 — acesso de exploração condicionado à costura original
 
 F12B2 job 138921338468 confirmou cinco eventos, quatro chamadas de item não identificadas, zero identidades Mars, zero Works Key, zero PBS de treinadores/itens e duas conexões originais. F12B3 job 138922763649 confirmou o bloqueio de história. O instalador passa a tentar a costura exata 111 W 0 / 94 E 57 somente se houver células ordinárias conectadas às chegadas dos dois mapas e nenhuma colisão de lado/ID/registro. A outra conexão 111 W 252 / 199 E 0 não tem interseção dimensional; não é habilitada. Se não houver prova geométrica, retorna os 139 mapas sem alterações. Se aprovada, acrescenta apenas Windworks, 1 conexão contínua, 0 portais, 0 eventos e 0 itens. Map581 é o ID da fixture, alocação local livre obrigatória. Preserva hashes dos mapas anteriores e compatibilidade de saves por manifesto. Sem QA nativa. CI pendente.
+
+F12B4 integrada em 7f42a0e1379a29f7585c41aae624196c6c9396c0 (11 workflows / 26 jobs; HEAD d123e0fe42007e26db065d1363671c16cc61a949, job 139113930557). Bloqueio route_source_side_ambiguous confirmado, 139 anteriores preservados.
+
+
+### F12B5 — exploração QA e referência autoral da Galactic
+
+F12B4 job 138926944235 bloqueou a costura por route_source_side_ambiguous; 139 mapas preservados. Agora compara intervalos geométricos de cada conexão concorrente do Map94, registra células caminháveis e, se não houver costura segura, prepara Windworks pelo teleporte QA bidirecional existente, sem portais novos ou avanço narrativo. Corrige o verificador de título que esperava 131 mapas, adicionando validação dos relatórios F11 e Windworks e hashes dos tilesets. Referência autoral do roteiro Platinum em data/regions/sinnoh-f12b5-authored-quest.json (Bulbapedia Part 3/4, Mars). Quatro possíveis pickups sem identidade permanecem bloqueados. Não declara Mars/Works Key instalados, não modifica balanceamento ou saves, sem QA nativa. CI pendente.

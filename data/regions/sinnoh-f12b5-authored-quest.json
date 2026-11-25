@@ -1,0 +1,99 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "status": "HISTORICAL_REFERENCE_AUTHORING_ONLY",
+  "sources": [
+    "https://bulbapedia.bulbagarden.net/wiki/Walkthrough:Pokémon_Platinum/Part_3",
+    "https://bulbapedia.bulbagarden.net/wiki/Walkthrough:Pokémon_Platinum/Part_4",
+    "https://bulbapedia.bulbagarden.net/wiki/Mars"
+  ],
+  "sequence": [
+    {
+      "id": "WINDWORKS_GUARD",
+      "area": "SINNOH_VALLEY_WINDWORKS",
+      "team": [
+        [
+          "GLAMEOW",
+          13
+        ]
+      ]
+    },
+    {
+      "id": "MEADOW_GRUNT_1",
+      "area": "SINNOH_FLOAROMA_MEADOW",
+      "team": [
+        [
+          "STUNKY",
+          13
+        ]
+      ]
+    },
+    {
+      "id": "MEADOW_GRUNT_2",
+      "area": "SINNOH_FLOAROMA_MEADOW",
+      "team": [
+        [
+          "ZUBAT",
+          11
+        ],
+        [
+          "ZUBAT",
+          11
+        ]
+      ]
+    },
+    {
+      "id": "WORKS_KEY",
+      "area": "SINNOH_FLOAROMA_MEADOW",
+      "requires": [
+        "MEADOW_GRUNT_1",
+        "MEADOW_GRUNT_2"
+      ],
+      "regional_key": true
+    },
+    {
+      "id": "MARS",
+      "area": "SINNOH_VALLEY_WINDWORKS",
+      "requires": [
+        "WINDWORKS_GUARD",
+        "WORKS_KEY"
+      ],
+      "team": [
+        [
+          "ZUBAT",
+          15
+        ],
+        [
+          "PURUGLY",
+          17
+        ]
+      ]
+    }
+  ],
+  "source_pickups": [
+    {
+      "event_id": 2,
+      "identity": null,
+      "grant_enabled": false
+    },
+    {
+      "event_id": 3,
+      "identity": null,
+      "grant_enabled": false
+    },
+    {
+      "event_id": 4,
+      "identity": null,
+      "grant_enabled": false
+    },
+    {
+      "event_id": 5,
+      "identity": null,
+      "grant_enabled": false
+    }
+  ],
+  "source_pbs_present": false,
+  "native_bindings": 0,
+  "native_verified": false,
+  "notes": "Historical rosters only; actual authored layout, local catalog and battle-result bindings pending. No automatic grant."
+}
