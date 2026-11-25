@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "79f2f50c76c30cee84bfc794a60ade669f3ed7e2",
+      "date": "2026-11-25T09:06:54-03:00",
+      "title": "Merge pull request #321 from GabrielChavesAlencar/sinnoh-full-expansion-f12c3-jupiter-quest-candidate",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "04f597b766bdcc215593a54223a1e512b75d4afb",
+      "date": "2026-11-25T08:58:40-03:00",
+      "title": "F12C3: reconcile main, preserve F12C2 evidence and validate Jupiter candidate",
+      "category": "Melhorias"
+    },
+    {
       "sha": "687ca84bd5cee68d4e67324ab2acef4958e15ecb",
       "date": "2026-11-25T08:57:39-03:00",
       "title": "Merge pull request #320 from GabrielChavesAlencar/sinnoh-full-expansion-f12c2-eterna-authored-preview",
@@ -80,6 +92,12 @@
       "category": "Melhorias"
     },
     {
+      "sha": "fe641df6e079126bf5ff24e0fbcf9337ff3fbe3a",
+      "date": "2026-11-25T06:53:20-03:00",
+      "title": "F12C3: implement missing authored Jupiter and rescue sprites and test palettes",
+      "category": "Melhorias"
+    },
+    {
       "sha": "3297f1708bae623fcf434fa4151c217395fe25a0",
       "date": "2026-11-25T06:47:08-03:00",
       "title": "F12B5: reconcile main preserving F12B4 definitive access evidence",
@@ -89,6 +107,18 @@
       "sha": "7f42a0e1379a29f7585c41aae624196c6c9396c0",
       "date": "2026-11-25T06:46:46-03:00",
       "title": "Merge pull request #315 from GabrielChavesAlencar/sinnoh-full-expansion-f12b4-windworks-access",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "2e5303d97250c96297cc2ca49bbf6deb893769a6",
+      "date": "2026-11-25T06:43:13-03:00",
+      "title": "F12C3: diagnose local quest roster and bicycle catalogue during installer preflight",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "3108feb914717df0d85bd7667529feb30eeaf141",
+      "date": "2026-11-25T06:42:42-03:00",
+      "title": "F12C3: prepare authored Jupiter mission and regional Cut gate with installer preflight",
       "category": "Melhorias"
     },
     {
