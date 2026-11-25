@@ -54,6 +54,9 @@ import sinnoh_f12b3_windworks_preflight as f12b3_windworks
 import sinnoh_f12b4_windworks_access as f12b4_windworks
 import sinnoh_f12b5_authored_quest as f12b5_quest
 import sinnoh_f12b5_pickup_catalog as f12b5_pickups
+import sinnoh_f12c_eterna_audit as f12c_audit
+import sinnoh_f12c2_eterna_preview as f12c_preview
+import sinnoh_f12c3_jupiter_candidate as f12c_quest
 from audit_sinnoh_rxdata import read_marshal
 from audit_sinnoh_twinleaf_events import MAPS,HANDLERS as CH06_HANDLERS,BALLS as CH06_BALLS
 from build_sinnoh_twinleaf_events import HANDLERS as SCRIPT_HANDLERS
@@ -805,6 +808,7 @@ def build_files(base:Path,project:Path=ROOT):
     f12b4_maps=None
     f12b5_report={}
     f12b5_pickup_report={"status":"NOT_EVALUATED","items_granted":0,"native_verified":False}
+    f12c_report={"status":"NOT_EVALUATED","runtime_install_enabled":False,"native_verified":False}
     f12b5_plugin=b""
     f11h_plugin=b""
     f10c_plugin=b""
@@ -903,6 +907,14 @@ def build_files(base:Path,project:Path=ROOT):
             print("SINNOH_F12B5_LOCAL_PICKUP_CATALOG_REPORT "+json.dumps(f12b5_pickup_report,sort_keys=True),flush=True)
         maps,f12b5_report,f12b5_plugin=f12b5_quest.append(maps,mapping,components,base,project)
         print("SINNOH_F12B5_AUTHORED_QUEST_REPORT "+json.dumps(f12b5_report,sort_keys=True),flush=True)
+        if set(mapping)==f12b4_windworks.ALL:
+            try:
+                audit=f12c_audit.audit(maps,mapping,sources["maps"])
+                _,pr=f12c_preview.preview(maps,mapping,components,occupied,audit,project)
+                f12c_report={"source":audit,"preview":pr,"entry_source":f12c_quest.entrance_source(sources["maps"]),"runtime_install_enabled":False,"native_verified":False}
+            except (OSError,ValueError,TypeError,KeyError,UnicodeError) as exc:
+                f12c_report={"status":"BLOCKED","reason":"audit_failed:"+type(exc).__name__,"runtime_install_enabled":False,"native_verified":False}
+            print("SINNOH_F12C_INSTALLER_PREFLIGHT_REPORT "+json.dumps(f12c_report,sort_keys=True),flush=True)
         gym_symbols=set(mapping)-f08c_expansion.ALL
         if gym_symbols:
             masks=private_visual.movement_masks(maps,mapping,extra_symbols=city_expansion.CITIES|route_expansion.ROUTES|natural_expansion.NATURAL|interior_expansion.INTERIORS|f08c_expansion.EXTERIORS|gym_symbols)
@@ -988,6 +1000,7 @@ def build_files(base:Path,project:Path=ROOT):
         "f12b4_windworks_access":f12b4_report,
         "f12b5_authored_quest":f12b5_report,
         "f12b5_local_pickup_catalog":f12b5_pickup_report,
+        "f12c_eterna_preflight":f12c_report,
         "qa_teleport":{"catalog_count":len(teleport_entries),"available_count":sum(row[3] is not None for row in teleport_entries),"destinations":teleport_entries,"native_verified":False},
         "encounter_coverage":encounter_coverage,"route202_trainers":route_trainers,
         "visual_native_reviewed":False,
