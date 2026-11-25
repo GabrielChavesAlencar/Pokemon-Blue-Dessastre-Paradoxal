@@ -308,3 +308,10 @@ F11H integrada em 267f9080daa99272d40805d99384d5589ab2bedb (11 workflows/26 chec
 F03 job 138719583390: fonte 111 Valley Windworks, 33x29, tileset 24, SHA-256 62646bd742809cf4ad65760e812f58c34169933d2dc26a0128853609a8cf9dac, cinco eventos e três comandos script, zero transferências estáticas. A prévia reconstrói somente geometria em memória, valida MapID livre, componente caminhável, chegada e preservação dos 139 mapas. Meta 140 mapas na prévia, não instalação. Sem inventar conexão, identidade/equipe de Mars ou recibo da Works Key. Os candidatos F12A são triados sem copiar scripts. Nenhum checkpoint ou item concedido. CI real pendente.
 
 F12A integrada em 1d1e001eb721162eeb0e3c5b7371855fe3c57ad1 (11 workflows/26 checks, HEAD 2b43a10d4ca496deeabbe693550519262ef2dd66, job 138926465068). F12B1 HEAD 209c4acf1a34a104b3f7340130a2224339565f89 job 138919751871: Map581, 140 mapas somente na prévia, chegada [17,14], 180 células conectadas. 139 anteriores preservados, sem QA nativa. CI na main pendente.
+
+F12B1 integrada em 375ab415184881fe130300ae08cf30dc06b64405 (11 workflows / 26 jobs; HEAD 2cf22d131a0036aa165afa9564d835372cd2cee5, job 138930816377). Prévia confirmada, sem instalação nativa.
+
+
+### F12B2 — evidências individuais, acesso e PBS
+
+F12A job 138918141829 HEAD 31e1f2f212da60c87bed2a0a79dec184e05151cd: 238 mapas-fonte, 2867 eventos, 13 candidatos, 10 mapeados, zero Mars/Works Key e zero chamadas literais de coleta no primeiro scanner. F12B2 audita todos os cinco eventos de Map111, inclusive parâmetros de scripts condicionais (111/12), metadados de páginas e SHA-256 sem expor scripts/textos. Varre transferências estáticas de todos os mapas para 111, conexões PBS e arquivos de treinadores/tipos/itens; verifica hashes e contagens de 91/94/96/98/111. Não habilita acessos, batalhas, itens ou flags sem evidência suficiente. CI pendente; sem QA nativa.

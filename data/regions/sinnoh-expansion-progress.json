@@ -542,7 +542,7 @@
       "id": "F12",
       "title": "História, Equipe Galactic e itens-chave",
       "status": "implementation_pending_ci",
-      "followup": "F12B1_MAIN_CI_PENDING",
+      "followup": "F12B2_WINDWORKS_EVIDENCE_PENDING_CI",
       "story_checkpoints_scope": 14,
       "hm_contracts_scope": 8,
       "native_bindings": 0,
@@ -559,15 +559,23 @@
       "f12a_ci_workflows": 11,
       "f12a_ci_checks": 26,
       "windworks_preview_confirmed": true,
-      "windworks_preview_real_head": "209c4acf1a34a104b3f7340130a2224339565f89",
-      "windworks_preview_real_job": 138919751871,
+      "windworks_preview_real_head": "2cf22d131a0036aa165afa9564d835372cd2cee5",
+      "windworks_preview_real_job": 138930816377,
       "windworks_preview_fixture_map_id": 581,
       "windworks_preview_safe_spawn": [
         17,
         14
       ],
       "windworks_preview_connected_cells": 180,
-      "windworks_runtime_install_enabled": false
+      "windworks_runtime_install_enabled": false,
+      "windworks_event_scope": 5,
+      "windworks_access_verified": false,
+      "windworks_preview_target_maps": 140,
+      "f12b1_merge_commit": "375ab415184881fe130300ae08cf30dc06b64405",
+      "f12b1_ci_workflows": 11,
+      "f12b1_ci_checks": 26,
+      "mars_native_bound": false,
+      "works_key_native_granted": false
     },
     {
       "id": "F13",
