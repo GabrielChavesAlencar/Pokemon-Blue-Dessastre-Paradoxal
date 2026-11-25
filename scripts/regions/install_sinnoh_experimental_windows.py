@@ -47,6 +47,7 @@ import sinnoh_f09b_original as f09b_original
 import sinnoh_f09c_refinement as f09c_refinement
 import sinnoh_f09d_relative as f09d_relative
 import sinnoh_f10b_trainers as f10b_trainers
+import sinnoh_f10b7_field_audit as f10b7_field_audit
 from audit_sinnoh_rxdata import read_marshal
 from audit_sinnoh_twinleaf_events import MAPS,HANDLERS as CH06_HANDLERS,BALLS as CH06_BALLS
 from build_sinnoh_twinleaf_events import HANDLERS as SCRIPT_HANDLERS
@@ -732,6 +733,7 @@ def build_files(base:Path,project:Path=ROOT):
     f09c_report={}
     f09d_report={}
     f10b_report={}
+    f10b7_report={}
     f10b_plugin=b""
     pre_f10b_maps=None
     f10b2_maps=None
@@ -783,6 +785,8 @@ def build_files(base:Path,project:Path=ROOT):
         f10b4_maps,_,_=f10b_trainers.append(maps,mapping,masks,components,sources["maps"],base,project,overworlds=sources.get("overworlds"),revision=4)
         f10b5_maps,_,_=f10b_trainers.append(maps,mapping,masks,components,sources["maps"],base,project,overworlds=sources.get("overworlds"),revision=5)
         maps,f10b_report,f10b_plugin=f10b_trainers.append(maps,mapping,masks,components,sources["maps"],base,project,overworlds=sources.get("overworlds"),revision=6)
+        f10b7_report=f10b7_field_audit.audit(maps,mapping,components,sources["maps"],project)
+        print("SINNOH_F10B7_FIELD_GATE_REPORT "+json.dumps(f10b7_report,sort_keys=True),flush=True)
         movement=private_visual.movement_plugin(masks,mapping["SINNOH_ROUTE_202"])
         teleport_entries=qa_teleport.build(maps,mapping,components,project)
         teleport=qa_teleport.plugin(teleport_entries,project)
@@ -862,7 +866,7 @@ def build_files(base:Path,project:Path=ROOT):
         "f09b_original_encounters":f09b_report,
         "f09c_refinement":f09c_report,
         "f09d_relative":f09d_report,
-        "f10b_trainers":f10b_report,
+        "f10b_trainers":f10b_report,"f10b7_field_gate_audit":f10b7_report,
         "qa_teleport":{"catalog_count":len(teleport_entries),"available_count":sum(row[3] is not None for row in teleport_entries),"destinations":teleport_entries,"native_verified":False},
         "encounter_coverage":encounter_coverage,"route202_trainers":route_trainers,
         "visual_native_reviewed":False,
