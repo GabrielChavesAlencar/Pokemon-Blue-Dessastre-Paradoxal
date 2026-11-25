@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c5dbde4b37e387f6bdf90988a33a1774149fa1b2",
+      "date": "2026-11-25T13:44:45-03:00",
+      "title": "Merge PR #335: Sinnoh F12D3I special terrain frontier audit",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "9450e2814d218ab708d0ec39ee674d18e62e515a",
+      "date": "2026-11-25T13:37:26-03:00",
+      "title": "Sinnoh F12D3I: identify exact special terrain frontier and mask-only diagnostic paths",
+      "category": "Melhorias"
+    },
+    {
       "sha": "8c714b2dee76ed4da4df24468a98e26a57acba71",
       "date": "2026-11-25T13:36:08-03:00",
       "title": "Merge PR #334: Sinnoh F12D3I canonical directional audit",
