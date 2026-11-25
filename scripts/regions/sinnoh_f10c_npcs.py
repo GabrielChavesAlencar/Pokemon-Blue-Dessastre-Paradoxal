@@ -1,5 +1,6 @@
 """F10C: append-only, stationary dialogue NPCs in private Sinnoh QA.
 
+F10C source job 138893998333 accepted both pinned residents.
 Source event shapes and coordinates are verified, but dialogue and fallback
 art are authored for this project. Never execute/copy donor scripts or text.
 """

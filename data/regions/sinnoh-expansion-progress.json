@@ -311,7 +311,7 @@
       "f10b8_real_job": 138878282025,
       "f10b8_fixture_recovered": 6,
       "f10b8_new_fixture_trainers": 0,
-      "f10b8_main_ci_pending": true,
+      "f10b8_main_ci_pending": false,
       "pending_trainers": [
         {
           "name": "Austin",
@@ -366,7 +366,16 @@
       "f10c_geometry_candidates": 2,
       "f10c_new_npcs": 0,
       "f10c_native_verified": false,
-      "f10c_dialogue_language": "pt-BR"
+      "f10c_dialogue_language": "pt-BR",
+      "f10b8_merge_commit": "c151a5da17139072210b07bdeb2a1cd0a7af75bf",
+      "f10b8_ci_workflows": 11,
+      "f10b8_ci_checks": 26,
+      "f10c_real_head": "2470b0ef9903ff3497092f2615615353a1c19f6c",
+      "f10c_real_job": 138893998333,
+      "f10c_fixture_recovered": 2,
+      "f10c_authored_sprites": 2,
+      "f10c_main_ci_pending": true,
+      "f10c_remaining_candidates": 2
     },
     {
       "id": "F11",
@@ -609,7 +618,7 @@
     "f10b8_real_job": 138878282025,
     "f10b8_fixture_recovered": 6,
     "f10b8_new_fixture_trainers": 0,
-    "f10b8_main_ci_pending": true,
+    "f10b8_main_ci_pending": false,
     "pending_trainers": [
       {
         "name": "Austin",
@@ -664,6 +673,15 @@
     "f10c_geometry_candidates": 2,
     "f10c_new_npcs": 0,
     "f10c_native_verified": false,
-    "f10c_dialogue_language": "pt-BR"
+    "f10c_dialogue_language": "pt-BR",
+    "f10b8_merge_commit": "c151a5da17139072210b07bdeb2a1cd0a7af75bf",
+    "f10b8_ci_workflows": 11,
+    "f10b8_ci_checks": 26,
+    "f10c_real_head": "2470b0ef9903ff3497092f2615615353a1c19f6c",
+    "f10c_real_job": 138893998333,
+    "f10c_fixture_recovered": 2,
+    "f10c_authored_sprites": 2,
+    "f10c_main_ci_pending": true,
+    "f10c_remaining_candidates": 2
   }
 }
