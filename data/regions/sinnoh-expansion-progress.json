@@ -393,8 +393,8 @@
       "status": "implementation_pending_ci",
       "followup": "F11C_PENDING_CI",
       "gym_count": 8,
-      "gym_rooms_confirmed": 2,
-      "gym_leaders_confirmed": 2,
+      "gym_rooms_confirmed": 3,
+      "gym_leaders_confirmed": 3,
       "native_verified": false,
       "hm_award_enabled": false,
       "f11a_pr": 303,
@@ -417,10 +417,11 @@
       "f11a2_fixture_rooms": 1,
       "f11b_fixture_maps": 133,
       "f11b_fixture_portals": 77,
-      "f11b_main_ci_pending": true,
+      "f11b_main_ci_pending": false,
       "fixture_gym_mapids": {
         "SINNOH_OREBURGH_GYM": 573,
-        "SINNOH_ETERNA_GYM": 574
+        "SINNOH_ETERNA_GYM": 574,
+        "SINNOH_HEARTHOME_GYM": 575
       },
       "species_and_types_validation": "REFERENCE_FIXTURE_NOT_LOCAL_DATABASE",
       "f11c_candidate": "Fantina",
@@ -428,8 +429,16 @@
         "COAL",
         "FOREST"
       ],
-      "f11c_fixture_rooms": 0,
-      "f11c_native_verified": false
+      "f11c_fixture_rooms": 1,
+      "f11c_native_verified": false,
+      "f11b_merge_commit": "31709a5c044142bccf6127db743f1d658721b14b",
+      "f11b_ci_workflows": 11,
+      "f11b_ci_checks": 26,
+      "f11c_real_head": "c3e0cc479be73b4971ce62b4a22ebce252679713",
+      "f11c_real_job": 138906092615,
+      "f11c_fixture_maps": 134,
+      "f11c_fixture_portals": 79,
+      "f11c_main_ci_pending": true
     },
     {
       "id": "F12",
@@ -747,8 +756,8 @@
     "status": "implementation_pending_ci",
     "followup": "F11C_PENDING_CI",
     "gym_count": 8,
-    "gym_rooms_confirmed": 2,
-    "gym_leaders_confirmed": 2,
+    "gym_rooms_confirmed": 3,
+    "gym_leaders_confirmed": 3,
     "native_verified": false,
     "hm_award_enabled": false,
     "f11a_pr": 303,
@@ -771,10 +780,11 @@
     "f11a2_fixture_rooms": 1,
     "f11b_fixture_maps": 133,
     "f11b_fixture_portals": 77,
-    "f11b_main_ci_pending": true,
+    "f11b_main_ci_pending": false,
     "fixture_gym_mapids": {
       "SINNOH_OREBURGH_GYM": 573,
-      "SINNOH_ETERNA_GYM": 574
+      "SINNOH_ETERNA_GYM": 574,
+      "SINNOH_HEARTHOME_GYM": 575
     },
     "species_and_types_validation": "REFERENCE_FIXTURE_NOT_LOCAL_DATABASE",
     "f11c_candidate": "Fantina",
@@ -782,7 +792,15 @@
       "COAL",
       "FOREST"
     ],
-    "f11c_fixture_rooms": 0,
-    "f11c_native_verified": false
+    "f11c_fixture_rooms": 1,
+    "f11c_native_verified": false,
+    "f11b_merge_commit": "31709a5c044142bccf6127db743f1d658721b14b",
+    "f11b_ci_workflows": 11,
+    "f11b_ci_checks": 26,
+    "f11c_real_head": "c3e0cc479be73b4971ce62b4a22ebce252679713",
+    "f11c_real_job": 138906092615,
+    "f11c_fixture_maps": 134,
+    "f11c_fixture_portals": 79,
+    "f11c_main_ci_pending": true
   }
 }
