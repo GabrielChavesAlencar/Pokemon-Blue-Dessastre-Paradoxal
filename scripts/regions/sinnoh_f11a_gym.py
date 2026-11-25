@@ -1,4 +1,6 @@
-"""F11A: private authored Oreburgh challenge room, not an original gym import."""
+"""F11A: private authored Oreburgh challenge room, not an original gym import.
+Real job 138898048760: zero rooms, exact Roark sprite missing.
+"""
 import copy
 import hashlib
 import json
