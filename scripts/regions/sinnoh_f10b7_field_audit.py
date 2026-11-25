@@ -122,7 +122,7 @@ def closure(edges,seeds):
             if node not in seen:seen.add(node);todo.append(node)
     return seen
 
-def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=False,seed_cells=None):
+def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=False,seed_cells=None,strict_movement=False):
     reverse={mid:sym for sym,mid in mapping.items()}
     tiles=conn.read_marshal(blobs["Data/Tilesets.rxdata"],"F10B7_QA_TILES")
     worlds={mid:conn.read_marshal(blobs["Data/Map%03d.rxdata"%mid],"F10B7_QA") for mid in reverse}
@@ -131,6 +131,10 @@ def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=Fal
         occupied={(e.attrs["@x"],e.attrs["@y"]) for e in world.attrs["@events"].values()}
         if directional:
             passages[mid]=directional_masks(world,tiles)
+            # The private movement guard rejects every stack with any passage bit.
+            # Chase witnesses must not use cells that the runtime will reject.
+            if strict_movement:
+                passages[mid]={xy:mask for xy,mask in passages[mid].items() if mask==0}
             free[mid]=set(passages[mid])-occupied
             index[mid],groups[mid]=index_components(free[mid],passages[mid])
         else:

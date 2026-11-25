@@ -1481,6 +1481,12 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                     import sinnoh_f12d_runtime as chase
                     chased,cr,cp=chase.prepare(installed,expanded,expanded_comps,{"GALACTIC_GRUNT"},{"CROAGUNK"},set(),ROOT,Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]))
                     self.assertFalse(cr["native_verified"])
+                    for pair in cr["source_seams"]["pairs"]:
+                        if "axis_evidence" in pair:
+                            self.assertEqual(pair["aligned_axis_count"],len(pair["axis_evidence"]))
+                            self.assertEqual(pair["shared_walkable_lanes"],[row["axis"] for row in pair["axis_evidence"] if row["eligible"]])
+                            self.assertTrue(set(pair["local_spawn_shared_lanes"])<=set(pair["shared_walkable_lanes"]))
+                            self.assertTrue(set(pair["shared_walkable_lanes"])<=set(pair["source_walkable_lanes"]) & set(pair["qa_walkable_lanes"]))
                     print("SINNOH_F12D_SOURCE_SEAM_REPORT "+json.dumps(cr["source_seams"],sort_keys=True),flush=True)
                     if cr["runtime_install_enabled"]:
                         self.assertEqual(cr["status"],"F12D_RUNTIME_PREPARED")
@@ -3015,6 +3021,26 @@ puts "F12B5_AUTHORED_QUEST_CONFIRMED_WINS_KEY_SCOPE_OK"
         delta,report=p.preview({}, {}, {}, set(), {}, ROOT)
         self.assertFalse(delta)
         self.assertFalse(report["runtime_install_enabled"])
+
+    def test_f12d_exact_edge_axes_and_source_walkability(self):
+        import sinnoh_f12d_seams as seams
+        self.assertEqual(list(seams.aligned_axes("E",1,(64,67),"W",0,(102,70))),list(range(66)))
+        self.assertEqual(list(seams.aligned_axes("N",32,(102,70),"S",0,(64,56))),list(range(64)))
+        self.assertEqual(seams.point(0,"E",1,(64,67)),(63,1))
+        self.assertEqual(seams.point(0,"W",0,(102,70)),(0,0))
+        self.assertEqual(seams.point(63,"N",32,(102,70)),(95,0))
+        self.assertEqual(seams.point(63,"S",0,(64,56)),(63,55))
+        self.assertEqual(list(seams.aligned_axes("E",100,(3,3),"W",0,(3,3))),[])
+        plain={"in_bounds":True,"terrain_tags":[0],"passage_masks":[0],"ordinary_walkable":True}
+        grass={"in_bounds":True,"terrain_tags":[0,2],"passage_masks":[0,0],"ordinary_walkable":True}
+        wall={"in_bounds":True,"terrain_tags":[0],"passage_masks":[4],"ordinary_walkable":False}
+        water={"in_bounds":True,"terrain_tags":[7],"passage_masks":[0],"ordinary_walkable":False}
+        self.assertTrue(seams.lane_allowed(plain,grass,plain,grass,False,False))
+        self.assertFalse(seams.lane_allowed(plain,grass,plain,grass,True,False))
+        self.assertFalse(seams.lane_allowed(plain,grass,plain,grass,False,True))
+        self.assertFalse(seams.lane_allowed(wall,plain,plain,plain,False,False))
+        self.assertFalse(seams.lane_allowed(water,plain,water,plain,False,False))
+        self.assertFalse(seams.lane_allowed(plain,plain,grass,plain,False,False))
 
     def test_f12d_pastoria_requires_exact_144_map_baseline(self):
         import sinnoh_f12d_pastoria_preview as d

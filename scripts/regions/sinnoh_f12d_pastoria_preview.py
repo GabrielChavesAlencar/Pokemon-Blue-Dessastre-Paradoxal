@@ -59,7 +59,7 @@ def preview(blobs,mapping,components,root):
     _,_,idx,_,reach,_=gates.access_graph(blobs,old,components,root,directional=True)
     old_cells=trainers.reached_cells(idx,reach)
     _,_,start_idx,_,start_reach,_=gates.access_graph(blobs,old,components,root,
-        seed_symbols={AREAS[0]},directional=True)
+        seed_symbols={AREAS[0]},directional=True,strict_movement=True)
     reachable_counts={sym:sum((old[sym],label) in start_reach for label in start_idx[old[sym]].values()) for sym in AREAS}
     def report(status,reason=None,placements=()):
         return {"status":status,"reason":reason,"placements":list(placements),
@@ -86,7 +86,7 @@ def preview(blobs,mapping,components,root):
             _,_,post,_,reached,_=gates.access_graph(trial,old,components,root,directional=True)
             if not (old_cells-positions-{(mid,*xy)})<=trainers.reached_cells(post,reached):continue
             _,_,pidx,_,preach,_=gates.access_graph(trial,old,components,root,
-                seed_symbols={AREAS[0]},directional=True)
+                seed_symbols={AREAS[0]},directional=True,strict_movement=True)
             if not all((loc["map_id"],pidx[loc["map_id"]].get(tuple(loc["stand"]))) in preach for loc in locations):continue
             if (mid,pidx[mid].get(land)) not in preach:continue
             out=trial; positions.add((mid,*xy));locations.append({"id":key,"map_id":mid,
@@ -96,7 +96,7 @@ def preview(blobs,mapping,components,root):
     # Prove ordered travel from the actual interaction cells, without reseeding QA teleports.
     for a,b in zip(locations,locations[1:]):
         _,_,index,_,reached,_=gates.access_graph(out,old,components,root,directional=True,
-            seed_cells=[(a["map_id"],*a["stand"])])
+            seed_cells=[(a["map_id"],*a["stand"])],strict_movement=True)
         if (b["map_id"],index[b["map_id"]].get(tuple(b["stand"]))) not in reached:
             return {},report("F12D2_BLOCKED","no_safe_walkable_chase_witness:"+b["id"],locations)
     # No map allocation or change to existing event, terrain or connection.

@@ -16,6 +16,19 @@ def point(axis,d,offset,size):
     w,h=size; n=axis+offset
     return (n,0 if d=="N" else h-1) if d in ("N","S") else (0 if d=="W" else w-1,n)
 
+def aligned_axes(da,oa,size_a,db,ob,size_b):
+    """All physical intersections; do not assume either QA spawn is connected."""
+    na=size_a[0] if da in ("N","S") else size_a[1]
+    nb=size_b[0] if db in ("N","S") else size_b[1]
+    return range(max(-oa,-ob),min(na-oa,nb-ob))
+
+def lane_allowed(source_a,source_b,qa_a,qa_b,occupied_a,occupied_b):
+    # Match ordered terrain/passage stacks after remapping; never open a wall.
+    return (source_a==qa_a and source_b==qa_b and
+            source_a.get("ordinary_walkable") is True and
+            source_b.get("ordinary_walkable") is True and
+            not occupied_a and not occupied_b)
+
 def repair(blobs,mapping,components,path,root):
     p.validate(blobs,mapping)
     old={k:v for k,v in mapping.items() if k in p.prior.ALL}
@@ -31,17 +44,24 @@ def repair(blobs,mapping,components,path,root):
     worlds={sid:conn.read_marshal(blobs["Data/Map%03d.rxdata"%mapping[sym]],"F12D_MAP") for sid,(sym,_) in p.SOURCES.items()}
     dims={sid:(w.attrs["@width"],w.attrs["@height"]) for sid,w in worlds.items()}
     masks={sid:gates.directional_masks(w,tiles) for sid,w in worlds.items()}
-    reached={}
+    reached={};occupied={}
     for sid,w in worlds.items():
         sym=p.SOURCES[sid][0]
         busy={(e.attrs["@x"],e.attrs["@y"]) for e in w.attrs["@events"].values()}
-        reached[sid]=gates.directional_component(set(masks[sid])-busy,arrivals[sym],masks[sid])
+        occupied[sid]=busy
+        strict={xy:mask for xy,mask in masks[sid].items() if mask==0}
+        reached[sid]=gates.directional_component(set(strict)-busy,arrivals[sym],strict)
     records=[];details=[]
     with pv.verified_archive(path,"maps") as z:
         rows=pv.parse_connections(pv.member(z,pv.MAP_ROOT+"PBS/map_connections.txt"))
+        source_worlds={}
+        source_tiles=conn.read_marshal(pv.member(z,pv.MAP_ROOT+"Data/Tilesets.rxdata"),"F12D_SOURCE_TILES")
         for sid,(_,expected) in p.SOURCES.items():
             raw=pv.member(z,pv.MAP_ROOT+"Data/Map%03d.rxdata"%sid)
             if hashlib.sha256(raw).hexdigest()!=expected:raise ValueError("F12D_SOURCE_HASH")
+            source_worlds[sid]=conn.read_marshal(raw,"F12D_SOURCE_EDGE")
+            a=source_worlds[sid].attrs
+            if (a["@width"],a["@height"])!=dims[sid]:raise ValueError("F12D_SOURCE_DIMENSIONS")
         def axis_size(sid,d):
             if sid in dims: w,h=dims[sid]
             else:
@@ -76,15 +96,40 @@ def repair(blobs,mapping,components,path,root):
             d["competing_intervals"]=competing
             if overlap:
                 d["reason"]="source_side_overlap";continue
-            common=pv.edge_axis(reached[a],dims[a],da,oa)&pv.edge_axis(reached[b],dims[b],db,ob)
-            lanes=[]
-            for n in sorted(common):
+            lanes=[];local_lanes=[];source_lanes=[];qa_lanes=[];mismatches=[];axis_rows=[]
+            for n in aligned_axes(da,oa,dims[a],db,ob,dims[b]):
                 x=point(n,da,oa,dims[a]);y=point(n,db,ob,dims[b])
-                if not masks[a][x]&gates.EDGE_BITS[da] and not masks[b][y]&gates.EDGE_BITS[db]:
+                sa=gates.cell_shape(source_worlds[a],source_tiles,x)
+                sb=gates.cell_shape(source_worlds[b],source_tiles,y)
+                qa=gates.cell_shape(worlds[a],tiles,x)
+                qb=gates.cell_shape(worlds[b],tiles,y)
+                busy_a=x in occupied[a];busy_b=y in occupied[b]
+                if sa["ordinary_walkable"] and sb["ordinary_walkable"]:source_lanes.append(n)
+                if qa["ordinary_walkable"] and qb["ordinary_walkable"]:qa_lanes.append(n)
+                if sa!=qa or sb!=qb:mismatches.append(n)
+                allowed=lane_allowed(sa,sb,qa,qb,busy_a,busy_b)
+                if allowed:
                     lanes.append(n)
+                    if x in reached[a] and y in reached[b]:local_lanes.append(n)
+                axis_rows.append({"axis":n,"a":list(x),"b":list(y),
+                    "source_a":sa,"source_b":sb,"qa_a":qa,"qa_b":qb,
+                    "occupied_a":busy_a,"occupied_b":busy_b,
+                    "a_from_local_spawn":x in reached[a],"b_from_local_spawn":y in reached[b],
+                    "eligible":allowed})
+            d["aligned_axis_count"]=len(axis_rows)
+            d["source_walkable_lanes"]=source_lanes
+            d["qa_walkable_lanes"]=qa_lanes
+            d["source_qa_mismatch_axes"]=mismatches
+            d["local_spawn_shared_lanes"]=local_lanes
             d["shared_walkable_lanes"]=lanes
+            d["axis_evidence"]=axis_rows
+            # Local spawn components are diagnostic, not a mandatory seed on
+            # both sides. The complete ordered chase proves actual reachability
+            # from Pastoria before any candidate connection can be installed.
             if not lanes:
-                d["reason"]="no_shared_walkable_source_lane";continue
+                d["reason"]=("source_has_no_ordinary_lane" if not source_lanes else
+                    "source_qa_remap_mismatch_or_occupied" if mismatches or qa_lanes else
+                    "no_shared_walkable_source_lane");continue
             records.append(target);d["reason"]="candidate_verified";d["record"]=list(target)
     out=dict(blobs)
     if records:
