@@ -1,5 +1,6 @@
 """F10B: rebuild ordinary route trainer events, never execute donor scripts.
 F10B3 evidence: Justin and Sean accepted in source job 138855505090.
+F10B5 evidence: five trainers preserved; Kath access witnessed in source job 138863348233.
 Historical Platinum teams are independently referenced, not donor PBS.
 Candidates without exact identity, assets or safe placement remain pending.
 """
@@ -190,8 +191,101 @@ def extra_sprite(maps,ow,event,kind,base=None):
     except ValueError:return None,None,labels
     return raw,"CLASS_EQUIVALENT_DPPt_OVERWORLD",labels
 
-def build(blobs,mapping,masks,components,path,types,species,existing,base=None,root=ROOT,overworlds=None,revision=4):
-    if revision not in (2,3,4):raise ValueError("F10B_UNSUPPORTED_REVISION")
+
+# F10B5: only pre-existing arrival/seam witnesses may establish additional
+# accessible components. No new warp, terrain edit, movement override or HM.
+F10B5_PENDING={(42,32):("YOUNGSTER","Austin"),(42,33):("HIKER","Kevin"),
+              (42,34):("CRUSHGIRL","Helen"),(79,32):("HIKER","Louis"),
+              (79,35):("BIRDKEEPER","Kath")}
+F10B5_GATED={(79,33):"possible_Alexandra_requires_rock_smash_identity_unproven",
+             (80,1):"possible_Jogger_Wyatt_morning_and_bicycle_identity_unproven"}
+AUSTIN_ART=("NPC_023_Youngster.png","NPC_024_Youngster.png")
+LOCAL_ART={"BIRDKEEPER":("trainer_BIRDKEEPER","trainer_BIRDKEEPER_F","trainer_BIRD_KEEPER_F"),
+           "BATTLEGIRL":("trainer_CRUSHGIRL","trainer_BATTLEGIRL","trainer_BATTLE_GIRL")}
+
+def strict_local_art(base,kind):
+    if base is None or kind not in LOCAL_ART:return None,None,[]
+    folder=base/"Graphics"/"Characters"
+    if not folder.is_dir() or folder.is_symlink():return None,None,[]
+    allowed={name.casefold()+".png" for name in LOCAL_ART[kind]}
+    matches=sorted((p for p in folder.iterdir() if p.name.casefold() in allowed),key=lambda p:p.name)
+    labels=[p.name for p in matches]
+    if len(matches)!=1:return None,None,labels
+    p=matches[0]
+    if p.is_symlink() or not p.is_file() or p.stat().st_size>1_000_000:return None,None,labels
+    raw=p.read_bytes()
+    try:w,h=pv.dims(raw)
+    except ValueError:return None,None,labels
+    if w%4 or h%4 or not (32<=w<=512 and 32<=h<=512):return None,None,labels
+    return raw,"CLASS_EQUIVALENT_LOCAL_VERIFIED_FILENAME",labels
+
+def f10b5_art(maps,ow,event,kind,base,source_key):
+    data,provenance,labels=extra_sprite(maps,ow,event,kind,base)
+    if data:return data,provenance,labels
+    if source_key==(42,32) and kind=="YOUNGSTER" and tuple(labels)==AUSTIN_ART:
+        raw=pv.member(ow,pv.OW_ROOT+AUSTIN_ART[0],1_000_000)
+        try:
+            if pv.dims(raw)==(256,256):return raw,"CLASS_EQUIVALENT_PROJECT_SELECTED",labels
+        except ValueError:pass
+    return strict_local_art(base,kind) if kind in LOCAL_ART else (None,None,labels)
+
+def witness_component(points,anchors,xy):
+    """Exact safe cell and a path from a verified existing entry.
+    Reject articulation points and never move the candidate.
+    """
+    if xy not in points:return None,set()
+    for label,seed in anchors:
+        reached=component(points,seed)
+        if xy in reached and non_cut(reached,xy):
+            return {"kind":label,"entry":list(seed),"reachable_cells":len(reached)},reached
+    return None,set()
+
+def access_witnesses(blobs,worlds,mapping,components,entries):
+    """Read only existing QA transfer and seam records, with conservative
+    plain/grass passability. Do not use the permissive movement mask alone:
+    it can contain special terrain not approved for ordinary access.
+    """
+    reverse={mid:sym for sym,mid in mapping.items()}
+    tiles=conn.read_marshal(blobs["Data/Tilesets.rxdata"],"F10B5_TILES")
+    ground={mid:conn.safe_cells(m,tiles,reverse[mid],allowed={0,2}) for mid,m in worlds.items()}
+    occupied={mid:{(e.attrs["@x"],e.attrs["@y"]) for e in m.attrs["@events"].values()} for mid,m in worlds.items()}
+    primary={mid:ground[mid]&components[reverse[mid]]-occupied[mid] for mid in worlds}
+    anchors={mid:[] for mid in worlds}
+    for row in entries:
+        if row[3]:
+            mid,x,y=row[3]
+            if (x,y) in primary[mid]:anchors[mid].append(("QA_EXISTING_ARRIVAL",(x,y)))
+    # Only static direct transfers reachable from a primary component.
+    for mid,m in worlds.items():
+        for e in m.attrs["@events"].values():
+            xy=(e.attrs["@x"],e.attrs["@y"])
+            if not any(q in primary[mid] for q in teleport.neighbours(*xy)):continue
+            for page in e.attrs["@pages"]:
+                condition=getattr(page.attrs.get("@condition"),"attrs",{})
+                if any(condition.get("@"+key) is not False for key in ("switch1_valid","switch2_valid","variable_valid","self_switch_valid")):continue
+                for cmd in page.attrs["@list"]:
+                    args=cmd.attrs.get("@parameters",[])
+                    if cmd.attrs.get("@code")!=201 or len(args)!=6 or args[0]!=0 or not all(type(v) is int for v in args):continue
+                    dst,x,y=args[1:4]
+                    if dst in worlds and (x,y) in ground[dst]-occupied[dst]:
+                        anchors[dst].append(("EXISTING_STATIC_PORTAL",(x,y)))
+    # Native connections are not changed. Match opposite safe edge cells
+    # against an existing connection's exact offset, from primary ground.
+    if "PBS/map_connections.txt" in blobs:
+        for a,da,oa,b,db,ob in pv.parse_connections(blobs["PBS/map_connections.txt"]):
+            if a not in worlds or b not in worlds or conn.OPPOSITE.get(da)!=db:continue
+            for src,sd,so,dst,dd,do in ((a,da,oa,b,db,ob),(b,db,ob,a,da,oa)):
+                sw,sh=worlds[src].attrs["@width"],worlds[src].attrs["@height"]
+                dw,dh=worlds[dst].attrs["@width"],worlds[dst].attrs["@height"]
+                axes=pv.edge_axis(primary[src],(sw,sh),sd,so)
+                for axis in sorted(axes):
+                    index=axis+do
+                    xy=(index,0 if dd=="N" else dh-1) if dd in ("N","S") else (0 if dd=="W" else dw-1,index)
+                    if xy in ground[dst]-occupied[dst]:anchors[dst].append(("EXISTING_CONTINUOUS_EDGE",xy))
+    return ground,{mid:sorted(set(rows),key=lambda r:(r[0],r[1])) for mid,rows in anchors.items()}
+
+def build(blobs,mapping,masks,components,path,types,species,existing,base=None,root=ROOT,overworlds=None,revision=5):
+    if revision not in (2,3,4,5):raise ValueError("F10B_UNSUPPORTED_REVISION")
     inventory=f10a.audit(blobs,mapping,masks,components,path,root)
     eligible={(q["source_id"],q["source_event_id"]):q for q in inventory["queue"]
               if q["kind"]=="trainer_candidate" and not q["geometry_blockers"]}
@@ -369,6 +463,85 @@ def build(blobs,mapping,masks,components,path,types,species,existing,base=None,r
                             rejected[:]=[row for row in rejected if (row["source_id"],row["source_event_id"]) not in keys]
                 extra_report.append({"group":group,"source_events":[list(k) for k in keys],
                                      "accepted":not blockers and len(staged)==len(keys),"blockers":blockers})
+        access_report=[]
+        if revision>=5:
+            lookup={(q["source_id"],q["source_event_id"]):q for q in all_trainers}
+            for key,gating in sorted(F10B5_GATED.items()):
+                access_report.append({"source_id":key[0],"source_event_id":key[1],"accepted":False,
+                                      "reason":gating,"position_preserved":True})
+            for (sid,eid),(literal_kind,literal_name) in sorted(F10B5_PENDING.items()):
+                q=lookup[sid,eid];mid=q["qa_map_id"];xy=tuple(q["position"])
+                if any(r["source_id"]==sid and r["source_event_id"]==eid for r in accepted):
+                    access_report.append({"source_id":sid,"source_event_id":eid,"accepted":True,"reason":"prior_revision"})
+                    continue
+                raw=pv.member(z,pv.MAP_ROOT+"Data/Map%03d.rxdata"%sid)
+                if hashlib.sha256(raw).hexdigest()!=source[sid]["sha256"]:raise ValueError("F10B5_SOURCE_HASH")
+                donor=conn.read_marshal(raw,"F10B5_DONOR").attrs["@events"][eid]
+                literal,_=literal_identity(donor)
+                row={"source_id":sid,"source_event_id":eid,"name":literal_name,"original_position":list(xy),
+                     "accepted":False,"position_preserved":True}
+                access_report.append(row)
+                if literal!=(literal_kind,literal_name):
+                    row["reason"]="literal_identity_changed";continue
+                if (sid,eid)==(42,34):
+                    # Source class is CRUSHGIRL; historical Platinum uses
+                    # Battle Girl. Explicit role alias only for this event.
+                    name="Helen";kind="BATTLEGIRL";team=REFERENCES[42]["Helen"][1]
+                    allowed_types=("CRUSHGIRL",*ALIASES[kind])
+                else:
+                    spec,why=identity(donor,sid,revision)
+                    if not spec:row["reason"]=why;continue
+                    _,name,kind,team=spec
+                    allowed_types=(literal_kind,*ALIASES[kind])
+                local=next((k for k in allowed_types if k in types),None)
+                version=1000+sid*100+eid
+                if not local or any(mon not in species for mon,level in team):
+                    row["reason"]="local_pbs_catalogue";continue
+                if (local,name,version) in existing or (sid,name) in used:
+                    row["reason"]="local_pbs_collision";continue
+                # Recompute after each addition, so occupied cells cannot be
+                # used as a route or hide a newly introduced articulation.
+                ground,anchors=access_witnesses(blobs,worlds,mapping,components,entries)
+                events=worlds[mid].attrs["@events"]
+                occupied={(e.attrs["@x"],e.attrs["@y"]) for e in events.values()}
+                grid=masks[mid]
+                plain=conn.safe_cells(worlds[mid],conn.read_marshal(blobs["Data/Tilesets.rxdata"],"F10B5_PLAIN_TILES"),q["symbol"],allowed={0})
+                row["entry_witness_count"]=len(anchors[mid])
+                if xy not in plain or not (0<xy[0]<len(grid[0])-1 and 0<xy[1]<len(grid)-1):
+                    row["reason"]="original_cell_not_plain_ground";continue
+                if any(a==mid and abs(x-xy[0])+abs(y-xy[1])<=1 for a,x,y in reserved):
+                    row["reason"]="reserved_arrival";continue
+                witness,_=witness_component(ground[mid]-occupied,anchors[mid],xy)
+                row["access_witness"]=witness
+                if witness is None:row["reason"]="no_existing_safe_access_witness";continue
+                data,provenance,labels=f10b5_art(z,ow,donor,kind,base,(sid,eid))
+                row["sprite_candidates"]=labels
+                if not data:row["reason"]="class_sprite_missing_or_ambiguous";continue
+                # Slots 1..3 are reserved for earlier revisions; exact
+                # deterministic slots leave all previous self-switch IDs intact.
+                slot={(42,32):4,(42,33):5,(42,34):6,(79,32):4,(79,35):2}[sid,eid]
+                event_id=original_max[mid]+slot
+                if event_id in events:row["reason"]="event_id_collision";continue
+                key="F10B_%d_%d"%(sid,eid);sn="SNQA_"+key
+                page=event_page(script='BlueSinnohF10B.battle("%s")'%key,sprite=sn)
+                event=ruby("RPG::Event",id=event_id,name=("SN_"+key).encode("ascii"),x=xy[0],y=xy[1],pages=[page])
+                events[event_id]=event
+                trial=dict(out)
+                for n in changed|{mid}:trial["Data/Map%03d.rxdata"%n]=serialize(worlds[n],EVENT_CLASSES)
+                try:safe=teleport.build(trial,mapping,components,root)==entries
+                except ValueError:safe=False
+                if not safe:
+                    del events[event_id];row["reason"]="qa_spawn_changed";continue
+                out["Graphics/Characters/"+sn+".png"]=data
+                changed.add(mid);used.add((sid,name))
+                rows.append([key,[local,name,version,mid,team]])
+                accepted.append({"key":key,"source_id":sid,"source_event_id":eid,"map_id":mid,"event_id":event_id,
+                    "position":list(xy),"type":local,"name":name,"version":version,"team":team,
+                    "sprite_sha256":hashlib.sha256(data).hexdigest(),"sprite_provenance":provenance,
+                    "team_source":"PLATINUM_HISTORICAL_REFERENCE","historical_reference_name":REVIEWED_NAME_ALIASES.get((sid,literal_kind,name),name),
+                    "placement_policy":"ORIGINAL_POSITION_EXISTING_ACCESS_WITNESS","access_witness":witness})
+                row["accepted"]=True;row["reason"]="original_position_validated"
+                rejected[:]=[r for r in rejected if (r["source_id"],r["source_event_id"])!=(sid,eid)]
     for mid in changed:
         out["Data/Map%03d.rxdata"%mid]=serialize(worlds[mid],EVENT_CLASSES)
     if teleport.build(out,mapping,components,root)!=entries:raise ValueError("F10B_QA_SPAWN_CHANGED")
@@ -387,10 +560,11 @@ def build(blobs,mapping,masks,components,path,types,species,existing,base=None,r
             "team_reference":["https://bulbapedia.bulbagarden.net/wiki/Sinnoh_Route_207","https://bulbapedia.bulbagarden.net/wiki/Sinnoh_Route_211"],
             "source_pbs_present":False,"action_only":True,"all_trainer_diagnostics":expanded,
             "all_source_trainer_candidates":len(expanded),"overworld_archive_checked":overworlds is not None,
-            "revision":revision,"f10b4_groups":extra_report if revision>=4 else []}
+            "revision":revision,"f10b4_groups":extra_report if revision>=4 else [],
+            "f10b5_access_report":access_report if revision>=5 else []}
     return out,report,plugin
 
-def append(blobs,mapping,masks,components,path,base,root=ROOT,overworlds=None,revision=4):
+def append(blobs,mapping,masks,components,path,base,root=ROOT,overworlds=None,revision=5):
     existing=set()
     for p in (base/"PBS").glob("trainers*.txt"):
         if p.is_symlink():raise ValueError("F10B_UNSAFE_PBS")
@@ -399,5 +573,5 @@ def append(blobs,mapping,masks,components,path,base,root=ROOT,overworlds=None,re
             if len(fields) in (2,3) and (len(fields)==2 or fields[2].isdigit()):
                 existing.add((fields[0],fields[1],int(fields[2]) if len(fields)==3 else 0))
     out,report,plugin=build(blobs,mapping,masks,components,path,catalogue(base,"trainer_types"),catalogue(base,"pokemon"),existing,base,root,overworlds,revision)
-    print(("SINNOH_F10B4_TRAINER_REPORT " if revision>=4 else "SINNOH_F10B3_TRAINER_REPORT " if revision==3 else "SINNOH_F10B2_ASSET_REPORT ")+json.dumps(report,sort_keys=True),flush=True)
+    print(("SINNOH_F10B5_TRAINER_REPORT " if revision>=5 else "SINNOH_F10B4_TRAINER_REPORT " if revision==4 else "SINNOH_F10B3_TRAINER_REPORT " if revision==3 else "SINNOH_F10B2_ASSET_REPORT ")+json.dumps(report,sort_keys=True),flush=True)
     return out,report,plugin
