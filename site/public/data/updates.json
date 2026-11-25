@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7f06fdac338b6b4c2699a98d4e15727604cba862",
+      "date": "2026-11-25T11:24:18-03:00",
+      "title": "Sinnoh F12D3: integrar auditoria das fontes e geometria",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "ae14ebd7668b27a9e1d92bfb0794960062b6cbb3",
+      "date": "2026-11-25T11:01:58-03:00",
+      "title": "Sinnoh F12D3: enable pinned live source CI and require positive markers",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "70fd99943074b7ffb10b20b9beaf9ec8df1f6fac",
+      "date": "2026-11-25T10:53:34-03:00",
+      "title": "Sinnoh F12D3: audit SecretPotion and Psyduck after verified chase",
+      "category": "Melhorias"
+    },
+    {
       "sha": "77cf7bf0aed78310cc6bdb59b0dc77e76c00e393",
       "date": "2026-11-25T10:52:15-03:00",
       "title": "Sinnoh F12D2: integrar perseguição Galactic com geometria validada",
