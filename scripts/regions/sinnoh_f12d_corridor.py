@@ -5,7 +5,7 @@ No transfer events, passage-table changes, source scripts, or save writes.
 import hashlib
 import heapq
 import struct
-from collections import Counter
+from collections import Counter, deque
 import sinnoh_f12d_pastoria_preview as p
 import sinnoh_f12d_seams as seams
 import sinnoh_private_visual as pv
@@ -46,6 +46,45 @@ def editable(source,qa):
     masks,tags=qa
     return source==qa and bool(masks) and 15 in masks and all(m in (0,15) for m in masks) and all(t==0 for t in tags)
 
+def cell_cost(q,target,shapes,source,protected,size,already,walkable_protected):
+    if q in protected:
+        return 0 if q in walkable_protected and ordinary(shapes[q]) else None
+    if ordinary(shapes[q]) or q in already:return 0
+    w,h=size
+    if q!=target and (q[0] in (0,w-1) or q[1] in (0,h-1)):return None
+    return 1 if editable(source[q],shapes[q]) else None
+
+def blocked_frontier(seed,target,shapes,source,protected,size,existing_edits=(),walkable_protected=()):
+    """Read-only, unbounded flood using the exact same cell admission rules.
+    Report excluded frontier classes and nearest cells, not a proposed edit.
+    """
+    already=set(existing_edits);walkable_protected=set(walkable_protected)
+    if seed not in shapes or cell_cost(seed,target,shapes,source,protected,size,already,walkable_protected) is None:
+        return {"reachable":False,"seed_rejected":True,"reachable_cells":0,"frontier_counts":{},"nearest_frontier":[]}
+    seen={seed};todo=deque([seed]);frontier={}
+    w,h=size
+    while todo:
+        xy=todo.popleft()
+        for q in tp.neighbours(*xy):
+            if q not in shapes or q in seen or q in frontier:continue
+            if cell_cost(q,target,shapes,source,protected,size,already,walkable_protected) is not None:
+                seen.add(q);todo.append(q);continue
+            masks,tags=shapes[q]
+            if q in protected:reason="protected"
+            elif source[q]!=shapes[q]:reason="source_qa_mismatch"
+            elif not masks:reason="empty_stack"
+            elif any(t not in (0,2) for t in tags):reason="special_terrain"
+            elif q!=target and (q[0] in (0,w-1) or q[1] in (0,h-1)):reason="perimeter"
+            elif any(0<m<15 for m in masks):reason="directional_mask"
+            elif any(t!=0 for t in tags):reason="nonzero_terrain"
+            else:reason="other_noneditable"
+            frontier[q]=reason
+    nearest=sorted(frontier,key=lambda q:(abs(q[0]-target[0])+abs(q[1]-target[1]),q[1],q[0]))[:24]
+    return {"reachable":target in seen,"seed_rejected":False,"reachable_cells":len(seen),
+        "frontier_counts":dict(Counter(frontier.values())),
+        "nearest_frontier":[{"position":list(q),"reason":frontier[q],"masks":list(shapes[q][0]),
+            "tags":list(shapes[q][1]),"source_matches":source[q]==shapes[q]} for q in nearest]}
+
 def shortest(seed,target,shapes,source,protected,size,existing_edits=(),budget=MAX_EDITS_PER_LEG,walkable_protected=()):
     """Lexicographically minimize changed cells, then walking distance.
     Only the requested boundary point may be changed on the map perimeter.
@@ -55,12 +94,7 @@ def shortest(seed,target,shapes,source,protected,size,existing_edits=(),budget=M
     if not ordinary(shapes[seed]) and (seed not in already or seed in protected):return None
     if target not in shapes:return None
     def cost(q):
-        if q in protected:
-            return 0 if q in walkable_protected and ordinary(shapes[q]) else None
-        if ordinary(shapes[q]) or q in already:return 0
-        if q!=target and (q[0] in (0,w-1) or q[1] in (0,h-1)):return None
-        if not editable(source[q],shapes[q]):return None
-        return 1
+        return cell_cost(q,target,shapes,source,protected,size,already,walkable_protected)
     dist={seed:(0,0)};prev={};todo=[(0,0,seed)]
     while todo:
         edits,length,xy=heapq.heappop(todo)
@@ -105,7 +139,7 @@ def repair(original,candidate,mapping,components,source_path,root,report):
     worlds={sid:conn.read_marshal(original["Data/Map%03d.rxdata"%mid],"F12D_CORRIDOR_MAP") for sid,mid in ids.items()}
     sizes={sid:(w.attrs["@width"],w.attrs["@height"]) for sid,w in worlds.items()}
     qa={sid:grid(w,tiles) for sid,w in worlds.items()}
-    src={};protected={sid:set() for sid in ids}
+    src={};protected={sid:set() for sid in ids};source_events={sid:set() for sid in ids};qa_events={sid:set() for sid in ids}
     with pv.verified_archive(source_path,"maps") as z:
         st=conn.read_marshal(pv.member(z,pv.MAP_ROOT+"Data/Tilesets.rxdata"),"F12D_CORRIDOR_SOURCE_TILES")
         for sid,(_,digest) in p.SOURCES.items():
@@ -114,7 +148,8 @@ def repair(original,candidate,mapping,components,source_path,root,report):
             w=conn.read_marshal(raw,"F12D_CORRIDOR_SOURCE")
             if (w.attrs["@width"],w.attrs["@height"])!=sizes[sid]:raise ValueError("F12D_CORRIDOR_DIMENSIONS")
             src[sid]=grid(w,st)[1]
-            protected[sid].update((e.attrs["@x"],e.attrs["@y"]) for e in w.attrs["@events"].values())
+            source_events[sid].update((e.attrs["@x"],e.attrs["@y"]) for e in w.attrs["@events"].values())
+            protected[sid].update(source_events[sid])
     # Keep actual event cells forbidden. Literal landing cells are protected
     # against edits, not against ordinary walking, unless also occupied.
     landings={sid:set() for sid in ids}
@@ -122,7 +157,8 @@ def repair(original,candidate,mapping,components,source_path,root,report):
         w=conn.read_marshal(original["Data/Map%03d.rxdata"%mid],"F12D_CORRIDOR_PORTALS")
         for e in w.attrs["@events"].values():
             for sid,id_ in ids.items():
-                if mid==id_:protected[sid].add((e.attrs["@x"],e.attrs["@y"]))
+                if mid==id_:
+                    xy=(e.attrs["@x"],e.attrs["@y"]);protected[sid].add(xy);qa_events[sid].add(xy)
             for page in e.attrs["@pages"]:
                 for command in page.attrs["@list"]:
                     a=command.attrs;args=a.get("@parameters",[])
@@ -131,7 +167,12 @@ def repair(original,candidate,mapping,components,source_path,root,report):
                             if args[1]==id_:landings[sid].add(tuple(args[2:4]))
     seeds={sid:arrivals[sym] for sid,(sym,_) in p.SOURCES.items()}
     for sid in ids:landings[sid].add(seeds[sid])
-    walkable_protected={sid:landings[sid]-protected[sid] for sid in ids}
+    # Source-only events are not present in the QA runtime. Their original
+    # coordinates remain immutable, but an unchanged dry cell may be walked
+    # over if no actual QA event occupies it. This matches strict access_graph.
+    source_only={sid:{q for q in source_events[sid]-qa_events[sid]
+        if q in qa[sid][1] and ordinary(qa[sid][1][q]) and src[sid][q]==qa[sid][1][q]} for sid in ids}
+    walkable_protected={sid:(landings[sid]|source_only[sid])-qa_events[sid] for sid in ids}
     # Preserve every landing and its blocked adjacent cells, but allow
     # walking over existing dry, unoccupied landing cells.
     for sid in ids:protected[sid].update(landings[sid])
@@ -142,7 +183,9 @@ def repair(original,candidate,mapping,components,source_path,root,report):
         return shortest(seeds[sid] if seed is None else seed,target,qa[sid][1],src[sid],forbidden[sid],sizes[sid],edits,budget=budget,walkable_protected=walkable_protected[sid])
     info['search_diagnostics']={'total_edit_budget':MAX_EDITS_TOTAL,'west_candidates':[], 'north_candidates':[],
         'input_map_hashes':{str(mid):hashlib.sha256(original['Data/Map%03d.rxdata'%mid]).hexdigest() for mid in ids.values()},
-        'protected_landings':{str(ids[sid]):[list(q) for q in sorted(walkable_protected[sid])] for sid in ids}}
+        'protected_landings':{str(ids[sid]):[list(q) for q in sorted(landings[sid]-qa_events[sid])] for sid in ids},
+        'source_only_walkable_protected':{str(ids[sid]):[list(q) for q in sorted(source_only[sid])] for sid in ids},
+        'qa_occupied_cells':{str(ids[sid]):[list(q) for q in sorted(qa_events[sid])] for sid in ids}}
     west_options=[]
     for row in west["axis_evidence"]:
         a,b=tuple(row["a"]),tuple(row["b"])
@@ -168,6 +211,8 @@ def repair(original,candidate,mapping,components,source_path,root,report):
         info["search_diagnostics"]["north_candidates"].append({
             "axis":row["axis"],"valor_minimum_edits":len(diagnostic[1]) if diagnostic else None,
             "valor_within_total_budget":vr is not None,"valor_candidate_path":[list(q) for q in vr[0]] if vr else None,
+            "valor_blocked_frontier":blocked_frontier(seeds[214],target,qa[214][1],src[214],forbidden[214],sizes[214],
+                walkable_protected=walkable_protected[214]) if diagnostic is None else None,
             "route_213_attempts":[]})
     for _,_,wa,wr in sorted(west_options):
         for row,diag in zip(north_rows,info["search_diagnostics"]["north_candidates"]):
@@ -192,6 +237,8 @@ def repair(original,candidate,mapping,components,source_path,root,report):
                 "additional_edits":len(rr[1]) if rr else None,
                 "minimum_additional_edits_without_cap":len(diagnostic[1]) if diagnostic else None,
                 "candidate_path":[list(q) for q in rr[0]] if rr else None,
+                "route_213_blocked_frontier":blocked_frontier(seeds[218],target,qa[218][1],src[218],forbidden[218],sizes[218],
+                    existing_edits=wr[1],walkable_protected=walkable_protected[218]) if diagnostic is None else None,
                 "route_213_within_remaining_budget":rr is not None,
                 "combined_edits":len(set(wr[1])|set(rr[1]))+len(vr[1]) if rr and vr else None})
             if not rr or not vr:continue

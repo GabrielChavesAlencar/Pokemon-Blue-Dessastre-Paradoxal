@@ -3081,6 +3081,27 @@ puts "F12B5_AUTHORED_QUEST_CONFIRMED_WINS_KEY_SCOPE_OK"
         self.assertIsNone(c.shortest((1,1),(3,1),shapes,dict(shapes),protected,(5,3),walkable_protected=protected))
         self.assertIsNone(c.shortest((1,1),(3,1),shapes,dict(shapes),protected,(5,3),existing_edits={(2,1)},walkable_protected=protected))
 
+    def test_f12d_unbounded_frontier_keeps_special_and_occupied_cells(self):
+        import sinnoh_f12d_corridor as c
+        dry=((0,),(0,))
+        special=((0,15),(0,7))
+        directional=((4,),(0,))
+        shapes={(x,y):special for x in range(7) for y in range(5)}
+        for x in (1,2,4,5):shapes[x,2]=dry
+        shapes[3,2]=directional
+        protected={(2,2)}
+        report=c.blocked_frontier((1,2),(5,2),shapes,dict(shapes),protected,(7,5))
+        self.assertFalse(report["reachable"])
+        self.assertEqual(report["frontier_counts"]["protected"],1)
+        report=c.blocked_frontier((1,2),(5,2),shapes,dict(shapes),protected,(7,5),walkable_protected=protected)
+        self.assertFalse(report["reachable"])
+        self.assertEqual(report["reachable_cells"],2)
+        self.assertEqual(report["frontier_counts"]["directional_mask"],1)
+        self.assertGreater(report["frontier_counts"]["special_terrain"],0)
+        self.assertIsNone(c.shortest((1,2),(5,2),shapes,dict(shapes),protected,(7,5),budget=35,walkable_protected=protected))
+        shapes[3,2]=dry
+        self.assertTrue(c.blocked_frontier((1,2),(5,2),shapes,dict(shapes),protected,(7,5),walkable_protected=protected)["reachable"])
+
     def test_f12d_exact_edge_axes_and_source_walkability(self):
         import sinnoh_f12d_seams as seams
         self.assertEqual(list(seams.aligned_axes("E",1,(64,67),"W",0,(102,70))),list(range(66)))
