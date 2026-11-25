@@ -1344,6 +1344,15 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
             self.assertFalse(report["native_verified"])
             print("SINNOH_F12A_STORY_SOURCE_REPORT "+json.dumps(report,sort_keys=True),flush=True)
             print("SINNOH_REAL_F12A_STORY_SOURCE_CANDIDATES_139_MAPS_BASELINE_PRESERVED_OK",flush=True)
+            import sinnoh_f12b2_windworks_evidence as wind_evidence
+            evidence=wind_evidence.audit(gh,ghids,Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]),ROOT)
+            self.assertEqual(len(evidence["windworks_events"]),5)
+            self.assertEqual(evidence["native_bindings"],0)
+            self.assertEqual(evidence["new_portals"],0)
+            self.assertEqual(evidence["items_granted"],0)
+            self.assertTrue(evidence["baseline_preserved"])
+            print("SINNOH_F12B2_WINDWORKS_EVIDENCE_REPORT "+json.dumps(evidence,sort_keys=True),flush=True)
+            print("SINNOH_REAL_F12B2_FIVE_EVENTS_ACCESS_PBS_AUDITED_OK",flush=True)
             import sinnoh_f12b_windworks as windworks
             preview=windworks.preview(gh,ghids,ghcomps,Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]),{2},ROOT,report)
             self.assertEqual(preview["preview_maps"],140)
@@ -2622,6 +2631,22 @@ puts "F11H_SEVEN_BADGES_THEN_BEACON_WIN_ONLY_OK"
             wind.evidence_gate(report)
         with self.assertRaisesRegex(ValueError,"F12B_REQUIRES_F11H"):
             wind.preview({}, {}, {}, Path("unused"),set(),ROOT)
+
+    def test_f12b2_evidence_only_and_conditional_script_markers(self):
+        import sinnoh_f12b2_windworks_evidence as evidence
+        from types import SimpleNamespace as Obj
+        command=Obj(attrs={"@code":111,"@indent":0,"@parameters":[12,b'pbTrainerBattle(:COMMANDER,"Mars")']})
+        item=Obj(attrs={"@code":355,"@indent":0,"@parameters":[b"pbReceiveItem(:WORKS_KEY)"]})
+        page=Obj(attrs={"@list":[command,item],"@trigger":0,"@move_type":0})
+        event=Obj(attrs={"@name":b"test","@x":1,"@y":2,"@pages":[page]})
+        row=evidence.event_evidence(event,5)
+        self.assertTrue(row["literal_mars_identity"])
+        self.assertEqual(row["script_item_markers"],["WORKSKEY"])
+        self.assertFalse(row["binding_approved"])
+        self.assertNotIn("pbTrainerBattle",json.dumps(row))
+        self.assertNotIn("pbReceiveItem",json.dumps(row))
+        with self.assertRaisesRegex(ValueError,"F12B2_BASELINE"):
+            evidence.audit({}, {}, Path("unused"),ROOT)
 
     def test_f11a_gym_contract_and_collision_guards(self):
         import sinnoh_f11a_gym as g

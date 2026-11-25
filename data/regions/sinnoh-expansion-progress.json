@@ -533,7 +533,7 @@
       "id": "F12",
       "title": "História, Equipe Galactic e itens-chave",
       "status": "implementation_pending_ci",
-      "followup": "F12B1_WINDWORKS_GEOMETRY_PREVIEW_PENDING_CI",
+      "followup": "F12B2_WINDWORKS_EVIDENCE_PENDING_CI",
       "story_checkpoints_scope": 14,
       "hm_contracts_scope": 8,
       "native_bindings": 0,
@@ -545,7 +545,15 @@
       "windworks_preview_target_maps": 140,
       "windworks_preview_confirmed": false,
       "mars_native_bound": false,
-      "works_key_native_granted": false
+      "works_key_native_granted": false,
+      "f12a_real_head": "31e1f2f212da60c87bed2a0a79dec184e05151cd",
+      "f12a_real_job": 138918141829,
+      "source_maps_scanned": 238,
+      "source_events_scanned": 2867,
+      "candidate_events": 13,
+      "mapped_candidates": 10,
+      "windworks_event_scope": 5,
+      "windworks_access_verified": false
     },
     {
       "id": "F13",
