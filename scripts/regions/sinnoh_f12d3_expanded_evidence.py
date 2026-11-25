@@ -68,7 +68,7 @@ def inspect(blobs,mapping,components,chase_report,report,source,root):
     with pv.verified_archive(source,"maps") as z:
         index=f03.index(z)
         st=conn.read_marshal(pv.member(z,pv.MAP_ROOT+"Data/Tilesets.rxdata"),"F12D3_FOLLOWUP_TILES")
-        source_worlds={}
+        source_worlds={};source_dims={}
         for name in sorted(index.values()):
             if name.casefold().startswith((pv.MAP_ROOT+"Data/").casefold()):
                 m=f03.MAP_RE.fullmatch(name[len(pv.MAP_ROOT+"Data/"):])
@@ -80,11 +80,13 @@ def inspect(blobs,mapping,components,chase_report,report,source,root):
                     events+=1;marks=audit.markers(e)
                     if marks:hits.append({"source_id":sid,"map_id":bound.get(sid),"event_id":eid,
                         "position":[e.attrs["@x"],e.attrs["@y"]],"markers":marks,"sha256":digest})
+                source_dims[sid]=(world.attrs["@width"],world.attrs["@height"])
                 if sid in bound:source_worlds[sid]=world
             elif name.lower().startswith((pv.MAP_ROOT+"PBS/").lower()) and name.lower().endswith(".txt"):
                 raw=pv.member(z,name);marks=audit.tokens(raw)
                 if marks:pbs_hits.append({"file":name.rsplit("/",1)[-1],"markers":marks,"sha256":hashlib.sha256(raw).hexdigest()})
-        for a,da,oa,b,db,ob in pv.parse_connections(pv.member(z,pv.MAP_ROOT+"PBS/map_connections.txt")):
+        source_records=pv.parse_connections(pv.member(z,pv.MAP_ROOT+"PBS/map_connections.txt"))
+        for a,da,oa,b,db,ob in source_records:
             if a not in bound or b not in bound or conn.OPPOSITE.get(da)!=db:continue
             sa,sb=source_worlds[a],source_worlds[b];ma,mb=bound[a],bound[b]
             size_a=(sa.attrs["@width"],sa.attrs["@height"]);size_b=(sb.attrs["@width"],sb.attrs["@height"])
@@ -92,7 +94,17 @@ def inspect(blobs,mapping,components,chase_report,report,source,root):
             target=(ma,da,oa,mb,db,ob);installed=target in current or seams.ends(target)[1] in current
             if axes:
                 topology.setdefault(a,set()).add(b);topology.setdefault(b,set()).add(a)
-            if not ({a,b}&(TARGETS|reached_ids)):continue
+            record=(a,da,oa,b,db,ob)
+            conflict=False
+            for u,du,ou,v,dv,ov in seams.ends(record):
+                for other in source_records:
+                    for x,dx,ox,y,dy,oy in seams.ends(other):
+                        if (x,dx)!=(u,du) or (x,dx,ox,y,dy,oy) in seams.ends(record):continue
+                        if y not in source_dims:
+                            conflict=True;continue
+                        left={n+ou for n in seams.aligned_axes(du,ou,source_dims[u],dv,ov,source_dims[v])}
+                        right={n+ox for n in seams.aligned_axes(dx,ox,source_dims[x],dy,oy,source_dims[y])}
+                        if left&right:conflict=True
             allowed=[];mismatch=0;reachable_a=[];reachable_b=[]
             for n in axes:
                 x=seams.point(n,da,oa,size_a);y=seams.point(n,db,ob,size_b)
@@ -104,7 +116,7 @@ def inspect(blobs,mapping,components,chase_report,report,source,root):
                 if (ma,idx[ma][x]) in reached:reachable_a.append(n)
                 if (mb,idx[mb][y]) in reached:reachable_b.append(n)
             candidates.append({"source_record":[a,da,oa,b,db,ob],"qa_record":list(target),
-                "installed":installed,"aligned_axes":len(axes),"matching_walkable_axes":allowed,
+                "installed":installed,"source_side_conflict":conflict,"aligned_axes":len(axes),"matching_walkable_axes":allowed,
                 "source_qa_mismatch_count":mismatch,"reachable_a_axes":reachable_a,"reachable_b_axes":reachable_b,
                 "target_side_already_used":any((u,d) in {(ma,da),(mb,db)} for rr in current for u,d,*_ in seams.ends(rr))})
     if before!=chase.digest(blobs):raise ValueError("F12D3_FOLLOWUP_MUTATION")
@@ -112,5 +124,5 @@ def inspect(blobs,mapping,components,chase_report,report,source,root):
         "exact_marker_events":hits,"pbs_marker_files":pbs_hits,"unidentified_groups":group_rows(report),
         "reached_source_ids":sorted(reached_ids),"edge_candidates":candidates,
         "topology_paths_only_not_walk_witnesses":{str(s):topology_path(topology,reached_ids,s) for s in sorted(TARGETS)},
-        "baseline_maps":144,"baseline_preserved":True,"new_events":0,"new_portals":0,
+        "input_hashes":before,"baseline_maps":144,"baseline_preserved":True,"new_events":0,"new_portals":0,
         "items_granted":0,"runtime_install_enabled":False,"native_verified":False}
