@@ -464,14 +464,15 @@ def recover_empty_lake_alignments(source,root,expanded,worlds,tiles,index,curren
             def border(sid,mid,d,w):
                 n=sdims[sid][0 if d in ("N","S") else 1]
                 out={}
+                occupied={(e.attrs["@x"],e.attrs["@y"]) for world in (w,worlds[mid]) for e in world.attrs["@events"].values()}
                 for axis in range(n):
                     xy=seams.point(axis,d,0,sdims[sid])
                     ss=gates.cell_shape(w,st,xy);qs=gates.cell_shape(worlds[mid],tiles,xy)
-                    out[axis]=(xy,ss,qs)
+                    out[axis]=(xy,ss,qs,xy in occupied)
                 return out
             left=border(a,ma,da,wa);right=border(b,mb,db,wb)
             def dry(border_rows,mid):
-                return [n for n,(xy,ss,qs) in border_rows.items() if xy in index[mid] and ss==qs and ss.get("ordinary_walkable")]
+                return [n for n,(xy,ss,qs,busy) in border_rows.items() if not busy and xy in index[mid] and ss==qs and ss.get("ordinary_walkable")]
             def build(delta):
                 return (ma,da,max(delta,0),mb,db,max(-delta,0))
             def valid(q):
@@ -482,9 +483,9 @@ def recover_empty_lake_alignments(source,root,expanded,worlds,tiles,index,curren
                 if not lanes:return False
                 expected=[]
                 for n in seams.aligned_axes(da,qa,dims[ma],db,qb,dims[mb]):
-                    x,sa,la=left[n+qa];y,sb,lb=right[n+qb]
+                    x,sa,la,busy_a=left[n+qa];y,sb,lb,busy_b=right[n+qb]
                     if sa!=la or sb!=lb:return False
-                    if seams.lane_allowed(sa,sb,la,lb,x not in index[ma],y not in index[mb]):
+                    if seams.lane_allowed(sa,sb,la,lb,busy_a or x not in index[ma],busy_b or y not in index[mb]):
                         expected.append((n,x,y))
                 return lanes==expected
             chosen,count=unique_empty_lake_alignment(dry(left,ma),dry(right,mb),build,valid)
@@ -629,6 +630,8 @@ def recover_lake_seams(data,mapping,components,root,expanded,seed,previews,rock,
         predecessor=goal
     report["accepted_records"]=[list(r) for r in added]
     report["authorial_accepted_records"]=[list(r) for r in added if r in realigned]
+    for row in alignment_report:
+        row["accepted"]=row.get("candidate_record") in report["authorial_accepted_records"]
     report["reason"]="complete_original_sequence_fixture_proved"
     return trial,added,report
 
