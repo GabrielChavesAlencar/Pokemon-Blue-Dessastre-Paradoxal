@@ -1634,6 +1634,14 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                         self.assertEqual(onr["new_portals"],0)
                         print("SINNOH_F12D3_ORIGINAL_NETWORK_REPORT "+json.dumps(onr,sort_keys=True),flush=True)
                         print("SINNOH_REAL_F12D3_ORIGINAL_NETWORK_AUDITED_OK",flush=True)
+                        import sinnoh_f12d3_canonical_network as canonical_network
+                        cnr=canonical_network.inspect(chased,expanded,expanded_comps,cr,ext,onr,Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]),ROOT)
+                        self.assertEqual(chased,snapshot)
+                        self.assertFalse(cnr["activation_allowed"])
+                        self.assertFalse(cnr["native_verified"])
+                        self.assertEqual(cnr["new_portals"],0)
+                        print("SINNOH_F12D3_CANONICAL_NETWORK_REPORT "+json.dumps(cnr,sort_keys=True),flush=True)
+                        print("SINNOH_REAL_F12D3_CANONICAL_NETWORK_AUDITED_OK",flush=True)
                         print("SINNOH_REAL_F12D3_GATED_ALIGNMENT_EVIDENCE_PRESERVED_OK",flush=True)
                         print("SINNOH_REAL_F12D3_ROUTE210_RECOVERY_EVIDENCE_PRESERVED_OK",flush=True)
                     else:
@@ -3389,6 +3397,19 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertFalse(b.cut_witness(opened,prior|far,prior,barrier,473))
         self.assertFalse(b.cut_witness(opened,{(528,0,0)},prior,barrier,473))
         self.assertFalse(b.cut_witness(opened|{(472,1,1)},prior,prior,barrier,473))
+
+    def test_f12d3_canonical_network_respects_cost_and_banned_seam(self):
+        import sinnoh_f12d3_canonical_network as n
+        a,b,c=(1,0,0),(2,0,0),(3,0,0)
+        r=(1,"E",0,2,"W",0)
+        edges={a:[(b,r,"authorial")],b:[(c,(),"native")],c:[]}
+        d,p=n.path_search([a],lambda q:edges[q],lambda q:0,frozenset())
+        self.assertEqual(d[c],(0,1,1,2))
+        self.assertEqual(len(n.trace(c,p)),2)
+        d,p=n.path_search([a],lambda q:edges[q],lambda q:0,frozenset({r}))
+        self.assertNotIn(c,d)
+        self.assertEqual(n.SYMBOLS[123],"SINNOH_HEARTHOME_CITY")
+        self.assertNotIn(22,n.SYMBOLS)
 
     def test_f12d3_original_network_uses_component_edges_not_map_names(self):
         import sinnoh_f12d3_original_network as n
