@@ -362,6 +362,23 @@ module BlueSinnohF12DIntegrated
       end
       super
     end
+    def field_allowed?(move,showmsg=true,selected=nil)
+      if move.to_s.upcase=="SURF" && defined?(BlueSinnohExperimental) && BlueSinnohExperimental.private_copy?
+        outcome=field_result(move,selected)
+        return true if outcome==:allowed
+        if showmsg
+          message=case outcome
+          when :badge then "Obtenha a Insignia FEN em Sinnoh."
+          when :hm then "Obtenha a HM03 e o comprovante local de Surf em Sinnoh."
+          when :pokemon then "Voce precisa de um Pokemon compativel com Surf na equipe."
+          else "Surf regional indisponivel neste momento."
+          end
+          pbMessage(_INTL(message))
+        end
+        return false
+      end
+      super
+    end
     def kanto_field_context?(move)
       if move.to_s.upcase=="SURF" && defined?(BlueSinnohExperimental) && BlueSinnohExperimental.private_copy?
         return @field_move==:SURF && field_result(:SURF)==:allowed

@@ -1819,8 +1819,8 @@
       "f12d_integrated_latest_observed_head": "dce1de6577894dfa350da70cd6bd9ec58c3214ec",
       "f12d_integrated_latest_observed_native_job": 139449851678,
       "f12d_integrated_latest_observed_source_job": 139449853803,
-      "f12d_integrated_latest_observed_workflows_approved": 9,
-      "f12d_integrated_latest_observed_jobs_approved": 24,
+      "f12d_integrated_latest_observed_workflows_approved": 10,
+      "f12d_integrated_latest_observed_jobs_approved": 25,
       "f12d_integrated_native_request_accepted_confirmed": true,
       "f12d_integrated_native_compiler_return_confirmed": true,
       "f12d_integrated_native_item_probe_confirmed": true,
@@ -1875,12 +1875,41 @@
       "f12d_integrated_surf_required_badge": "FEN",
       "f12d_integrated_surf_local_receipt_verified": false,
       "f12d_integrated_surf_native_movement_verified": false,
-      "f12d_integrated_surf_geometry_implemented_pending_ci": true,
-      "f12d_integrated_saturn_entry_component_placement_pending_ci": true,
+      "f12d_integrated_surf_geometry_implemented_pending_ci": false,
+      "f12d_integrated_saturn_entry_component_placement_pending_ci": false,
       "f12d_integrated_surf_path_regression_confirmed": true,
       "f12d_integrated_surf_pickup_candidate_implemented_pending_ci": true,
       "f12d_integrated_surf_conditional_component_graph_implemented_pending_ci": true,
-      "f12d_integrated_surf_pickup_candidate_policy": "AUTHORIAL_CELESTIC_POST_PSYDUCK_FEN_LOCAL_HM03_TRANSACTION"
+      "f12d_integrated_surf_pickup_candidate_policy": "AUTHORIAL_CELESTIC_POST_PSYDUCK_FEN_LOCAL_HM03_TRANSACTION",
+      "f12d_integrated_surf_source_local_geometry_confirmed": true,
+      "f12d_integrated_surf_matched_water_cells": {
+        "161": 1003,
+        "215": 1017
+      },
+      "f12d_integrated_surf_source_local_steps": {
+        "161": 77,
+        "215": 39
+      },
+      "f12d_integrated_surf_source_local_water_steps": {
+        "161": 53,
+        "215": 14
+      },
+      "f12d_integrated_saturn_entry_component_preview": {
+        "map_id": 531,
+        "position": [
+          22,
+          25
+        ],
+        "stand": [
+          21,
+          25
+        ],
+        "placement_seed": [
+          531,
+          22,
+          36
+        ]
+      }
     },
     {
       "id": "F13",
