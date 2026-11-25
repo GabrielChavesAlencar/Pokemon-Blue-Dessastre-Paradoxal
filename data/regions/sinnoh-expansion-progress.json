@@ -542,7 +542,7 @@
       "id": "F12",
       "title": "História, Equipe Galactic e itens-chave",
       "status": "implementation_pending_ci",
-      "followup": "F12D3_SECRETPOTION_PSYDUCK_SOURCE_AUDIT_PENDING_CI",
+      "followup": "F12D3_LIVE_SOURCE_WORKFLOW_GATE_PENDING_CI",
       "story_checkpoints_scope": 14,
       "hm_contracts_scope": 8,
       "native_bindings": 0,
@@ -990,7 +990,14 @@
         "PASTORIA",
         "ROUTE_213",
         "VALOR_BATTLE"
-      ]
+      ],
+      "f12d3_prior_ci_head": "70fd99943074b7ffb10b20b9beaf9ec8df1f6fac",
+      "f12d3_prior_ci_base": "cd136372e52dc3f3ec856d3e23fb0e6caacad98c",
+      "f12d3_prior_workflows_approved": 10,
+      "f12d3_prior_jobs_approved": 24,
+      "f12d3_prior_missing_workflow": "Blue-Story - instalador Windows independente",
+      "f12d3_marker_unit_job": 139254075616,
+      "f12d3_live_gate_pending_ci": true
     },
     {
       "id": "F13",
