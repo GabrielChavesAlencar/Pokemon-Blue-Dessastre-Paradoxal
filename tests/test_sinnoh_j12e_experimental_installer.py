@@ -3592,6 +3592,21 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertLess(main.index("TRANSACTION_PROBE_OK"),main.index("ALL_VERIFIERS_PASSED"))
         self.assertIn("Compiler.singleton_class.send(:define_method, :compile_all, blue_sinnoh_core)",main)
 
+    def test_f12d_lake_surf_path_requires_water_mode_and_never_opens_dry_graph(self):
+        import sinnoh_f12d_integrated as i
+        self.assertEqual(i.lake_surface_mode(((0,),(0,)),(0,)),"walk")
+        for tag in (5,6):
+            self.assertEqual(i.lake_surface_mode(((15,),(tag,)),(0,)),"surf")
+        for shape,pri in ((((15,),(0,)),(0,)),(((15,),(16,)),(0,)),
+                          (((15,0),(6,0)),(0,1)),(((15,),(6,)),(1,))):
+            self.assertIsNone(i.lake_surface_mode(shape,pri))
+        modes={(0,0):"walk",(1,0):"surf",(2,0):"walk"}
+        self.assertIsNone(i.lake_surface_path(modes,(0,0),(2,0)))
+        self.assertEqual(i.lake_surface_path(modes,(0,0),(2,0),True),[(0,0),(1,0),(2,0)])
+        self.assertIsNone(i.lake_surface_path(modes,(0,0),(1,0),True))
+        del modes[(1,0)]
+        self.assertIsNone(i.lake_surface_path(modes,(0,0),(2,0),True))
+
     def test_f12d_valor_rock_npc_occupancy_preserves_terrain_and_blocks_cell(self):
         import sinnoh_f10b7_field_audit as g
         # NPC placement must be evaluated by component continuity, not fail

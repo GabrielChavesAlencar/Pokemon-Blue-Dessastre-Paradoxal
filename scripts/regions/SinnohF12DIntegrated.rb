@@ -149,7 +149,17 @@ module BlueSinnohF12DIntegrated
     raise "Sinnoh F12D: consumo repetido" if T.stage(final_s,final_b,T::ORDER[1],catalogue_verified:true,geometry_verified:true)
     true
   end
+  # Verify only terrain catalogue semantics here. Real Surf movement and
+  # regional HM acquisition still require their own actual runtime evidence.
+  def self.lake_surf_terrain_reference?
+    return false unless defined?(GameData::TerrainTag)
+    [5,6].all? do |n|
+      tag=GameData::TerrainTag.try_get(n)
+      tag && tag.id_number==n && tag.can_surf && !tag.waterfall && !tag.waterfall_crest && !tag.ledge && !tag.bridge
+    end
+  end
   def self.verify_compiled!
+    puts(lake_surf_terrain_reference? ? "SINNOH_F12D_NATIVE_LAKE_SURF_TERRAIN_REFERENCE_OK" : "SINNOH_F12D_NATIVE_LAKE_SURF_TERRAIN_REFERENCE_BLOCKED")
     raise "Sinnoh F12D3: terreno Rock incompatível" unless rock_reference_valid?
     raise "Sinnoh F12D3: item regional invalido" unless T.compiled_item_valid?
     raise "Sinnoh F12D lagos: equipes invalidas" unless SPECS.values.all? { |spec| BlueSinnohF10B.valid_team?(spec) }

@@ -114,6 +114,78 @@ def valor_rock_reference(blobs,mapping,source):
         cells[mid,*door]=qs[door]
     return cells
 
+# Candidate aquatic paths never enter the dry progression graph. RMXP
+# source water has mask 15; only native Surf may override that water mask.
+# Match the original and remapped tile attributes, not numeric tile IDs.
+def lake_surface_mode(shape,priorities):
+    masks,tags=shape
+    if corridor.ordinary(shape):return "walk"
+    if len(tags)==1 and tags[0] in (5,6) and masks==(15,) and priorities==(0,):
+        return "surf"
+    return None
+
+def lake_surface_path(modes,start,goal,allow_surf=False):
+    from collections import deque
+    if modes.get(start)!="walk" or modes.get(goal)!="walk":return None
+    allowed={"walk","surf"} if allow_surf else {"walk"}
+    previous={start:None};queue=deque([start])
+    while queue:
+        q=queue.popleft()
+        if q==goal:break
+        for n in sorted(tp.neighbours(*q)):
+            if n not in previous and modes.get(n) in allowed:
+                previous[n]=q;queue.append(n)
+    if goal not in previous:return None
+    path=[];q=goal
+    while q is not None:path.append(q);q=previous[q]
+    return list(reversed(path))
+
+def lake_surf_geometry(data,mapping,source,root,previews):
+    catalog,_,_=conn.graph(root)
+    targets={215:("SINNOH_LAKE_VALOR",(45,6),(26,24)),
+        161:("SINNOH_LAKE_ACUITY",(8,49),tuple(previews["ACUITY"]["stand"]) if "ACUITY" in previews else None)}
+    hms=json.loads((root/"data/regions/sinnoh-hms-s16.json").read_text("utf-8"))
+    hm=next(r for r in hms["hms"] if r["action"]=="SURF")
+    if (hm["badge"],hm["hm_item"])!=("FEN","HM03"):
+        raise ValueError("F12D_SURF_CONTRACT_CHANGED")
+    result={"required_badge":"FEN","required_item":"HM03","local_pickup_required":True,
+        "compatible_party_required":True,"local_pickup_verified":hm["local_receipt_verified"] is True,
+        "native_surf_movement_verified":False,"activation_allowed":False,"maps":{}}
+    qt=conn.read_marshal(data["Data/Tilesets.rxdata"],"F12D_SURF_QA_TILES")
+    with pv.verified_archive(source,"maps") as z:
+        st=conn.read_marshal(pv.member(z,pv.MAP_ROOT+"Data/Tilesets.rxdata"),"F12D_SURF_SOURCE_TILES")
+        for sid,(symbol,start,goal) in targets.items():
+            if not goal or symbol not in mapping:continue
+            raw=pv.member(z,pv.MAP_ROOT+"Data/Map%03d.rxdata"%sid)
+            if hashlib.sha256(raw).hexdigest()!=catalog[sid]["sha256"]:raise ValueError("F12D_SURF_SOURCE_HASH")
+            sw=conn.read_marshal(raw,"F12D_SURF_SOURCE")
+            mid=mapping[symbol];qw=conn.read_marshal(data["Data/Map%03d.rxdata"%mid],"F12D_SURF_QA")
+            ss,sh=corridor.grid(sw,st);qs,qh=corridor.grid(qw,qt)
+            if set(ss)!=set(qs):raise ValueError("F12D_SURF_DIMENSIONS")
+            def pri(world,tiles,stack):
+                table=tiles[world.attrs["@tileset_id"]].attrs["@priorities"].data
+                return tuple(struct.unpack_from("<H",table,20+2*k)[0] for k in stack if k)
+            occupied={(e.attrs["@x"],e.attrs["@y"]) for e in qw.attrs["@events"].values()}
+            modes={}
+            for q in ss:
+                if q in occupied or sh[q]!=qh[q]:continue
+                sp=pri(sw,st,ss[q]);qp=pri(qw,qt,qs[q])
+                if sp!=qp:continue
+                mode=lake_surface_mode(sh[q],sp)
+                if mode:modes[q]=mode
+            path=lake_surface_path(modes,start,goal,True)
+            dry=lake_surface_path(modes,start,goal,False)
+            row={"source_id":sid,"map_id":mid,"start":list(start),"goal":list(goal),
+                "source_sha256":catalog[sid]["sha256"],"matched_water_cells":sum(v=="surf" for v in modes.values()),
+                "dry_path":dry is not None,"surf_candidate":path is not None,
+                "terrain_changes":0,"native_verified":False}
+            if path:
+                row.update(steps=len(path)-1,water_steps=sum(modes[q]=="surf" for q in path),
+                    transitions=[{"from":list(a),"to":list(b),"mode":modes[b]} for a,b in zip(path,path[1:]) if modes[a]!=modes[b]],
+                    path_sha256=hashlib.sha256(json.dumps(path,separators=(",",":")).encode("ascii")).hexdigest())
+            result["maps"][str(sid)]=row
+    return result
+
 def lake_contract(key,types,species,existing):
     symbol,name,aliases,version,team=LAKES[key]
     if not team:return {"symbol":symbol,"name":name,"team":[],"kind":"scene"}
@@ -377,11 +449,17 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
         if not contract or contract["symbol"] not in mapping:continue
         mid=mapping[contract["symbol"]]
         local_seed=next((tuple(r[3]) for r in entries if r[3] and r[3][0]==mid),None)
-        if local_seed:
-            local=placement(blobs,mapping,components,root,mid,local_seed,valor_rock=valor_rock)
+        # Saturn is authorial, not pinned to a donor NPC coordinate. Use
+        # the exact original cave entrance component, not an isolated QA spawn.
+        # Preserve the QA teleport itself and never open any new cave tile.
+        entry_seed=threshold if key=="VALOR" and threshold in valor_rock else local_seed
+        if entry_seed:
+            local=placement(blobs,mapping,components,root,mid,entry_seed,valor_rock=valor_rock)
             if local:
                 preview,loc=add_event(blobs,mid,local[0],key,"SNQA_F12D_"+key)
-                loc.update(stand=list(local[1]),qa_seed=list(local_seed),walk_from_predecessor_proved=False,
+                loc.update(stand=list(local[1]),qa_seed=list(local_seed) if local_seed else None,
+                    placement_seed=list(entry_seed),placement_policy="ORIGINAL_CAVE_ENTRY_COMPONENT" if key=="VALOR" and entry_seed==threshold else "LOCAL_QA_COMPONENT",
+                    walk_from_predecessor_proved=False,
                     candidate_map_sha256=hashlib.sha256(preview["Data/Map%03d.rxdata"%mid]).hexdigest())
                 result["lake_local_previews"][key]=loc
         pos=placement(blobs,mapping,components,root,mid,seed,valor_rock=valor_rock)
@@ -426,6 +504,7 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
     recovered,lake_seams,lake_recovery=recover_lake_seams(original_trial,mapping,components,root,expanded,lake_seed,result["lake_local_previews"],rock,valor_rock)
     result["lake_original_seam_recovery"]=lake_recovery
     result["lake_original_entries"]=entry_report
+    result["lake_surf_geometry"]=lake_surf_geometry(reopened,mapping,source,root,result["lake_local_previews"])
     accepted_entries=[]
     if lake_recovery.get("reason")=="complete_original_sequence_fixture_proved":
         accepted_entries=entry_report["candidate_records"] if original_trial!=reopened else []
@@ -731,6 +810,7 @@ def installer_preflight(blobs,mapping,components,cr,base,root,source,staged=None
             lake_independent_legs=story.get("lake_independent_legs",{}),
             lake_original_seam_recovery=story.get("lake_original_seam_recovery",{}),
             lake_original_entries=story.get("lake_original_entries",{}),
+            lake_surf_geometry=story.get("lake_surf_geometry",{}),
             restored_original_portals=story.get("restored_original_portals",0),
             pre_chase_graph_checks=story.get("pre_chase_graph_checks",[]),
             geometry_delta_count=story.get("geometry_delta_count",0),
