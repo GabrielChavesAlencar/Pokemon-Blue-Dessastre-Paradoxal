@@ -3632,6 +3632,50 @@ raise "foreign map" if m.surf_step_allowed?(:allowed,nil,[],true,b,[511,2,0])
             run=subprocess.run([shutil.which("ruby"),"-"],input=fixture,capture_output=True,text=True,encoding="utf-8",timeout=30)
             self.assertEqual(run.returncode,0,run.stderr)
 
+    def test_f12d_surf_compile_context_restores_native_globals_on_failure(self):
+        if not shutil.which("ruby"):self.skipTest("Ruby unavailable")
+        template=(ROOT/"scripts/regions/SinnohF12DIntegrated.rb").read_text("utf-8")
+        for key in ("__LOCATIONS__","__SPECS__","__SURF_ROUTES__"):
+            template=template.replace(key,"{}")
+        for key in ("__EDIT_CELLS__","__CHASE_LANES__","__CELESTIC_LANES__"):
+            template=template.replace(key,"[]")
+        code=(ROOT/"scripts/regions/SinnohF12D3Transaction.rb").read_text("utf-8")+"\n"+template
+        fixture=code+'''
+class Game_Variables < Hash; end
+class Game_Switches < Hash; end
+class Game_SelfSwitches < Hash; end
+class Game_Temp; end
+class PokemonGlobalMetadata; end
+class GameStats; end
+m=BlueSinnohF12DIntegrated
+$game_variables=nil;$game_switches=:existing_switches
+$game_self_switches=:existing_self_switches;$game_temp=:existing_temp
+$PokemonGlobal=:existing_global;$stats=:existing_stats
+original=[$game_variables,$game_switches,$game_self_switches,$game_temp,$PokemonGlobal,$stats]
+result=m.with_native_surf_pokemon_context do
+  raise "variables" unless $game_variables.is_a?(Game_Variables)
+  raise "switches" unless $game_switches.is_a?(Game_Switches)
+  raise "self switches" unless $game_self_switches.is_a?(Game_SelfSwitches)
+  raise "temp" unless $game_temp.is_a?(Game_Temp)
+  raise "global" unless $PokemonGlobal.is_a?(PokemonGlobalMetadata)
+  raise "stats" unless $stats.is_a?(GameStats)
+  $game_variables[1]=123
+  :passed
+end
+raise "return" unless result==:passed
+raise "restore success" unless original==[$game_variables,$game_switches,$game_self_switches,$game_temp,$PokemonGlobal,$stats]
+begin
+  m.with_native_surf_pokemon_context { raise "constructor failure" }
+rescue RuntimeError => e
+  raise unless e.message=="constructor failure"
+else
+  raise "swallowed failure"
+end
+raise "restore error" unless original==[$game_variables,$game_switches,$game_self_switches,$game_temp,$PokemonGlobal,$stats]
+'''
+        run=subprocess.run([shutil.which("ruby"),"-"],input=fixture,capture_output=True,text=True,encoding="utf-8",timeout=30)
+        self.assertEqual(run.returncode,0,run.stderr)
+
     def test_f12d_surf_pickup_candidate_uses_native_regional_receipt(self):
         source=(ROOT/"scripts/regions/SinnohF12DIntegrated.rb").read_text("utf-8")
         self.assertIn('BlueRegions.record_sinnoh_hm(next_s,"SURF",:HM03,next_bag,true)',source)

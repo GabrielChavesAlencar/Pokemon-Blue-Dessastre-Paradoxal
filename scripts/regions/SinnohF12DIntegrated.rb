@@ -271,7 +271,27 @@ module BlueSinnohF12DIntegrated
   end
   # Actual compiled catalogue, PokemonBag and regional state receipt. No
   # synthetic map traversal or claim that the player has used Surf.
+  # Compile-only execution precedes New Game. DBK's real Pokemon constructor
+  # reads native indexed globals (Terastallization#getTeraType). Never
+  # replace Pokemon.new or disable a mechanic to make this probe pass.
+  def self.with_native_surf_pokemon_context
+    previous=[$game_variables,$game_switches,$game_self_switches,$game_temp,$PokemonGlobal,$stats]
+    begin
+      $game_variables=Game_Variables.new
+      $game_switches=Game_Switches.new
+      $game_self_switches=Game_SelfSwitches.new
+      $game_temp=Game_Temp.new
+      $PokemonGlobal=PokemonGlobalMetadata.new
+      $stats=GameStats.new
+      yield
+    ensure
+      $game_variables,$game_switches,$game_self_switches,$game_temp,$PokemonGlobal,$stats=*previous
+    end
+  end
   def self.verify_native_surf_pickup!
+    with_native_surf_pokemon_context { verify_native_surf_pickup_in_context! }
+  end
+  def self.verify_native_surf_pickup_in_context!
     raise "Sinnoh HM03 catalogue" unless surf_hm_valid?
     s=BlueRegions.new_state("SINNOH")
     s["sinnoh_f12d_quest"]=T::CHASE.dup;s[T::LEDGER]=T::ORDER.dup
@@ -305,7 +325,7 @@ module BlueSinnohF12DIntegrated
     raise "Sinnoh HM03 missing item" unless surf_permission(saved,PokemonBag.new,[])==:hm
     # Exercise real compiled species compatibility rather than a permissive
     # party double. The Pokemon is temporary and never written to a save.
-    candidate=[:PIPLUP,:PSYDUCK,:GOLBAT].filter_map do |id|
+    candidate=[:PIPLUP,:PSYDUCK,:GOLBAT].lazy.filter_map do |id|
       next unless GameData::Species.exists?(id)
       Pokemon.new(id,20)
     end.find { |pkmn| !pkmn.egg? && !pkmn.fainted? && pkmn.compatible_with_move?(:SURF) }
@@ -317,7 +337,7 @@ module BlueSinnohF12DIntegrated
     raise "Sinnoh HM03 borrowed receipt gate" unless surf_permission(s,borrowed,[candidate],candidate)==:hm
     raise "Sinnoh HM03 badge with compatible party" unless surf_permission(no_badge,bag,[candidate],candidate)==:badge
     raise "Sinnoh HM03 item with compatible party" unless surf_permission(saved,PokemonBag.new,[candidate],candidate)==:hm
-    incompatible=[:STARLY,:SHINX,:BIDOOF,:WURMPLE].filter_map do |id|
+    incompatible=[:STARLY,:SHINX,:BIDOOF,:WURMPLE].lazy.filter_map do |id|
       next unless GameData::Species.exists?(id)
       Pokemon.new(id,20)
     end.find { |pkmn| !pkmn.egg? && !pkmn.fainted? && !pkmn.compatible_with_move?(:SURF) }
