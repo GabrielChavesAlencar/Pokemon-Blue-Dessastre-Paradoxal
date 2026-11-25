@@ -1396,6 +1396,16 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
             self.assertEqual([row["event_id"] for row in pickup],[2,3,4,5])
             self.assertTrue(all(not row["grant_enabled"] for row in pickup))
             print("SINNOH_F12B5_PICKUP_IDENTITY_REPORT "+json.dumps(pickup,sort_keys=True),flush=True)
+            if wr["runtime_install_enabled"]:
+                import sinnoh_f12c_eterna_audit as eterna_audit
+                er=eterna_audit.audit(wo,wi,Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]))
+                self.assertEqual(er["source_maps_scanned"],238)
+                self.assertTrue(er["baseline_preserved"])
+                self.assertEqual(er["new_maps"],0)
+                self.assertEqual(er["items_granted"],0)
+                self.assertFalse(er["native_verified"])
+                print("SINNOH_F12C_ETERNA_SOURCE_REPORT "+json.dumps(er,sort_keys=True),flush=True)
+                print("SINNOH_REAL_F12C_238_SOURCE_MAPS_AUDITED_140_BASELINE_PRESERVED_OK",flush=True)
             qo,qr,qp=quest.build(wo,wi,wc,{"GALACTIC_GRUNT","GALACTIC_ADMIN"},{"GLAMEOW","STUNKY","ZUBAT","PURUGLY"},{"WORKSKEY"},set(),ROOT)
             qr["catalog_provenance"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
             self.assertFalse(qr["native_verified"])
@@ -2862,6 +2872,34 @@ puts "F12B5_AUTHORED_QUEST_CONFIRMED_WINS_KEY_SCOPE_OK"
             result=subprocess.run(["ruby","-e",fixture,str(path)],capture_output=True,text=True,encoding="utf-8")
             self.assertEqual(result.returncode,0,result.stdout+result.stderr)
             self.assertIn("F12B5_AUTHORED_QUEST_CONFIRMED_WINS_KEY_SCOPE_OK",result.stdout)
+
+    def test_f12c_pickup_local_catalog_read_only(self):
+        import sinnoh_f12b5_pickup_catalog as catalog
+        rows=[{"event_id":i,"literal_candidates":[{"symbol":k,"quantity":1,"legacy_numeric_id":None}]} for i,k in catalog.EXPECTED.items()]
+        with tempfile.TemporaryDirectory() as td:
+            base=Path(td)
+            self.assertEqual(catalog.audit(base,rows)["local_catalog_valid_count"],0)
+            p=base/"PBS";p.mkdir()
+            path=p/"items.txt"
+            content="".join("[%s]\nName = %s\nPocket = 1\n%s"%(k,k,"Move = THUNDERBOLT\n" if k=="TM24" else "") for k in catalog.EXPECTED.values())
+            path.write_text(content,encoding="utf-8")
+            report=catalog.audit(base,rows)
+            self.assertEqual(report["local_catalog_valid_count"],4)
+            self.assertTrue(all(not x["grant_enabled"] for x in report["items"]))
+            self.assertEqual(path.read_text("utf-8"),content)
+            (p/"items_extra.txt").write_text("[POTION]\nName = Potion\nPocket = 1\n",encoding="utf-8")
+            self.assertEqual(catalog.audit(base,rows)["local_catalog_valid_count"],3)
+            path.write_text(content.replace("THUNDERBOLT","TACKLE"),encoding="utf-8")
+            self.assertEqual(catalog.audit(base,rows)["local_catalog_valid_count"],2)
+            rows[2]["literal_candidates"][0]["quantity"]=2
+            self.assertEqual(catalog.audit(base,rows)["local_catalog_valid_count"],1)
+
+    def test_f12c_candidate_classification_no_allocation(self):
+        import sinnoh_f12c_eterna_audit as audit
+        rows=[{"source_id":90,"name":"Eterna City","parent_id":0},{"source_id":119,"name":"Eterna City","parent_id":90},{"source_id":5,"name":"MAP005","parent_id":0},{"source_id":8,"name":"Galactic Building","parent_id":0}]
+        self.assertEqual(audit.classify(rows),([8],[5],[90,119]))
+        with self.assertRaisesRegex(ValueError,"F12C_REQUIRES_140_BASELINE"):
+            audit.audit({}, {}, Path("unused"))
 
     def test_f11a_gym_contract_and_collision_guards(self):
         import sinnoh_f11a_gym as g

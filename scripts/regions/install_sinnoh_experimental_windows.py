@@ -53,6 +53,7 @@ import sinnoh_f11a_gym as f11a_gym
 import sinnoh_f12b3_windworks_preflight as f12b3_windworks
 import sinnoh_f12b4_windworks_access as f12b4_windworks
 import sinnoh_f12b5_authored_quest as f12b5_quest
+import sinnoh_f12b5_pickup_catalog as f12b5_pickups
 from audit_sinnoh_rxdata import read_marshal
 from audit_sinnoh_twinleaf_events import MAPS,HANDLERS as CH06_HANDLERS,BALLS as CH06_BALLS
 from build_sinnoh_twinleaf_events import HANDLERS as SCRIPT_HANDLERS
@@ -803,6 +804,7 @@ def build_files(base:Path,project:Path=ROOT):
     f12b4_report={"status":"WINDWORKS_ACCESS_BLOCKED","new_seams":0,"runtime_install_enabled":False}
     f12b4_maps=None
     f12b5_report={}
+    f12b5_pickup_report={"status":"NOT_EVALUATED","items_granted":0,"native_verified":False}
     f12b5_plugin=b""
     f11h_plugin=b""
     f10c_plugin=b""
@@ -893,6 +895,12 @@ def build_files(base:Path,project:Path=ROOT):
         maps,mapping,components,f12b4_report=f12b4_windworks.append(maps,mapping,components,sources["maps"],occupied,project)
         print("SINNOH_F12B4_WINDWORKS_ACCESS_REPORT "+json.dumps(f12b4_report,sort_keys=True),flush=True)
         f12b4_maps=maps
+        if f12b4_report.get("runtime_install_enabled"):
+            try:
+                f12b5_pickup_report=f12b5_pickups.audit(base,f12b5_quest.pickup_candidates(sources["maps"]))
+            except (OSError,ValueError,TypeError,KeyError,UnicodeError) as exc:
+                f12b5_pickup_report={"status":"BLOCKED","reason":"source_diagnostic_failed:"+type(exc).__name__,"items_granted":0,"native_verified":False}
+            print("SINNOH_F12B5_LOCAL_PICKUP_CATALOG_REPORT "+json.dumps(f12b5_pickup_report,sort_keys=True),flush=True)
         maps,f12b5_report,f12b5_plugin=f12b5_quest.append(maps,mapping,components,base,project)
         print("SINNOH_F12B5_AUTHORED_QUEST_REPORT "+json.dumps(f12b5_report,sort_keys=True),flush=True)
         gym_symbols=set(mapping)-f08c_expansion.ALL
@@ -979,6 +987,7 @@ def build_files(base:Path,project:Path=ROOT):
         "f12b3_windworks_preflight":f12b3_report,
         "f12b4_windworks_access":f12b4_report,
         "f12b5_authored_quest":f12b5_report,
+        "f12b5_local_pickup_catalog":f12b5_pickup_report,
         "qa_teleport":{"catalog_count":len(teleport_entries),"available_count":sum(row[3] is not None for row in teleport_entries),"destinations":teleport_entries,"native_verified":False},
         "encounter_coverage":encounter_coverage,"route202_trainers":route_trainers,
         "visual_native_reviewed":False,
