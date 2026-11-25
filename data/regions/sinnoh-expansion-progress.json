@@ -542,7 +542,7 @@
       "id": "F12",
       "title": "História, Equipe Galactic e itens-chave",
       "status": "implementation_pending_ci",
-      "followup": "F12D3_CANONICAL_NETWORK_PENDING_CI",
+      "followup": "F12D3_CANONICAL_DIRECTIONAL_PENDING_CI",
       "story_checkpoints_scope": 14,
       "hm_contracts_scope": 8,
       "native_bindings": 0,
@@ -1427,7 +1427,26 @@
           126,
           "E"
         ]
-      ]
+      ],
+      "f12d3_canonical_network_real_job": 139339946523,
+      "f12d3_canonical_network_validated_head": "28a795cf10dc729717f9ab77d6d557311d3b149f",
+      "f12d3_canonical_network_real_audit_verified": true,
+      "f12d3_canonical_network_markers": 13,
+      "f12d3_canonical_network_source_hashes_verified": 14,
+      "f12d3_canonical_network_qa_hashes_verified": 14,
+      "f12d3_canonical_network_exit_costs": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "f12d3_canonical_network_reachable_route210_segment2_candidate_cells": 1211,
+      "f12d3_canonical_network_trials": 0,
+      "f12d3_canonical_network_witness": false,
+      "f12d3_canonical_directional_pending_ci": true,
+      "f12d3_canonical_directional_installed": false,
+      "f12d3_canonical_directional_budget": 32
     },
     {
       "id": "F13",
