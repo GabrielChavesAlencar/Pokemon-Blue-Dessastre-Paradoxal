@@ -142,10 +142,14 @@ def verified_verity_entry(event,src,mapping):
     return (10+lane,2,dst,44+lane,42,8,a[5])
 
 ORIGINAL_LAKE_SYMBOLS={159:"SINNOH_ACUITY_LAKEFRONT",161:"SINNOH_LAKE_ACUITY",
-    162:"SINNOH_ACUITY_CAVERN",214:"SINNOH_VALOR_LAKEFRONT",215:"SINNOH_LAKE_VALOR",217:"SINNOH_VALOR_CAVERN"}
+    162:"SINNOH_ACUITY_CAVERN",195:"SINNOH_VERITY_LAKEFRONT",196:"SINNOH_LAKE_VERITY",214:"SINNOH_VALOR_LAKEFRONT",215:"SINNOH_LAKE_VALOR",217:"SINNOH_VALOR_CAVERN"}
 ORIGINAL_LAKE_EVENT_CONTRACTS={
     (159,3,161):(20,32,8,49),(161,2,159):(8,49,20,33),
     (161,3,162):(26,26,20,34),(162,1,161):(20,34,26,26),
+    # The Verity pair is accepted only when the pinned donor transfer matches
+    # the existing lakefront lanes and a safe adjacent return landing.
+    (195,2,196):(10,2,44,42),(195,3,196):(11,2,45,42),
+    (196,1,195):(44,43,10,3),(196,2,195):(45,43,11,3),
     (214,6,215):(45,22,45,6),(214,7,215):(45,23,45,7),
     (215,2,214):(46,6,46,22),(215,3,214):(46,7,46,23),
     (215,4,217):(26,24,22,36),(217,1,215):(22,36,26,24),

@@ -1931,7 +1931,8 @@
       "f12d_integrated_surf_pickup_last_prepared_runtime_routes": 2,
       "f12d_integrated_surf_pickup_last_prepared_head": "82041f46b03440966a0050d122f727a3991c62e2",
       "f12d_integrated_surf_pickup_last_native_failure": "NoMethodError: undefined method [] for nil at DBK Terastallization Pokemon#getTeraType",
-      "f12d_integrated_native_surf_pokemon_context_fix_pending_ci": true
+      "f12d_integrated_native_surf_pokemon_context_fix_pending_ci": true,
+      "f12d_integrated_verity_original_return_candidate_pending_ci": true
     },
     {
       "id": "F13",

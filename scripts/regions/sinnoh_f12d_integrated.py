@@ -305,8 +305,20 @@ def original_lake_candidates(data,mapping,components,root,source,rock,valor_rock
                     row["reason"]="source_or_destination_ground_unproved";continue
                 if landing not in ix[b] or not any(n in ix[a] for n in tp.neighbours(*xy)):
                     row["reason"]="local_component_unproved";continue
-                if any((v.attrs["@x"],v.attrs["@y"])==xy for v in wa.attrs["@events"].values()):
-                    row["reason"]="existing_event_preserved";continue
+                present=[v for v in wa.attrs["@events"].values() if (v.attrs["@x"],v.attrs["@y"])==xy]
+                if present:
+                    # Verity already has protected outbound gates. Count an
+                    # exact existing forward transfer as reciprocal evidence,
+                    # without replacing it or duplicating the event.
+                    if (sid,dst)==(195,196) and any(
+                        gates.verified_verity_entry(v,a,mapping)==(x,y,b,dx,dy,direction,fade)
+                        for v in present):
+                        staged.setdefault((sid,dst),[])
+                        row["reason"]="exact_existing_verity_forward_preserved"
+                    else:row["reason"]="existing_event_preserved"
+                    continue
+                if gates.ORIGINAL_LAKE_EVENT_CONTRACTS.get((sid,eid,dst))!=(x,y,dx,dy):
+                    row["reason"]="source_contract_coordinates_unproved";continue
                 key=(sid,dst);staged.setdefault(key,[]).append((row,eid,call,page["@trigger"],direction,fade))
                 row["reason"]="exact_original_candidate"
         for sid in sorted(missing):

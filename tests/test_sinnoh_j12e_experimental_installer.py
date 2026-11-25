@@ -3758,6 +3758,12 @@ raise "restore error" unless original==[$game_variables,$game_switches,$game_sel
         with self.assertRaises(ValueError):i.original_lake_reference_destination(215,2,(46,6,25,46,22,0,0),{25:{"@width":64,"@height":56}})
         self.assertEqual(g.ORIGINAL_LAKE_EVENT_CONTRACTS[214,6,215],(45,22,45,6))
         self.assertEqual(g.ORIGINAL_LAKE_EVENT_CONTRACTS[215,2,214],(46,6,46,22))
+        self.assertEqual(g.ORIGINAL_LAKE_EVENT_CONTRACTS[195,2,196],(10,2,44,42))
+        self.assertEqual(g.ORIGINAL_LAKE_EVENT_CONTRACTS[196,1,195],(44,43,10,3))
+        self.assertIn((196,195),g.ORIGINAL_LAKE_PAIRS)
+        source=(ROOT/"scripts/regions/sinnoh_f12d_integrated.py").read_text("utf-8")
+        self.assertIn("exact_existing_verity_forward_preserved",source)
+        self.assertIn("source_contract_coordinates_unproved",source)
 
     def test_f12d_integrated_missing_item_and_player_methods(self):
         import tempfile
