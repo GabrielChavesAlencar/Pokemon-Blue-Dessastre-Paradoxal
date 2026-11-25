@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "scope": "PRIVATE_QA_PREVIEW_ONLY",
+  "source_inventory_job": 138719583390,
+  "source_maps": [
+    {
+      "symbol": "SINNOH_VALLEY_WINDWORKS",
+      "source_id": 111,
+      "source_name": "Valley Windworks",
+      "parent_id": 0,
+      "width": 33,
+      "height": 29,
+      "source_tileset_id": 24,
+      "sha256": "62646bd742809cf4ad65760e812f58c34169933d2dc26a0128853609a8cf9dac",
+      "label": "Valley Windworks",
+      "outdoor": true,
+      "source_events": 5,
+      "source_script_commands": 3,
+      "static_transfer_targets": []
+    }
+  ],
+  "native_verified": false
+}

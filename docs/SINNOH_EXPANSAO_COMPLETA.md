@@ -298,3 +298,8 @@ F11E integrada em 8cd5d6d3c66745ded74c4237f6ecdb4319a1d5e1 (11 workflows/26 chec
 ### F12A — auditoria de história, Equipe Galactic e itens-chave
 
 Primeira etapa F12, dependente da F11H auditada e integração sequencial. Inventário somente leitura do ZIP original validado; cruzamento de MapIDs e hashes, 14 checkpoints CH14 (fases 5–8) e oito HMs S16. Identifica candidatos por marcadores e chamadas literais, sem publicar texto ou scripts doador, sem aprovar automaticamente identidade, posição ou resultado. Nenhuma batalha, coleta, flag, HM ou teleporte habilitado. F12B deverá reconstruir apenas eventos com evidência suficiente e testes de acesso. CI pendente; nenhuma QA nativa presumida.
+
+
+### F12B1 — Valley Windworks: prévia isolada e análise de evidência
+
+F03 job 138719583390: fonte 111 Valley Windworks, 33x29, tileset 24, SHA-256 62646bd742809cf4ad65760e812f58c34169933d2dc26a0128853609a8cf9dac, cinco eventos e três comandos script, zero transferências estáticas. A prévia reconstrói somente geometria em memória, valida MapID livre, componente caminhável, chegada e preservação dos 139 mapas. Meta 140 mapas na prévia, não instalação. Sem inventar conexão, identidade/equipe de Mars ou recibo da Works Key. Os candidatos F12A são triados sem copiar scripts. Nenhum checkpoint ou item concedido. CI real pendente.
