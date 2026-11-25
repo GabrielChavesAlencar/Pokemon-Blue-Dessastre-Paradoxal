@@ -3719,6 +3719,14 @@ raise "restore error" unless original==[$game_variables,$game_switches,$game_sel
         del modes[(1,0)]
         self.assertIsNone(i.lake_surface_path(modes,(0,0),(2,0),True))
 
+    def test_f12d_empty_lake_alignment_requires_unique_physical_interval(self):
+        import sinnoh_f12d_integrated as integrated
+        build=lambda offset: (offset,)
+        self.assertEqual(integrated.unique_empty_lake_alignment([3,4],[0,1],build,lambda r:r==(3,)),((3,),1))
+        self.assertEqual(integrated.unique_empty_lake_alignment([3,4],[0,1],build,lambda r:True),(None,3))
+        self.assertEqual(integrated.unique_empty_lake_alignment([3],[0],build,lambda r:False),(None,0))
+        self.assertEqual(integrated.unique_empty_lake_alignment([], [0],build,lambda r:True),(None,0))
+
     def test_f12d_conditional_surf_uses_actual_shores_not_portal_endpoints(self):
         import sinnoh_f12d_integrated as i
         # Endpoints may be automatic portal arrival components. They cannot

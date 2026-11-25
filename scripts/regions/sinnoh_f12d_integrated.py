@@ -401,12 +401,109 @@ def conditional_surf_shores(routes,index,occupied):
         if start is not None:raise ValueError("F12D_SURF_WITNESS_UNCLOSED")
     return witnesses
 
-def recover_lake_seams(data,mapping,components,root,expanded,seed,previews,rock,valor_rock,surf_geometry=None,surf_routes=None):
+def unique_empty_lake_alignment(left,right,build,valid):
+    """Only a unique physically verified offset is admissible.
+
+    left/right are matching dry border coordinates in their original sides.
+    A tie is not evidence of the donor's intended alignment.
+    """
+    choices=[]
+    for delta in sorted({a-b for a in left for b in right}):
+        record=build(delta)
+        if valid(record):
+            choices.append(record)
+    return (choices[0] if len(choices)==1 else None),len(choices)
+
+
+def recover_empty_lake_alignments(source,root,expanded,worlds,tiles,index,current,dims):
+    """Recover empty original intervals without inventing a map pair or side.
+
+    Only empty, uninstalled donor records qualify. Compare donor/QA geometry,
+    reject every occupied or competing interval, and refuse ambiguous offsets.
+    The caller must still prove the entire ordered forward/return graph.
+    """
+    import sinnoh_f12d_seams as seams
+    from sinnoh_f12d3_alternate_route212 import reserved
+    from sinnoh_f08c_expansion import rows
+    catalog,_,_=conn.graph(root)
+    catalog={**catalog,**{r["source_id"]:r for r in rows(root)}}
+    candidates=[e for e in expanded["edge_candidates"] if e["aligned_axes"]==0
+        and not e["installed"] and not e["source_side_conflict"]
+        and not e["source_qa_mismatch_count"] and e["qa_record"][0] in index and e["qa_record"][3] in index]
+    accepted=[];report=[]
+    if not source or not candidates:return accepted,report
+    with pv.verified_archive(source,"maps") as z:
+        source_rows=pv.parse_connections(pv.member(z,pv.MAP_ROOT+"PBS/map_connections.txt"))
+        st=conn.read_marshal(pv.member(z,pv.MAP_ROOT+"Data/Tilesets.rxdata"),"F12D_EMPTY_LAKE_TILES")
+        donors={};sdims={}
+        def donor(sid,verified=False):
+            if sid not in donors:
+                raw=pv.member(z,pv.MAP_ROOT+"Data/Map%03d.rxdata"%sid)
+                if verified and (sid not in catalog or hashlib.sha256(raw).hexdigest()!=catalog[sid]["sha256"]):
+                    raise ValueError("F12D_EMPTY_LAKE_SOURCE_HASH")
+                world=conn.read_marshal(raw,"F12D_EMPTY_LAKE_SOURCE")
+                donors[sid]=(world,hashlib.sha256(raw).hexdigest())
+                sdims[sid]=(world.attrs["@width"],world.attrs["@height"])
+            if verified and (sid not in catalog or donors[sid][1]!=catalog[sid]["sha256"]):
+                raise ValueError("F12D_EMPTY_LAKE_SOURCE_HASH")
+            return donors[sid][0]
+        for e in candidates:
+            s=tuple(e["source_record"]);r=tuple(e["qa_record"])
+            a,da,oa,b,db,ob=s;ma,_,_,mb,_,_=r
+            row={"source_record":list(s),"qa_record":list(r),"valid_offsets":0,"accepted":False}
+            report.append(row)
+            if source_rows.count(s)!=1 or conn.OPPOSITE.get(da)!=db:continue
+            wa=donor(a,True);wb=donor(b,True)
+            if sdims[a]!=dims[ma] or sdims[b]!=dims[mb] or list(seams.aligned_axes(da,oa,sdims[a],db,ob,sdims[b])):
+                continue
+            # Reserve the donor's other physical intervals, including unmapped neighbours.
+            for rr in source_rows:
+                for u,d,_,v,_,_ in seams.ends(rr):
+                    if (u,d) in ((a,da),(b,db)):
+                        donor(u);donor(v)
+            def border(sid,mid,d,w):
+                n=sdims[sid][0 if d in ("N","S") else 1]
+                out={}
+                for axis in range(n):
+                    xy=seams.point(axis,d,0,sdims[sid])
+                    ss=gates.cell_shape(w,st,xy);qs=gates.cell_shape(worlds[mid],tiles,xy)
+                    out[axis]=(xy,ss,qs)
+                return out
+            left=border(a,ma,da,wa);right=border(b,mb,db,wb)
+            def dry(border_rows,mid):
+                return [n for n,(xy,ss,qs) in border_rows.items() if xy in index[mid] and ss==qs and ss.get("ordinary_walkable")]
+            def build(delta):
+                return (ma,da,max(delta,0),mb,db,max(-delta,0))
+            def valid(q):
+                _,_,qa,_,_,qb=q
+                sr=(a,da,qa,b,db,qb)
+                if reserved(sr,source_rows,sdims) or reserved(q,current,dims):return False
+                lanes=gated.all_lanes(q,index,dims)
+                if not lanes:return False
+                expected=[]
+                for n in seams.aligned_axes(da,qa,dims[ma],db,qb,dims[mb]):
+                    x,sa,la=left[n+qa];y,sb,lb=right[n+qb]
+                    if sa!=la or sb!=lb:return False
+                    if seams.lane_allowed(sa,sb,la,lb,x not in index[ma],y not in index[mb]):
+                        expected.append((n,x,y))
+                return lanes==expected
+            chosen,count=unique_empty_lake_alignment(dry(left,ma),dry(right,mb),build,valid)
+            row["valid_offsets"]=count
+            if chosen is not None:
+                row["candidate_record"]=list(chosen)
+                row["classification"]="UNIQUE_AUTHORIAL_REALIGNMENT_ORIGINAL_PAIR_AND_SIDES"
+                accepted.append(chosen)
+            else:
+                row["classification"]="AMBIGUOUS_OR_NO_MATCHING_PHYSICAL_INTERVAL"
+    return accepted,report
+
+
+def recover_lake_seams(data,mapping,components,root,expanded,seed,previews,rock,valor_rock,surf_geometry=None,surf_routes=None,source=None):
     from sinnoh_f12d3_alternate_route212 import reserved
     import sinnoh_f12d3_route210_recovery as recovery
     old={k:v for k,v in mapping.items() if k in chase.prior.ALL}
     edge_sink={}
-    worlds,_,index,_,_,_=gates.access_graph(data,old,components,root,seed_cells=[seed],
+    worlds,tiles,index,_,_,_=gates.access_graph(data,old,components,root,seed_cells=[seed],
         directional=True,strict_movement=True,rock_cells=rock,valor_rock=valor_rock,
         post_chase_story=True,edge_sink=edge_sink)
     dims={m:(w.attrs["@width"],w.attrs["@height"]) for m,w in worlds.items()}
@@ -425,7 +522,16 @@ def recover_lake_seams(data,mapping,components,root,expanded,seed,previews,rock,
         for _,a,b in lanes:
             u=(r[0],index[r[0]][a]);v=(r[3],index[r[3]][b])
             edges.setdefault(u,set()).add((v,r,False));edges.setdefault(v,set()).add((u,r,False))
-    report={"eligible_original_seams":len(eligible),"legs":{},"accepted_records":[],"new_portals":0,"terrain_changes":0,
+    original_count=len(eligible)
+    realigned,alignment_report=recover_empty_lake_alignments(source,root,expanded,worlds,tiles,index,current,dims)
+    for r in realigned:
+        if r in eligible:continue
+        eligible.append(r)
+        for _,a,b in gated.all_lanes(r,index,dims):
+            u=(r[0],index[r[0]][a]);v=(r[3],index[r[3]][b])
+            edges.setdefault(u,set()).add((v,r,False));edges.setdefault(v,set()).add((u,r,False))
+    report={"eligible_original_seams":original_count,"authorial_empty_interval_candidates":alignment_report,
+        "authorial_accepted_records":[],"legs":{},"accepted_records":[],"new_portals":0,"terrain_changes":0,
         "existing_directed_edges":sum(len(v) for v in edge_sink.values()),
         "portal_arrival_model":"ACTION_THROUGH_AND_DIRECTED_TOUCH_LANDING"}
     def node(q):
@@ -488,15 +594,16 @@ def recover_lake_seams(data,mapping,components,root,expanded,seed,previews,rock,
         if a is None or b is None:
             report["legs"][key]={"reason":"missing_component"};complete=False;continue
         d,p=original_audit.component_paths(edges,[a])
-        if b not in d:
+        back,bp=original_audit.component_paths(edges,[b])
+        if b not in d or a not in back:
             frontier={u[0] for u in d}
-            report["legs"][key]={"reason":"no_original_dry_seam_path",
+            report["legs"][key]={"reason":"no_bidirectional_dry_seam_path","forward_reachable":b in d,"return_reachable":a in back,
                 "reachable_maps":sorted(frontier),"reachable_components":len(d),
                 "destination_components_reached":sorted(label for m,label in d if m==goal[0]),
                 "unreached_adjacent_original_records":[list(r) for r in eligible if (r[0] in frontier)!=(r[3] in frontier)]}
             complete=False;continue
-        candidate=[r for _,_,r,installed in original_audit.trace(b,p) if not installed]
-        report["legs"][key]={"minimum_new_original_seams":d[b][0],"records":[list(r) for r in candidate]}
+        candidate=list(dict.fromkeys(r for path in (original_audit.trace(b,p),original_audit.trace(a,bp)) for _,_,r,installed in path if not installed))
+        report["legs"][key]={"minimum_new_original_seams":d[b][0],"records":[list(r) for r in candidate],"return_reachable":True}
         for r in candidate:
             if r in added:continue
             if reserved(r,current+added,dims):
@@ -516,10 +623,12 @@ def recover_lake_seams(data,mapping,components,root,expanded,seed,previews,rock,
         loc=previews[key];goal=(loc["map_id"],*loc["stand"])
         _,_,prior=graph(data,mapping,components,root,predecessor,rock,valor_rock,post_chase_story=True)
         _,_,after=graph(trial,mapping,components,root,predecessor,rock,valor_rock,post_chase_story=True)
-        if not prior<=after or goal not in after:
+        _,_,return_cells=graph(trial,mapping,components,root,goal,rock,valor_rock,post_chase_story=True)
+        if not prior<=after or goal not in after or predecessor not in return_cells:
             report["reason"]="serialized_original_sequence_not_proved";return data,[],report
         predecessor=goal
     report["accepted_records"]=[list(r) for r in added]
+    report["authorial_accepted_records"]=[list(r) for r in added if r in realigned]
     report["reason"]="complete_original_sequence_fixture_proved"
     return trial,added,report
 
@@ -624,7 +733,7 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
     original_trial,entry_report=original_lake_candidates(reopened,mapping,components,root,source,rock,valor_rock,lake_seed)
     surf_routes={}
     surf_geometry=lake_surf_geometry(reopened,mapping,source,root,result["lake_local_previews"],surf_routes)
-    recovered,lake_seams,lake_recovery=recover_lake_seams(original_trial,mapping,components,root,expanded,lake_seed,result["lake_local_previews"],rock,valor_rock,surf_geometry,surf_routes)
+    recovered,lake_seams,lake_recovery=recover_lake_seams(original_trial,mapping,components,root,expanded,lake_seed,result["lake_local_previews"],rock,valor_rock,surf_geometry,surf_routes,source=source)
     result["lake_original_seam_recovery"]=lake_recovery
     result["lake_original_entries"]=entry_report
     result["lake_surf_geometry"]=surf_geometry

@@ -1943,7 +1943,9 @@
       "f12d_integrated_surf_native_collision_probe_confirmed_maps": [511, 529],
       "f12d_integrated_surf_native_collision_probe_observed_edges": {"511": 108, "529": 30},
       "f12d_integrated_surf_native_shore_jumps_each_direction": {"511": 2, "529": 2},
-      "f12d_integrated_full_route_native_receipt_verified": false
+      "f12d_integrated_full_route_native_receipt_verified": false,
+      "f12d_integrated_empty_original_lake_interval_recovery_pending_ci": true,
+      "f12d_integrated_lake_bidirectional_serialized_graph_gate_pending_ci": true
     },
     {
       "id": "F13",
