@@ -3780,6 +3780,21 @@ raise "restore error" unless original==[$game_variables,$game_switches,$game_sel
         self.assertIn("exact_existing_verity_forward_preserved",source)
         self.assertIn("source_contract_coordinates_unproved",source)
 
+    def test_f12d_preserved_lake_transfer_uses_exact_geometry_not_fade(self):
+        import sinnoh_f12d_integrated as i
+        from build_johto_events import ruby,event_page
+        page=event_page(warp=(451,10,3),touch=True)
+        page.attrs["@through"]=True
+        event=ruby("RPG::Event",id=1,name=b"Existing return",x=44,y=43,pages=[page])
+        expected=(44,43,451,10,3,8,1)
+        got=i.preserved_lake_transfer([event],447,{},expected)
+        self.assertIsNotNone(got)
+        self.assertEqual(got[:5],expected[:5])
+        self.assertIsNone(i.preserved_lake_transfer([event],447,{},(44,43,451,11,3,8,1)))
+        self.assertIsNone(i.preserved_lake_transfer([event,event],447,{},expected))
+        page.attrs["@through"]=False
+        self.assertIsNone(i.preserved_lake_transfer([event],447,{},expected))
+
     def test_f12d_northern_original_transfer_requires_pinned_donor_contract(self):
         import sinnoh_f10b7_field_audit as g
         import sinnoh_f12d_integrated as i

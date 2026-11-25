@@ -227,6 +227,22 @@ def original_lake_reference_destination(sid,eid,transfer,stale):
         raise ValueError("F12D_LAKE_STALE_REFERENCE_NOT_OUT_OF_BOUNDS")
     return right
 
+def preserved_lake_transfer(events,mid,mapping,expected):
+    """Recognise an occupied original lane without replacing its local event.
+
+    Geometry is the first five transfer fields. Facing and fade belong to
+    the preserved local event, and cannot justify a different landing.
+    Only the existing strict Verity guard or a classified static transfer
+    may supply an edge; ambiguous occupancy remains blocked.
+    """
+    if len(events)!=1:return None
+    event=events[0]
+    transfer=gates.verified_verity_entry(event,mid,mapping) or conn.classify_transfer(event)[0]
+    if transfer is None or tuple(transfer[:5])!=tuple(expected[:5]):return None
+    page=event.attrs["@pages"][0].attrs
+    if page.get("@trigger")!=0 and page.get("@through") is not True:return None
+    return transfer
+
 def original_lake_candidates(data,mapping,components,root,source,rock,valor_rock,seed):
     import copy
     from build_johto_events import command
@@ -313,18 +329,20 @@ def original_lake_candidates(data,mapping,components,root,source,rock,valor_rock
                     row["reason"]="local_component_unproved";continue
                 present=[v for v in wa.attrs["@events"].values() if (v.attrs["@x"],v.attrs["@y"])==xy]
                 if present:
-                    # Verity already has protected outbound gates. Count an
-                    # exact existing forward transfer as reciprocal evidence,
-                    # without replacing it or duplicating the event.
-                    if (sid,dst)==(195,196) and any(
-                        gates.verified_verity_entry(v,a,mapping)==(x,y,b,dx,dy,direction,fade)
-                        for v in present):
+                    # Match geometry, not donor facing/fade, and keep the
+                    # complete existing event byte-for-byte. A static return
+                    # lane can witness reciprocity just as a guarded forward
+                    # lane can. Never replace an unrecognised occupant.
+                    existing=preserved_lake_transfer(present,a,mapping,(x,y,b,dx,dy,direction,fade))
+                    if existing is not None:
                         staged.setdefault((sid,dst),[])
-                        row["reason"]="exact_existing_verity_forward_preserved"
-                    elif north and any(conn.classify_transfer(v)[0]==(x,y,b,dx,dy,direction,fade) for v in present):
-                        staged.setdefault((sid,dst),[])
-                        row["reason"]="exact_existing_north_transfer_preserved"
-                    else:row["reason"]="existing_event_preserved"
+                        row["reason"]=("exact_existing_verity_forward_preserved" if (sid,dst)==(195,196)
+                            else "exact_existing_north_transfer_preserved" if north
+                            else "exact_existing_reciprocal_transfer_preserved")
+                        row["preserved_transfer"]=list(existing)
+                    else:
+                        row["reason"]="existing_event_preserved"
+                        row["occupied_event_shapes"]=[conn.event_shape(v) for v in present]
                     continue
                 if north:source_portal_contracts[(sid,eid,dst)]=(x,y,dx,dy)
                 if gates.original_lake_contract((sid,eid,dst),source_portal_contracts)!=(x,y,dx,dy):
