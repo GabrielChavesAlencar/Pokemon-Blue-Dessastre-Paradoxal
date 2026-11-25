@@ -141,7 +141,7 @@ def verified_verity_entry(event,src,mapping):
     if dst is None or len(a)!=6 or a[:5]!=[0,dst,44+lane,42,8] or a[5] not in (0,1):return None
     return (10+lane,2,dst,44+lane,42,8,a[5])
 
-ORIGINAL_LAKE_SYMBOLS={159:"SINNOH_ACUITY_LAKEFRONT",161:"SINNOH_LAKE_ACUITY",
+ORIGINAL_LAKE_SYMBOLS={82:"SINNOH_MT_CORONET_WEST_APPROACH",156:"SINNOH_ROUTE_216",159:"SINNOH_ACUITY_LAKEFRONT",161:"SINNOH_LAKE_ACUITY",
     162:"SINNOH_ACUITY_CAVERN",195:"SINNOH_VERITY_LAKEFRONT",196:"SINNOH_LAKE_VERITY",214:"SINNOH_VALOR_LAKEFRONT",215:"SINNOH_LAKE_VALOR",217:"SINNOH_VALOR_CAVERN"}
 ORIGINAL_LAKE_EVENT_CONTRACTS={
     (159,3,161):(20,32,8,49),(161,2,159):(8,49,20,33),
@@ -154,10 +154,19 @@ ORIGINAL_LAKE_EVENT_CONTRACTS={
     (215,2,214):(46,6,46,22),(215,3,214):(46,7,46,23),
     (215,4,217):(26,24,22,36),(217,1,215):(22,36,26,24),
 }
-ORIGINAL_LAKE_PAIRS={(a,b) for a,_,b in ORIGINAL_LAKE_EVENT_CONTRACTS}
+# Only these two donor events can supply an additional northern route
+# contract. Their coordinates must be recovered from the pinned archive,
+# not assumed or inferred from a nearby walkable tile.
+NORTH_LAKE_DONOR_EVENTS={(82,82,156),(156,1,82)}
+ORIGINAL_LAKE_PAIRS={(a,b) for a,_,b in ORIGINAL_LAKE_EVENT_CONTRACTS}|{(a,b) for a,_,b in NORTH_LAKE_DONOR_EVENTS}
+
+def original_lake_contract(key,source_portal_contracts=None):
+    if key in NORTH_LAKE_DONOR_EVENTS:
+        return (source_portal_contracts or {}).get(key)
+    return ORIGINAL_LAKE_EVENT_CONTRACTS.get(key)
 ORIGINAL_CAVE_CALLS={b"pbCaveEntrance",b"pbCaveExit"}
 
-def verified_original_lake_entry(event,src,mapping):
+def verified_original_lake_entry(event,src,mapping,source_portal_contracts=None):
     name=event.attrs.get("@name",b"")
     if not isinstance(name,bytes):return None
     match=re.fullmatch(rb"SN_F12D_ORIGINAL_LAKE_(\d+)_(\d+)_(\d+)",name)
@@ -179,7 +188,7 @@ def verified_original_lake_entry(event,src,mapping):
     if len(body)==2 and (body[0].get("@code")!=355 or len(body[0].get("@parameters",[]))!=1 or body[0]["@parameters"][0] not in ORIGINAL_CAVE_CALLS):return None
     v=body[-1].get("@parameters",[])
     if len(v)!=6 or any(type(x) is not int for x in v) or v[:2]!=[0,dst] or v[4] not in (0,2,4,6,8) or v[5] not in (0,1):return None
-    if ORIGINAL_LAKE_EVENT_CONTRACTS.get((a,eid,b))!=(event.attrs["@x"],event.attrs["@y"],v[2],v[3]):return None
+    if original_lake_contract((a,eid,b),source_portal_contracts)!=(event.attrs["@x"],event.attrs["@y"],v[2],v[3]):return None
     return (event.attrs["@x"],event.attrs["@y"],dst,*v[2:])
 
 def valor_rock_mask_allowed(threshold, occupied, verified_portal, post_chase_story):
@@ -189,7 +198,7 @@ def valor_rock_mask_allowed(threshold, occupied, verified_portal, post_chase_sto
     # usable only for the verified original portal in the post-chase model.
     return not (threshold and occupied) or (verified_portal and post_chase_story)
 
-def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=False,seed_cells=None,strict_movement=False,rock_cells=(),valor_rock=(),blocked_cells=(),blocked_lanes=(),post_chase_story=False,edge_sink=None):
+def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=False,seed_cells=None,strict_movement=False,rock_cells=(),valor_rock=(),blocked_cells=(),blocked_lanes=(),post_chase_story=False,edge_sink=None,source_portal_contracts=None):
     reverse={mid:sym for sym,mid in mapping.items()}
     tiles=conn.read_marshal(blobs["Data/Tilesets.rxdata"],"F10B7_QA_TILES")
     worlds={mid:conn.read_marshal(blobs["Data/Map%03d.rxdata"%mid],"F10B7_QA") for mid in reverse}
@@ -213,7 +222,7 @@ def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=Fal
                 if len(events)!=1:continue
                 e=events[0]
                 transfer,_=conn.classify_transfer(e)
-                if not transfer:transfer=verified_verity_entry(e,mid,mapping) or verified_original_lake_entry(e,mid,mapping)
+                if not transfer:transfer=verified_verity_entry(e,mid,mapping) or verified_original_lake_entry(e,mid,mapping,source_portal_contracts)
                 if not transfer:continue
                 p=e.attrs["@pages"][0].attrs
                 if p.get("@through") is not True:continue
@@ -249,7 +258,7 @@ def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=Fal
                 if stack!=expected or 4 not in tags or any(tag not in (0,4) for tag in tags) or any(
                     struct.unpack_from("<H",ts["@passages"].data,20+2*k)[0]&15 for k in stack if k) or (not threshold and any(priorities)):
                     raise ValueError("F12D_VALOR_ROCK_CHANGED")
-                valid=threshold and (x,y) in occupied and any(verified_original_lake_entry(e,mid,mapping)
+                valid=threshold and (x,y) in occupied and any(verified_original_lake_entry(e,mid,mapping,source_portal_contracts)
                     for e in world.attrs["@events"].values() if (e.attrs["@x"],e.attrs["@y"])==(x,y))
                 if not valor_rock_mask_allowed(threshold,(x,y) in occupied,valid,post_chase_story):
                     continue
@@ -295,7 +304,7 @@ def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=Fal
     for mid,world in worlds.items():
         for e in world.attrs["@events"].values():
             transfer,why=conn.classify_transfer(e)
-            if not transfer and post_chase_story:transfer=verified_verity_entry(e,mid,mapping) or verified_original_lake_entry(e,mid,mapping)
+            if not transfer and post_chase_story:transfer=verified_verity_entry(e,mid,mapping) or verified_original_lake_entry(e,mid,mapping,source_portal_contracts)
             if not transfer:continue
             x,y,dst,dx,dy,_,_=transfer
             # Native action portal can be activated from a safe adjacent cell.

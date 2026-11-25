@@ -31,7 +31,9 @@ module BlueSinnohF12DIntegrated
     badges=BlueRegions.local_achievements(s,"SINNOH")
     return false unless badges.include?("MINE")
     return badges.include?("ICICLE") if [[159,161],[161,159],[161,162],[162,161]].include?([a,b])
-    [[195,196],[196,195],[214,215],[215,214],[215,217],[217,215]].include?([a,b])
+    # Route 216 is needed before earning ICICLE. The lake entry itself
+    # still requires ICICLE; this original cave pair only requires MINE.
+    [[82,156],[156,82],[195,196],[196,195],[214,215],[215,214],[215,217],[217,215]].include?([a,b])
   end
   def self.rock_reference_valid?
     return false unless defined?(GameData::TerrainTag)

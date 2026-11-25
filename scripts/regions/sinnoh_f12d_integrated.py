@@ -28,9 +28,9 @@ LAKES={
     "VERITY":("SINNOH_LAKE_VERITY","Mars",mars.COMMANDERS,15002,(("GOLBAT",38),("BRONZOR",38),("PURUGLY",40))),
     "ACUITY":("SINNOH_LAKE_ACUITY","Jupiter",(),15003,()),
 }
-def graph(data,mapping,components,root,seed,rock=(),valor_rock=(),blocked_cells=(),blocked_lanes=(),post_chase_story=False):
+def graph(data,mapping,components,root,seed,rock=(),valor_rock=(),blocked_cells=(),blocked_lanes=(),post_chase_story=False,source_portal_contracts=None):
     old={k:v for k,v in mapping.items() if k in chase.prior.ALL}
-    w,t,i,_,r,_=gates.access_graph(data,old,components,root,seed_cells=[seed],directional=True,strict_movement=True,rock_cells=rock,valor_rock=valor_rock,blocked_cells=blocked_cells,blocked_lanes=blocked_lanes,post_chase_story=post_chase_story)
+    w,t,i,_,r,_=gates.access_graph(data,old,components,root,seed_cells=[seed],directional=True,strict_movement=True,rock_cells=rock,valor_rock=valor_rock,blocked_cells=blocked_cells,blocked_lanes=blocked_lanes,post_chase_story=post_chase_story,source_portal_contracts=source_portal_contracts)
     return w,t,trainers.reached_cells(i,r)
 
 def add_event(data,mid,xy,key,sprite,cleared=False):
@@ -52,7 +52,7 @@ def add_event(data,mid,xy,key,sprite,cleared=False):
     if conn.serialize(world,EVENT_CLASSES)!=data[rel]:raise ValueError("F12D_INTEGRATED_EVENT_DELTA")
     return out,{"map_id":mid,"event_id":eid,"position":list(xy)}
 
-def protected(data,mapping,components,root):
+def protected(data,mapping,components,root,source_portal_contracts=None):
     old={k:v for k,v in mapping.items() if k in chase.prior.ALL}
     result={tuple(r[3]) for r in tp.build(data,old,components,root) if r[3]}
     for mid in mapping.values():
@@ -60,14 +60,16 @@ def protected(data,mapping,components,root):
         for e in w.attrs["@events"].values():
             a=e.attrs;result.add((mid,a["@x"],a["@y"]))
             tr,_=conn.classify_transfer(e)
+            if not tr and source_portal_contracts is not None:
+                tr=gates.verified_verity_entry(e,mid,mapping) or gates.verified_original_lake_entry(e,mid,mapping,source_portal_contracts)
             if tr:result.add((tr[2],tr[3],tr[4]))
     return result
 
-def placement(data,mapping,components,root,mid,seed,rock=(),valor_rock=(),post_chase_story=False):
-    worlds,tiles,reached=graph(data,mapping,components,root,seed,rock,valor_rock,post_chase_story=post_chase_story)
+def placement(data,mapping,components,root,mid,seed,rock=(),valor_rock=(),post_chase_story=False,source_portal_contracts=None):
+    worlds,tiles,reached=graph(data,mapping,components,root,seed,rock,valor_rock,post_chase_story=post_chase_story,source_portal_contracts=source_portal_contracts)
     if mid not in worlds:return None
     world=worlds[mid];w,h=world.attrs["@width"],world.attrs["@height"]
-    forbid=protected(data,mapping,components,root)|{seed}
+    forbid=protected(data,mapping,components,root,source_portal_contracts)|{seed}
     if mid==mapping.get("SINNOH_VALOR_CAVERN"):
         forbid.add((mid,22,36))  # Preserve the exact original cave threshold.
     candidates={(x,y) for m,x,y in reached if m==mid and 1<x<w-2 and 1<y<h-2 and
@@ -76,7 +78,7 @@ def placement(data,mapping,components,root,mid,seed,rock=(),valor_rock=(),post_c
         stands=[q for q in tp.neighbours(*xy) if (mid,*q) in reached and (mid,*q) not in forbid]
         if not stands:continue
         trial,loc=add_event(data,mid,xy,"PLACEMENT_PROBE","")
-        _,_,after=graph(trial,mapping,components,root,seed,rock,valor_rock,post_chase_story=post_chase_story)
+        _,_,after=graph(trial,mapping,components,root,seed,rock,valor_rock,post_chase_story=post_chase_story,source_portal_contracts=source_portal_contracts)
         if reached-{(mid,*xy)}<=after:
             for q in sorted(stands):
                 if (mid,*q) in after:return xy,q
@@ -232,12 +234,12 @@ def original_lake_candidates(data,mapping,components,root,source,rock,valor_rock
     catalog,_,_=conn.graph(root)
     catalog={**catalog,**{r["source_id"]:r for r in rows(root)}}
     bound={sid:mapping[r["symbol"]] for sid,r in catalog.items() if r["symbol"] in mapping}
-    focus={159,161,162,195,196,197,214,215,216,217}
+    focus={82,156,159,161,162,195,196,197,214,215,216,217}
     result={"source_entries":[],"missing_dependencies":[],"candidate_records":[],"accepted_records":[]}
     old={k:v for k,v in mapping.items() if k in chase.prior.ALL}
     worlds,tiles,ix,_,_,_=gates.access_graph(data,old,components,root,seed_cells=[seed],
         directional=True,strict_movement=True,rock_cells=rock,valor_rock=valor_rock,post_chase_story=True)
-    staged={}
+    staged={};source_portal_contracts={}
     with pv.verified_archive(source,"maps") as z:
         st=conn.read_marshal(pv.member(z,pv.MAP_ROOT+"Data/Tilesets.rxdata"),"F12D_LAKE_SOURCE_TILES")
         infos=conn.read_marshal(pv.member(z,pv.MAP_ROOT+"Data/MapInfos.rxdata"),"F12D_LAKE_SOURCE_INFOS")
@@ -269,7 +271,8 @@ def original_lake_candidates(data,mapping,components,root,source,rock,valor_rock
                 repair=LAKE_REFERENCE_REPAIRS.get((sid,eid))
                 dst=repair[1] if repair else original_dst
                 if dst not in bound:row["reason"]="unmapped_source_dependency";continue
-                if (sid,dst) not in gates.ORIGINAL_LAKE_PAIRS:
+                north=(sid,eid,dst) in gates.NORTH_LAKE_DONOR_EVENTS
+                if (sid,dst) not in gates.ORIGINAL_LAKE_PAIRS or ((sid in (82,156) or dst in (82,156)) and not north):
                     row["reason"]="outside_reciprocal_lake_scope";continue
                 cloned=copy.deepcopy(e);pages=cloned.attrs.get("@pages",[])
                 if len(pages)!=1:row["reason"]="conditional_or_multiple_pages";continue
@@ -302,6 +305,9 @@ def original_lake_candidates(data,mapping,components,root,source,rock,valor_rock
                     sa=gates.cell_shape(source_world,st,point);qa=gates.cell_shape(qa_world,tiles,point)
                     return sa==qa and (qa.get("ordinary_walkable") is True or (mid,*point) in valor_rock)
                 if not exact_ground(w,wa,a,xy) or not exact_ground(donor[dst],wb,b,landing):
+                    if north:
+                        row["north_ground_evidence"]={"source":gates.cell_shape(w,st,xy),"local_source":gates.cell_shape(wa,tiles,xy),
+                            "destination":gates.cell_shape(donor[dst],st,landing),"local_destination":gates.cell_shape(wb,tiles,landing)}
                     row["reason"]="source_or_destination_ground_unproved";continue
                 if landing not in ix[b] or not any(n in ix[a] for n in tp.neighbours(*xy)):
                     row["reason"]="local_component_unproved";continue
@@ -315,9 +321,13 @@ def original_lake_candidates(data,mapping,components,root,source,rock,valor_rock
                         for v in present):
                         staged.setdefault((sid,dst),[])
                         row["reason"]="exact_existing_verity_forward_preserved"
+                    elif north and any(conn.classify_transfer(v)[0]==(x,y,b,dx,dy,direction,fade) for v in present):
+                        staged.setdefault((sid,dst),[])
+                        row["reason"]="exact_existing_north_transfer_preserved"
                     else:row["reason"]="existing_event_preserved"
                     continue
-                if gates.ORIGINAL_LAKE_EVENT_CONTRACTS.get((sid,eid,dst))!=(x,y,dx,dy):
+                if north:source_portal_contracts[(sid,eid,dst)]=(x,y,dx,dy)
+                if gates.original_lake_contract((sid,eid,dst),source_portal_contracts)!=(x,y,dx,dy):
                     row["reason"]="source_contract_coordinates_unproved";continue
                 key=(sid,dst);staged.setdefault(key,[]).append((row,eid,call,page["@trigger"],direction,fade))
                 row["reason"]="exact_original_candidate"
@@ -357,7 +367,7 @@ def original_lake_candidates(data,mapping,components,root,source,rock,valor_rock
             p.attrs["@list"]=body+[transfer,ending,command(412),command(0)]
             new_id=max(max(events,default=0)+1,3001)
             e=ruby("RPG::Event",id=new_id,name=("SN_F12D_ORIGINAL_LAKE_%d_%d_%d"%(sid,eid,dst)).encode("ascii"),x=x,y=y,pages=[p])
-            if not gates.verified_original_lake_entry(e,a,mapping):raise ValueError("F12D_ORIGINAL_LAKE_GATE")
+            if not gates.verified_original_lake_entry(e,a,mapping,source_portal_contracts):raise ValueError("F12D_ORIGINAL_LAKE_GATE")
             events[new_id]=e;trial[rel]=conn.serialize(world,EVENT_CLASSES)
             result["candidate_records"].append({**row,"event_id_local":new_id})
     if tp.build(trial,old,components,root)!=tp.build(data,old,components,root):
@@ -499,14 +509,22 @@ def recover_empty_lake_alignments(source,root,expanded,worlds,tiles,index,curren
     return accepted,report
 
 
-def recover_lake_seams(data,mapping,components,root,expanded,seed,previews,rock,valor_rock,surf_geometry=None,surf_routes=None,source=None):
+def north_portal_contracts(entry_report):
+    result={}
+    for row in entry_report.get("candidate_records",[]):
+        key=(row["source_id"],row["event_id"],row["target_source_ids"][0])
+        if key in gates.NORTH_LAKE_DONOR_EVENTS:
+            result[key]=(*row["from"][1:],*row["to"][1:])
+    return result
+
+def recover_lake_seams(data,mapping,components,root,expanded,seed,previews,rock,valor_rock,surf_geometry=None,surf_routes=None,source=None,source_portal_contracts=None):
     from sinnoh_f12d3_alternate_route212 import reserved
     import sinnoh_f12d3_route210_recovery as recovery
     old={k:v for k,v in mapping.items() if k in chase.prior.ALL}
     edge_sink={}
     worlds,tiles,index,_,_,_=gates.access_graph(data,old,components,root,seed_cells=[seed],
         directional=True,strict_movement=True,rock_cells=rock,valor_rock=valor_rock,
-        post_chase_story=True,edge_sink=edge_sink)
+        post_chase_story=True,edge_sink=edge_sink,source_portal_contracts=source_portal_contracts)
     dims={m:(w.attrs["@width"],w.attrs["@height"]) for m,w in worlds.items()}
     current=pv.parse_connections(data["PBS/map_connections.txt"])
     if conn.read_marshal(data["Data/map_connections.dat"],"F12D_LAKE_CONNECTIONS")!=[recovery.encode(r) for r in current]:
@@ -622,9 +640,9 @@ def recover_lake_seams(data,mapping,components,root,expanded,seed,previews,rock,
     predecessor=seed
     for key in ORDER:
         loc=previews[key];goal=(loc["map_id"],*loc["stand"])
-        _,_,prior=graph(data,mapping,components,root,predecessor,rock,valor_rock,post_chase_story=True)
-        _,_,after=graph(trial,mapping,components,root,predecessor,rock,valor_rock,post_chase_story=True)
-        _,_,return_cells=graph(trial,mapping,components,root,goal,rock,valor_rock,post_chase_story=True)
+        _,_,prior=graph(data,mapping,components,root,predecessor,rock,valor_rock,post_chase_story=True,source_portal_contracts=source_portal_contracts)
+        _,_,after=graph(trial,mapping,components,root,predecessor,rock,valor_rock,post_chase_story=True,source_portal_contracts=source_portal_contracts)
+        _,_,return_cells=graph(trial,mapping,components,root,goal,rock,valor_rock,post_chase_story=True,source_portal_contracts=source_portal_contracts)
         if not prior<=after or goal not in after or predecessor not in return_cells:
             report["reason"]="serialized_original_sequence_not_proved";return data,[],report
         predecessor=goal
@@ -736,12 +754,14 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
     original_trial,entry_report=original_lake_candidates(reopened,mapping,components,root,source,rock,valor_rock,lake_seed)
     surf_routes={}
     surf_geometry=lake_surf_geometry(reopened,mapping,source,root,result["lake_local_previews"],surf_routes)
-    recovered,lake_seams,lake_recovery=recover_lake_seams(original_trial,mapping,components,root,expanded,lake_seed,result["lake_local_previews"],rock,valor_rock,surf_geometry,surf_routes,source=source)
+    north_contracts=north_portal_contracts(entry_report)
+    recovered,lake_seams,lake_recovery=recover_lake_seams(original_trial,mapping,components,root,expanded,lake_seed,result["lake_local_previews"],rock,valor_rock,surf_geometry,surf_routes,source=source,source_portal_contracts=north_contracts)
     result["lake_original_seam_recovery"]=lake_recovery
     result["lake_original_entries"]=entry_report
     result["lake_surf_geometry"]=surf_geometry
-    accepted_entries=[]
-    if lake_recovery.get("reason")=="complete_original_sequence_fixture_proved":
+    accepted_entries=[];accepted_north_contracts={}
+    full_lake_sequence=lake_recovery.get("reason")=="complete_original_sequence_fixture_proved"
+    if full_lake_sequence:
         accepted_entries=entry_report["candidate_records"] if original_trial!=reopened else []
         # Reapply only the new original portals to the still-closed mission
         # maps; never copy the reopened Psyduck map wholesale.
@@ -754,6 +774,7 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
             before_world.attrs["@events"][eid]=after_world.attrs["@events"][eid]
             out[rel]=conn.serialize(before_world,EVENT_CLASSES)
         entry_report["accepted_records"]=accepted_entries
+        accepted_north_contracts=north_portal_contracts({"candidate_records":accepted_entries})
         for path in ("PBS/map_connections.txt","Data/map_connections.dat"):
             out[path]=recovered[path]
         reopened=recovered
@@ -767,19 +788,22 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
             result["lake_independent_legs"][key]={"reason":"local_position_missing"}
             predecessor=None;continue
         if predecessor is not None:
-            _,_,cells=graph(reopened,mapping,components,root,predecessor,rock,valor_rock,post_chase_story=True)
+            _,_,cells=graph(reopened,mapping,components,root,predecessor,rock,valor_rock,post_chase_story=True,source_portal_contracts=accepted_north_contracts)
             goal=(preview["map_id"],*preview["stand"])
             result["lake_independent_legs"][key]={"from":list(predecessor),"to":list(goal),
                 "reachable":goal in cells,"target_map_reachable_cells":sum(q[0]==goal[0] for q in cells)}
         else:
             result["lake_independent_legs"][key]={"reason":"predecessor_position_missing"}
         predecessor=(preview["map_id"],*preview["stand"])
-    for key in ORDER:
+    # Never install a partial commander sequence while a lake remains unproved.
+    if not full_lake_sequence:
+        result["lake_sequence_checks"]={key:{"reason":"complete_bidirectional_sequence_required"} for key in ORDER}
+    for key in ORDER if full_lake_sequence else ():
         contract=result["lake_contracts"][key]
         if not contract or contract["symbol"] not in mapping:
             result["lake_sequence_checks"][key]={"reason":"missing_contract_or_map"};break
         lm=mapping[contract["symbol"]]
-        pos=placement(reopened,mapping,components,root,lm,lake_seed,rock,valor_rock,post_chase_story=True)
+        pos=placement(reopened,mapping,components,root,lm,lake_seed,rock,valor_rock,post_chase_story=True,source_portal_contracts=accepted_north_contracts)
         if not pos:
             result["lake_sequence_checks"][key]={"from":list(lake_seed),"map_id":lm,"reason":"no_proven_reachable_noncut_position"};break
         xy,stand=pos;sprite="SNQA_F12D_"+key
@@ -792,7 +816,7 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
             specs[key]=spec
             pbs.append("[%s,%s,%d]\nLoseText = Voce venceu!\n%s\n"%(spec[0],spec[1],spec[2],"\n".join("Pokemon = %s,%d"%tuple(p) for p in spec[4])))
         result["lake_placements"][key]=loc
-    if (lake_seams or accepted_entries) and lake_ready!=list(ORDER):
+    if full_lake_sequence and lake_ready!=list(ORDER):
         result["reason"]="original_lake_sequence_events_not_proved";return {},result,b""
     # Staging only until the private engine, sprites and pre-chase seam gate pass.
     template=(root/"scripts/regions/SinnohF12DIntegrated.rb").read_text("utf-8")

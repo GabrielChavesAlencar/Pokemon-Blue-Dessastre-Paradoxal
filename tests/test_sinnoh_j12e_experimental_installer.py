@@ -3780,6 +3780,22 @@ raise "restore error" unless original==[$game_variables,$game_switches,$game_sel
         self.assertIn("exact_existing_verity_forward_preserved",source)
         self.assertIn("source_contract_coordinates_unproved",source)
 
+    def test_f12d_northern_original_transfer_requires_pinned_donor_contract(self):
+        import sinnoh_f10b7_field_audit as g
+        import sinnoh_f12d_integrated as i
+        self.assertEqual(g.NORTH_LAKE_DONOR_EVENTS,{(82,82,156),(156,1,82)})
+        self.assertIsNone(g.original_lake_contract((82,82,156)))
+        self.assertIsNone(g.original_lake_contract((82,81,156),{(82,81,156):(1,2,3,4)}))
+        report={"candidate_records":[{"source_id":82,"event_id":82,"target_source_ids":[156],"from":[500,1,2],"to":[480,3,4]}]}
+        receipt=i.north_portal_contracts(report)
+        self.assertEqual(receipt,{(82,82,156):(1,2,3,4)})
+        self.assertEqual(g.original_lake_contract((82,82,156),receipt),(1,2,3,4))
+        self.assertIsNone(g.original_lake_contract((156,1,82),receipt))
+        self.assertEqual(g.original_lake_contract((214,6,215),receipt),(45,22,45,6))
+        source=(ROOT/"scripts/regions/sinnoh_f12d_integrated.py").read_text("utf-8")
+        self.assertIn("for key in ORDER if full_lake_sequence else ():",source)
+        self.assertIn("complete_bidirectional_sequence_required",source)
+
     def test_f12d_integrated_missing_item_and_player_methods(self):
         import tempfile
         import hashlib
