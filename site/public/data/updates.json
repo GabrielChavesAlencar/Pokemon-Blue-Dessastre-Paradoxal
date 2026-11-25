@@ -2,9 +2,27 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c5c1e4fde3011b101b99786fd8d3f55057ecf01e",
+      "date": "2026-11-25T13:13:26-03:00",
+      "title": "Merge pull request #332 from GabrielChavesAlencar/sinnoh-full-expansion-f12d3-directional-network",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "2e992122912b024fc8a7575771c83660de310c94",
+      "date": "2026-11-25T13:04:25-03:00",
+      "title": "Sinnoh F12D3: reconcile main and test original component-only network",
+      "category": "Melhorias"
+    },
+    {
       "sha": "89153f900c10dff1b41e85cbc4c7466a976a1f37",
       "date": "2026-11-25T13:02:47-03:00",
       "title": "Merge pull request #331 from GabrielChavesAlencar/sinnoh-full-expansion-f12d3-dry-network",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "2dfedc54f64cf34592ee122bf6c9cec7c08fb7da",
+      "date": "2026-11-25T12:53:29-03:00",
+      "title": "Sinnoh F12D3: test dry directional approaches without opening forbidden edges",
       "category": "Melhorias"
     },
     {
