@@ -391,10 +391,10 @@
       "id": "F11",
       "title": "Oito ginásios e insígnias",
       "status": "implementation_pending_ci",
-      "followup": "F11H_PENDING_CI",
+      "followup": "F11F_G_H_PENDING_MAIN_CI",
       "gym_count": 8,
-      "gym_rooms_confirmed": 6,
-      "gym_leaders_confirmed": 6,
+      "gym_rooms_confirmed": 8,
+      "gym_leaders_confirmed": 8,
       "native_verified": false,
       "hm_award_enabled": false,
       "f11a_pr": 303,
@@ -424,7 +424,9 @@
         "SINNOH_HEARTHOME_GYM": 575,
         "SINNOH_VEILSTONE_GYM": 576,
         "SINNOH_PASTORIA_GYM": 577,
-        "SINNOH_CANALAVE_GYM": 578
+        "SINNOH_CANALAVE_GYM": 578,
+        "SINNOH_SNOWPOINT_GYM": 579,
+        "SINNOH_SUNYSHORE_GYM": 580
       },
       "species_and_types_validation": "REFERENCE_FIXTURE_NOT_LOCAL_DATABASE",
       "f11c_candidate": "Fantina",
@@ -482,13 +484,13 @@
       "f11d_ci_checks": 26,
       "f11e_fixture_maps": 136,
       "f11e_fixture_portals": 83,
-      "f11e_real_head": "533ee072d9f239326bbd0e9781d01e9ac601cf95",
-      "f11e_real_job": 138912147891,
-      "f11e_main_ci_pending": true,
+      "f11e_real_head": "fd229fc550416c49e562481036faa55b996b1de3",
+      "f11e_real_job": 138914711407,
+      "f11e_main_ci_pending": false,
       "f11f_fixture_maps": 137,
       "f11f_fixture_portals": 85,
-      "f11f_real_head": "3af0c5a9bdfbc359b2b35a6f82ceb3aa4cef7a08",
-      "f11f_real_job": 138912475363,
+      "f11f_real_head": "045fbf1941061bb9cd8364774765b993215758d0",
+      "f11f_real_job": 138914801656,
       "f11g_candidate": "Candice",
       "f11g_prerequisites": [
         "COAL",
@@ -498,7 +500,7 @@
         "FEN",
         "MINE"
       ],
-      "f11g_fixture_rooms": 0,
+      "f11g_fixture_rooms": 1,
       "f11g_native_verified": false,
       "f11h_candidate": "Volkner",
       "f11h_prerequisites": [
@@ -510,13 +512,34 @@
         "MINE",
         "ICICLE"
       ],
-      "f11h_fixture_rooms": 0,
-      "f11h_native_verified": false
+      "f11h_fixture_rooms": 1,
+      "f11h_native_verified": false,
+      "f11e_merge_commit": "8cd5d6d3c66745ded74c4237f6ecdb4319a1d5e1",
+      "f11e_ci_workflows": 11,
+      "f11e_ci_checks": 26,
+      "f11f_main_ci_pending": true,
+      "f11g_fixture_maps": 138,
+      "f11g_fixture_portals": 87,
+      "f11g_real_head": "0a7f5a0e36e073e111140319edf6cb1fb052dde4",
+      "f11g_real_job": 138915913881,
+      "f11g_main_ci_pending": true,
+      "f11h_fixture_maps": 139,
+      "f11h_fixture_portals": 89,
+      "f11h_real_head": "3aa6644a393294faa173171789913c7911ba258f",
+      "f11h_real_job": 138916172371,
+      "f11h_main_ci_pending": true
     },
     {
       "id": "F12",
       "title": "História, Equipe Galactic e itens-chave",
-      "status": "pending"
+      "status": "implementation_pending_ci",
+      "followup": "F12A_SOURCE_AUDIT_PENDING_CI",
+      "story_checkpoints_scope": 14,
+      "hm_contracts_scope": 8,
+      "native_bindings": 0,
+      "items_granted": 0,
+      "native_verified": false,
+      "requires_f11h_baseline": true
     },
     {
       "id": "F13",
@@ -827,10 +850,10 @@
   },
   "f11": {
     "status": "implementation_pending_ci",
-    "followup": "F11H_PENDING_CI",
+    "followup": "F11F_G_H_PENDING_MAIN_CI",
     "gym_count": 8,
-    "gym_rooms_confirmed": 6,
-    "gym_leaders_confirmed": 6,
+    "gym_rooms_confirmed": 8,
+    "gym_leaders_confirmed": 8,
     "native_verified": false,
     "hm_award_enabled": false,
     "f11a_pr": 303,
@@ -860,7 +883,9 @@
       "SINNOH_HEARTHOME_GYM": 575,
       "SINNOH_VEILSTONE_GYM": 576,
       "SINNOH_PASTORIA_GYM": 577,
-      "SINNOH_CANALAVE_GYM": 578
+      "SINNOH_CANALAVE_GYM": 578,
+      "SINNOH_SNOWPOINT_GYM": 579,
+      "SINNOH_SUNYSHORE_GYM": 580
     },
     "species_and_types_validation": "REFERENCE_FIXTURE_NOT_LOCAL_DATABASE",
     "f11c_candidate": "Fantina",
@@ -918,13 +943,13 @@
     "f11d_ci_checks": 26,
     "f11e_fixture_maps": 136,
     "f11e_fixture_portals": 83,
-    "f11e_real_head": "533ee072d9f239326bbd0e9781d01e9ac601cf95",
-    "f11e_real_job": 138912147891,
-    "f11e_main_ci_pending": true,
+    "f11e_real_head": "fd229fc550416c49e562481036faa55b996b1de3",
+    "f11e_real_job": 138914711407,
+    "f11e_main_ci_pending": false,
     "f11f_fixture_maps": 137,
     "f11f_fixture_portals": 85,
-    "f11f_real_head": "3af0c5a9bdfbc359b2b35a6f82ceb3aa4cef7a08",
-    "f11f_real_job": 138912475363,
+    "f11f_real_head": "045fbf1941061bb9cd8364774765b993215758d0",
+    "f11f_real_job": 138914801656,
     "f11g_candidate": "Candice",
     "f11g_prerequisites": [
       "COAL",
@@ -934,7 +959,7 @@
       "FEN",
       "MINE"
     ],
-    "f11g_fixture_rooms": 0,
+    "f11g_fixture_rooms": 1,
     "f11g_native_verified": false,
     "f11h_candidate": "Volkner",
     "f11h_prerequisites": [
@@ -946,7 +971,21 @@
       "MINE",
       "ICICLE"
     ],
-    "f11h_fixture_rooms": 0,
-    "f11h_native_verified": false
+    "f11h_fixture_rooms": 1,
+    "f11h_native_verified": false,
+    "f11e_merge_commit": "8cd5d6d3c66745ded74c4237f6ecdb4319a1d5e1",
+    "f11e_ci_workflows": 11,
+    "f11e_ci_checks": 26,
+    "f11f_main_ci_pending": true,
+    "f11g_fixture_maps": 138,
+    "f11g_fixture_portals": 87,
+    "f11g_real_head": "0a7f5a0e36e073e111140319edf6cb1fb052dde4",
+    "f11g_real_job": 138915913881,
+    "f11g_main_ci_pending": true,
+    "f11h_fixture_maps": 139,
+    "f11h_fixture_portals": 89,
+    "f11h_real_head": "3aa6644a393294faa173171789913c7911ba258f",
+    "f11h_real_job": 138916172371,
+    "f11h_main_ci_pending": true
   }
 }

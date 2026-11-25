@@ -1333,6 +1333,17 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
             ghreport["species_and_types_validation"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
             print("SINNOH_F11H_GYM_REPORT "+json.dumps(ghreport,sort_keys=True),flush=True)
             print("SINNOH_REAL_F11H_EIGHT_GYMS_139_MAPS_BASELINE_PRESERVED_OK",flush=True)
+            import sinnoh_f12a_story_audit as story_audit
+            report=story_audit.audit(gh,ghids,Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]),ROOT)
+            self.assertEqual(report["baseline_maps"],139)
+            self.assertEqual(len(report["story_checkpoints"]),14)
+            self.assertEqual(len(report["hm_contracts"]),8)
+            self.assertEqual(report["native_bindings"],0)
+            self.assertEqual(report["items_granted"],0)
+            self.assertTrue(report["baseline_preserved"])
+            self.assertFalse(report["native_verified"])
+            print("SINNOH_F12A_STORY_SOURCE_REPORT "+json.dumps(report,sort_keys=True),flush=True)
+            print("SINNOH_REAL_F12A_STORY_SOURCE_CANDIDATES_139_MAPS_BASELINE_PRESERVED_OK",flush=True)
 
 
 
@@ -2563,6 +2574,25 @@ puts "F11H_SEVEN_BADGES_THEN_BEACON_WIN_ONLY_OK"
             result=subprocess.run(["ruby","-e",fixture,str(path)],capture_output=True,text=True,encoding="utf-8")
             self.assertEqual(result.returncode,0,result.stdout+result.stderr)
             self.assertIn("F11H_SEVEN_BADGES_THEN_BEACON_WIN_ONLY_OK",result.stdout)
+
+    def test_f12a_story_contract_and_inert_marker_detection(self):
+        import sinnoh_f12a_story_audit as audit
+        from types import SimpleNamespace as Obj
+        steps,hms=audit.contract(ROOT)
+        self.assertEqual(len(steps),14)
+        self.assertEqual(len(hms),8)
+        self.assertTrue(all(s["binding"] is None for s in steps+hms))
+        cmd=lambda code,*args:Obj(attrs={"@code":code,"@parameters":list(args)})
+        event=Obj(attrs={"@name":b"Galactic Mars","@pages":[Obj(attrs={
+            "@list":[cmd(101,b"HM03"),cmd(355,b"pbReceiveItem(:HM01)"),
+                     cmd(355,b"pbReceiveItem(:HM010)"),cmd(0)]})]})
+        row=audit.markers(event)
+        self.assertEqual(row["actors"],["GALACTIC","MARS"])
+        self.assertEqual(row["item_markers"],["HM01","HM03"])
+        self.assertEqual(row["literal_pickup_call_candidates"],["HM01"])
+        self.assertNotIn("pbReceiveItem",json.dumps(row))
+        with self.assertRaisesRegex(ValueError,"F12A_REQUIRES_F11H_BASELINE"):
+            audit.audit({}, {}, Path("unused"),ROOT)
 
     def test_f11a_gym_contract_and_collision_guards(self):
         import sinnoh_f11a_gym as g
