@@ -7,3 +7,7 @@ O futuro adaptador deve confirmar a cópia privada, região, posição e intera�
 # Auditoria integrada e nova revisão
 
 #325 merged 7f06fdac338b6b4c2699a98d4e15727604cba862: 11/11 workflows, 26/26 jobs, real job 139262668218 confirmed all three required markers. 62 events, zero exact identity markers, reachability 451/0/0. Source 80 events 10–13 at x92–95,y75 blocked; source 116 events 32–35 at x12–15,y7 ordinary. These groups are unidentified, not confirmed Psyduck. New review expands exact-marker search across all 238 maps and PBS, diagnoses original connection alignment and current reachable sides, reports topology-only paths separately from real walking. No event binding or native claims. Transaction and catalogue candidates copied from 5ca6bb8e62dda8cb2da896da18477202b55b75a2 and covered by new CI.
+
+## Correção do índice de componentes
+
+HEAD beaba6d022ef5cc7def91e7cfbc1aa178eaee3f2: 10/11 workflows, 25/26 jobs. O job real 139274207840 verificou as duas fontes e confirmou F12C4, F12D2 e F12D3 inicial. Falhou antes da auditoria ampliada porque access_graph retorna listas de conjuntos de células, e o auditor usou esses conjuntos como rótulos hashable. Correção: enumerar índices inteiros das componentes, mantendo as mesmas regras de caminhada; novo teste usa index_components real com duas componentes, outra isolada e mapa sem células. Busca de caminhos Data/ case-insensitive igual ao F03. Nenhuma alteração de mapas ou eventos. Novo CI necessário.

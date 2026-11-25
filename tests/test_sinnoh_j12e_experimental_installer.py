@@ -3255,6 +3255,15 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertEqual(result.returncode,0,result.stdout+result.stderr)
         self.assertIn("F12D3_STAGED_TRANSACTION_FIXTURE_OK",result.stdout)
 
+    def test_f12d3_reached_source_ids_use_integer_component_labels(self):
+        import sinnoh_f12d3_expanded_evidence as f
+        from sinnoh_f10b7_field_audit import index_components
+        _,g=index_components({(0,0),(1,0),(4,0)})
+        self.assertEqual(len(g),2)
+        self.assertEqual(f.reached_source_ids({214:528,80:472,116:473},
+            {528:g,472:[{(0,0)}],473:[]},{(528,1)}),{214})
+        self.assertEqual(f.reached_source_ids({214:528},{528:g},set()),set())
+
     def test_f12d3_topology_is_not_walk_witness(self):
         import sinnoh_f12d3_expanded_evidence as f
         self.assertEqual(f.topology_path({1:{2},2:{3}}, {1},3),[1,2,3])

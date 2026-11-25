@@ -542,7 +542,7 @@
       "id": "F12",
       "title": "História, Equipe Galactic e itens-chave",
       "status": "implementation_pending_ci",
-      "followup": "F12D3_EXPANDED_EVIDENCE_AND_TRANSACTION_PENDING_CI",
+      "followup": "F12D3_COMPONENT_INDEX_FIX_PENDING_CI",
       "story_checkpoints_scope": 14,
       "hm_contracts_scope": 8,
       "native_bindings": 0,
@@ -1072,7 +1072,21 @@
         }
       ],
       "f12d3_expanded_audit_pending_ci": true,
-      "f12d3_transaction_candidate_pending_ci": true
+      "f12d3_transaction_candidate_pending_ci": true,
+      "f12d3_expanded_prior_head": "beaba6d022ef5cc7def91e7cfbc1aa178eaee3f2",
+      "f12d3_expanded_prior_base": "3ccdf4f557258a2471b20b8f771d982c02e02e39",
+      "f12d3_expanded_prior_workflows_approved": 10,
+      "f12d3_expanded_prior_jobs_approved": 25,
+      "f12d3_expanded_prior_real_job": 139274207840,
+      "f12d3_expanded_prior_error": "TypeError: unhashable type: set (component labels)",
+      "f12d3_transaction_tests_approved": 4,
+      "f12d3_transaction_tests_job": 139274210442,
+      "f12d3_expanded_prior_markers_confirmed": [
+        "SINNOH_REAL_F12C4_144_MAP_INSTALL_FIXTURE_140_BASELINE_PRESERVED_OK",
+        "SINNOH_REAL_F12D2_RUNTIME_FIXTURE_PREPARED_OK",
+        "SINNOH_REAL_F12D3_SOURCE_GEOMETRY_AUDITED_144_BASELINE_PRESERVED_OK"
+      ],
+      "f12d3_component_index_fix_pending_ci": true
     },
     {
       "id": "F13",

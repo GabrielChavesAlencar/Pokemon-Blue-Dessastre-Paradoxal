@@ -16,6 +16,12 @@ import sinnoh_qa_teleport as tp
 GROUPS={80:(10,11,12,13),116:(32,33,34,35)}
 TARGETS={80,116}
 
+def reached_source_ids(bound,groups,reached):
+    # access_graph returns a list of cell sets per map. The graph node is
+    # (map_id, integer component index), never (map_id, cell set).
+    return {sid for sid,mid in bound.items()
+            if any((mid,label) in reached for label in range(len(groups[mid])))}
+
 def topology_path(edges,starts,target):
     parents={n:None for n in sorted(starts)}
     todo=deque(sorted(starts))
@@ -56,7 +62,7 @@ def inspect(blobs,mapping,components,chase_report,report,source,root):
     source_map,_,_=conn.graph(root)
     source_map={**source_map,**{r["source_id"]:r for r in f08c.rows(root)}}
     bound={sid:mapping[r["symbol"]] for sid,r in source_map.items() if r["symbol"] in old}
-    reached_ids={sid for sid,mid in bound.items() if any((mid,label) in reached for label in groups[mid])}
+    reached_ids=reached_source_ids(bound,groups,reached)
     current=pv.parse_connections(blobs["PBS/map_connections.txt"])
     candidates=[];hits=[];scanned=0;events=0;pbs_hits=[];topology={}
     with pv.verified_archive(source,"maps") as z:
@@ -64,7 +70,7 @@ def inspect(blobs,mapping,components,chase_report,report,source,root):
         st=conn.read_marshal(pv.member(z,pv.MAP_ROOT+"Data/Tilesets.rxdata"),"F12D3_FOLLOWUP_TILES")
         source_worlds={}
         for name in sorted(index.values()):
-            if name.startswith(pv.MAP_ROOT+"Data/"):
+            if name.casefold().startswith((pv.MAP_ROOT+"Data/").casefold()):
                 m=f03.MAP_RE.fullmatch(name[len(pv.MAP_ROOT+"Data/"):])
                 if not m:continue
                 sid=int(m[1]);raw=pv.member(z,name);digest=hashlib.sha256(raw).hexdigest()
