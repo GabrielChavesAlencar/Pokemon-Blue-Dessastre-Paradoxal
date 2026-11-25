@@ -158,7 +158,91 @@ module BlueSinnohF12DIntegrated
       tag && tag.id_number==n && tag.can_surf && !tag.waterfall && !tag.waterfall_crest && !tag.ledge && !tag.bridge
     end
   end
+  # Regional pickup is transactional: stage on deep copies, then atomically
+  # replace the local receipt and bag. Never adopt an item already in a bag.
+  def self.surf_hm_valid?
+    item=GameData::Item.try_get(:HM03)
+    !!(item && item.is_HM? && item.move==:SURF && BlueRegionTravel.regional_item?(:HM03))
+  end
+  def self.stage_surf_pickup(s,bag)
+    return nil unless s && T.cleared?(s) && BlueRegions.valid_sinnoh_badges?(s) &&
+      s["current"]=="SINNOH" && BlueRegions.local_achievements(s,"SINNOH").include?("FEN") && surf_hm_valid?
+    claims=BlueRegions.sinnoh_local_hms(s)
+    return nil unless claims && !claims.include?("SURF") && bag && bag.quantity(:HM03)==0
+    next_s=Marshal.load(Marshal.dump(s))
+    next_bag=Marshal.load(Marshal.dump(bag))
+    return nil unless next_bag.add(:HM03,1) && next_bag.quantity(:HM03)==1
+    return nil unless BlueRegions.record_sinnoh_hm(next_s,"SURF",:HM03,next_bag,true)
+    return nil unless BlueRegions.field_access(next_s,"SINNOH","SURF",true)==:allowed &&
+      bag.quantity(:HM03)==0 && BlueRegions.sinnoh_local_hms(s)==claims
+    {state:next_s,bag:next_bag}
+  rescue StandardError
+    nil
+  end
+  def self.surf_permission(s,bag,party,selected=nil)
+    return :unavailable unless s && s["current"]=="SINNOH" && T.cleared?(s)
+    outcome=BlueRegions.field_access(s,"SINNOH","SURF",true)
+    return outcome unless outcome==:allowed
+    return :hm unless surf_hm_valid? && bag && bag.has?(:HM03)
+    eligible=Array(party).any? do |p|
+      p && (!selected || p.equal?(selected)) && !p.egg? && !p.fainted? &&
+        p.respond_to?(:compatible_with_move?) && p.compatible_with_move?(:SURF)
+    end
+    eligible ? :allowed : :pokemon
+  rescue StandardError
+    :unavailable
+  end
+  def self.offer_surf(s)
+    return false unless near?("SURF_HM03") && s && !s.frozen? && state.equal?(s) &&
+      defined?(BlueKantoTitle) && BlueKantoTitle.sinnoh_experimental_barry_compiled?
+    return true if BlueRegions.sinnoh_local_hms(s)&.include?("SURF")
+    return false unless pbConfirmMessage(_INTL("Cynthia: deseja receber a HM Surf de Sinnoh?"))
+    bag=$bag;staged=stage_surf_pickup(s,bag)
+    return false unless staged && state.equal?(s) && $bag.equal?(bag)
+    old=s["region_local_hms"];existed=s.key?("region_local_hms")
+    begin
+      s["region_local_hms"]=staged[:state]["region_local_hms"]
+      $bag=staged[:bag]
+      raise "Sinnoh HM03 commit" unless BlueRegions.sinnoh_local_hms(s).include?("SURF") && $bag.quantity(:HM03)==1
+    rescue StandardError
+      $bag=bag
+      existed ? s["region_local_hms"]=old : s.delete("region_local_hms")
+      return false
+    end
+    pbMessage(_INTL("Voce recebeu a HM03 Surf de Sinnoh!"))
+    true
+  end
+  # Actual compiled catalogue, PokemonBag and regional state receipt. No
+  # synthetic map traversal or claim that the player has used Surf.
+  def self.verify_native_surf_pickup!
+    raise "Sinnoh HM03 catalogue" unless surf_hm_valid?
+    s=BlueRegions.new_state("SINNOH")
+    s["sinnoh_f12d_quest"]=T::CHASE.dup;s[T::LEDGER]=T::ORDER.dup
+    b=PokemonBag.new
+    raise "Sinnoh HM03 before badge" if stage_surf_pickup(s,b)
+    s["achievements"]["SINNOH"]=["FEN"]
+    raise "Sinnoh HM03 missing receipt gate" unless surf_permission(s,b,[])==:hm
+    foreign=Marshal.load(Marshal.dump(s));foreign["current"]="KANTO"
+    raise "Sinnoh HM03 foreign pickup" if stage_surf_pickup(foreign,b)
+    borrowed=PokemonBag.new
+    raise "Sinnoh HM03 test bag" unless borrowed.add(:HM03,1)
+    raise "Sinnoh HM03 borrowed item" if stage_surf_pickup(s,borrowed) || surf_permission(s,borrowed,[])==:allowed
+    next_pair=stage_surf_pickup(s,b)
+    raise "Sinnoh HM03 staged receipt" unless next_pair && b.quantity(:HM03)==0 && BlueRegions.sinnoh_local_hms(s).empty?
+    saved,bag=Marshal.load(Marshal.dump([next_pair[:state],next_pair[:bag]]))
+    raise "Sinnoh HM03 persistent receipt" unless BlueRegions.sinnoh_local_hms(saved).include?("SURF") && bag.quantity(:HM03)==1
+    raise "Sinnoh HM03 duplicate" if stage_surf_pickup(saved,bag)
+    raise "Sinnoh HM03 incompatible party" unless surf_permission(saved,bag,[])==:pokemon
+    no_badge=Marshal.load(Marshal.dump(saved));no_badge["achievements"]["SINNOH"]=[]
+    raise "Sinnoh HM03 missing badge" unless surf_permission(no_badge,bag,[])==:badge
+    raise "Sinnoh HM03 missing item" unless surf_permission(saved,PokemonBag.new,[])==:hm
+    true
+  end
   def self.verify_compiled!
+    if LOCATIONS.key?("SURF_HM03")
+      verify_native_surf_pickup!
+      puts "SINNOH_F12D_NATIVE_SURF_PICKUP_TRANSACTION_OK"
+    end
     puts(lake_surf_terrain_reference? ? "SINNOH_F12D_NATIVE_LAKE_SURF_TERRAIN_REFERENCE_OK" : "SINNOH_F12D_NATIVE_LAKE_SURF_TERRAIN_REFERENCE_BLOCKED")
     raise "Sinnoh F12D3: terreno Rock incompatível" unless rock_reference_valid?
     raise "Sinnoh F12D3: item regional invalido" unless T.compiled_item_valid?
@@ -206,6 +290,8 @@ module BlueSinnohF12DIntegrated
         return false unless commit_item(s,T::ORDER[0])
         pbMessage(_INTL("Cynthia: Use esta SecretPotion para ajudar os Psyduck da Rota 210."))
         return true
+      elsif key=="SURF_HM03"
+        return offer_surf(s)
       elsif key.start_with?("PSYDUCK_")
         return true if T.cleared?(s)
         return false unless T.history(s)==[T::ORDER[0]]
@@ -269,10 +355,29 @@ module BlueSinnohF12DIntegrated
       super(dir,*args,&block)
     end
   end
+  module PrivateSurfPolicy
+    def field_result(move,selected=nil)
+      if move.to_s.upcase=="SURF" && defined?(BlueSinnohExperimental) && BlueSinnohExperimental.private_copy?
+        return BlueSinnohF12DIntegrated.surf_permission(BlueSinnohF12DIntegrated.state,$bag,$player && $player.party,selected)
+      end
+      super
+    end
+    def kanto_field_context?(move)
+      if move.to_s.upcase=="SURF" && defined?(BlueSinnohExperimental) && BlueSinnohExperimental.private_copy?
+        return @field_move==:SURF && field_result(:SURF)==:allowed
+      end
+      super
+    end
+  end
   def self.bind_pages!
     return false unless defined?(Game_Event) && defined?(Game_Player)
     Game_Event.prepend(BarrierPages) unless Game_Event.ancestors.include?(BarrierPages)
     Game_Player.prepend(ProgressionMovement) unless Game_Player.ancestors.include?(ProgressionMovement)
+    if LOCATIONS.key?("SURF_HM03")
+      return false unless defined?(BlueRegionalPolicy)
+      klass=BlueRegionalPolicy.singleton_class
+      klass.prepend(PrivateSurfPolicy) unless klass.ancestors.include?(PrivateSurfPolicy)
+    end
     true
   end
 end

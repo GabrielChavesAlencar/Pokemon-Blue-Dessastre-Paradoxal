@@ -349,7 +349,7 @@ def original_lake_candidates(data,mapping,components,root,source,rock,valor_rock
     result["reason"]="complete_sequence_required"
     return trial,result
 
-def recover_lake_seams(data,mapping,components,root,expanded,seed,previews,rock,valor_rock):
+def recover_lake_seams(data,mapping,components,root,expanded,seed,previews,rock,valor_rock,surf_geometry=None):
     from sinnoh_f12d3_alternate_route212 import reserved
     import sinnoh_f12d3_route210_recovery as recovery
     old={k:v for k,v in mapping.items() if k in chase.prior.ALL}
@@ -379,6 +379,26 @@ def recover_lake_seams(data,mapping,components,root,expanded,seed,previews,rock,
     def node(q):
         label=index.get(q[0],{}).get(tuple(q[1:]))
         return (q[0],label) if label is not None else None
+    # Conditional witnesses are an independent graph: never install these
+    # edges in the dry graph or accept them as native movement evidence.
+    conditional={k:set(v) for k,v in edges.items()}
+    surf_edges=[]
+    for row in (surf_geometry or {}).get("maps",{}).values():
+        if not row.get("surf_candidate") or not row.get("water_steps"):continue
+        a=node((row["map_id"],*row["start"]));b=node((row["map_id"],*row["goal"]))
+        if a is None or b is None or a==b:continue
+        conditional.setdefault(a,set()).add((b,(),True))
+        conditional.setdefault(b,set()).add((a,(),True))
+        surf_edges.append({"map_id":row["map_id"],"from":row["start"],"to":row["goal"],"requires":"SINNOH_HM03_FEN_LOCAL_RECEIPT_COMPATIBLE_PARTY_NATIVE_SURF"})
+    conditional_legs={};prior=seed
+    for key in ORDER:
+        loc=previews.get(key)
+        goal=(loc["map_id"],*loc["stand"]) if loc else None
+        a=node(prior) if prior else None;b=node(goal) if goal else None
+        distances,_=original_audit.component_paths(conditional,[a]) if a is not None else ({},{})
+        conditional_legs[key]={"candidate_reachable":b is not None and b in distances,"native_verified":False}
+        prior=goal
+    report["conditional_surf"]={"edges":surf_edges,"legs":conditional_legs,"activation_allowed":False}
     added=[];predecessor=seed;complete=True
     for key in ORDER:
         loc=previews.get(key)
@@ -499,12 +519,25 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
     specs={};pbs=[];lake_seed=min(q for q in restored if q[0]==town);lake_ready=[]
     result["lake_sequence_seed"]=list(lake_seed)
     result["lake_sequence_checks"]={}
+    # Authorial local HM03 pickup: reachable after the existing Psyduck gate.
+    # Do not move a QA seed, add a warp, or change terrain.
+    pickup=placement(reopened,mapping,components,root,town,lake_seed,rock)
+    result["surf_pickup"]={"prepared":False,"authorial":True,"native_verified":False,"item":"HM03","badge":"FEN"}
+    if pickup:
+        xy,stand=pickup
+        trial,loc=add_event(reopened,town,xy,"SURF_HM03","SNQA_F12D_CYNTHIA")
+        if tp.build(trial,old,components,root)==entries:
+            closed_trial,closed_loc=add_event(out,town,xy,"SURF_HM03","SNQA_F12D_CYNTHIA")
+            if closed_loc==loc:
+                reopened=trial;out=closed_trial;loc["stand"]=list(stand);locations["SURF_HM03"]=loc
+                result["surf_pickup"].update(prepared=True,location=loc)
     # All three legs must be proved before any original seam is staged.
     original_trial,entry_report=original_lake_candidates(reopened,mapping,components,root,source,rock,valor_rock,lake_seed)
-    recovered,lake_seams,lake_recovery=recover_lake_seams(original_trial,mapping,components,root,expanded,lake_seed,result["lake_local_previews"],rock,valor_rock)
+    surf_geometry=lake_surf_geometry(reopened,mapping,source,root,result["lake_local_previews"])
+    recovered,lake_seams,lake_recovery=recover_lake_seams(original_trial,mapping,components,root,expanded,lake_seed,result["lake_local_previews"],rock,valor_rock,surf_geometry)
     result["lake_original_seam_recovery"]=lake_recovery
     result["lake_original_entries"]=entry_report
-    result["lake_surf_geometry"]=lake_surf_geometry(reopened,mapping,source,root,result["lake_local_previews"])
+    result["lake_surf_geometry"]=surf_geometry
     accepted_entries=[]
     if lake_recovery.get("reason")=="complete_original_sequence_fixture_proved":
         accepted_entries=entry_report["candidate_records"] if original_trial!=reopened else []
@@ -811,6 +844,7 @@ def installer_preflight(blobs,mapping,components,cr,base,root,source,staged=None
             lake_original_seam_recovery=story.get("lake_original_seam_recovery",{}),
             lake_original_entries=story.get("lake_original_entries",{}),
             lake_surf_geometry=story.get("lake_surf_geometry",{}),
+            surf_pickup=story.get("surf_pickup",{}),
             restored_original_portals=story.get("restored_original_portals",0),
             pre_chase_graph_checks=story.get("pre_chase_graph_checks",[]),
             geometry_delta_count=story.get("geometry_delta_count",0),

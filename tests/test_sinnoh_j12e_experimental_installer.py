@@ -3592,6 +3592,14 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertLess(main.index("TRANSACTION_PROBE_OK"),main.index("ALL_VERIFIERS_PASSED"))
         self.assertIn("Compiler.singleton_class.send(:define_method, :compile_all, blue_sinnoh_core)",main)
 
+    def test_f12d_surf_pickup_candidate_uses_native_regional_receipt(self):
+        source=(ROOT/"scripts/regions/SinnohF12DIntegrated.rb").read_text("utf-8")
+        self.assertIn('BlueRegions.record_sinnoh_hm(next_s,"SURF",:HM03,next_bag,true)',source)
+        self.assertIn('bag.quantity(:HM03)==0',source)
+        self.assertIn('SINNOH_F12D_NATIVE_SURF_PICKUP_TRANSACTION_OK',source)
+        self.assertIn('BlueSinnohF12DIntegrated.surf_permission',source)
+        self.assertIn('Marshal.load(Marshal.dump([next_pair[:state],next_pair[:bag]]))',source)
+
     def test_f12d_lake_surf_path_requires_water_mode_and_never_opens_dry_graph(self):
         import sinnoh_f12d_integrated as i
         self.assertEqual(i.lake_surface_mode(((0,),(0,)),(0,)),"walk")

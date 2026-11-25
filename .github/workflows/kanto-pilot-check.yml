@@ -269,6 +269,8 @@ jobs:
               "lake_original_seam_recovery":integrated.get("lake_original_seam_recovery",{}),
               "lake_original_entries":integrated.get("lake_original_entries",{}),
               "lake_independent_legs":integrated.get("lake_independent_legs",{}),
+              "lake_surf_geometry":integrated.get("lake_surf_geometry",{}),
+              "surf_pickup":integrated.get("surf_pickup",{}),
               "item":integrated.get("item_catalogue",{})},sort_keys=True),flush=True)
           assert report["maps_prepared"]==144, "actual installed Blue did not prepare all 144 maps"
           assert integrated["runtime_install_enabled"] and integrated["status"]=="F12D_INTEGRATED_PRIVATE_COPY_PREPARED", "actual private candidate not staged"
