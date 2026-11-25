@@ -212,3 +212,8 @@ F10B5 comprovou entrada existente [72,17] para Kath, 341 células alcançáveis,
 
 
 F10B5 integrada em 96ee503f3fc8b7d94044ccb8afb17c431db8f879 (11 workflows/26 checks). F10B6 job 138868969472 HEAD 8d576f14f5dfb9670929b26a86dbdc0dfa253a49 confirmou seis recuperados, Kath em MapID 474 evento 2, posição [57,12], sprite autoral SHA-256 9062d14740dfb26af6ccad6f45e31a819d9ef011f72e4a26fb999c8206b6b64a, acesso contínuo [72,17]. Preservados cinco anteriores, sem execução nativa. Dez workflows da base anterior aprovados; CI integral na main exigido.
+
+
+### F10B7 — investigação de terreno, acessos e gates
+
+F10B6 real confirmou seis recuperados. F10B7 lê os 127 mapas doadores com hashes fixados, os 131 mapas QA e os seis eventos pendentes. Compara tags e bits de passagem de cada célula original/QA e vizinhos; percorre componentes de terreno comum/grama com fechamento transitivo sobre entradas existentes, transferências estáticas simples e conexões existentes. Registra somente tipos de condições, contagens de comandos e marcadores de bicicleta/Rock Smash/Rock Climb/horário, sem executar ou exportar scripts. Reconta identidades literais, inclusive chamadas condicionais antes omitidas da fila F10A. Referências históricas: https://bulbapedia.bulbagarden.net/wiki/Sinnoh_Route_207 (subida de bicicleta), https://bulbapedia.bulbagarden.net/wiki/Sinnoh_Route_211 (Alexandra/Rock Smash), https://bulbapedia.bulbagarden.net/wiki/Sinnoh_Route_210 (Wyatt/manhã). Essas hipóteses não equivalem à prova de gates donor ou nativos; não libera nenhum treinador adicional. Sem mutação de mapas, PBS, sprites, conexões, saves ou gates. F10C aguardará resultado e cobertura suficiente.

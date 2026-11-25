@@ -1056,6 +1056,21 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
             report6["species_and_types_validation"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
             print("SINNOH_F10B6_TRAINER_REPORT "+json.dumps(report6,sort_keys=True),flush=True)
             print("SINNOH_REAL_F10B6_131_MAPS_KATH_AUTHORED_ART_BASELINE_PRESERVED_OK",flush=True)
+            import sinnoh_f10b7_field_audit as f10b7
+            snapshot=dict(final6)
+            gate=f10b7.audit(final6,f08c_ids,f08c_components,source,ROOT)
+            self.assertEqual(final6,snapshot)
+            self.assertEqual(gate["pending_candidates"],6)
+            self.assertEqual(gate["literal_inventory"]["source_events"],2124)
+            self.assertEqual({r["name"] for r in gate["rows"]},{"Austin","Kevin","Helen","Louis","Alexander","Wyatt"})
+            self.assertFalse(gate["field_gates_enabled"])
+            self.assertFalse(gate["native_verified"])
+            self.assertEqual(gate["new_trainers"],0)
+            self.assertFalse(any(r["installed"] or r["historical_gate_proven"] for r in gate["rows"]))
+            self.assertEqual(exp.qa_teleport.build(final6,f08c_ids,f08c_components),entries)
+            print("SINNOH_F10B7_FIELD_GATE_REPORT "+json.dumps(gate,sort_keys=True),flush=True)
+            print("SINNOH_REAL_F10B7_131_MAPS_6_PENDING_FIELD_GATES_INERT_AUDITED_OK",flush=True)
+
 
 
 
@@ -1753,6 +1768,25 @@ puts "F10B4_DOUBLE_ATOMIC_VICTORY_OK"
             result=subprocess.run(["ruby","-e",fixture,str(path)],capture_output=True,text=True,encoding="utf-8")
             self.assertEqual(result.returncode,0,result.stdout+result.stderr)
             self.assertIn("F10B4_DOUBLE_ATOMIC_VICTORY_OK",result.stdout)
+
+    def test_f10b7_component_closure_and_inert_gate_shapes(self):
+        import sinnoh_f10b7_field_audit as g
+        from build_johto_events import ruby
+        points={(0,0),(1,0),(3,0),(3,1)}
+        index,groups=g.index_components(points)
+        self.assertEqual(len(groups),2)
+        self.assertNotEqual(index[(0,0)],index[(3,0)])
+        edges={(1,0):{(2,0)},(2,0):{(3,1)}}
+        self.assertEqual(g.closure(edges,{(1,0)}),{(1,0),(2,0),(3,1)})
+        self.assertNotIn((1,0),g.closure(edges,{(2,0)}))
+        event=ruby("RPG::Event",pages=[ruby("RPG::Event::Page",list=[
+            ruby("RPG::EventCommand",code=111,parameters=[12,b"PBDayNight.isMorning? && pbRockSmash"]),
+            ruby("RPG::EventCommand",code=355,parameters=[b"pbMountBike; private_text_not_exported"]),
+            ruby("RPG::EventCommand",code=101,parameters=[b"morning"])])])
+        shape=g.gate_shape(event)
+        self.assertEqual(shape[0]["script_gate_tokens"],{"rock_smash":1,"morning":1,"time":1,"bicycle":1})
+        self.assertNotIn("private_text_not_exported",json.dumps(shape))
+        self.assertEqual(shape[0]["conditional_types"],{12:1})
 
     def test_f10b6_authored_sheet_png_integrity_and_animation(self):
         import sinnoh_f10b_trainers as f
