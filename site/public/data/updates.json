@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1d1e001eb721162eeb0e3c5b7371855fe3c57ad1",
+      "date": "2026-11-24T23:17:47-03:00",
+      "title": "Merge pull request #311 from GabrielChavesAlencar/sinnoh-full-expansion-f12a-story-source-audit",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "2b43a10d4ca496deeabbe693550519262ef2dd66",
+      "date": "2026-11-24T23:11:12-03:00",
+      "title": "F12A: reconcile main and consolidate definitive eight-gym and story audit evidence",
+      "category": "Melhorias"
+    },
+    {
       "sha": "267f9080daa99272d40805d99384d5589ab2bedb",
       "date": "2026-11-24T23:10:49-03:00",
       "title": "Merge pull request #310 from GabrielChavesAlencar/sinnoh-full-expansion-f11h-volkner",
@@ -29,6 +41,12 @@
       "sha": "62d48570c6fb961806e1c48c4af5c1499ff4fe97",
       "date": "2026-11-24T22:54:41-03:00",
       "title": "Merge pull request #308 from GabrielChavesAlencar/sinnoh-full-expansion-f11f-byron",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "31e1f2f212da60c87bed2a0a79dec184e05151cd",
+      "date": "2026-11-24T22:50:09-03:00",
+      "title": "Sinnoh F12A: read-only Galactic, story and local item source candidate audit",
       "category": "Melhorias"
     },
     {
