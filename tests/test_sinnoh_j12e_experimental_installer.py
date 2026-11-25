@@ -1406,6 +1406,21 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                 self.assertFalse(er["native_verified"])
                 print("SINNOH_F12C_ETERNA_SOURCE_REPORT "+json.dumps(er,sort_keys=True),flush=True)
                 print("SINNOH_REAL_F12C_238_SOURCE_MAPS_AUDITED_140_BASELINE_PRESERVED_OK",flush=True)
+                import sinnoh_f12c2_eterna_preview as eterna_preview
+                delta,pr=eterna_preview.preview(wo,wi,wc,{2},er,ROOT)
+                self.assertFalse(pr["runtime_install_enabled"])
+                self.assertFalse(pr["native_verified"])
+                if delta:
+                    self.assertEqual(pr["maps_after"],144)
+                    self.assertEqual(len(pr["rooms"]),4)
+                    self.assertEqual(len(pr["preview_links"]),7)
+                    self.assertTrue(pr["baseline_preserved"])
+                    self.assertTrue(all("Data/Map%03d.rxdata"%n not in delta for n in wi.values()))
+                    print("SINNOH_REAL_F12C2_144_MAP_PREVIEW_140_BASELINE_PRESERVED_OK",flush=True)
+                else:
+                    self.assertEqual(pr["maps_after"],140)
+                    print("SINNOH_REAL_F12C2_PREVIEW_BLOCKED_140_BASELINE_PRESERVED_OK",flush=True)
+                print("SINNOH_F12C2_ETERNA_PREVIEW_REPORT "+json.dumps(pr,sort_keys=True),flush=True)
             qo,qr,qp=quest.build(wo,wi,wc,{"GALACTIC_GRUNT","GALACTIC_ADMIN"},{"GLAMEOW","STUNKY","ZUBAT","PURUGLY"},{"WORKSKEY"},set(),ROOT)
             qr["catalog_provenance"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
             self.assertFalse(qr["native_verified"])
@@ -2900,6 +2915,24 @@ puts "F12B5_AUTHORED_QUEST_CONFIRMED_WINS_KEY_SCOPE_OK"
         self.assertEqual(audit.classify(rows),([8],[5],[90,119]))
         with self.assertRaisesRegex(ValueError,"F12C_REQUIRES_140_BASELINE"):
             audit.audit({}, {}, Path("unused"))
+
+    def test_f12c2_four_layouts_gate_and_collision_guards(self):
+        import sinnoh_f12c2_eterna_preview as p
+        self.assertEqual(len(p.SYMBOLS),4)
+        for floor in range(1,5):
+            ground=p.layout(floor)
+            self.assertGreater(len(ground),150)
+            self.assertEqual(p.access.component(ground,next(iter(ground))),ground)
+        self.assertEqual(p.allocate({"old":581},{582},{583},{"Data/Map584.rxdata":b"x"})[:4],[442,443,444,445])
+        self.assertEqual(p.allocate({},set(range(442,597)),{},{}),[])
+        self.assertTrue(p.entry_allowed(True,"SINNOH",["COAL","FOREST"],True,True,True))
+        for args in [(False,"SINNOH",["FOREST"],True,True,True),(True,"KANTO",["FOREST"],True,True,True),
+                     (True,"SINNOH",["COAL"],True,True,True),(True,"SINNOH",["FOREST"],False,True,True),
+                     (True,"SINNOH",["FOREST"],True,False,True),(True,"SINNOH",["FOREST"],True,True,False)]:
+            self.assertFalse(p.entry_allowed(*args))
+        delta,report=p.preview({}, {}, {}, set(), {}, ROOT)
+        self.assertFalse(delta)
+        self.assertFalse(report["runtime_install_enabled"])
 
     def test_f11a_gym_contract_and_collision_guards(self):
         import sinnoh_f11a_gym as g
