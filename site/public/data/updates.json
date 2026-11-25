@@ -2,6 +2,30 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6df8cbe653bc8a79056d4d1ee5a3d9f5d99709d3",
+      "date": "2026-11-25T08:27:34-03:00",
+      "title": "Merge pull request #319 from GabrielChavesAlencar/sinnoh-full-expansion-f12c-eterna-source-audit",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "b1255cd377831a14600a8211bae863024f82a747",
+      "date": "2026-11-25T08:13:24-03:00",
+      "title": "F12C1: record merged Mars evidence and Eterna source audit in regional progress",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "27525f0505df62ae7c69eac78dbc2ea6db737674",
+      "date": "2026-11-25T07:34:57-03:00",
+      "title": "F12C1: synchronize post-merge portal history",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "cc7cbdd6528e97ab1146bbe2d9844b20c7ddcfe4",
+      "date": "2026-11-25T07:34:39-03:00",
+      "title": "F12C1: reconcile current main and preserve definitive Mars fixture evidence",
+      "category": "Melhorias"
+    },
+    {
       "sha": "424ebfda8d4d991cdd1e74e555212433c0a20446",
       "date": "2026-11-25T07:34:13-03:00",
       "title": "Merge pull request #317 from GabrielChavesAlencar/sinnoh-full-expansion-f12b5b-authored-galactic",
@@ -59,6 +83,12 @@
       "sha": "bf88d490d9c125d6399d4abc24f7192d51dbde2b",
       "date": "2026-11-25T06:35:54-03:00",
       "title": "Merge pull request #314 from GabrielChavesAlencar/sinnoh-full-expansion-f12b3-windworks-preflight",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "1fed6367c8e82a0eb1c1e77b44bac49be3ad2af4",
+      "date": "2026-11-25T06:30:40-03:00",
+      "title": "F12C: audit Eterna source candidates and diagnose local Windworks pickup catalogue",
       "category": "Melhorias"
     },
     {
