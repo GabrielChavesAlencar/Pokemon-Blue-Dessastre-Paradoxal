@@ -2,7 +2,7 @@
   "schema": 1,
   "region": "SINNOH",
   "reference": "Platinum",
-  "status": "F01_F02_F03_F04_F05_F06_F07_MERGED_F08C_MERGED_F09D_MERGED_F10A_MERGED_F10B_MERGED_ZERO_RECOVERED_F10B2_REAL_ONE_RECOVERED_F10B3_REAL_TWO_RECOVERED_F10B4_REAL_FIVE_RECOVERED_F10B5_PENDING_CI",
+  "status": "F01_F02_F03_F04_F05_F06_F07_MERGED_F08C_MERGED_F09D_MERGED_F10A_MERGED_F10B_MERGED_ZERO_RECOVERED_F10B2_REAL_ONE_RECOVERED_F10B3_REAL_TWO_RECOVERED_F10B4_REAL_FIVE_RECOVERED_F10B5_REAL_FIVE_PRESERVED_F10B6_PENDING_CI",
   "catalog": "data/regions/sinnoh-expansion-destinations.json",
   "prepared_pilot": {
     "maps": 131,
@@ -202,7 +202,7 @@
       "id": "F10",
       "title": "Todos os treinadores e NPCs",
       "status": "partially_merged",
-      "followup": "F10B5_PENDING_CI",
+      "followup": "F10B6_PENDING_CI",
       "maps_to_audit": 131,
       "source_event_maps_to_audit": 127,
       "new_trainers": 0,
@@ -275,7 +275,18 @@
       "f10b5_fixture_recovered": 5,
       "f10b5_new_fixture_trainers": 0,
       "f10b5_kath_access_verified": true,
-      "f10b5_main_ci_pending": true
+      "f10b5_main_ci_pending": false,
+      "f10b5_pr": 298,
+      "f10b6_candidate": "Kath",
+      "f10b6_sprite_policy": "PROJECT_AUTHORED_BIRDWATCHER_NOT_DONOR",
+      "f10b5_merge_commit": "96ee503f3fc8b7d94044ccb8afb17c431db8f879",
+      "f10b5_ci_workflows": 11,
+      "f10b5_ci_checks": 26,
+      "f10b6_real_head": "8d576f14f5dfb9670929b26a86dbdc0dfa253a49",
+      "f10b6_real_job": 138868969472,
+      "f10b6_fixture_recovered": 6,
+      "f10b6_new_fixture_trainers": 1,
+      "f10b6_main_ci_pending": true
     },
     {
       "id": "F11",
@@ -411,7 +422,7 @@
   },
   "f10": {
     "status": "partially_merged",
-    "followup": "F10B5_PENDING_CI",
+    "followup": "F10B6_PENDING_CI",
     "f10a_pr": 293,
     "f10a_merge_commit": "7302bcc3345dbb8e649b8d8a63498524f6cd9cc5",
     "maps_audited": 131,
@@ -482,6 +493,17 @@
     "f10b5_fixture_recovered": 5,
     "f10b5_new_fixture_trainers": 0,
     "f10b5_kath_access_verified": true,
-    "f10b5_main_ci_pending": true
+    "f10b5_main_ci_pending": false,
+    "f10b5_pr": 298,
+    "f10b6_candidate": "Kath",
+    "f10b6_sprite_policy": "PROJECT_AUTHORED_BIRDWATCHER_NOT_DONOR",
+    "f10b5_merge_commit": "96ee503f3fc8b7d94044ccb8afb17c431db8f879",
+    "f10b5_ci_workflows": 11,
+    "f10b5_ci_checks": 26,
+    "f10b6_real_head": "8d576f14f5dfb9670929b26a86dbdc0dfa253a49",
+    "f10b6_real_job": 138868969472,
+    "f10b6_fixture_recovered": 6,
+    "f10b6_new_fixture_trainers": 1,
+    "f10b6_main_ci_pending": true
   }
 }
