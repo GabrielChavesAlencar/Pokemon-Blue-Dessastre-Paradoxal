@@ -3499,6 +3499,31 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertFalse(i.activation_allowed(story,{"Data/Map473.rxdata":b"tampered"},b"ruby",engine,item))
         self.assertFalse(i.activation_allowed(dict(story,pre_chase_graph_checks=[]),payload,b"ruby",engine,item))
 
+    def test_private_regional_catalogue_missing_types_are_additive(self):
+        import tempfile
+        from pathlib import Path
+        import sinnoh_regional_catalogue as r
+        from pbs import catalogue
+        with tempfile.TemporaryDirectory() as d:
+            base=Path(d);pbs=base/"PBS";pbs.mkdir()
+            tt=pbs/"trainer_types.txt";it=pbs/"items.txt"
+            tt.write_text("[LEADER_Brock]\nName = Gym Leader\n","utf-8")
+            it.write_text("[BICYCLE]\nName = Bicycle\n","utf-8")
+            before=(tt.read_bytes(),it.read_bytes())
+            delta,report=r.prepare(base,{})
+            self.assertEqual(len(report["generated_trainer_types"]),10)
+            self.assertTrue(report["works_key_prepared"])
+            self.assertFalse(report["compiled_catalog_verified"])
+            self.assertEqual(report["unresolved"],[])
+            self.assertEqual((tt.read_bytes(),it.read_bytes()),before)
+            self.assertIn("BLUE_SINNOH_LEADER_ROARK",catalogue(base,"trainer_types",delta))
+            self.assertIn("WORKSKEY",catalogue(base,"items",delta))
+            self.assertNotIn("WORKSKEY",catalogue(base,"items"))
+            with self.assertRaises(ValueError):r.prepare(base,delta)
+            tt.write_text("[LEADER_ROARK]\nName = Gym Leader\n[LEADER_Roark]\nName = Gym Leader\n","utf-8")
+            _,report=r.prepare(base,{})
+            self.assertIn("Roark",report["unresolved"])
+
     def test_f12d_integrated_pinned_decades_compile_only_profile(self):
         import hashlib
         import copy

@@ -259,6 +259,8 @@ jobs:
           integrated=report["f12d_integrated"]
           print("SINNOH_F12D_ACTUAL_INSTALLER_RESULT "+json.dumps({
               "maps_prepared":report["maps_prepared"],"status":integrated["status"],
+              "regional_catalogue":report.get("private_regional_catalogue",{}),
+              "roark":report.get("f11a_gym",{}),
               "engine_profile":integrated.get("engine_profile"),"reason":integrated.get("reason"),
               "candidate_ready":integrated.get("candidate_ready"),"native_verified":False,
               "runtime_install_enabled":integrated["runtime_install_enabled"],

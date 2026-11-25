@@ -117,7 +117,7 @@ def local_preview(blobs,mapping,delta,report,base,root,return_payload=False):
                 if key in BIKES:counts[key]=counts.get(key,0)+1
         if len(counts)!=1 or next(iter(counts.values()))!=1:
             return blocked("local_bicycle_missing_or_ambiguous")
-        payload,diagnostic,plugin=build(blobs,mapping,delta,report,trainers.catalogue(base,"trainer_types"),
+        payload,diagnostic,plugin=build(blobs,mapping,delta,report,trainers.catalogue(base,"trainer_types",blobs),
             trainers.catalogue(base,"pokemon"),set(counts),existing,root)
         diagnostic["catalog_provenance"]="LOCAL_PBS_READ_ONLY"
         diagnostic["compiled_catalog_verified"]=False

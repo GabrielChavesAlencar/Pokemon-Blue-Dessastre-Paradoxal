@@ -71,7 +71,7 @@ def append(blobs,mapping,components,base,root,source):
                 v=[x.strip() for x in header.split(",")]
                 if len(v) in (2,3) and (len(v)==2 or v[2].isdigit()):
                     existing.add((v[0],v[1],int(v[2]) if len(v)==3 else 0))
-        return prepare(blobs,mapping,components,trainers.catalogue(base,"trainer_types"),
+        return prepare(blobs,mapping,components,trainers.catalogue(base,"trainer_types",blobs),
             trainers.catalogue(base,"pokemon"),existing,root,source)
     except (OSError,ValueError,TypeError,KeyError,UnicodeError) as exc:
         return blobs,{"status":"F12D_RUNTIME_BLOCKED","reason":"preflight_failed:"+type(exc).__name__,

@@ -443,7 +443,7 @@ def installer_preflight(blobs,mapping,components,cr,base,root,source,staged=None
         expanded=expanded_audit.inspect(blobs,mapping,components,cr,audited,source,root)
         original=original_audit.inspect(blobs,mapping,components,cr,expanded,source,root)
         delta,story,plugin=compile_story(blobs,mapping,components,cr,expanded,original,source,root,
-            trainers.catalogue(base,"trainer_types"),trainers.catalogue(base,"pokemon"),
+            trainers.catalogue(base,"trainer_types",blobs),trainers.catalogue(base,"pokemon"),
             {"SECRETPOTION"} if item_report["local_catalog_valid"] or item_delta else set(),existing)
         # Do not embed private map bytes or huge path reports in the manifest.
         result.update(story_status=story["status"],mission_prepared=story["mission_prepared"],

@@ -60,6 +60,7 @@ import sinnoh_f12c3_jupiter_candidate as f12c_quest
 import sinnoh_f12c4_install as f12c_install
 import sinnoh_f12d_runtime as f12d_runtime
 import sinnoh_f12d_integrated as f12d_integrated
+import sinnoh_regional_catalogue as regional_catalogue
 from audit_sinnoh_rxdata import read_marshal
 from audit_sinnoh_twinleaf_events import MAPS,HANDLERS as CH06_HANDLERS,BALLS as CH06_BALLS
 from build_sinnoh_twinleaf_events import HANDLERS as SCRIPT_HANDLERS
@@ -429,13 +430,14 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile
     if f11h:
         verify=verify.replace("        File.write(", "        BlueSinnohF11H.verify_compiled!\n        File.write(",1)
     if f12b5:
-        verify=verify.replace("        File.write(", "        BlueSinnohF12B5.verify_compiled!\n        File.write(",1)
+        hook=hook.replace("trainers.dat","trainers.dat items.dat")
+        verify=verify.replace("        File.write(", "        GameData::Item.load\n        BlueSinnohF12B5.verify_compiled!\n        File.write(",1)
     if f12c4:
         verify=verify.replace("        File.write(", "        BlueSinnohF12C3.verify_compiled!\n        File.write(",1)
     if f12d:
         verify=verify.replace("        File.write(", "        BlueSinnohF12D.verify_compiled!\n        File.write(",1)
     if f12d_integrated:
-        hook=hook.replace("trainers.dat","trainers.dat items.dat")
+        if "items.dat" not in hook:hook=hook.replace("trainers.dat","trainers.dat items.dat")
         verify=verify.replace("        File.write(", "        GameData::Item.load\n        BlueSinnohF12DIntegrated.verify_compiled!\n        File.write(",1)
     # Essentials normalizes transfer events (door SFX/fades) during PBS
     # compilation and rewrites their maps. These authored QA files are pinned
@@ -830,6 +832,7 @@ def build_files(base:Path,project:Path=ROOT):
     f12d_integrated_report={"status":"NOT_EVALUATED","runtime_install_enabled":False,"native_verified":False}
     f12d_integrated_previous_maps=None
     f12d_integrated_plugin=b""
+    regional_catalogue_report={"status":"NOT_EVALUATED"}
     f12b5_plugin=b""
     f11h_plugin=b""
     f10c_plugin=b""
@@ -892,6 +895,9 @@ def build_files(base:Path,project:Path=ROOT):
         print("SINNOH_F10C_NPC_REPORT "+json.dumps(f10c_report,sort_keys=True),flush=True)
         forest_png,forest_code,forest_report=forest_edge.build(maps,mapping,project,extra_symbols=city_expansion.CITIES|route_expansion.ROUTES|natural_expansion.OUTDOORS|f08c_expansion.EXTERIORS)
         maps[forest_edge.TEXTURE]=forest_png
+        catalogue_delta,regional_catalogue_report=regional_catalogue.prepare(base,maps)
+        maps={**maps,**catalogue_delta}
+        print("SINNOH_PRIVATE_REGIONAL_CATALOGUE_REPORT "+json.dumps(regional_catalogue_report,sort_keys=True),flush=True)
         maps,mapping,components,f11a_report,f11a_plugin=f11a_gym.append(maps,mapping,components,occupied,base,project,sources.get("overworlds"),allow_authored=True)
         print("SINNOH_F11A2_GYM_REPORT "+json.dumps(f11a_report,sort_keys=True),flush=True)
         f11a_maps=maps
@@ -1041,6 +1047,7 @@ def build_files(base:Path,project:Path=ROOT):
         "f12c4_install":f12c4_report,
         "f12d_runtime":f12d_report,
         "f12d_integrated":f12d_integrated_report,
+        "private_regional_catalogue":regional_catalogue_report,
         "qa_teleport":{"catalog_count":len(teleport_entries),"available_count":sum(row[3] is not None for row in teleport_entries),"destinations":teleport_entries,"native_verified":False},
         "encounter_coverage":encounter_coverage,"route202_trainers":route_trainers,
         "visual_native_reviewed":False,

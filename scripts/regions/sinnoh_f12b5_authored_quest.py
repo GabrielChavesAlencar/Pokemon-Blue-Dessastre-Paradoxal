@@ -141,4 +141,4 @@ def append(blobs,mapping,components,base,root=ROOT):
             if len(v) in (2,3) and (len(v)==2 or v[2].isdigit()):existing.add((v[0],v[1],int(v[2]) if len(v)==3 else 0))
     # Item PBS must be locally present; this never fabricates a database entry.
     if not (base/"PBS/items.txt").is_file():return build(blobs,mapping,components,(),(),(),existing,root)
-    return build(blobs,mapping,components,trainers.catalogue(base,"trainer_types"),trainers.catalogue(base,"pokemon"),trainers.catalogue(base,"items"),existing,root)
+    return build(blobs,mapping,components,trainers.catalogue(base,"trainer_types",blobs),trainers.catalogue(base,"pokemon"),trainers.catalogue(base,"items",blobs),existing,root)

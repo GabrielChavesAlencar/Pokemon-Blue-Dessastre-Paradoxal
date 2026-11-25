@@ -1780,7 +1780,13 @@
       "f12d_integrated_last_full_ci_f12d_markers": 18,
       "f12d_integrated_last_full_ci_f12c4_marker": true,
       "f12d_integrated_actual_private_native_compile_ci_implemented": true,
-      "f12d_integrated_actual_private_native_compile_ci_confirmed": false
+      "f12d_integrated_actual_private_native_compile_ci_confirmed": false,
+      "f12d_integrated_actual_failed_head": "afd6d443cf228c8d740d4f6c2298e0125c3aae85",
+      "f12d_integrated_actual_failed_job": 139402874004,
+      "f12d_integrated_actual_maps_prepared": 131,
+      "f12d_integrated_actual_first_blocker": "local_roark_type_species_or_pbs_collision",
+      "f12d_integrated_private_regional_catalogue_overlay_implemented": true,
+      "f12d_integrated_private_regional_catalogue_compile_confirmed": false
     },
     {
       "id": "F13",
