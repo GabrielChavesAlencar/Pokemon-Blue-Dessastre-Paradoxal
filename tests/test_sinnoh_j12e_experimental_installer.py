@@ -2963,6 +2963,16 @@ puts "F12B5_AUTHORED_QUEST_CONFIRMED_WINS_KEY_SCOPE_OK"
         self.assertEqual(report["reason"],"requires_valid_144_map_preview")
         self.assertFalse(report["runtime_install_enabled"])
 
+    def test_f12c4_install_blocked_without_baseline_and_mars(self):
+        import sinnoh_f12c4_install as install
+        self.assertEqual(len(install.ALL),144)
+        blobs={"unchanged":b"x"}
+        result,mapping,components,report,plugin=install.append(blobs,{}, {}, {}, {},Path("unused"),ROOT,{})
+        self.assertIs(result,blobs)
+        self.assertFalse(plugin)
+        self.assertFalse(report["runtime_install_enabled"])
+        self.assertEqual(report["reason"],"requires_140_baseline")
+
     def test_f11a_gym_contract_and_collision_guards(self):
         import sinnoh_f11a_gym as g
         self.assertEqual(len(g.roster(ROOT)),8)

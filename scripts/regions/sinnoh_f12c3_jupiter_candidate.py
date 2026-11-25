@@ -90,11 +90,12 @@ def build(blobs,mapping,delta,report,types,species,items,existing,root):
         "historical_jupiter_team":specs["JUPITER"][4],"catalog_provenance":"CALLER_SUPPLIED_NOT_COMPILED"},template.encode("utf-8")
 
 
-def local_preview(blobs,mapping,delta,report,base,root):
+def local_preview(blobs,mapping,delta,report,base,root,return_payload=False):
     """Read local PBS only; return diagnostic, never candidate payloads."""
     def blocked(reason):
-        return {"status":"F12C3_BLOCKED","reason":reason,"catalog_provenance":"LOCAL_PBS_READ_ONLY",
+        diagnostic={"status":"F12C3_BLOCKED","reason":reason,"catalog_provenance":"LOCAL_PBS_READ_ONLY",
                 "runtime_install_enabled":False,"native_verified":False,"items_granted":0}
+        return ({},diagnostic,b"") if return_payload else diagnostic
     if not delta:return blocked("requires_valid_144_map_preview")
     pbs=base/"PBS"
     if pbs.is_symlink() or not pbs.is_dir() or not (pbs/"items.txt").is_file():
@@ -116,10 +117,10 @@ def local_preview(blobs,mapping,delta,report,base,root):
                 if key in BIKES:counts[key]=counts.get(key,0)+1
         if len(counts)!=1 or next(iter(counts.values()))!=1:
             return blocked("local_bicycle_missing_or_ambiguous")
-        _,diagnostic,_=build(blobs,mapping,delta,report,trainers.catalogue(base,"trainer_types"),
+        payload,diagnostic,plugin=build(blobs,mapping,delta,report,trainers.catalogue(base,"trainer_types"),
             trainers.catalogue(base,"pokemon"),set(counts),existing,root)
         diagnostic["catalog_provenance"]="LOCAL_PBS_READ_ONLY"
         diagnostic["compiled_catalog_verified"]=False
-        return diagnostic
+        return (payload,diagnostic,plugin) if return_payload else diagnostic
     except (OSError,ValueError,TypeError,KeyError,UnicodeError) as exc:
         return blocked("local_catalog_audit_failed:"+type(exc).__name__)

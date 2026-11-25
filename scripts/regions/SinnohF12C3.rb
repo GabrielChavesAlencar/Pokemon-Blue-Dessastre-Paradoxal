@@ -1,4 +1,4 @@
-# Authored private QA candidate. Not loaded by the current title.
+# Authored private QA mission; compiler and regional gates required.
 module BlueSinnohF12C3
   SPECS=__F12C3_SPECS__.freeze
   ENTRY=__F12C3_ENTRY__.freeze
@@ -25,10 +25,36 @@ module BlueSinnohF12C3
     return false unless $player && $player.party.any? { |p| !p.egg? && p.hp>0 && p.respond_to?(:compatible_with_move?) && p.compatible_with_move?(:CUT) }
     BlueRegions.field_access(s,"SINNOH","CUT",true)==:allowed
   end
+  def self.mars_complete?(s)
+    s.fetch("sinnoh_f12b5_quest",[])==%w[WINDWORKS_GUARD MEADOW_GRUNT_1 MEADOW_GRUNT_2 WORKS_KEY MARS]
+  end
+  def self.hm_valid?
+    item=GameData::Item.try_get(:HM01)
+    item && item.respond_to?(:is_HM?) && item.is_HM? && item.move==:CUT
+  end
+  def self.offer_cut(s)
+    return false unless s && !s.frozen? && mars_complete?(s) && hm_valid?
+    return false unless BlueRegions.local_achievements(s,"SINNOH").include?("FOREST")
+    claims=BlueRegions.sinnoh_local_hms(s)
+    return false unless claims && !claims.include?("CUT")
+    return false unless $bag && $bag.respond_to?(:has?) && $bag.respond_to?(:add) && $bag.respond_to?(:remove)
+    return false if $bag.has?(:HM01)
+    return false unless pbConfirmMessage(_INTL("Guia de Eterna: deseja receber a HM Cut de Sinnoh?"))
+    return false unless $bag.add(:HM01) && $bag.has?(:HM01)
+    unless BlueRegions.record_sinnoh_hm(s,"CUT",:HM01,$bag,true)
+      $bag.remove(:HM01,1)
+      return false
+    end
+    pbMessage(_INTL("Voce recebeu a HM Cut regional!"))
+    true
+  end
   def self.enter
     s=state
     return false unless s && $game_map && $game_map.map_id==ENTRY[0] && $game_player
     return false unless ($game_player.x-ENTRY[1]).abs+($game_player.y-ENTRY[2]).abs==1
+    return false unless mars_complete?(s)
+    return false unless defined?(BlueKantoTitle) && BlueKantoTitle.sinnoh_experimental_barry_compiled?
+    return true if offer_cut(s)
     unless cut_allowed?(s)
       pbMessage(_INTL("Voce precisa da Insignia da Floresta, HM Cut de Sinnoh e um Pokemon compativel."))
       return false
@@ -57,6 +83,7 @@ module BlueSinnohF12C3
   end
   def self.verify_compiled!
     raise "Sinnoh F12C3: bicicleta regional invalida" unless bike_valid?
+    raise "Sinnoh F12C4: HM01 invalida" unless hm_valid?
     raise "Sinnoh F12C3: equipes divergentes" unless ORDER.first(4).all? { |key| BlueSinnohF10B.valid_team?(SPECS.fetch(key)) }
     true
   end
