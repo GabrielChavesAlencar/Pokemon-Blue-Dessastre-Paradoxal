@@ -82,7 +82,7 @@ def closure(edges,seeds):
             if node not in seen:seen.add(node);todo.append(node)
     return seen
 
-def access_graph(blobs,mapping,components,root):
+def access_graph(blobs,mapping,components,root,seed_symbols=None):
     reverse={mid:sym for sym,mid in mapping.items()}
     tiles=conn.read_marshal(blobs["Data/Tilesets.rxdata"],"F10B7_QA_TILES")
     worlds={mid:conn.read_marshal(blobs["Data/Map%03d.rxdata"%mid],"F10B7_QA") for mid in reverse}
@@ -100,7 +100,7 @@ def access_graph(blobs,mapping,components,root):
         if mid not in index or xy not in index[mid]:return None
         return mid,index[mid][xy]
     for row in teleport.build(blobs,mapping,components,root):
-        if row[3]:
+        if row[3] and (seed_symbols is None or row[0] in seed_symbols):
             mid,x,y=row[3];n=node(mid,(x,y))
             if n is not None:seeds.add(n)
     for mid,world in worlds.items():

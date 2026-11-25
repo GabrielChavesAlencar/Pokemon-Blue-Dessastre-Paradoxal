@@ -337,8 +337,47 @@ def access_witnesses(blobs,worlds,mapping,components,entries):
                     if xy in ground[dst]-occupied[dst]:anchors[dst].append(("EXISTING_CONTINUOUS_EDGE",xy))
     return ground,{mid:sorted(set(rows),key=lambda r:(r[0],r[1])) for mid,rows in anchors.items()}
 
+
+# The original north-side approach from Route 206 and west-side Eterna
+# approach are tested independently. No arbitrary teleport into the target.
+F10B8_ORIGINS={(42,32):"SINNOH_ROUTE_206",(42,33):"SINNOH_ROUTE_206",
+               (79,32):"SINNOH_ETERNA_CITY"}
+def reached_cells(index,reached):
+    return {(mid,*xy) for mid,lookup in index.items() for xy,label in lookup.items()
+            if (mid,label) in reached}
+
+def ordinary_event_shape(event):
+    """Recognize only a simple trainer interaction, never donor code execution.
+    Unknown conditions or extra scripts require explicit review.
+    """
+    if not literal_identity(event)[0]:return False
+    pages=event.attrs.get("@pages",[])
+    if len(pages)!=2:return False
+    for i,page in enumerate(pages):
+        p=page.attrs;cond=getattr(p.get("@condition"),"attrs",{})
+        for k in ("switch1_valid","switch2_valid","variable_valid"):
+            if cond.get("@"+k) is not False:return False
+        if cond.get("@self_switch_valid") is not (i==1):return False
+        if i==1 and cond.get("@self_switch_ch")!=b"A":return False
+        if p.get("@move_type")!=0 or p.get("@trigger") not in (0,2):return False
+        for command in p.get("@list",[]):
+            op=command.attrs;code=op.get("@code");args=op.get("@parameters",[])
+            if code not in (0,101,401,111,123,355,655,412):return False
+            if code==123 and args!=[0,0] and args!=[b"A",0]:return False
+            if code==111:
+                if len(args)!=2 or args[0]!=12 or not isinstance(args[1],bytes) or not CALL.match(args[1]):return False
+                # Restrict the tail to literal legacy trainer parameters. No
+                # additional calls, operators, interpolation or statements.
+                tail=args[1][CALL.match(args[1]).end():]
+                if not re.fullmatch(rb'[,\s]*(?:(?:"[^"\\\r\n]*"|_I\("[^"\\\r\n]*"\)|_INTL\("[^"\\\r\n]*"\)|true|false|nil|\d+)[,\s]*)*\)?\s*',tail):return False
+                if any(x in args[1] for x in (b";",b"#{",b"\\x00")):return False
+            if code in (355,655):
+                if len(args)!=1 or not isinstance(args[0],bytes):return False
+                if not re.fullmatch(rb"\s*(?:pbTrainerIntro(?:\(\s*PBTrainers::[A-Za-z_0-9]+\s*\))?|pbNoticePlayer(?:\(\))?|pbTrainerEnd(?:\(\))?)\s*",args[0]):return False
+    return True
+
 def build(blobs,mapping,masks,components,path,types,species,existing,base=None,root=ROOT,overworlds=None,revision=6):
-    if revision not in (2,3,4,5,6):raise ValueError("F10B_UNSUPPORTED_REVISION")
+    if revision not in (2,3,4,5,6,8):raise ValueError("F10B_UNSUPPORTED_REVISION")
     inventory=f10a.audit(blobs,mapping,masks,components,path,root)
     eligible={(q["source_id"],q["source_event_id"]):q for q in inventory["queue"]
               if q["kind"]=="trainer_candidate" and not q["geometry_blockers"]}
@@ -602,6 +641,70 @@ def build(blobs,mapping,masks,components,path,types,species,existing,base=None,r
                     "placement_policy":"ORIGINAL_POSITION_EXISTING_ACCESS_WITNESS","access_witness":witness})
                 row["accepted"]=True;row["reason"]="original_position_validated"
                 rejected[:]=[r for r in rejected if (r["source_id"],r["source_event_id"])!=(sid,eid)]
+        origin_report=[]
+        if revision==8:
+            # Lazy import prevents a circular module dependency on F10B7.
+            import sinnoh_f10b7_field_audit as gates
+            lookup={(q["source_id"],q["source_event_id"]):q for q in all_trainers}
+            for (sid,eid),origin in sorted(F10B8_ORIGINS.items()):
+                q=lookup[sid,eid];mid=q["qa_map_id"];xy=tuple(q["position"])
+                record={"source_id":sid,"source_event_id":eid,"origin":origin,"position":list(xy),"accepted":False}
+                origin_report.append(record)
+                if any(r["source_id"]==sid and r["source_event_id"]==eid for r in accepted):
+                    record.update(accepted=True,reason="prior_revision");continue
+                trial=dict(out)
+                for n in changed:trial["Data/Map%03d.rxdata"%n]=serialize(worlds[n],EVENT_CLASSES)
+                _,tiles,index,groups,reached,graph=gates.access_graph(trial,mapping,components,root,{origin})
+                record["graph"]=graph
+                label=index[mid].get(xy)
+                if label is None or (mid,label) not in reached:
+                    record["reason"]="no_ordinary_path_from_named_origin";continue
+                if xy not in conn.safe_cells(worlds[mid],tiles,q["symbol"],allowed={0}) or not non_cut(groups[mid][label],xy):
+                    record["reason"]="unsafe_original_cell";continue
+                if any(a==mid and abs(x-xy[0])+abs(y-xy[1])<=1 for a,x,y in reserved):
+                    record["reason"]="reserved_arrival";continue
+                raw=pv.member(z,pv.MAP_ROOT+"Data/Map%03d.rxdata"%sid)
+                if hashlib.sha256(raw).hexdigest()!=source[sid]["sha256"]:raise ValueError("F10B8_SOURCE_HASH")
+                donor=conn.read_marshal(raw,"F10B8_DONOR").attrs["@events"][eid]
+                spec,why=identity(donor,sid,revision)
+                if not spec:record["reason"]=why;continue
+                if not ordinary_event_shape(donor) or any(p["script_gate_tokens"] for p in gates.gate_shape(donor)):
+                    record["reason"]="source_event_requires_review";continue
+                src_kind,name,kind,team=spec
+                local=next((k for k in (src_kind,*ALIASES[kind]) if k in types),None)
+                version=1000+sid*100+eid
+                if not local or any(mon not in species for mon,lv in team):
+                    record["reason"]="local_pbs_catalogue";continue
+                if (local,name,version) in existing or (sid,name) in used:
+                    record["reason"]="local_pbs_collision";continue
+                data,provenance,labels=f10b5_art(z,ow,donor,kind,base,(sid,eid))
+                record["sprite_candidates"]=labels
+                if not data:record["reason"]="sprite_missing_or_ambiguous";continue
+                slot={(42,32):4,(42,33):5,(79,32):4}[sid,eid]
+                events=worlds[mid].attrs["@events"];event_id=original_max[mid]+slot
+                if event_id in events:record["reason"]="event_id_collision";continue
+                key="F10B_%d_%d"%(sid,eid);sn="SNQA_"+key
+                page=event_page(script='BlueSinnohF10B.battle("%s")'%key,sprite=sn)
+                events[event_id]=ruby("RPG::Event",id=event_id,name=("SN_"+key).encode("ascii"),x=xy[0],y=xy[1],pages=[page])
+                trial["Data/Map%03d.rxdata"%mid]=serialize(worlds[mid],EVENT_CLASSES)
+                try:
+                    _,_,post_index,_,post_reached,_=gates.access_graph(trial,mapping,components,root,{origin})
+                    before=reached_cells(index,reached)-{(mid,*xy)}
+                    after=reached_cells(post_index,post_reached)
+                    safe=before<=after and teleport.build(trial,mapping,components,root)==entries
+                except ValueError:safe=False
+                if not safe:
+                    del events[event_id];record["reason"]="existing_access_or_spawn_changed";continue
+                out["Graphics/Characters/"+sn+".png"]=data
+                changed.add(mid);used.add((sid,name))
+                rows.append([key,[local,name,version,mid,team]])
+                witness={"kind":"NAMED_ORIGIN_ORDINARY_QA_PATH","origin":origin,"reachable_cells":len(before)}
+                accepted.append({"key":key,"source_id":sid,"source_event_id":eid,"map_id":mid,"event_id":event_id,
+                    "position":list(xy),"type":local,"name":name,"version":version,"team":team,
+                    "sprite_sha256":hashlib.sha256(data).hexdigest(),"sprite_provenance":provenance,
+                    "team_source":"PLATINUM_HISTORICAL_REFERENCE","historical_reference_name":name,
+                    "placement_policy":"ORIGINAL_POSITION_NAMED_ORIGIN","access_witness":witness})
+                record.update(accepted=True,reason="original_cell_and_named_origin_verified")
     for mid in changed:
         out["Data/Map%03d.rxdata"%mid]=serialize(worlds[mid],EVENT_CLASSES)
     if teleport.build(out,mapping,components,root)!=entries:raise ValueError("F10B_QA_SPAWN_CHANGED")
@@ -622,7 +725,9 @@ def build(blobs,mapping,masks,components,path,types,species,existing,base=None,r
             "all_source_trainer_candidates":len(expanded),"overworld_archive_checked":overworlds is not None,
             "revision":revision,"f10b4_groups":extra_report if revision>=4 else [],
             "f10b5_access_report":access_report if revision>=5 else [],
-            "f10b6_authored_sprites":sum(r["sprite_provenance"]=="PROJECT_AUTHORED_BIRDWATCHER_NOT_DONOR" for r in accepted) if revision>=6 else 0}
+            "f10b6_authored_sprites":sum(r["sprite_provenance"]=="PROJECT_AUTHORED_BIRDWATCHER_NOT_DONOR" for r in accepted) if revision>=6 else 0,
+            "f10b8_origin_report":origin_report if revision==8 else [],
+            "f10b8_field_gates_enabled":False}
     return out,report,plugin
 
 def append(blobs,mapping,masks,components,path,base,root=ROOT,overworlds=None,revision=6):
@@ -634,5 +739,5 @@ def append(blobs,mapping,masks,components,path,base,root=ROOT,overworlds=None,re
             if len(fields) in (2,3) and (len(fields)==2 or fields[2].isdigit()):
                 existing.add((fields[0],fields[1],int(fields[2]) if len(fields)==3 else 0))
     out,report,plugin=build(blobs,mapping,masks,components,path,catalogue(base,"trainer_types"),catalogue(base,"pokemon"),existing,base,root,overworlds,revision)
-    print(("SINNOH_F10B6_TRAINER_REPORT " if revision>=6 else "SINNOH_F10B5_TRAINER_REPORT " if revision==5 else "SINNOH_F10B4_TRAINER_REPORT " if revision==4 else "SINNOH_F10B3_TRAINER_REPORT " if revision==3 else "SINNOH_F10B2_ASSET_REPORT ")+json.dumps(report,sort_keys=True),flush=True)
+    print(("SINNOH_F10B8_TRAINER_REPORT " if revision==8 else "SINNOH_F10B6_TRAINER_REPORT " if revision>=6 else "SINNOH_F10B5_TRAINER_REPORT " if revision==5 else "SINNOH_F10B4_TRAINER_REPORT " if revision==4 else "SINNOH_F10B3_TRAINER_REPORT " if revision==3 else "SINNOH_F10B2_ASSET_REPORT ")+json.dumps(report,sort_keys=True),flush=True)
     return out,report,plugin

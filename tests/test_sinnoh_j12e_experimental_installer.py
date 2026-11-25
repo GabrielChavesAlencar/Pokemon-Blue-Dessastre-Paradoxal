@@ -1070,6 +1070,31 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
             self.assertEqual(exp.qa_teleport.build(final6,f08c_ids,f08c_components),entries)
             print("SINNOH_F10B7_FIELD_GATE_REPORT "+json.dumps(gate,sort_keys=True),flush=True)
             print("SINNOH_REAL_F10B7_131_MAPS_6_PENDING_FIELD_GATES_INERT_AUDITED_OK",flush=True)
+            final8,report8,plugin8=f10b.build(baseline,f08c_ids,masks,f08c_components,source,types|pair_types|{"CRUSHGIRL"},species|pair_species,set(),overworlds=Path(ow),revision=8)
+            by_key8={row["key"]:row for row in report8["accepted"]}
+            self.assertTrue(set(by_key6)<=set(by_key8))
+            self.assertTrue((set(by_key8)-set(by_key6))<={"F10B_42_32","F10B_42_33","F10B_79_32"})
+            self.assertEqual(len(report8["f10b8_origin_report"]),3)
+            self.assertFalse(report8["f10b8_field_gates_enabled"])
+            for key,row in by_key6.items():
+                for field in ("event_id","map_id","position","type","name","version","team","sprite_sha256"):
+                    self.assertEqual(row[field],by_key8[key][field])
+            for path,raw in final6.items():
+                if path=="PBS/trainers_sinnoh_f10b.txt":continue
+                if path.startswith("Data/Map") and path.endswith(".rxdata") and path!="Data/MapInfos.rxdata":
+                    old=read_marshal(raw,"F10B6_OLD");new=read_marshal(final8[path],"F10B8_NEW")
+                    before=old.attrs.pop("@events");after=new.attrs.pop("@events")
+                    self.assertEqual(serialize(old,connection.EVENT_CLASSES),serialize(new,connection.EVENT_CLASSES))
+                    for eid,event in before.items():
+                        self.assertEqual(serialize(event,connection.EVENT_CLASSES),serialize(after[eid],connection.EVENT_CLASSES))
+                else:self.assertEqual(final8[path],raw)
+            self.assertEqual(exp.qa_teleport.build(final8,f08c_ids,f08c_components),entries)
+            self.assertFalse(report8["native_verified"])
+            self.assertFalse(report8["water_enabled"])
+            report8["species_and_types_validation"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
+            print("SINNOH_F10B8_TRAINER_REPORT "+json.dumps(report8,sort_keys=True),flush=True)
+            print("SINNOH_REAL_F10B8_131_MAPS_NAMED_ORIGIN_ACCESS_BASELINE_PRESERVED_OK",flush=True)
+
 
 
 
@@ -1768,6 +1793,18 @@ puts "F10B4_DOUBLE_ATOMIC_VICTORY_OK"
             result=subprocess.run(["ruby","-e",fixture,str(path)],capture_output=True,text=True,encoding="utf-8")
             self.assertEqual(result.returncode,0,result.stdout+result.stderr)
             self.assertIn("F10B4_DOUBLE_ATOMIC_VICTORY_OK",result.stdout)
+
+    def test_f10b8_reachable_cells_and_unknown_event_rejection(self):
+        import sinnoh_f10b_trainers as f
+        from build_johto_events import ruby
+        index={10:{(0,0):0,(1,0):0,(4,4):1},11:{(2,2):0}}
+        self.assertEqual(f.reached_cells(index,{(10,0)}),{(10,0,0),(10,1,0)})
+        self.assertEqual(f.reached_cells(index,{(11,0)}),{(11,2,2)})
+        event=ruby("RPG::Event",pages=[])
+        self.assertFalse(f.ordinary_event_shape(event))
+        self.assertEqual(set(f.F10B8_ORIGINS.values()),{"SINNOH_ROUTE_206","SINNOH_ETERNA_CITY"})
+        self.assertNotIn((79,33),f.F10B8_ORIGINS)
+        self.assertNotIn((80,1),f.F10B8_ORIGINS)
 
     def test_f10b7_component_closure_and_inert_gate_shapes(self):
         import sinnoh_f10b7_field_audit as g
