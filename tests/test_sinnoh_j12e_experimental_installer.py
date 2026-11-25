@@ -3472,6 +3472,21 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertEqual(n.SYMBOLS[123],"SINNOH_HEARTHOME_CITY")
         self.assertNotIn(22,n.SYMBOLS)
 
+    def test_f12d_integrated_noncollinear_four_vertex_cut(self):
+        import sinnoh_f12d3_celestic_cut as c
+        # Four disjoint lanes with staggered eligible positions; no straight
+        # four-cell barrier can satisfy this synthetic geometry.
+        cells={(x,y) for x in range(7) for y in (1,3,5,7)}
+        ingress={(0,y) for y in (1,3,5,7)}
+        exits={(6,y) for y in (1,3,5,7)}
+        eligible={(2,1),(3,3),(4,5),(2,7)}
+        self.assertEqual(c.cuts(cells,ingress,exits,eligible),[])
+        self.assertEqual(c.minimum_vertex_cut(cells,ingress,exits,eligible),eligible)
+        self.assertEqual(c.integrated_cuts(cells,ingress,exits,eligible)[0][1],tuple(sorted(eligible)))
+        self.assertIsNone(c.minimum_vertex_cut(cells,ingress,exits,eligible-{(2,1)}))
+        cells|={(x,9) for x in range(7)}
+        self.assertIsNone(c.minimum_vertex_cut(cells,ingress|{(0,9)},exits|{(6,9)},eligible|{(3,9)}))
+
     def test_f12d_integrated_assets_engine_and_transient_retry(self):
         import io
         import struct

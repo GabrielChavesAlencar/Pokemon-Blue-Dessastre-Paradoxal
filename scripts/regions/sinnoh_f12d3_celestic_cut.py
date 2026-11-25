@@ -2,6 +2,7 @@
 Requires an independently verified source seam to Celestic Town.
 Direct conflicting alignment is diagnostic only, never activation evidence.
 """
+from collections import deque
 import sinnoh_f12d_pastoria_preview as chase
 import sinnoh_f12d_seams as seams
 import sinnoh_f10b7_field_audit as gates
@@ -39,6 +40,62 @@ def cuts(cells,ingress,exit_cells,eligible):
             if not stands:continue
             result.append((len(cells-reached-line),tuple(sorted(line))))
     return sorted(result,key=lambda p:(p[0],p[1]))
+
+def minimum_vertex_cut(cells,ingress,exit_cells,eligible):
+    """Exact vertex-capacity cut up to four removable dry event positions.
+    A fifth augmenting path proves that four blocking events are insufficient.
+    No terrain or existing events are changed by this search."""
+    source=("source",);sink=("sink",);cap={};adj={}
+    def edge(a,b,n):
+        cap[a,b]=cap.get((a,b),0)+n;cap.setdefault((b,a),0)
+        adj.setdefault(a,set()).add(b);adj.setdefault(b,set()).add(a)
+    eligible=set(eligible)-set(ingress)-set(exit_cells)
+    for x,y in sorted(cells):
+        p=(x,y);a=(0,x,y);b=(1,x,y)
+        edge(a,b,1 if p in eligible else 5)
+        if p in ingress:edge(source,a,5)
+        if p in exit_cells:edge(b,sink,5)
+        for u,v in tp.neighbours(x,y):
+            if (u,v) in cells:edge(b,(0,u,v),5)
+    flow=0
+    while flow<5:
+        parent={source:None};queue=deque([source])
+        while queue and sink not in parent:
+            a=queue.popleft()
+            for b in sorted(adj.get(a,()),key=str):
+                if b not in parent and cap[a,b]>0:parent[b]=a;queue.append(b)
+        if sink not in parent:
+            cut={p for p in eligible if (0,*p) in parent and (1,*p) not in parent}
+            if len(cut)!=flow or not cut or local_reach(cells-cut,ingress)&exit_cells:return None
+            return cut
+        p=sink;n=5-flow
+        while parent[p] is not None:
+            a=parent[p];n=min(n,cap[a,p]);p=a
+        p=sink
+        while parent[p] is not None:
+            a=parent[p];cap[a,p]-=n;cap[p,a]+=n;p=a
+        flow+=n
+    return None
+
+def integrated_cuts(cells,ingress,exit_cells,eligible):
+    """Include non-collinear cuts; add nearby eligible companions if needed.
+    Every candidate still has to pass the full serialized global graph proof."""
+    found={line:score for score,line in cuts(cells,ingress,exit_cells,eligible)}
+    cut=minimum_vertex_cut(cells,ingress,exit_cells,eligible)
+    if cut:
+        for excluded in [set()]+[{p} for p in sorted(cut)]:
+            line=minimum_vertex_cut(cells,ingress,exit_cells,set(eligible)-excluded)
+            if not line:continue
+            line=set(line)
+            while len(line)<4:
+                nearby={q for p in line for q in tp.neighbours(*p) if q in eligible and q not in line}
+                if not nearby:break
+                line.add(min(nearby))
+            if len(line)!=4:continue
+            reached=local_reach(cells-line,ingress)
+            if reached&exit_cells or not any(q in reached for p in line for q in tp.neighbours(*p)):continue
+            found[tuple(sorted(line))]=len(cells-reached-line)
+    return sorted((score,line) for line,score in found.items())
 
 def inspect(baseline,direct,mapping,components,chase_report,expanded,alternative,root,recovered_alternative=None,source_protected=(),rock_cells=(),prepared=None):
     chase.validate(baseline,mapping);before=chase.digest(baseline)
@@ -122,7 +179,7 @@ def inspect(baseline,direct,mapping,components,chase_report,expanded,alternative
         eligible={xy for xy in cells if 0<xy[0]<w-1 and 0<xy[1]<h-1 and
                   (mid,*xy) not in protected|prior and xy not in ingress|exit_xy and
                   gates.cell_shape(world,tiles,xy)["ordinary_walkable"]}
-        ranked=cuts(cells,ingress,exit_xy,eligible)
+        ranked=integrated_cuts(cells,ingress,exit_xy,eligible) if prepared is not None else cuts(cells,ingress,exit_xy,eligible)
         case["local_candidate_count"]=len(ranked);case["ingress_cells"]=[list(x) for x in sorted(ingress)]
         rel="Data/Map%03d.rxdata"%mid
         for _,line in (ranked if prepared is not None else ranked[:LIMIT]):
