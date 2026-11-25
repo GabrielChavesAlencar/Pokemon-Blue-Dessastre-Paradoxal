@@ -1421,6 +1421,25 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                     self.assertEqual(pr["maps_after"],140)
                     print("SINNOH_REAL_F12C2_PREVIEW_BLOCKED_140_BASELINE_PRESERVED_OK",flush=True)
                 print("SINNOH_F12C2_ETERNA_PREVIEW_REPORT "+json.dumps(pr,sort_keys=True),flush=True)
+                import sinnoh_f12c3_jupiter_candidate as jupiter
+                anchor=jupiter.entrance_source(Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]))
+                self.assertEqual(anchor["source_position"],[14,15])
+                self.assertFalse(anchor["binding_approved"])
+                print("SINNOH_F12C3_ENTRY_SOURCE_REPORT "+json.dumps(anchor,sort_keys=True),flush=True)
+                qdelta,jr,jplugin=jupiter.build(wo,wi,delta,pr,{"GALACTIC_GRUNT","GALACTIC_ADMIN"},
+                    {"ZUBAT","STUNKY","GLAMEOW","SKUNTANK"},{"BICYCLE"},set(),ROOT)
+                self.assertFalse(jr["runtime_install_enabled"])
+                self.assertEqual(jr["items_granted"],0)
+                if delta:
+                    self.assertEqual(jr["status"],"AUTHORED_QUEST_CANDIDATE")
+                    self.assertEqual(jr["battle_candidates"],4)
+                    self.assertEqual(jr["new_events"],6)
+                    self.assertIn(b"BlueRegions.field_access",jplugin)
+                    self.assertIn(b"TrainerBattle.start_core",jplugin)
+                    self.assertIn(b"BlueSinnohF12C3",jplugin)
+                    print("SINNOH_REAL_F12C3_AUTHORED_QUEST_FIXTURE_CANDIDATE_OK",flush=True)
+                jr["catalog_provenance"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
+                print("SINNOH_F12C3_QUEST_CANDIDATE_REPORT "+json.dumps(jr,sort_keys=True),flush=True)
             qo,qr,qp=quest.build(wo,wi,wc,{"GALACTIC_GRUNT","GALACTIC_ADMIN"},{"GLAMEOW","STUNKY","ZUBAT","PURUGLY"},{"WORKSKEY"},set(),ROOT)
             qr["catalog_provenance"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
             self.assertFalse(qr["native_verified"])
@@ -2932,6 +2951,19 @@ puts "F12B5_AUTHORED_QUEST_CONFIRMED_WINS_KEY_SCOPE_OK"
             self.assertFalse(p.entry_allowed(*args))
         delta,report=p.preview({}, {}, {}, set(), {}, ROOT)
         self.assertFalse(delta)
+        self.assertFalse(report["runtime_install_enabled"])
+
+    def test_f12c3_requires_geometry_and_preserves_candidate_scope(self):
+        import sinnoh_f12c3_jupiter_candidate as j
+        self.assertEqual([r[0] for r in j.ROWS],["GRUNT_1","GRUNT_2","GRUNT_3","JUPITER","RESCUE","BICYCLE"])
+        self.assertEqual(j.ROWS[3][3],[["ZUBAT",21],["SKUNTANK",23]])
+        for role in ("galactic_jupiter","galactic_rescue","galactic_grunt"):
+            self.assertEqual(j.pv.dims(j.npc.authored_sheet(role)),(128,128))
+        self.assertNotEqual(j.npc.authored_sheet("galactic_jupiter"),j.npc.authored_sheet("galactic_rescue"))
+        delta,report,plugin=j.build({}, {}, {}, {}, set(),set(),set(),set(),ROOT)
+        self.assertFalse(delta)
+        self.assertFalse(plugin)
+        self.assertEqual(report["reason"],"requires_valid_144_map_preview")
         self.assertFalse(report["runtime_install_enabled"])
 
     def test_f11a_gym_contract_and_collision_guards(self):
