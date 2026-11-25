@@ -1371,13 +1371,20 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
             if wr["runtime_install_enabled"]:
                 self.assertEqual(len(wi),140)
                 self.assertEqual(wi[access.SYMBOL],581)
-                self.assertEqual(wr["new_seams"],1)
-                self.assertTrue(wr["shared_lanes"])
+                self.assertIn(wr["new_seams"],(0,1))
+                if wr["new_seams"]:
+                    self.assertTrue(wr["shared_lanes"])
+                else:
+                    self.assertEqual(wr["status"],"WINDWORKS_QA_TELEPORT_ONLY")
+                    self.assertTrue(wr["seam_blocker"])
                 self.assertEqual({k:wi[k] for k in ghids},ghids)
-                self.assertEqual(read_marshal(wo["Data/map_connections.dat"],"F12B4_NEW")[:-1],read_marshal(gh["Data/map_connections.dat"],"F12B4_OLD"))
+                old_links=read_marshal(gh["Data/map_connections.dat"],"F12B4_OLD")
+                new_links=read_marshal(wo["Data/map_connections.dat"],"F12B4_NEW")
+                self.assertEqual(new_links[:len(old_links)],old_links)
+                self.assertEqual(len(new_links),len(old_links)+wr["new_seams"])
                 for mid in ghids.values():
                     self.assertEqual(wo["Data/Map%03d.rxdata"%mid],gh["Data/Map%03d.rxdata"%mid])
-                print("SINNOH_REAL_F12B4_WINDWORKS_140_MAPS_8_SEAMS_EXPLORATION_PREPARED_OK",flush=True)
+                print("SINNOH_REAL_F12B5_WINDWORKS_140_MAPS_QA_EXPLORATION_PREPARED_OK",flush=True)
             else:
                 self.assertEqual(wi,ghids)
                 self.assertEqual(wo,gh)

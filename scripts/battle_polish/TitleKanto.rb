@@ -334,10 +334,12 @@ module BlueKantoTitle
       interior_keys = [32,43,48,81,86,87,88,97,107,115,120,124,125,129,130,131,132,133,134,135,136,137,138,143,148,149,158,167,168,169,170,171,172,187,188,220].map { |id| sprintf("SINNOH_F07_INTERIOR_%03d",id) }
       extra_report = data["f08c_expansion"]
       extra_keys = %w[SINNOH_RESORT_AREA SINNOH_CYCLING_ROAD SINNOH_SURVIVAL_AREA SINNOH_FIGHT_AREA]
+      gym_keys = %w[SINNOH_OREBURGH_GYM SINNOH_ETERNA_GYM SINNOH_HEARTHOME_GYM SINNOH_VEILSTONE_GYM SINNOH_PASTORIA_GYM SINNOH_CANALAVE_GYM SINNOH_SNOWPOINT_GYM SINNOH_SUNYSHORE_GYM]
+      windworks_key = "SINNOH_VALLEY_WINDWORKS"
       natural_report = data["natural_expansion"]
       if natural_report.is_a?(Hash) && !natural_report.empty?
         natural_keys = %w[SINNOH_OREBURGH_MINE SINNOH_OREBURGH_GATE SINNOH_MT_CORONET_WEST_APPROACH SINNOH_SOLACEON_RUINS SINNOH_ETERNA_FOREST SINNOH_ETERNA_FOREST_SOURCE_093 SINNOH_FLOAROMA_MEADOW SINNOH_MT_CORONET_SOURCE_117 SINNOH_MT_CORONET_INTERIOR_ROUTES SINNOH_RAVAGED_PATH SINNOH_STARK_MOUNTAIN SINNOH_STARK_MOUNTAIN_SOURCE_153 SINNOH_ACUITY_LAKEFRONT SINNOH_LAKE_ACUITY SINNOH_ACUITY_CAVERN SINNOH_SNOWPOINT_TEMPLE SINNOH_MT_CORONET_SOURCE_174 SINNOH_MT_CORONET_SOURCE_182 SINNOH_MT_CORONET_SOURCE_183 SINNOH_MT_CORONET_SOURCE_184 SINNOH_WAYWARD_CAVE SINNOH_WAYWARD_CAVE_SOURCE_190 SINNOH_VERITY_CAVERN SINNOH_MANIAC_TUNNEL SINNOH_SPRING_PATH SINNOH_SENDOFF_SPRING SINNOH_TURNBACK_CAVE SINNOH_TURNBACK_CAVE_SOURCE_211 SINNOH_TURNBACK_CAVE_SOURCE_212 SINNOH_TURNBACK_CAVE_SOURCE_213 SINNOH_VALOR_LAKEFRONT SINNOH_LAKE_VALOR SINNOH_LAKE_VALOR_SOURCE_216 SINNOH_VALOR_CAVERN SINNOH_GREAT_MARSH]
-        return sinnoh_qa_block("Manifesto F06 invalido.") unless expected_count == 56 && ids.is_a?(Hash) && natural_report.keys.sort == natural_keys.sort && natural_keys.all? { |k| ids.key?(k) && natural_report[k].is_a?(Hash) && natural_report[k]["target_id"] == ids[k] } && ids.all? { |k,n| natural_keys.include?(k) || (interior_report.is_a?(Hash) && !interior_report.empty? && interior_keys.include?(k)) || (extra_report.is_a?(Hash) && !extra_report.empty? && extra_keys.include?(k)) || (n.is_a?(Integer) && n.between?(442,517)) }
+        return sinnoh_qa_block("Manifesto F06 invalido.") unless expected_count == 56 && ids.is_a?(Hash) && natural_report.keys.sort == natural_keys.sort && natural_keys.all? { |k| ids.key?(k) && natural_report[k].is_a?(Hash) && natural_report[k]["target_id"] == ids[k] } && ids.all? { |k,n| natural_keys.include?(k) || (interior_report.is_a?(Hash) && !interior_report.empty? && interior_keys.include?(k)) || (extra_report.is_a?(Hash) && !extra_report.empty? && extra_keys.include?(k)) || gym_keys.include?(k) || k==windworks_key || (n.is_a?(Integer) && n.between?(442,517)) }
         expected_count = 91
       end
       if interior_report.is_a?(Hash) && !interior_report.empty?
@@ -347,6 +349,27 @@ module BlueKantoTitle
       if extra_report.is_a?(Hash) && !extra_report.empty?
         return sinnoh_qa_block("Manifesto F08C invalido.") unless expected_count == 127 && ids.is_a?(Hash) && extra_report.keys.sort == extra_keys.sort && extra_keys.all? { |k| ids.key?(k) && extra_report[k].is_a?(Hash) && extra_report[k]["target_id"] == ids[k] && extra_report[k]["source_tileset_id"] == 24 && extra_report[k]["outdoor"] == true }
         expected_count = 131
+      end
+      gym_art = []
+      %w[a b c d e f g h].each_with_index do |letter,i|
+        report = data["f11#{letter}_gym"]
+        next unless report.is_a?(Hash) && report["gym_rooms_added"] == 1
+        key = gym_keys[i]
+        return sinnoh_qa_block("Manifesto F11 invalido.") unless expected_count == 131+i &&
+          ids.is_a?(Hash) && ids.key?(key) && report["maps_after"] == expected_count+1 &&
+          report["gyms"].is_a?(Array) && report["gyms"][i].is_a?(Hash) &&
+          report["gyms"][i]["map_id"] == ids[key] && report["gyms"][i]["installed"] == true
+        expected_count += 1
+        gym_art << ["ROCK","GRASS","GHOST","FIGHTING","WATER","STEEL","ICE","ELECTRIC"][i].then { |s| "Graphics/Tilesets/SNQA_F11#{letter.upcase}_#{s}_GYM.png" }
+      end
+      windworks = data["f12b4_windworks_access"]
+      if windworks.is_a?(Hash) && windworks["runtime_install_enabled"] == true
+        return sinnoh_qa_block("Manifesto Windworks invalido.") unless expected_count==139 &&
+          ids.is_a?(Hash) && ids.key?(windworks_key) && windworks["preview_map_id"]==ids[windworks_key] &&
+          windworks["new_maps"]==1 && [0,1].include?(windworks["new_seams"]) &&
+          windworks["baseline_preserved"]==true
+        expected_count+=1
+        gym_art << "Graphics/Tilesets/SNQA_F12B_111.png"
       end
       return sinnoh_qa_block("MapIDs QA invalidos ou colisao entre mapas.") unless
         ids.is_a?(Hash) && ids.length == expected_count &&
@@ -381,11 +404,12 @@ module BlueKantoTitle
         return sinnoh_qa_block("Fontes F07 invalidas.") unless source_ids.all? { |id| id.is_a?(Integer) } && source_ids.sort == [32,43,48,81,86,87,88,97,107,115,120,124,125,129,130,131,132,133,134,135,136,137,138,143,148,149,158,167,168,169,170,171,172,187,188,220]
         required += source_ids.map { |id| sprintf("Graphics/Tilesets/SNQA_F07_%03d.png",id) }
       end
-      if expected_count == 131
+      if expected_count >= 131
         source_ids = extra_report.values.map { |r| r["source_id"] }
         return sinnoh_qa_block("Fontes F08C invalidas.") unless source_ids.all? { |id| id.is_a?(Integer) } && source_ids.sort == [139,147,163,166]
         required += source_ids.map { |id| sprintf("Graphics/Tilesets/SNQA_F08C_%03d.png",id) }
       end
+      required += gym_art
       required.each do |file|
         hash = files[file]
         return sinnoh_qa_block("Manifesto SHA-256 incompleto: " + file) unless

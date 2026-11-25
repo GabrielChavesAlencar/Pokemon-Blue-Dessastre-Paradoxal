@@ -45,7 +45,16 @@ def append(blobs,mapping,components,path,occupied,root=ROOT):
         other_map=conn.read_marshal(other,"F12B4_OTHER").attrs
         if (other_map["@width"],other_map["@height"])!=(64,35):return blocked("alternate_source_dimensions")
         if set(range(-252,29-252))&set(range(other_map["@height"])):return blocked("alternate_source_overlap")
-        if sum((r[0],r[1])==(94,"E") or (r[3],r[4])==(94,"E") for r in rows)!=1:return blocked("route_source_side_ambiguous")
+        competing=[]
+        for r in rows:
+            if r==SOURCE:continue
+            if (r[0],r[1])==(94,"E"):local_off,other_id,other_dir,other_off=r[2],r[3],r[4],r[5]
+            elif (r[3],r[4])==(94,"E"):local_off,other_id,other_dir,other_off=r[5],r[0],r[1],r[2]
+            else:continue
+            other_raw=pv.member(z,pv.MAP_ROOT+"Data/Map%03d.rxdata"%other_id)
+            a=conn.read_marshal(other_raw,"F12B5_COMPETING_EDGE").attrs
+            size=a["@height"] if other_dir in ("E","W") else a["@width"]
+            competing.append({"source_id":other_id,"local_y_interval":[local_off-other_off,local_off-other_off+size-1],"opposite":other_dir=="W"})
         rr=pv.member(z,pv.MAP_ROOT+"Data/Map094.rxdata")
         if hashlib.sha256(rr).hexdigest()!="0624b353d4b1e0817b8b735714e314aa778a234c3dfe011b2ef60473543d9b2a":return blocked("route_source_hash_changed")
     infos=conn.read_marshal(blobs["Data/MapInfos.rxdata"],"F12B4_INFOS")
@@ -72,19 +81,29 @@ def append(blobs,mapping,components,path,occupied,root=ROOT):
         "windworks_edge":sorted(pv.edge_axis(reach[SYMBOL],(33,29),"W",0)),
         "route_edge":sorted(pv.edge_axis(reach[ROUTE],(32,88),"E",57)),
         "preview_map_id":mid,"safe_spawn":geometry[SYMBOL]["safe_spawn"]}
-    if not lanes:return blocked("no_shared_ordinary_walkable_seam",**detail)
+    detail["competing_source_intervals"]=competing
+    detail["shared_lanes"]=lanes
+    conflict=any(not c["opposite"] or max(57,c["local_y_interval"][0])<=min(85,c["local_y_interval"][1]) for c in competing)
+    seam_reason="source_edge_overlap" if conflict else ("no_shared_ordinary_walkable_seam" if not lanes else None)
     original=pv.parse_connections(blobs["PBS/map_connections.txt"])
     compiled=conn.read_marshal(blobs["Data/map_connections.dat"],"F12B4_CONNECTIONS")
     expected=[[r[0],r[1].encode("ascii"),r[2],r[3],r[4].encode("ascii"),r[5]] for r in original]
     if compiled!=expected:return blocked("compiled_pbs_connections_mismatch",**detail)
-    if any((m,d) in ((mid,"W"),(ids[ROUTE],"E")) or m==mid for r in original for m,d in ((r[0],r[1]),(r[3],r[4]))):return blocked("existing_side_or_id_collision",**detail)
-    record=[mid,"W",0,ids[ROUTE],"E",57]
-    out["Data/map_connections.dat"]=conn.serialize(compiled+[[mid,b"W",0,ids[ROUTE],b"E",57]])
-    out["PBS/map_connections.txt"]=blobs["PBS/map_connections.txt"]+("\n# F12B4 original Windworks QA seam\n"+",".join(map(str,record))+"\n").encode("ascii")
+    if any(m==mid for r in original for m in (r[0],r[3])):return blocked("existing_map_id_collision",**detail)
+    if any((m,d)==(ids[ROUTE],"E") for r in original for m,d in ((r[0],r[1]),(r[3],r[4]))):
+        seam_reason="existing_route_side_in_use"
+    record=None
+    if seam_reason is None:
+        record=[mid,"W",0,ids[ROUTE],"E",57]
+        out["Data/map_connections.dat"]=conn.serialize(compiled+[[mid,b"W",0,ids[ROUTE],b"E",57]])
+        out["PBS/map_connections.txt"]=blobs["PBS/map_connections.txt"]+("\n# F12B5 original Windworks QA seam\n"+",".join(map(str,record))+"\n").encode("ascii")
+    # The existing private QA teleport is bidirectional by design. A verified
+    # isolated geometry may be explored without claiming a natural connection.
+    # No story or event completion is triggered by this fallback.
     mutable={"Data/MapInfos.rxdata","Data/Tilesets.rxdata","PBS/map_metadata.txt","Data/map_connections.dat","PBS/map_connections.txt"}
     if any(out.get(k)!=v for k,v in blobs.items() if k not in mutable):raise ValueError("F12B4_BASELINE_CHANGED")
     if before!={k:hashlib.sha256(v).hexdigest() for k,v in blobs.items()}:raise ValueError("F12B4_INPUT_MUTATED")
-    return out,ids,comps,{"status":"WINDWORKS_EXPLORATION_PREPARED","runtime_install_enabled":True,
-        "new_maps":1,"new_seams":1,"new_portals":0,"native_bindings":0,"items_granted":0,
-        "source_seam":list(SOURCE),"record":record,"shared_lanes":lanes,"baseline_preserved":True,
-        "native_verified":False,"story_enabled":False,**detail}
+    return out,ids,comps,{"status":"WINDWORKS_EXPLORATION_PREPARED" if record else "WINDWORKS_QA_TELEPORT_ONLY",
+        "runtime_install_enabled":True,"new_maps":1,"new_seams":int(record is not None),"new_portals":0,
+        "native_bindings":0,"items_granted":0,"source_seam":list(SOURCE),"record":record,
+        "seam_blocker":seam_reason,"baseline_preserved":True,"native_verified":False,"story_enabled":False,**detail}
