@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b9e23dc336577d92b9feb7895dbc87033f294ff9",
+      "date": "2026-11-25T09:29:36-03:00",
+      "title": "Merge pull request #323 from GabrielChavesAlencar/sinnoh-full-expansion-f12d1-d2-pastoria-pursuit",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "bb05136cb86d8dc1921e7f9b8e321d9d65332aba",
+      "date": "2026-11-25T09:22:51-03:00",
+      "title": "F12D1/D2: audit Pastoria sources and prepare isolated chase preview; record F12C4 merge evidence",
+      "category": "Melhorias"
+    },
+    {
       "sha": "7842dfbc352f1423a2cf35b97b8d33eb50a4be6c",
       "date": "2026-11-25T09:20:55-03:00",
       "title": "Merge pull request #322 from GabrielChavesAlencar/sinnoh-full-expansion-f12c4-144-map-installer",
