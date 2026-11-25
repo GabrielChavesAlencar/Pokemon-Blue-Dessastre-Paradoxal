@@ -52,7 +52,12 @@ CANDICE_CITY="SINNOH_SNOWPOINT_CITY"
 CANDICE_TEAM=[["SNEASEL",40],["PILOSWINE",40],["ABOMASNOW",42],["FROSLASS",44]]
 CANDICE_TYPES=("LEADER_CANDICE","LEADER_Candice","LEADERCANDICE","BLUE_SINNOH_LEADER_CANDICE")
 CANDICE_VERSION=11007
-GYM_SETS=(f08c.ALL|{SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL,FANTINA_SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL,FANTINA_SYMBOL,MAYLENE_SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL,FANTINA_SYMBOL,MAYLENE_SYMBOL,WAKE_SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL,FANTINA_SYMBOL,MAYLENE_SYMBOL,WAKE_SYMBOL,BYRON_SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL,FANTINA_SYMBOL,MAYLENE_SYMBOL,WAKE_SYMBOL,BYRON_SYMBOL,CANDICE_SYMBOL})
+VOLKNER_SYMBOL="SINNOH_SUNYSHORE_GYM"
+VOLKNER_CITY="SINNOH_SUNYSHORE_CITY"
+VOLKNER_TEAM=[["JOLTEON",46],["RAICHU",46],["LUXRAY",48],["ELECTIVIRE",50]]
+VOLKNER_TYPES=("LEADER_VOLKNER","LEADER_Volkner","LEADERVOLKNER","BLUE_SINNOH_LEADER_VOLKNER")
+VOLKNER_VERSION=11008
+GYM_SETS=(f08c.ALL|{SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL,FANTINA_SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL,FANTINA_SYMBOL,MAYLENE_SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL,FANTINA_SYMBOL,MAYLENE_SYMBOL,WAKE_SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL,FANTINA_SYMBOL,MAYLENE_SYMBOL,WAKE_SYMBOL,BYRON_SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL,FANTINA_SYMBOL,MAYLENE_SYMBOL,WAKE_SYMBOL,BYRON_SYMBOL,CANDICE_SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL,FANTINA_SYMBOL,MAYLENE_SYMBOL,WAKE_SYMBOL,BYRON_SYMBOL,CANDICE_SYMBOL,VOLKNER_SYMBOL})
 GYM_SPECS={
     "Roark":(SYMBOL,CITY,TEAM,TYPE_ALIASES,VERSION,"F11A","Oreburgh Gym - QA"),
     "Gardenia":(GARDENIA_SYMBOL,GARDENIA_CITY,GARDENIA_TEAM,GARDENIA_TYPES,GARDENIA_VERSION,"F11B","Eterna Gym - QA"),
@@ -61,8 +66,9 @@ GYM_SPECS={
     "Crasher Wake":(WAKE_SYMBOL,WAKE_CITY,WAKE_TEAM,WAKE_TYPES,WAKE_VERSION,"F11E","Pastoria Gym - QA"),
     "Byron":(BYRON_SYMBOL,BYRON_CITY,BYRON_TEAM,BYRON_TYPES,BYRON_VERSION,"F11F","Canalave Gym - QA"),
     "Candice":(CANDICE_SYMBOL,CANDICE_CITY,CANDICE_TEAM,CANDICE_TYPES,CANDICE_VERSION,"F11G","Snowpoint Gym - QA"),
+    "Volkner":(VOLKNER_SYMBOL,VOLKNER_CITY,VOLKNER_TEAM,VOLKNER_TYPES,VOLKNER_VERSION,"F11H","Sunyshore Gym - QA"),
 }
-LEADER_ORDER=("Roark","Gardenia","Fantina","Maylene","Crasher Wake","Byron","Candice")
+LEADER_ORDER=("Roark","Gardenia","Fantina","Maylene","Crasher Wake","Byron","Candice","Volkner")
 W,H=15,12
 LEADER=(7,3)
 EXIT=(7,10)
@@ -92,6 +98,9 @@ def roster(root):
     seventh=gyms[6];c=next(t for t in teams["trainers"] if t["id"]==seventh["id"])
     if seventh["id"]!="SINNOH_CANDICE" or seventh["badge"]!="ICICLE" or seventh["prerequisite_badges"]!=["COAL","FOREST","RELIC","COBBLE","FEN","MINE"] or list(map(list,zip(c["first_battle"]["species"],c["first_battle"]["historical_levels"])))!=CANDICE_TEAM:
         raise ValueError("F11G_GYM_CONTRACT_CHANGED")
+    eighth=gyms[7];v=next(t for t in teams["trainers"] if t["id"]==eighth["id"])
+    if eighth["id"]!="SINNOH_VOLKNER" or eighth["badge"]!="BEACON" or eighth["prerequisite_badges"]!=["COAL","FOREST","RELIC","COBBLE","FEN","MINE","ICICLE"] or list(map(list,zip(v["first_battle"]["species"],v["first_battle"]["historical_levels"])))!=VOLKNER_TEAM:
+        raise ValueError("F11H_GYM_CONTRACT_CHANGED")
     return [{"id":g["id"],"badge":g["badge"],"order":g["order"],"installed":False} for g in gyms]
 
 def tileset_png(leader='Roark'):
@@ -103,7 +112,8 @@ def tileset_png(leader='Roark'):
             "Maylene":[(156,111,91),(73,55,49),(227,190,144),(112,78,68)],
             "Crasher Wake":[(98,151,173),(38,76,108),(182,224,229),(48,112,153)],
             "Byron":[(134,141,153),(49,57,70),(199,207,217),(92,101,116)],
-            "Candice":[(177,216,229),(65,104,139),(232,246,250),(112,173,207)]}[leader]
+            "Candice":[(177,216,229),(65,104,139),(232,246,250),(112,173,207)],
+            "Volkner":[(197,177,90),(56,63,82),(245,226,139),(95,114,145)]}[leader]
     for y in range(h):
         for x in range(w):
             tile=x//32;xx=x%32
@@ -195,7 +205,7 @@ def build(blobs,mapping,components,occupied,types,species,existing,root=f.ROOT,o
     template=conn.read_marshal(blobs["Data/Map%03d.rxdata"%mapping["SINNOH_PLAYER_HOUSE_1F"]],"F11A_TEMPLATE")
     tile=copy.deepcopy(tiles[template.attrs["@tileset_id"]]);tid=len(tiles)
     if tid>=5000:raise ValueError("F11A_TILESET_CAPACITY")
-    name="SNQA_"+tag+("_ROCK_GYM","_GRASS_GYM","_GHOST_GYM","_FIGHTING_GYM","_WATER_GYM","_STEEL_GYM","_ICE_GYM")[order]
+    name="SNQA_"+tag+("_ROCK_GYM","_GRASS_GYM","_GHOST_GYM","_FIGHTING_GYM","_WATER_GYM","_STEEL_GYM","_ICE_GYM","_ELECTRIC_GYM")[order]
     tile.attrs.update({"@id":tid,"@name":name.encode(),"@tileset_name":name.encode(),
                        "@autotile_names":[b""]*7,"@passages":pv.table1([15]*384+[0,15,0,15,15,15,15,15]),
                        "@priorities":pv.table1([0]*392),"@terrain_tags":pv.table1([0]*392)})
@@ -210,7 +220,8 @@ def build(blobs,mapping,components,occupied,types,species,existing,root=f.ROOT,o
              ((4,3),(10,3),(4,5),(10,5),(4,7),(10,7),(2,8),(12,8)) if order==3 else
              ((3,4),(4,4),(10,4),(11,4),(3,5),(4,5),(10,5),(11,5),(5,7),(9,7)) if order==4 else
              ((3,3),(11,3),(3,5),(11,5),(5,6),(9,6),(3,8),(11,8)) if order==5 else
-             ((3,3),(11,3),(4,5),(10,5),(4,6),(10,6),(2,8),(12,8)))
+             ((3,3),(11,3),(4,5),(10,5),(4,6),(10,6),(2,8),(12,8)) if order==6 else
+             ((3,4),(11,4),(5,5),(9,5),(3,7),(11,7),(5,8),(9,8)))
     for xy in pillars:
         cells[xy[1]*W+xy[0]]=387;floor.remove(xy)
     room=copy.deepcopy(template)

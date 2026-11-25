@@ -1308,6 +1308,31 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
             ggreport["species_and_types_validation"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
             print("SINNOH_F11G_GYM_REPORT "+json.dumps(ggreport,sort_keys=True),flush=True)
             print("SINNOH_REAL_F11G_SEVEN_GYMS_138_MAPS_BASELINE_PRESERVED_OK",flush=True)
+            gh,ghids,ghcomps,ghreport,ghplugin=gym.build(gg,ggids,ggcomps,{2},{"LEADER_VOLKNER"},{"JOLTEON","RAICHU","LUXRAY","ELECTIVIRE"},set(),ROOT,Path(ow),leader="Volkner",allow_authored=True)
+            self.assertEqual(ghreport["gym_rooms_added"],1,ghreport)
+            self.assertEqual(len(ghids),139)
+            self.assertEqual({k:ghids[k] for k in ggids},ggids)
+            self.assertEqual(ghreport["new_portals"],2)
+            self.assertFalse(ghreport["native_verified"])
+            self.assertFalse(ghreport["hm_award_enabled"])
+            self.assertFalse(ghreport["water_enabled"])
+            for path,raw in gg.items():
+                if path in ("Data/MapInfos.rxdata","Data/Tilesets.rxdata","PBS/map_metadata.txt"):continue
+                if path=="Data/Map%03d.rxdata"%ggids[gym.VOLKNER_CITY]:
+                    old=read_marshal(raw,"F11H_OLD");new=read_marshal(gh[path],"F11H_NEW")
+                    before=old.attrs.pop("@events");after=new.attrs.pop("@events")
+                    self.assertEqual(serialize(old,connection.EVENT_CLASSES),serialize(new,connection.EVENT_CLASSES))
+                    for eid,event in before.items():
+                        self.assertEqual(serialize(event,connection.EVENT_CLASSES),serialize(after[eid],connection.EVENT_CLASSES))
+                else:self.assertEqual(gh[path],raw)
+            self.assertEqual([r for r in exp.qa_teleport.build(gh,ghids,ghcomps) if r[0]!=gym.VOLKNER_SYMBOL],[r for r in exp.qa_teleport.build(gg,ggids,ggcomps) if r[0]!=gym.VOLKNER_SYMBOL])
+            self.assertIn(b"BlueSinnohF11H",ghplugin)
+            self.assertIn("PBS/trainers_sinnoh_f11h.txt",gh)
+            self.assertIn("Graphics/Characters/SNQA_F11H_VOLKNER.png",gh)
+            self.assertEqual([r["badge"] for r in ghreport["gyms"] if r["installed"]],["COAL","FOREST","RELIC","COBBLE","FEN","MINE","ICICLE","BEACON"])
+            ghreport["species_and_types_validation"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
+            print("SINNOH_F11H_GYM_REPORT "+json.dumps(ghreport,sort_keys=True),flush=True)
+            print("SINNOH_REAL_F11H_EIGHT_GYMS_139_MAPS_BASELINE_PRESERVED_OK",flush=True)
 
 
 
@@ -2454,6 +2479,90 @@ puts "F11G_SIX_BADGES_THEN_ICICLE_WIN_ONLY_OK"
             result=subprocess.run(["ruby","-e",fixture,str(path)],capture_output=True,text=True,encoding="utf-8")
             self.assertEqual(result.returncode,0,result.stdout+result.stderr)
             self.assertIn("F11G_SIX_BADGES_THEN_ICICLE_WIN_ONLY_OK",result.stdout)
+
+    @unittest.skipUnless(shutil.which("ruby"),"Requires Ruby runtime")
+    def test_f11h_volkner_requires_coal_forest_relic_cobble_fen_mine_icicle_and_confirmed_win(self):
+        source=(ROOT/"scripts/regions/SinnohF11H.rb").read_text("utf-8").replace(
+            "__F11H_SPEC__", '["LEADER_VOLKNER","Volkner",11008,584,[["JOLTEON",46],["RAICHU",46],["LUXRAY",48],["ELECTIVIRE",50]]]')
+        fixture=r'''
+module BlueSinnohExperimental
+  def self.private_copy?; true; end
+end
+module BlueSinnohPilot
+  def self.regional_state; $state; end
+  def self.profile_error(*args); raise args.last; end
+end
+module BlueRegions
+  def self.valid_sinnoh_badges?(s);s["current"]=="SINNOH" && s["badges"].is_a?(Array);end
+  def self.local_achievements(s,r);s["badges"];end
+  def self.award(s,r,b);return false if s["badges"].include?(b);s["badges"] << b;true;end
+end
+module BlueKantoTitle
+  def self.sinnoh_experimental_barry_compiled?;true;end
+end
+module BlueCampaign
+  module Teams;end
+  def self.active?;true;end
+end
+class Battle;prepend BlueCampaign::Teams;end
+module BlueStory
+  def self.regional_first_boss?(a);a.first.trainer_type=="LEADER_VOLKNER";end
+end
+module BlueSinnohF10B
+  def self.valid_team?(s);true;end
+end
+module TrainerBattle
+  def self.start_core(*args);$calls+=1;$outcome;end
+end
+def _INTL(s);s;end
+def pbMessage(s);end
+Mon=Struct.new(:hp) {def egg?;false;end}
+$player=Struct.new(:party).new([Mon.new(10)])
+$game_map=Struct.new(:map_id).new(584)
+$game_temp=Struct.new(:waiting_trainer,:battle_rules).new(nil,{})
+$state={"current"=>"SINNOH","badges"=>[],"native"=>[false],"hm"=>[]}
+$calls=0;$outcome=1
+load ARGV[0]
+raise "bypass" if BlueSinnohF11H.battle
+raise "battle started before COAL" unless $calls==0
+$state["badges"] << "COAL"
+raise "bypass forest" if BlueSinnohF11H.battle
+raise "battle started before FOREST" unless $calls==0
+$state["badges"] << "FOREST"
+raise "bypass relic" if BlueSinnohF11H.battle
+raise "battle started before RELIC" unless $calls==0
+$state["badges"] << "RELIC"
+raise "bypass cobble" if BlueSinnohF11H.battle
+raise "battle started before COBBLE" unless $calls==0
+$state["badges"] << "COBBLE"
+raise "bypass fen" if BlueSinnohF11H.battle
+raise "battle started before FEN" unless $calls==0
+$state["badges"] << "FEN"
+raise "bypass mine" if BlueSinnohF11H.battle
+raise "battle started before MINE" unless $calls==0
+$state["badges"] << "MINE"
+raise "bypass icicle" if BlueSinnohF11H.battle
+raise "battle started before ICICLE" unless $calls==0
+$state["badges"] << "ICICLE"
+[2,3,nil].each do |result|
+  $outcome=result
+  raise "invalid award" if BlueSinnohF11H.battle
+end
+raise "loss changed badges" unless $state["badges"]==["COAL","FOREST","RELIC","COBBLE","FEN","MINE","ICICLE"]
+$outcome=1
+raise "win" unless BlueSinnohF11H.battle
+raise "badge" unless $state["badges"]==["COAL","FOREST","RELIC","COBBLE","FEN","MINE","ICICLE","BEACON"]
+raise "native changed" unless $state["native"]==[false] && $state["hm"].empty?
+before=$calls
+raise "repeat" unless BlueSinnohF11H.battle
+raise "duplicate" unless $calls==before
+puts "F11H_SEVEN_BADGES_THEN_BEACON_WIN_ONLY_OK"
+'''
+        with tempfile.TemporaryDirectory() as td:
+            path=Path(td)/"F11H.rb";path.write_text(source,encoding="utf-8")
+            result=subprocess.run(["ruby","-e",fixture,str(path)],capture_output=True,text=True,encoding="utf-8")
+            self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+            self.assertIn("F11H_SEVEN_BADGES_THEN_BEACON_WIN_ONLY_OK",result.stdout)
 
     def test_f11a_gym_contract_and_collision_guards(self):
         import sinnoh_f11a_gym as g
