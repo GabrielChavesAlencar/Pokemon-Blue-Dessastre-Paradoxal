@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0a6c4c627599f0d72d4dc146d7285639b80cca8f",
+      "date": "2026-11-25T11:41:40-03:00",
+      "title": "Sinnoh F12D3B: integrar auditoria ampliada e transação candidata",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "f1b62d3fae2a2f34b40caed38d168bab0ba0a913",
+      "date": "2026-11-25T11:34:38-03:00",
+      "title": "Sinnoh F12D3: fix component labels in expanded source audit",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "beaba6d022ef5cc7def91e7cfbc1aa178eaee3f2",
+      "date": "2026-11-25T11:25:30-03:00",
+      "title": "Sinnoh F12D3: expanded evidence and staged SecretPotion regression",
+      "category": "Melhorias"
+    },
+    {
       "sha": "7f06fdac338b6b4c2699a98d4e15727604cba862",
       "date": "2026-11-25T11:24:18-03:00",
       "title": "Sinnoh F12D3: integrar auditoria das fontes e geometria",
