@@ -1542,6 +1542,18 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                         self.assertEqual(chased,snapshot)
                         print("SINNOH_F12D3_EXPANDED_EVIDENCE_REPORT "+json.dumps(ext,sort_keys=True),flush=True)
                         print("SINNOH_REAL_F12D3_EXPANDED_EVIDENCE_144_BASELINE_PRESERVED_OK",flush=True)
+                        import sinnoh_f12d3_route210_recovery as recovery
+                        candidate,rr=recovery.preview(chased,expanded,expanded_comps,cr,ext,ROOT)
+                        self.assertEqual(chased,snapshot)
+                        self.assertEqual(rr["new_portals"],0)
+                        self.assertFalse(rr["native_verified"])
+                        if rr["status"]=="F12D3_ROUTE210_RECOVERY_BLOCKED":
+                            self.assertEqual(candidate,chased)
+                        else:
+                            self.assertTrue(all(rr["reachable_cells"].values()))
+                            self.assertEqual(set(candidate),set(chased))
+                            self.assertTrue(all(candidate[k]==v for k,v in chased.items() if k not in ("PBS/map_connections.txt","Data/map_connections.dat")))
+                        print("SINNOH_F12D3_ROUTE210_RECOVERY_REPORT "+json.dumps(rr,sort_keys=True),flush=True)
                     else:
                         print("SINNOH_REAL_F12D3_BLOCKED_REQUIRES_F12D2",flush=True)
                 jr["catalog_provenance"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
@@ -3263,6 +3275,18 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertEqual(f.reached_source_ids({214:528,80:472,116:473},
             {528:g,472:[{(0,0)}],473:[]},{(528,1)}),{214})
         self.assertEqual(f.reached_source_ids({214:528},{528:g},set()),set())
+
+    def test_f12d3_recovery_frontier_preserves_existing_sides(self):
+        import sinnoh_f12d3_route210_recovery as r
+        row={"qa_record":[1,"E",0,2,"W",0],"installed":False,
+            "source_side_conflict":False,"matching_walkable_axes":[1]}
+        idx={1:{(2,1):0},2:{(0,1):0}}
+        dims={1:(3,3),2:(3,3)}
+        self.assertEqual(list(r.frontier_candidates([row],[],idx,{(1,0)},dims)),
+            [((1,"E",0,2,"W",0),[1])])
+        self.assertFalse(list(r.frontier_candidates([row],[(1,"E",0,3,"W",0)],idx,{(1,0)},dims)))
+        self.assertFalse(list(r.frontier_candidates([dict(row,source_side_conflict=True)],[],idx,{(1,0)},dims)))
+        self.assertFalse(list(r.frontier_candidates([row],[],idx,{(1,0),(2,0)},dims)))
 
     def test_f12d3_topology_is_not_walk_witness(self):
         import sinnoh_f12d3_expanded_evidence as f
