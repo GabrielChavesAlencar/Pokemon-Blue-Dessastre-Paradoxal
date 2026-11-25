@@ -1554,12 +1554,32 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                             self.assertEqual(set(candidate),set(chased))
                             self.assertTrue(all(candidate[k]==v for k,v in chased.items() if k not in ("PBS/map_connections.txt","Data/map_connections.dat")))
                         print("SINNOH_F12D3_ROUTE210_RECOVERY_REPORT "+json.dumps(rr,sort_keys=True),flush=True)
+
                         import sinnoh_f12d3_authored_offset as offset
                         off=offset.inspect(chased,expanded,expanded_comps,cr,ext,Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]),ROOT)
                         self.assertEqual(off["new_seams"],0)
                         self.assertFalse(off["native_verified"])
                         self.assertEqual(chased,snapshot)
                         print("SINNOH_F12D3_AUTHORED_OFFSET_REPORT "+json.dumps(off,sort_keys=True),flush=True)
+                        import sinnoh_f12d3_gated_alignment as gated
+                        linked,gr=gated.prepare(chased,expanded,expanded_comps,cr,ext,off,ROOT)
+                        self.assertEqual(chased,snapshot)
+                        self.assertEqual(gr["new_portals"],0)
+                        self.assertFalse(gr["native_verified"])
+                        if gr["status"]=="F12D3_GATED_ALIGNMENT_FIXTURE_PREPARED":
+                            self.assertTrue(gr["closed_equals_baseline"])
+                            self.assertTrue(all(gr["open_reachable_cells"].values()))
+                            print("SINNOH_REAL_F12D3_GATED_ALIGNMENT_FIXTURE_PREPARED_OK",flush=True)
+                        else:
+                            self.assertEqual(linked,chased)
+                        print("SINNOH_F12D3_GATED_ALIGNMENT_REPORT "+json.dumps(gr,sort_keys=True),flush=True)
+                        import sinnoh_f12d3_psyduck_barrier as barrier
+                        br=barrier.inspect(chased,linked,expanded,expanded_comps,cr,ROOT)
+                        self.assertEqual(br["new_events"],0)
+                        self.assertFalse(br["native_verified"])
+                        self.assertEqual(chased,snapshot)
+                        print("SINNOH_F12D3_PSYDUCK_BARRIER_REPORT "+json.dumps(br,sort_keys=True),flush=True)
+                        print("SINNOH_REAL_F12D3_GATED_ALIGNMENT_EVIDENCE_PRESERVED_OK",flush=True)
                         print("SINNOH_REAL_F12D3_ROUTE210_RECOVERY_EVIDENCE_PRESERVED_OK",flush=True)
                     else:
                         print("SINNOH_REAL_F12D3_BLOCKED_REQUIRES_F12D2",flush=True)
@@ -3303,6 +3323,23 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertTrue(rows[1]["reaches_segment2"])
         self.assertEqual(rows[1]["offset_east"],5)
         self.assertEqual(a.offset_rows({}, {2:0},{}),[])
+
+    def test_f12d3_barrier_cut_rejects_bypass_and_prior_loss(self):
+        import sinnoh_f12d3_psyduck_barrier as b
+        barrier={(473,1,0),(473,2,0),(473,3,0),(473,4,0)}
+        prior={(528,0,0),(473,0,0)}
+        far={(473,5,0)}
+        opened=prior|barrier|far
+        self.assertTrue(b.cut_witness(opened,prior,prior,barrier,473))
+        self.assertFalse(b.cut_witness(opened,prior|far,prior,barrier,473))
+        self.assertFalse(b.cut_witness(opened,{(528,0,0)},prior,barrier,473))
+        self.assertFalse(b.cut_witness(opened|{(472,1,1)},prior,prior,barrier,473))
+
+    def test_f12d3_all_aligned_lanes_are_counted(self):
+        import sinnoh_f12d3_gated_alignment as g
+        row=(1,"E",0,2,"W",1)
+        self.assertEqual(g.all_lanes(row,{1:{(2,0):0,(2,1):0},2:{(0,1):0,(0,2):0}},
+            {1:(3,3),2:(3,3)}),[(0,(2,0),(0,1)),(1,(2,1),(0,2))])
 
     def test_f12d3_topology_is_not_walk_witness(self):
         import sinnoh_f12d3_expanded_evidence as f
