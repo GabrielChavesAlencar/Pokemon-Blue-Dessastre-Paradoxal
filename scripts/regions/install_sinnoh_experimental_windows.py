@@ -326,7 +326,7 @@ def runtime_config(base:Path,token:str):
     if count!=1:fail("GAME_INI_TITLE_NOT_UNIQUE")
     return (json.dumps(config,ensure_ascii=False,indent=2)+"\n").encode(),result.encode(),profile
 
-def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile=False,save_token=None,route201=None,encounter_coverage=None,route_trainers=False,encounter_expected=None,f10b=False,f11a=False,f11b=False):
+def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile=False,save_token=None,route201=None,encounter_coverage=None,route_trainers=False,encounter_expected=None,f10b=False,f11a=False,f11b=False,f11c=False):
     """Require real Essentials Compiler and all three Barry PBS data; no fake success."""
     rows=Marshal(raw).read()
     matches=[row for row in rows if isinstance(row,list) and len(row)>=3 and row[1]==b"Main"]
@@ -339,7 +339,7 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile
         fail("ESSENTIALS_MAIN_BOOTSTRAP_NOT_RECOGNIZED")
     if "sinnoh-experimental-compile-request" in code:fail("QA_ALREADY_PATCHED")
     if not re.fullmatch(r"[a-f0-9]{12}",token):fail("INVALID_QA_TOKEN")
-    if map_ids and (len(map_ids) not in (9,10,22,56,natural_expansion.COUNT,interior_expansion.COUNT,f08c_expansion.COUNT,f08c_expansion.COUNT+1,f08c_expansion.COUNT+2) or len(set(map_ids))!=len(map_ids) or
+    if map_ids and (len(map_ids) not in (9,10,22,56,natural_expansion.COUNT,interior_expansion.COUNT,f08c_expansion.COUNT,f08c_expansion.COUNT+1,f08c_expansion.COUNT+2,f08c_expansion.COUNT+3) or len(set(map_ids))!=len(map_ids) or
                     any(type(n) is not int or not 442<=n<=(599 if len(map_ids)>=natural_expansion.COUNT else 517) for n in map_ids)):
         fail("INVALID_QA_COMPILE_MAP_IDS")
     scope='File.basename(Dir.pwd) == "game-sinnoh-experimental-'+token+'" && '
@@ -406,6 +406,8 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile
         verify=verify.replace("        File.write(", "        BlueSinnohF11A.verify_compiled!\n        File.write(",1)
     if f11b:
         verify=verify.replace("        File.write(", "        BlueSinnohF11B.verify_compiled!\n        File.write(",1)
+    if f11c:
+        verify=verify.replace("        File.write(", "        BlueSinnohF11C.verify_compiled!\n        File.write(",1)
     # Essentials normalizes transfer events (door SFX/fades) during PBS
     # compilation and rewrites their maps. These authored QA files are pinned
     # byte-for-byte by the title/supervisor. Preserve their verified input bytes
@@ -647,7 +649,7 @@ end
     code=code.replace("__PLATINUM_PLAYER__",player_code)
     return code.encode("utf-8")
 
-def compatible_save_token(project,mapping,base_hash,generated_maps=None,previous_maps=None,intermediate_maps=None,refined_maps=None,pre_f10b_maps=None,f10b2_maps=None,f10b3_maps=None,f10b4_maps=None,f10b5_maps=None,f10b6_maps=None,f10b8_maps=None,f10c1_maps=None,f10c2_maps=None,f11a_maps=None):
+def compatible_save_token(project,mapping,base_hash,generated_maps=None,previous_maps=None,intermediate_maps=None,refined_maps=None,pre_f10b_maps=None,f10b2_maps=None,f10b3_maps=None,f10b4_maps=None,f10b5_maps=None,f10b6_maps=None,f10b8_maps=None,f10c1_maps=None,f10c2_maps=None,f11a_maps=None,f11b_maps=None):
     # Read manifests/config only; never enumerate or open save files.
     work=safe_path(project/REPO_OUTPUT)
     candidates=[]
@@ -676,14 +678,15 @@ def compatible_save_token(project,mapping,base_hash,generated_maps=None,previous
                          (set(prior) in (city_expansion.OLD,route_expansion.PRIOR,route_expansion.ALL,natural_expansion.ALL) and set(mapping)==interior_expansion.ALL) or
                          (set(prior) in (city_expansion.OLD,route_expansion.PRIOR,route_expansion.ALL,natural_expansion.ALL,interior_expansion.ALL) and set(mapping)==f08c_expansion.ALL) or
                          (set(prior) in (city_expansion.OLD,route_expansion.PRIOR,route_expansion.ALL,natural_expansion.ALL,interior_expansion.ALL,f08c_expansion.ALL) and set(mapping)==f11a_gym.GYM_SETS[0]) or
-                         (set(prior) in (city_expansion.OLD,route_expansion.PRIOR,route_expansion.ALL,natural_expansion.ALL,interior_expansion.ALL,f08c_expansion.ALL,f11a_gym.GYM_SETS[0]) and set(mapping)==f11a_gym.GYM_SETS[1])) and
+                         (set(prior) in (city_expansion.OLD,route_expansion.PRIOR,route_expansion.ALL,natural_expansion.ALL,interior_expansion.ALL,f08c_expansion.ALL,f11a_gym.GYM_SETS[0]) and set(mapping)==f11a_gym.GYM_SETS[1]) or
+                         (set(prior) in (city_expansion.OLD,route_expansion.PRIOR,route_expansion.ALL,natural_expansion.ALL,interior_expansion.ALL,f08c_expansion.ALL,*f11a_gym.GYM_SETS[:2]) and set(mapping)==f11a_gym.GYM_SETS[2])) and
                         all(mapping.get(k)==v for k,v in prior.items())):continue
                 hashes=data.get("file_sha256",{})
                 if not isinstance(hashes,dict):continue
-                if not any(all(hashes.get(f"Data/Map{mid:03d}.rxdata")==sha(candidate.get(f"Data/Map{mid:03d}.rxdata",b"")) for mid in prior.values()) for candidate in (generated_maps,previous_maps,intermediate_maps,refined_maps,pre_f10b_maps,f10b2_maps,f10b3_maps,f10b4_maps,f10b5_maps,f10b6_maps,f10b8_maps,f10c1_maps,f10c2_maps,f11a_maps) if candidate):continue
+                if not any(all(hashes.get(f"Data/Map{mid:03d}.rxdata")==sha(candidate.get(f"Data/Map{mid:03d}.rxdata",b"")) for mid in prior.values()) for candidate in (generated_maps,previous_maps,intermediate_maps,refined_maps,pre_f10b_maps,f10b2_maps,f10b3_maps,f10b4_maps,f10b5_maps,f10b6_maps,f10b8_maps,f10c1_maps,f10c2_maps,f11a_maps,f11b_maps) if candidate):continue
             elif set(mapping) in (interior_expansion.ALL,f08c_expansion.ALL,*f11a_gym.GYM_SETS):
                 hashes=data.get("file_sha256",{})
-                if not isinstance(hashes,dict) or not any(all(hashes.get(f"Data/Map{mid:03d}.rxdata")==sha(candidate.get(f"Data/Map{mid:03d}.rxdata",b"")) for mid in mapping.values()) for candidate in (generated_maps,previous_maps,intermediate_maps,refined_maps,pre_f10b_maps,f10b2_maps,f10b3_maps,f10b4_maps,f10b5_maps,f10b6_maps,f10b8_maps,f10c1_maps,f10c2_maps,f11a_maps) if candidate):continue
+                if not isinstance(hashes,dict) or not any(all(hashes.get(f"Data/Map{mid:03d}.rxdata")==sha(candidate.get(f"Data/Map{mid:03d}.rxdata",b"")) for mid in mapping.values()) for candidate in (generated_maps,previous_maps,intermediate_maps,refined_maps,pre_f10b_maps,f10b2_maps,f10b3_maps,f10b4_maps,f10b5_maps,f10b6_maps,f10b8_maps,f10c1_maps,f10c2_maps,f11a_maps,f11b_maps) if candidate):continue
             config_path=folder/"mkxp.json";regular(config_path)
             conf=jsonc(config_path.read_text("utf-8-sig"))
             profile=namespace(token)
@@ -758,6 +761,9 @@ def build_files(base:Path,project:Path=ROOT):
     f11a_maps=None
     f11b_report={}
     f11b_plugin=b""
+    f11b_maps=None
+    f11c_report={}
+    f11c_plugin=b""
     f10c_plugin=b""
     encounter_expected={}
     encounter_coverage={}
@@ -823,6 +829,9 @@ def build_files(base:Path,project:Path=ROOT):
         f11a_maps=maps
         maps,mapping,components,f11b_report,f11b_plugin=f11a_gym.append(maps,mapping,components,occupied,base,project,sources.get("overworlds"),leader="Gardenia",allow_authored=True)
         print("SINNOH_F11B_GYM_REPORT "+json.dumps(f11b_report,sort_keys=True),flush=True)
+        f11b_maps=maps
+        maps,mapping,components,f11c_report,f11c_plugin=f11a_gym.append(maps,mapping,components,occupied,base,project,sources.get("overworlds"),leader="Fantina",allow_authored=True)
+        print("SINNOH_F11C_GYM_REPORT "+json.dumps(f11c_report,sort_keys=True),flush=True)
         gym_symbols=set(mapping)-f08c_expansion.ALL
         if gym_symbols:
             masks=private_visual.movement_masks(maps,mapping,extra_symbols=city_expansion.CITIES|route_expansion.ROUTES|natural_expansion.NATURAL|interior_expansion.INTERIORS|f08c_expansion.EXTERIORS|gym_symbols)
@@ -839,7 +848,7 @@ def build_files(base:Path,project:Path=ROOT):
     platinum_dawn=private_visual.has_platinum_player(base,10)
     token=secrets.token_hex(6)
     base_hash=sha((base/"Data/MapInfos.rxdata").read_bytes())
-    save_token=compatible_save_token(project,mapping,base_hash,maps,previous_maps,intermediate_maps,refined_maps,pre_f10b_maps,f10b2_maps,f10b3_maps,f10b4_maps,f10b5_maps,f10b6_maps,f10b8_maps,f10c1_maps,f10c2_maps,f11a_maps) or token
+    save_token=compatible_save_token(project,mapping,base_hash,maps,previous_maps,intermediate_maps,refined_maps,pre_f10b_maps,f10b2_maps,f10b3_maps,f10b4_maps,f10b5_maps,f10b6_maps,f10b8_maps,f10c1_maps,f10c2_maps,f11a_maps,f11b_maps) or token
     config,game_ini,profile=runtime_config(base,save_token)
     # This is an isolated copy, never the installed game:
     final=dict(maps)
@@ -848,7 +857,7 @@ def build_files(base:Path,project:Path=ROOT):
         "Graphics/Characters/SNQA_NPC.png":sprite_png("NPC"),
         "Graphics/Characters/SNQA_BALL.png":sprite_png("BALL"),
         "Data/System.rxdata":None,
-        "Data/Scripts.rxdata":patch_bootstrap((base/"Data/Scripts.rxdata").read_bytes(),token,ids,connected=bool(continuity),story_profile=bool(story),save_token=save_token,route201=mapping["SINNOH_ROUTE_201"] if story else None,encounter_coverage={mapping[sym]:v["methods"] for sym,v in encounter_coverage.items() if v["methods"]},route_trainers=bool(route_trainers),encounter_expected=encounter_expected,f10b=bool(f10b_report.get("new_trainers")),f11a=bool(f11a_report.get("gym_leaders_added")),f11b=bool(f11b_report.get("gym_leaders_added"))),
+        "Data/Scripts.rxdata":patch_bootstrap((base/"Data/Scripts.rxdata").read_bytes(),token,ids,connected=bool(continuity),story_profile=bool(story),save_token=save_token,route201=mapping["SINNOH_ROUTE_201"] if story else None,encounter_coverage={mapping[sym]:v["methods"] for sym,v in encounter_coverage.items() if v["methods"]},route_trainers=bool(route_trainers),encounter_expected=encounter_expected,f10b=bool(f10b_report.get("new_trainers")),f11a=bool(f11a_report.get("gym_leaders_added")),f11b=bool(f11b_report.get("gym_leaders_added")),f11c=bool(f11c_report.get("gym_leaders_added"))),
         "mkxp.json":config,"Game.ini":game_ini,
         # Only inside the NEW private QA copy. Blue-Story source-only sync
         # cannot update the installed main-game title when Kanto is 142/145.
@@ -858,7 +867,7 @@ def build_files(base:Path,project:Path=ROOT):
         f"{INTRO_PLUGIN}/SinnohPilot.rb":(project/"scripts/regions/SinnohPilot.rb").read_bytes(),
         f"{INTRO_PLUGIN}/meta.txt":b"Name = Blue Sinnoh Intro\nVersion = 0.1\nEssentials = 21.1\nScripts = SinnohPilot.rb\n",
         f"{EXPERIMENT_PLUGIN}/SinnohExperimentalStart.rb":experiment_plugin(
-                  [mapping["SINNOH_PLAYER_BEDROOM"],*start],token,platinum_player,platinum_dawn,story_profile=bool(story))+b"\n"+movement+b"\n"+teleport+b"\n"+forest_code+b"\n"+f10b_plugin+b"\n"+f10c_plugin+b"\n"+f11a_plugin+b"\n"+f11b_plugin,
+                  [mapping["SINNOH_PLAYER_BEDROOM"],*start],token,platinum_player,platinum_dawn,story_profile=bool(story))+b"\n"+movement+b"\n"+teleport+b"\n"+forest_code+b"\n"+f10b_plugin+b"\n"+f10c_plugin+b"\n"+f11a_plugin+b"\n"+f11b_plugin+b"\n"+f11c_plugin,
         f"{EXPERIMENT_PLUGIN}/meta.txt":b"Name = Blue Sinnoh Experimental\nVersion = 0.1\nEssentials = 21.1\nRequires = Blue Sinnoh Intro\nScripts = SinnohExperimentalStart.rb\n",
     })
     sysdata=read_marshal((base/"Data/System.rxdata").read_bytes(),"BASE_SYSTEM")
@@ -875,7 +884,7 @@ def build_files(base:Path,project:Path=ROOT):
     final["Data/sinnoh-experimental-compile-request.txt"]=proof.encode("ascii")
     # These hashes do not claim human rights approval, or native gameplay acceptance.
     report={"schema":1,"region":"SINNOH","mode":MODE,
-        "maps_prepared":len(mapping),"static_events_placed":len(events)+story.get("extra_event_count",0)+len(route_trainers)+len(connection_report.get("portals",[]))+len(f08c_report.get("portals",[]))+f10b_report.get("new_trainers",0)+f10c_report.get("new_npcs",0)+f11a_report.get("gym_leaders_added",0)+f11a_report.get("new_portals",0)+f11b_report.get("gym_leaders_added",0)+f11b_report.get("new_portals",0),
+        "maps_prepared":len(mapping),"static_events_placed":len(events)+story.get("extra_event_count",0)+len(route_trainers)+len(connection_report.get("portals",[]))+len(f08c_report.get("portals",[]))+f10b_report.get("new_trainers",0)+f10c_report.get("new_npcs",0)+f11a_report.get("gym_leaders_added",0)+f11a_report.get("new_portals",0)+f11b_report.get("gym_leaders_added",0)+f11b_report.get("new_portals",0)+f11c_report.get("gym_leaders_added",0)+f11c_report.get("new_portals",0),
         "static_warps":16-len(continuity.get("retired_warp_keys",[]))+(3 if story else 0)+len(connection_report.get("portals",[]))+len(f08c_report.get("portals",[])),"native_seam_pairs":sum(not p.get("visual_only") for p in continuity.get("connections",[]))+len(connection_report.get("seams",[])),"static_handlers":5,"static_starter_balls":3,
         "local_reserved_qa_only":True,"independent_r07_approved":False,
         "independent_r08_approved":False,"r09_native_qa_executed":0,
@@ -903,7 +912,7 @@ def build_files(base:Path,project:Path=ROOT):
         "f09b_original_encounters":f09b_report,
         "f09c_refinement":f09c_report,
         "f09d_relative":f09d_report,
-        "f10b_trainers":f10b_report,"f10b7_field_gate_audit":f10b7_report,"f10c_npcs":f10c_report,"f11a_gym":f11a_report,"f11b_gym":f11b_report,
+        "f10b_trainers":f10b_report,"f10b7_field_gate_audit":f10b7_report,"f10c_npcs":f10c_report,"f11a_gym":f11a_report,"f11b_gym":f11b_report,"f11c_gym":f11c_report,
         "qa_teleport":{"catalog_count":len(teleport_entries),"available_count":sum(row[3] is not None for row in teleport_entries),"destinations":teleport_entries,"native_verified":False},
         "encounter_coverage":encounter_coverage,"route202_trainers":route_trainers,
         "visual_native_reviewed":False,

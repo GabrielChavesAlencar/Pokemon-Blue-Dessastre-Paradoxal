@@ -391,7 +391,7 @@
       "id": "F11",
       "title": "Oito ginásios e insígnias",
       "status": "implementation_pending_ci",
-      "followup": "F11A2_F11B_PENDING_CI",
+      "followup": "F11C_PENDING_CI",
       "gym_count": 8,
       "gym_rooms_confirmed": 2,
       "gym_leaders_confirmed": 2,
@@ -422,7 +422,14 @@
         "SINNOH_OREBURGH_GYM": 573,
         "SINNOH_ETERNA_GYM": 574
       },
-      "species_and_types_validation": "REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
+      "species_and_types_validation": "REFERENCE_FIXTURE_NOT_LOCAL_DATABASE",
+      "f11c_candidate": "Fantina",
+      "f11c_prerequisites": [
+        "COAL",
+        "FOREST"
+      ],
+      "f11c_fixture_rooms": 0,
+      "f11c_native_verified": false
     },
     {
       "id": "F12",
@@ -738,7 +745,7 @@
   },
   "f11": {
     "status": "implementation_pending_ci",
-    "followup": "F11A2_F11B_PENDING_CI",
+    "followup": "F11C_PENDING_CI",
     "gym_count": 8,
     "gym_rooms_confirmed": 2,
     "gym_leaders_confirmed": 2,
@@ -769,6 +776,13 @@
       "SINNOH_OREBURGH_GYM": 573,
       "SINNOH_ETERNA_GYM": 574
     },
-    "species_and_types_validation": "REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
+    "species_and_types_validation": "REFERENCE_FIXTURE_NOT_LOCAL_DATABASE",
+    "f11c_candidate": "Fantina",
+    "f11c_prerequisites": [
+      "COAL",
+      "FOREST"
+    ],
+    "f11c_fixture_rooms": 0,
+    "f11c_native_verified": false
   }
 }

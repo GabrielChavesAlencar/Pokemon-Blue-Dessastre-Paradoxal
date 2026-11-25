@@ -27,7 +27,18 @@ GARDENIA_CITY="SINNOH_ETERNA_CITY"
 GARDENIA_TEAM=[["TURTWIG",20],["CHERRIM",20],["ROSERADE",22]]
 GARDENIA_TYPES=("LEADER_GARDENIA","LEADER_Gardenia","LEADERGARDENIA","BLUE_SINNOH_LEADER_GARDENIA")
 GARDENIA_VERSION=11002
-GYM_SETS=(f08c.ALL|{SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL})
+FANTINA_SYMBOL="SINNOH_HEARTHOME_GYM"
+FANTINA_CITY="SINNOH_HEARTHOME_CITY"
+FANTINA_TEAM=[["DUSKULL",24],["HAUNTER",24],["MISMAGIUS",26]]
+FANTINA_TYPES=("LEADER_FANTINA","LEADER_Fantina","LEADERFANTINA","BLUE_SINNOH_LEADER_FANTINA")
+FANTINA_VERSION=11003
+GYM_SETS=(f08c.ALL|{SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL,FANTINA_SYMBOL})
+GYM_SPECS={
+    "Roark":(SYMBOL,CITY,TEAM,TYPE_ALIASES,VERSION,"F11A","Oreburgh Gym - QA"),
+    "Gardenia":(GARDENIA_SYMBOL,GARDENIA_CITY,GARDENIA_TEAM,GARDENIA_TYPES,GARDENIA_VERSION,"F11B","Eterna Gym - QA"),
+    "Fantina":(FANTINA_SYMBOL,FANTINA_CITY,FANTINA_TEAM,FANTINA_TYPES,FANTINA_VERSION,"F11C","Hearthome Gym - QA"),
+}
+LEADER_ORDER=("Roark","Gardenia","Fantina")
 W,H=15,12
 LEADER=(7,3)
 EXIT=(7,10)
@@ -42,12 +53,17 @@ def roster(root):
     second=gyms[1];s=next(t for t in teams["trainers"] if t["id"]==second["id"])
     if second["id"]!="SINNOH_GARDENIA" or second["badge"]!="FOREST" or second["prerequisite_badges"]!=["COAL"] or list(map(list,zip(s["first_battle"]["species"],s["first_battle"]["historical_levels"])))!=GARDENIA_TEAM:
         raise ValueError("F11B_GYM_CONTRACT_CHANGED")
+    third=gyms[2];t=next(t for t in teams["trainers"] if t["id"]==third["id"])
+    if third["id"]!="SINNOH_FANTINA" or third["badge"]!="RELIC" or third["prerequisite_badges"]!=["COAL","FOREST"] or list(map(list,zip(t["first_battle"]["species"],t["first_battle"]["historical_levels"])))!=FANTINA_TEAM:
+        raise ValueError("F11C_GYM_CONTRACT_CHANGED")
     return [{"id":g["id"],"badge":g["badge"],"order":g["order"],"installed":False} for g in gyms]
 
 def tileset_png(leader='Roark'):
     # Authored rock-floor/wall arena; no protected image copied.
     w,h=256,32;raw=bytearray(w*h*4)
-    colors=([(148,139,123),(65,61,58),(193,157,95),(93,83,72)] if leader=='Roark' else [(125,158,106),(53,91,64),(222,196,106),(69,119,75)])
+    colors={"Roark":[(148,139,123),(65,61,58),(193,157,95),(93,83,72)],
+            "Gardenia":[(125,158,106),(53,91,64),(222,196,106),(69,119,75)],
+            "Fantina":[(100,83,142),(45,34,72),(179,153,215),(66,53,103)]}[leader]
     for y in range(h):
         for x in range(w):
             tile=x//32;xx=x%32
@@ -94,18 +110,23 @@ def city_entrance(blobs,mapping,components,root,city=CITY):
 
 def build(blobs,mapping,components,occupied,types,species,existing,root=f.ROOT,overworlds=None,base=None,leader='Roark',allow_authored=False):
     gyms=roster(root)
-    if leader not in ('Roark','Gardenia'):raise ValueError('F11_UNKNOWN_LEADER')
-    second=leader=='Gardenia'
-    symbol,city,team,aliases,version,tag,label=(GARDENIA_SYMBOL,GARDENIA_CITY,GARDENIA_TEAM,GARDENIA_TYPES,GARDENIA_VERSION,'F11B','Eterna Gym - QA') if second else (SYMBOL,CITY,TEAM,TYPE_ALIASES,VERSION,'F11A','Oreburgh Gym - QA')
+    if leader not in GYM_SPECS:raise ValueError('F11_UNKNOWN_LEADER')
+    order=LEADER_ORDER.index(leader)
+    symbol,city,team,aliases,version,tag,label=GYM_SPECS[leader]
     report={"gyms":gyms,"gym_rooms_added":0,"gym_leaders_added":0,"new_portals":0,
             "maps_before":len(mapping),"maps_after":len(mapping),"native_verified":False,
             "source_layout":"PROJECT_AUTHORED_CHALLENGE_ROOM_NOT_ORIGINAL_GYM",
             "hm_award_enabled":False,"water_enabled":False}
-    if second and set(mapping)==f08c.ALL:
-        report["blocker"]="roark_predecessor_not_prepared";return blobs,mapping,components,report,b""
-    if set(mapping)!=(GYM_SETS[0] if second else f08c.ALL):raise ValueError("F11_GYM_BASELINE")
-    if second:
-        gyms[0].update(installed=True,map_id=mapping[SYMBOL])
+    expected=GYM_SETS[order-1] if order else f08c.ALL
+    if order and set(mapping) in (f08c.ALL,*GYM_SETS[:order-1]):
+        report["blocker"]=LEADER_ORDER[order-1].lower()+"_predecessor_not_prepared"
+        for i,prior in enumerate(LEADER_ORDER[:order]):
+            ps=GYM_SPECS[prior][0]
+            if ps in mapping:gyms[i].update(installed=True,map_id=mapping[ps])
+        return blobs,mapping,components,report,b""
+    if set(mapping)!=expected:raise ValueError("F11_GYM_BASELINE")
+    for i,prior in enumerate(LEADER_ORDER[:order]):
+        gyms[i].update(installed=True,map_id=mapping[GYM_SPECS[prior][0]])
     local=exact_leader_type(types,aliases)
     if not local or any(s not in species for s,l in team) or (local,leader,version) in existing:
         report["blocker"]="local_"+leader.lower()+"_type_species_or_pbs_collision";return blobs,mapping,components,report,b""
@@ -134,7 +155,7 @@ def build(blobs,mapping,components,occupied,types,species,existing,root=f.ROOT,o
     template=conn.read_marshal(blobs["Data/Map%03d.rxdata"%mapping["SINNOH_PLAYER_HOUSE_1F"]],"F11A_TEMPLATE")
     tile=copy.deepcopy(tiles[template.attrs["@tileset_id"]]);tid=len(tiles)
     if tid>=5000:raise ValueError("F11A_TILESET_CAPACITY")
-    name="SNQA_"+tag+("_GRASS_GYM" if second else "_ROCK_GYM")
+    name="SNQA_"+tag+("_ROCK_GYM","_GRASS_GYM","_GHOST_GYM")[order]
     tile.attrs.update({"@id":tid,"@name":name.encode(),"@tileset_name":name.encode(),
                        "@autotile_names":[b""]*7,"@passages":pv.table1([15]*384+[0,15,0,15,15,15,15,15]),
                        "@priorities":pv.table1([0]*392),"@terrain_tags":pv.table1([0]*392)})
@@ -144,7 +165,8 @@ def build(blobs,mapping,components,occupied,types,species,existing,root=f.ROOT,o
     for y in range(H):
         for x in range(W):
             cells[y*W+x]=385 if (x,y) not in floor else (386 if 5<=x<=9 and 2<=y<=4 else 384)
-    for xy in ((3,4),(11,4),(3,6),(11,6)):
+    pillars=((3,4),(11,4),(3,6),(11,6)) if order<2 else ((3,3),(11,3),(5,6),(9,6),(3,8),(11,8))
+    for xy in pillars:
         cells[xy[1]*W+xy[0]]=387;floor.remove(xy)
     room=copy.deepcopy(template)
     room.attrs.update({"@width":W,"@height":H,"@tileset_id":tid,"@events":{},
@@ -189,7 +211,7 @@ def build(blobs,mapping,components,occupied,types,species,existing,root=f.ROOT,o
         placeholder="__"+tag+"_SPEC__"
         if template.count(placeholder)!=1:raise ValueError("F11_TEMPLATE")
         plugin=template.replace(placeholder,json.dumps([local,leader,version,mid,team],ensure_ascii=True)).encode("utf-8")
-        gyms[1 if second else 0].update(installed=True,map_id=mid,leader_event_id=1,source_layout="PROJECT_AUTHORED",team=team)
+        gyms[order].update(installed=True,map_id=mid,leader_event_id=1,source_layout="PROJECT_AUTHORED",team=team)
         report.update(gym_rooms_added=1,gym_leaders_added=1,new_portals=2,maps_after=len(expanded),sprite_provenance=provenance,
             city_guide={"map_id":city_mid,"event_id":eid,"position":list(xy),"return":list(land)},
             gym_entry=list(ENTRY),gym_exit=list(EXIT),sprite_sha256=hashlib.sha256(art).hexdigest(),

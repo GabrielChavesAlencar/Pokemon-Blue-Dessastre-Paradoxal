@@ -252,3 +252,8 @@ F11A real bloqueou por zero candidatos Roark. F11A2 preserva o resultado anterio
 
 
 F11A integrada em b93c79734fa51867ce681a6eaf2b0e10d40c1556 (11 workflows/26 checks). F11A2/F11B job real 138901215154 HEAD 467d51a6c3e0f484d420418e249bcea9ec1ad106 confirmou duas salas autorais Map573/574, líderes evento1, guias evento2001 em Oreburgh Map452 [36,21] retorno [35,21] e Eterna Map455 [31,32] retorno [30,32]. 133 mapas, 77 portais, sete conexões e baseline preservados. Sprites autorais, catálogo fixture, sem vitória/compilação nativa. CI integral na main pendente.
+
+
+### F11C — Fantina
+
+Terceiro desafio em Hearthome, sala autoral de tipo Fantasma, não importação do layout original. Referência CH15/S15 Duskull/Haunter/Mismagius (24/24/26 históricos). Exige COAL e FOREST antes da batalha e antes da concessão RELIC, vitória confirmada pelo motor, compilação verificada e balanceamento/proteção de chefes existentes. Não concede HM05. Geração somente após os dois ginásios anteriores, com MapID livre, dois portais seguros, sprite exato ou autoral identificado sem ambiguidade. Testes reais exigem 134 mapas, preservação dos 133 anteriores, incluindo salas Roark/Gardenia, 79 portais esperados e saves por hashes. Nenhuma aprovação nativa ou instalação presumida. CI pendente.

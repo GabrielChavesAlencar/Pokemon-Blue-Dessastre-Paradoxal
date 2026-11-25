@@ -43,7 +43,8 @@ def authored_sheet(role):
               "north_gate_resident":((83,96,155),(160,185,196),(103,70,45)),
               "gym_guide":((65,78,110),(225,189,78),(78,52,37)),
               "gym_roark":((103,105,113),(207,85,49),(151,80,40)),
-              "gym_gardenia":((74,129,66),(231,184,75),(171,83,47))}
+              "gym_gardenia":((74,129,66),(231,184,75),(171,83,47)),
+              "gym_fantina":((115,69,150),(229,190,218),(139,86,177))}
     shirt,accent,hair=palettes[role]
     w=h=128;raw=bytearray(w*h*4);ink=(42,44,52);skin=(222,178,138)
     for direction in range(4):
@@ -65,6 +66,9 @@ def authored_sheet(role):
             if role=="gym_gardenia":
                 rect(8,5+bob,24,8+bob,hair);rect(9,8+bob,12,16+bob,hair);rect(20,8+bob,23,16+bob,hair)
                 rect(11,7+bob,21,9+bob,accent)
+            if role=="gym_fantina":
+                rect(7,4+bob,12,12+bob,hair);rect(20,4+bob,25,12+bob,hair)
+                rect(11,3+bob,21,7+bob,hair);rect(14,4+bob,18,6+bob,accent)
             rect(9,16+bob,23,26+bob,ink);rect(10,17+bob,22,25+bob,shirt)
             x=(10,10,19,13)[direction];rect(x,17+bob,x+3,24+bob,accent)
             stride=(0,1,0,-1)[frame]
