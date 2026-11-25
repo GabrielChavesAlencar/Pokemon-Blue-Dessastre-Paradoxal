@@ -2,9 +2,27 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "96ee503f3fc8b7d94044ccb8afb17c431db8f879",
+      "date": "2026-11-24T21:07:48-03:00",
+      "title": "Merge pull request #298 from GabrielChavesAlencar/sinnoh-full-expansion-f10b5-access-witnesses",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "44026f61f3a15bcc42d027ef8480e23e3de420bf",
+      "date": "2026-11-24T20:54:15-03:00",
+      "title": "Record F10B5 real access evidence and trigger complete main-target CI",
+      "category": "Melhorias"
+    },
+    {
       "sha": "805f9253951216e4987d427362579d3916cad2ad",
       "date": "2026-11-24T20:53:38-03:00",
       "title": "Merge pull request #297 from GabrielChavesAlencar/sinnoh-full-expansion-f10b4-double-battles",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "0962eced89a2306032752756d7de4eee2e7fc109",
+      "date": "2026-11-24T20:43:17-03:00",
+      "title": "Sinnoh F10B5: recover remaining trainers only through existing access witnesses",
       "category": "Melhorias"
     },
     {
