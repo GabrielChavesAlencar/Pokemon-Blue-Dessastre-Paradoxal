@@ -1344,6 +1344,17 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
             self.assertFalse(report["native_verified"])
             print("SINNOH_F12A_STORY_SOURCE_REPORT "+json.dumps(report,sort_keys=True),flush=True)
             print("SINNOH_REAL_F12A_STORY_SOURCE_CANDIDATES_139_MAPS_BASELINE_PRESERVED_OK",flush=True)
+            import sinnoh_f12b_windworks as windworks
+            preview=windworks.preview(gh,ghids,ghcomps,Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]),{2},ROOT,report)
+            self.assertEqual(preview["preview_maps"],140)
+            self.assertEqual(preview["baseline_maps"],139)
+            self.assertEqual(preview["new_portals"],0)
+            self.assertEqual(preview["native_bindings"],0)
+            self.assertEqual(preview["items_granted"],0)
+            self.assertFalse(preview["runtime_install_enabled"])
+            self.assertTrue(preview["baseline_preserved"])
+            print("SINNOH_F12B_WINDWORKS_PREVIEW_REPORT "+json.dumps(preview,sort_keys=True),flush=True)
+            print("SINNOH_REAL_F12B_WINDWORKS_140_MAP_PREVIEW_139_BASELINE_PRESERVED_OK",flush=True)
 
 
 
@@ -2593,6 +2604,24 @@ puts "F11H_SEVEN_BADGES_THEN_BEACON_WIN_ONLY_OK"
         self.assertNotIn("pbReceiveItem",json.dumps(row))
         with self.assertRaisesRegex(ValueError,"F12A_REQUIRES_F11H_BASELINE"):
             audit.audit({}, {}, Path("unused"),ROOT)
+
+    def test_f12b_windworks_evidence_gate_does_not_grant_items_or_bind_events(self):
+        import sinnoh_f12b_windworks as wind
+        self.assertEqual(wind.source_row(ROOT)["source_id"],111)
+        report={"baseline_maps":139,"baseline_preserved":True,"native_verified":False,"event_candidates":[
+            {"source_id":111,"source_sha256":wind.HASH,"qa_map_id":None,"source_event_id":1,
+             "actors":["MARS"],"item_markers":["WORKSKEY"],"literal_pickup_call_candidates":["WORKSKEY"]}]}
+        result=wind.evidence_gate(report)
+        self.assertEqual(result["mars_candidates"],[1])
+        self.assertEqual(result["literal_works_key_candidates"],[1])
+        self.assertEqual(result["native_bindings"],0)
+        self.assertEqual(result["items_granted"],0)
+        self.assertEqual(result["story_checkpoints_installed"],0)
+        report["event_candidates"][0]["source_sha256"]="0"*64
+        with self.assertRaisesRegex(ValueError,"F12B_SOURCE_EVIDENCE"):
+            wind.evidence_gate(report)
+        with self.assertRaisesRegex(ValueError,"F12B_REQUIRES_F11H"):
+            wind.preview({}, {}, {}, Path("unused"),set(),ROOT)
 
     def test_f11a_gym_contract_and_collision_guards(self):
         import sinnoh_f11a_gym as g
