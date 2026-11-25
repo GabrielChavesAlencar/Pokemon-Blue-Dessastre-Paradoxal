@@ -1391,6 +1391,27 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                 self.assertEqual(wr["new_seams"],0)
                 print("SINNOH_REAL_F12B4_ACCESS_BLOCKED_139_BASELINE_PRESERVED_OK",flush=True)
             print("SINNOH_F12B4_WINDWORKS_ACCESS_REPORT "+json.dumps(wr,sort_keys=True),flush=True)
+            import sinnoh_f12b5_authored_quest as quest
+            pickup=quest.pickup_candidates(Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]))
+            self.assertEqual([row["event_id"] for row in pickup],[2,3,4,5])
+            self.assertTrue(all(not row["grant_enabled"] for row in pickup))
+            print("SINNOH_F12B5_PICKUP_IDENTITY_REPORT "+json.dumps(pickup,sort_keys=True),flush=True)
+            qo,qr,qp=quest.build(wo,wi,wc,{"GALACTIC_GRUNT","GALACTIC_ADMIN"},{"GLAMEOW","STUNKY","ZUBAT","PURUGLY"},{"WORKSKEY"},set(),ROOT)
+            qr["catalog_provenance"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
+            self.assertFalse(qr["native_verified"])
+            self.assertEqual(qr["items_granted"],0)
+            if qr["new_events"]:
+                self.assertEqual(qr["new_events"],5)
+                self.assertTrue(qr["existing_map_content_preserved"])
+                self.assertEqual(qr["new_portals"],0)
+                self.assertEqual(qo["Data/map_connections.dat"],wo["Data/map_connections.dat"])
+                self.assertIn(b"BlueSinnohF12B5",qp)
+                print("SINNOH_REAL_F12B5_AUTHORED_FIVE_EVENTS_FIXTURE_PREPARED_OK",flush=True)
+            else:
+                self.assertEqual(qo,wo)
+                self.assertEqual(qp,b"")
+                print("SINNOH_REAL_F12B5_AUTHORED_QUEST_BLOCKED_BASELINE_PRESERVED_OK",flush=True)
+            print("SINNOH_F12B5_AUTHORED_QUEST_REPORT "+json.dumps(qr,sort_keys=True),flush=True)
             import sinnoh_f12b_windworks as windworks
             preview=windworks.preview(gh,ghids,ghcomps,Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]),{2},ROOT,report)
             self.assertEqual(preview["preview_maps"],140)
@@ -2712,6 +2733,14 @@ puts "F11H_SEVEN_BADGES_THEN_BEACON_WIN_ONLY_OK"
         self.assertEqual(access.shared_edge({(0,1)}, {(31,1)},(33,29),(32,88)),[])
         self.assertEqual(access.component({(0,0),(1,0),(3,0)},(0,0)),{(0,0),(1,0)})
         self.assertEqual(access.append({}, {}, {}, Path("unused"),set(),ROOT)[3]["runtime_install_enabled"],False)
+
+    def test_f12b5_reference_and_exact_pickup_literals(self):
+        import sinnoh_f12b5_authored_quest as quest
+        self.assertEqual(len(quest.contract(ROOT)),5)
+        self.assertEqual(quest.PICKUP.fullmatch(b"pbItemBall(PBItems::POTION)")[1],b"POTION")
+        self.assertEqual(quest.PICKUP.fullmatch(b"pbItemBall(42, 2)")[2],b"42")
+        self.assertIsNone(quest.PICKUP.fullmatch(b"pbItemBall(:POTION); other()"))
+        self.assertEqual(quest.build({}, {}, {}, set(),set(),set(),set(),ROOT)[1]["new_events"],0)
 
     def test_f11a_gym_contract_and_collision_guards(self):
         import sinnoh_f11a_gym as g
