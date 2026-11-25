@@ -1705,6 +1705,7 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                             self.assertEqual(set(story["lake_independent_legs"]),set(integrated.ORDER))
                             self.assertEqual(set(story["lake_local_previews"]),set(integrated.ORDER))
                             self.assertEqual(story["valor_rock_reference_cells"],204)
+                            self.assertIn(story["valor_rock_threshold_cells"],(0,1))
                             self.assertEqual(story["lake_payloads"],list(integrated.ORDER[:len(story["lake_payloads"])]))
                             self.assertTrue(all(story["lake_sequence_checks"][k]["walk_from_predecessor_proved"] for k in story["lake_payloads"]))
                             self.assertIn("CYNTHIA",story["locations"])
@@ -3590,6 +3591,18 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertLess(main.index("COMPILER_RETURNED"),main.index("VERIFY_ENTERED"))
         self.assertLess(main.index("TRANSACTION_PROBE_OK"),main.index("ALL_VERIFIERS_PASSED"))
         self.assertIn("Compiler.singleton_class.send(:define_method, :compile_all, blue_sinnoh_core)",main)
+
+    def test_f12d_lake_reference_repairs_are_exact_and_reciprocal(self):
+        import sinnoh_f12d_integrated as i
+        import sinnoh_f10b7_field_audit as g
+        stale={25:{"@width":20,"@height":15},26:{"@width":20,"@height":15}}
+        self.assertEqual(i.original_lake_reference_destination(214,6,(45,22,26,45,6,0,0),stale),215)
+        self.assertEqual(i.original_lake_reference_destination(215,2,(46,6,25,46,22,0,0),stale),214)
+        self.assertEqual(i.original_lake_reference_destination(216,2,(46,6,25,46,22,0,0),stale),25)
+        with self.assertRaises(ValueError):i.original_lake_reference_destination(214,6,(45,22,26,44,6,0,0),stale)
+        with self.assertRaises(ValueError):i.original_lake_reference_destination(215,2,(46,6,25,46,22,0,0),{25:{"@width":64,"@height":56}})
+        self.assertEqual(g.ORIGINAL_LAKE_EVENT_CONTRACTS[214,6,215],(45,22,45,6))
+        self.assertEqual(g.ORIGINAL_LAKE_EVENT_CONTRACTS[215,2,214],(46,6,46,22))
 
     def test_f12d_integrated_missing_item_and_player_methods(self):
         import tempfile

@@ -142,8 +142,15 @@ def verified_verity_entry(event,src,mapping):
     return (10+lane,2,dst,44+lane,42,8,a[5])
 
 ORIGINAL_LAKE_SYMBOLS={159:"SINNOH_ACUITY_LAKEFRONT",161:"SINNOH_LAKE_ACUITY",
-    162:"SINNOH_ACUITY_CAVERN",215:"SINNOH_LAKE_VALOR",217:"SINNOH_VALOR_CAVERN"}
-ORIGINAL_LAKE_PAIRS={(159,161),(161,159),(161,162),(162,161),(215,217),(217,215)}
+    162:"SINNOH_ACUITY_CAVERN",214:"SINNOH_VALOR_LAKEFRONT",215:"SINNOH_LAKE_VALOR",217:"SINNOH_VALOR_CAVERN"}
+ORIGINAL_LAKE_EVENT_CONTRACTS={
+    (159,3,161):(20,32,8,49),(161,2,159):(8,49,20,33),
+    (161,3,162):(26,26,20,34),(162,1,161):(20,34,26,26),
+    (214,6,215):(45,22,45,6),(214,7,215):(45,23,45,7),
+    (215,2,214):(46,6,46,22),(215,3,214):(46,7,46,23),
+    (215,4,217):(26,24,22,36),(217,1,215):(22,36,26,24),
+}
+ORIGINAL_LAKE_PAIRS={(a,b) for a,_,b in ORIGINAL_LAKE_EVENT_CONTRACTS}
 ORIGINAL_CAVE_CALLS={b"pbCaveEntrance",b"pbCaveExit"}
 
 def verified_original_lake_entry(event,src,mapping):
@@ -168,6 +175,7 @@ def verified_original_lake_entry(event,src,mapping):
     if len(body)==2 and (body[0].get("@code")!=355 or len(body[0].get("@parameters",[]))!=1 or body[0]["@parameters"][0] not in ORIGINAL_CAVE_CALLS):return None
     v=body[-1].get("@parameters",[])
     if len(v)!=6 or any(type(x) is not int for x in v) or v[:2]!=[0,dst] or v[4] not in (0,2,4,6,8) or v[5] not in (0,1):return None
+    if ORIGINAL_LAKE_EVENT_CONTRACTS.get((a,eid,b))!=(event.attrs["@x"],event.attrs["@y"],v[2],v[3]):return None
     return (event.attrs["@x"],event.attrs["@y"],dst,*v[2:])
 
 def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=False,seed_cells=None,strict_movement=False,rock_cells=(),valor_rock=(),blocked_cells=(),blocked_lanes=(),post_chase_story=False,edge_sink=None):
@@ -225,10 +233,17 @@ def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=Fal
                 stack=tuple(struct.unpack_from("<H",a["@data"].data,20+2*(z*w*h+y*w+x))[0] for z in range(3))
                 ts=tiles[a["@tileset_id"]].attrs
                 tags=[struct.unpack_from("<H",ts["@terrain_tags"].data,20+2*k)[0] for k in stack if k]
+                priorities=tuple(struct.unpack_from("<H",ts["@priorities"].data,20+2*k)[0] for k in stack if k)
+                threshold=(x,y)==(22,36) and tags==[4,0] and priorities==(0,1)
                 if stack!=expected or 4 not in tags or any(tag not in (0,4) for tag in tags) or any(
-                    struct.unpack_from("<H",ts["@passages"].data,20+2*k)[0]&15 or
-                    struct.unpack_from("<H",ts["@priorities"].data,20+2*k)[0]!=0 for k in stack if k):
+                    struct.unpack_from("<H",ts["@passages"].data,20+2*k)[0]&15 for k in stack if k) or (not threshold and any(priorities)):
                     raise ValueError("F12D_VALOR_ROCK_CHANGED")
+                if (x,y) in occupied:
+                    # Only the exact recovered door can occupy the threshold.
+                    valid=threshold and any(verified_original_lake_entry(e,mid,mapping) for e in world.attrs["@events"].values()
+                        if (e.attrs["@x"],e.attrs["@y"])==(x,y))
+                    if not valid:raise ValueError("F12D_VALOR_ROCK_OCCUPIED")
+                    if not post_chase_story:continue
                 passages[mid][x,y]=0
             for m,x,y in blocked_cells:
                 if m==mid:passages[mid].pop((x,y),None)

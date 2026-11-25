@@ -98,10 +98,19 @@ def valor_rock_reference(blobs,mapping,source):
     def zero_priority(a,ts,stack):
         data=ts[a.attrs["@tileset_id"]].attrs["@priorities"].data
         return all(struct.unpack_from("<H",data,20+2*k)[0]==0 for k in stack if k)
-    return {(mid,x,y):qs[x,y] for x,y in qs if 0<x<w-1 and 0<y<h-1 and
+    cells={(mid,x,y):qs[x,y] for x,y in qs if 0<x<w-1 and 0<y<h-1 and
         sh[x,y]==qh[x,y] and 4 in qh[x,y][1] and all(k in (0,4) for k in qh[x,y][1])
         and all(k==0 for k in qh[x,y][0]) and guard[y][x]=="." and
         zero_priority(src,st,ss[x,y]) and zero_priority(world,tiles,qs[x,y])}
+    door=(22,36)
+    def priorities(a,ts,stack):
+        data=ts[a.attrs["@tileset_id"]].attrs["@priorities"].data
+        return tuple(struct.unpack_from("<H",data,20+2*k)[0] for k in stack if k)
+    if (ss.get(door)==(6833,7001,0) and sh.get(door)==((0,0),(4,0)) and qh.get(door)==sh[door] and
+        priorities(src,st,ss[door])==(0,1) and priorities(world,tiles,qs[door])==(0,1) and
+        guard[36][22]=="." and (mid,22,35) in cells):
+        cells[mid,*door]=qs[door]
+    return cells
 
 def lake_contract(key,types,species,existing):
     symbol,name,aliases,version,team=LAKES[key]
@@ -112,6 +121,31 @@ def lake_contract(key,types,species,existing):
 
 def ruby_hash(mapping):
     return "{"+",".join(json.dumps(k)+"=>"+json.dumps(v) for k,v in sorted(mapping.items()))+"}"
+
+# Exact misnumbered original transfer records independently recovered from
+# F03 job 138719583390 and the pinned source archive (no donor code execution).
+# These are references to the source, not local MapIDs or arbitrary new warps.
+LAKE_REFERENCE_REPAIRS={
+    (214,6):(26,215,(45,22),(45,6)),
+    (214,7):(26,215,(45,23),(45,7)),
+    (215,2):(25,214,(46,6),(46,22)),
+    (215,3):(25,214,(46,7),(46,23)),
+}
+LAKE_STALE_DEMO_MAPS={
+    25:("067f4510f90050b44f1db93be6460f5939e1340eaf278eb2788af61c32e791c1",5),
+    26:("8f14169c7f6b6b6ad9f03ce55bcc9ab7a33e86cb8a5e6f275f7e2f41880387e6",3),
+}
+
+def original_lake_reference_destination(sid,eid,transfer,stale):
+    row=LAKE_REFERENCE_REPAIRS.get((sid,eid))
+    if row is None:return transfer[2]
+    wrong,right,xy,landing=row
+    x,y,t,dx,dy,_,_=transfer
+    if (t,(x,y),(dx,dy))!=(wrong,xy,landing) or wrong not in stale:
+        raise ValueError("F12D_LAKE_STALE_REFERENCE_CHANGED")
+    if 0<=dx<stale[wrong]["@width"] and 0<=dy<stale[wrong]["@height"]:
+        raise ValueError("F12D_LAKE_STALE_REFERENCE_NOT_OUT_OF_BOUNDS")
+    return right
 
 def original_lake_candidates(data,mapping,components,root,source,rock,valor_rock,seed):
     import copy
@@ -129,7 +163,14 @@ def original_lake_candidates(data,mapping,components,root,source,rock,valor_rock
     with pv.verified_archive(source,"maps") as z:
         st=conn.read_marshal(pv.member(z,pv.MAP_ROOT+"Data/Tilesets.rxdata"),"F12D_LAKE_SOURCE_TILES")
         infos=conn.read_marshal(pv.member(z,pv.MAP_ROOT+"Data/MapInfos.rxdata"),"F12D_LAKE_SOURCE_INFOS")
-        donor={};hashes={}
+        donor={};hashes={};stale={}
+        for sid,(digest,tileset) in LAKE_STALE_DEMO_MAPS.items():
+            raw=pv.member(z,pv.MAP_ROOT+"Data/Map%03d.rxdata"%sid)
+            if hashlib.sha256(raw).hexdigest()!=digest:raise ValueError("F12D_LAKE_STALE_DEMO_HASH")
+            w=conn.read_marshal(raw,"F12D_LAKE_STALE_DEMO").attrs
+            if (w["@width"],w["@height"],w["@tileset_id"])!=(20,15,tileset) or conn.static_targets(w["@events"])!={23} or infos[sid].attrs["@parent_id"]!=1:
+                raise ValueError("F12D_LAKE_STALE_DEMO_IDENTITY")
+            stale[sid]=w
         for sid in sorted(focus):
             raw=pv.member(z,pv.MAP_ROOT+"Data/Map%03d.rxdata"%sid)
             digest=hashlib.sha256(raw).hexdigest()
@@ -146,7 +187,9 @@ def original_lake_candidates(data,mapping,components,root,source,rock,valor_rock
                     "source_position":[e.attrs["@x"],e.attrs["@y"]],"source_map_sha256":hashes[sid]}
                 result["source_entries"].append(row)
                 if len(targets)!=1:row["reason"]="ambiguous_targets";continue
-                dst=next(iter(targets))
+                original_dst=next(iter(targets))
+                repair=LAKE_REFERENCE_REPAIRS.get((sid,eid))
+                dst=repair[1] if repair else original_dst
                 if dst not in bound:row["reason"]="unmapped_source_dependency";continue
                 if (sid,dst) not in gates.ORIGINAL_LAKE_PAIRS:
                     row["reason"]="outside_reciprocal_lake_scope";continue
@@ -169,7 +212,10 @@ def original_lake_candidates(data,mapping,components,root,source,rock,valor_rock
                 transfer,why=conn.classify_transfer(cloned)
                 if not transfer:row["reason"]=why;continue
                 x,y,t,dx,dy,direction,fade=transfer
-                if t!=dst:row["reason"]="source_destination_mismatch";continue
+                if t!=original_dst or original_lake_reference_destination(sid,eid,transfer,stale)!=dst:
+                    row["reason"]="source_destination_mismatch";continue
+                if repair:
+                    row["reference_repair"]={"original_target_source_id":original_dst,"resolved_target_source_id":dst,"reason":"pinned_out_of_bounds_demo_reference_and_reciprocal_corridor"}
                 a,b=bound[sid],bound[dst];xy=(x,y);landing=(dx,dy)
                 row["from"]=[a,x,y];row["to"]=[b,dx,dy]
                 if a not in worlds or b not in worlds:row["reason"]="missing_local_map";continue
@@ -197,6 +243,8 @@ def original_lake_candidates(data,mapping,components,root,source,rock,valor_rock
                 entry.update(sha256=hashlib.sha256(raw).hexdigest(),
                     dimensions=[world.attrs["@width"],world.attrs["@height"]],
                     original_targets=sorted(conn.static_targets(world.attrs["@events"])))
+            if sid in stale:entry["classification"]="STALE_DEMO_INTERIOR_NOT_A_LAKE_DEPENDENCY"
+            if sid==9:entry["classification"]="STALE_DEMO_REFERENCE_TO_VERITY_CAVERN_NOT_INSTALLED"
             result["missing_dependencies"].append(entry)
     # No arbitrary landing/door shift. Require both directions of an exact
     # original pair; never attach the nonreciprocal source 216 variant.
@@ -319,7 +367,9 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
     old={k:v for k,v in mapping.items() if k in chase.prior.ALL}
     entries=tp.build(blobs,old,components,root)
     valor_rock=valor_rock_reference(blobs,mapping,source)
-    result["valor_rock_reference_cells"]=len(valor_rock)
+    threshold=(mapping["SINNOH_VALOR_CAVERN"],22,36)
+    result["valor_rock_threshold_cells"]=int(threshold in valor_rock)
+    result["valor_rock_reference_cells"]=len(valor_rock)-result["valor_rock_threshold_cells"]
     for key in ORDER:
         contract=result["lake_contracts"][key]
         if not contract or contract["symbol"] not in mapping:continue
@@ -554,7 +604,10 @@ def effective_player_receipt(player_rows,expected=PLAYER_METHOD_REFS):
                     if len(starts)==1:
                         stop=next((i for i in range(starts[0]+1,len(lines)) if lines[i]==b"  end"),None)
                         if stop is not None:
-                            row["method_sha1"]=hashlib.sha1(b"\n".join(lines[starts[0]:stop+1])).hexdigest()
+                            method=b"\n".join(lines[starts[0]:stop+1])
+                            row["method_sha1"]=hashlib.sha1(method).hexdigest()
+                            if name=="passable?":
+                                row["indexed_state_identifiers"]=[v.decode("ascii") for v in sorted(set(re.findall(rb"(?:\$|@)[A-Za-z_][A-Za-z0-9_]*(?=\s*\[)",method)))]
                         else:row["status"]="unresolved"
                     entry["methods"][name]=row["status"];history[name].append(row)
             declarations.append(entry)

@@ -30,7 +30,7 @@ module BlueSinnohF12DIntegrated
     badges=BlueRegions.local_achievements(s,"SINNOH")
     return false unless badges.include?("MINE")
     return badges.include?("ICICLE") if [[159,161],[161,159],[161,162],[162,161]].include?([a,b])
-    [[215,217],[217,215]].include?([a,b])
+    [[214,215],[215,214],[215,217],[217,215]].include?([a,b])
   end
   def self.rock_reference_valid?
     return false unless defined?(GameData::TerrainTag)
@@ -77,12 +77,21 @@ module BlueSinnohF12DIntegrated
     raise "Sinnoh F12D: passable? owner inesperado" unless Game_Player.instance_method(:passable?).owner==Game_Player
     raise "Sinnoh F12D: super de passable? inesperado" unless Game_Player.instance_method(:passable?).super_method &&
       Game_Player.instance_method(:passable?).super_method.owner==Game_Character
-    previous=[$game_map,$map_factory,$game_player,$DEBUG]
+    previous=[$game_map,$map_factory,$game_player,$DEBUG,$game_switches,$game_variables,$game_self_switches,$game_temp]
     begin
       $DEBUG=false
+      # Decades has an additional passable? branch before the ordinary
+      # superclass checks. At compile time there is no New Game state.
+      # Exercise it with actual native default containers, not permissive
+      # mocks, and restore every global even if the collision probe fails.
+      $game_switches=Game_Switches.new
+      $game_variables=Game_Variables.new
+      $game_self_switches=Game_SelfSwitches.new
+      $game_temp=Game_Temp.new
       $game_map=CompileProbeMap.new
       $map_factory=nil
-      $game_player=Game_Player.allocate
+      $game_player=Game_Player.new
+      puts "SINNOH_F12D_NATIVE_STAGE FRESH_MOVEMENT_CONTEXT"
       p=$game_player
       p.instance_variable_set(:@x,1); p.instance_variable_set(:@y,1)
       p.instance_variable_set(:@width,1); p.instance_variable_set(:@height,1)
@@ -122,7 +131,7 @@ module BlueSinnohF12DIntegrated
       raise "Sinnoh F12D: coordenada de borda" unless $map_factory.calls==[[3,1],[3,1]]
       true
     ensure
-      $game_map,$map_factory,$game_player,$DEBUG=*previous
+      $game_map,$map_factory,$game_player,$DEBUG,$game_switches,$game_variables,$game_self_switches,$game_temp=*previous
     end
   end
   def self.verify_native_transaction!
