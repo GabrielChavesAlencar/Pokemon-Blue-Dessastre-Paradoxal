@@ -3484,7 +3484,7 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertEqual(len(sprites),5)
         self.assertEqual(len(set(sprites.values())),5)
         for raw in sprites.values():
-            self.assertEqual(raw[:8],b"\\x89PNG\\r\\n\\x1a\\n")
+            self.assertEqual(raw[:8],b"\x89PNG\r\n\x1a\n")
             self.assertEqual(struct.unpack_from(">II",raw,16),(128,128))
         code=b"reference"
         row=[1,b"reference",zlib.compress(code)]
