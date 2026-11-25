@@ -244,3 +244,8 @@ F10C2 testa os dois portões Cycling Road nas posições originais, apenas por a
 
 
 F10C integrada em 50c3a10d35232bb11d38ae3bd4b1820cbb97277f (11 workflows/26 checks). Job real 138898048760, HEAD 848fc824e838e2797047bf6614960ce981029502: F10C2 preservou dois NPCs, sem novos; portão sul sem acesso seguro, norte posição insegura/reservada. F11A preservou 131 mapas e zero salas/líderes novos; Roark bloqueado por ausência de sprite exato (zero candidatos). Aprovação do marcador não equivale a ginásio instalado. CI integral na main exigida; QA nativa pendente.
+
+
+### F11A2 e F11B — correção de sprite e Gardenia
+
+F11A real bloqueou por zero candidatos Roark. F11A2 preserva o resultado anterior reproduzível, mas permite arte autoral de líder quando nenhum arquivo exato existe (não quando há ambiguidade). F11B reutiliza a arena com paleta vegetal em Eterna, somente após Roark preparado, e exige COAL antes de iniciar a batalha e antes de conceder FOREST. Equipe histórica Turtwig/Cherrim/Roserade 20/20/22; níveis dinâmicos e proteção de chefes existentes. Sem HM01/HM06 automáticas, sem alterações Decades. Testes reais exigem 133 mapas, dois novos ginásios e quatro portais, preservação dos 131 anteriores, seis treinadores, dois NPCs, spawns, encounters e MapIDs; testes Ruby de vitória, derrota, fuga e repetição. Máscaras para novas salas e compatibilidade por hashes F11A2. Status efetivo ainda pendente de CI e catálogo local; não confundir com QA nativa.

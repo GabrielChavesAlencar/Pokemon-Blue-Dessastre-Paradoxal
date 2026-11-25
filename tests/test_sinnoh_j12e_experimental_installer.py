@@ -1158,6 +1158,37 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
             greport["species_and_types_validation"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
             print("SINNOH_F11A_GYM_REPORT "+json.dumps(greport,sort_keys=True),flush=True)
             print("SINNOH_REAL_F11A_ROARK_GYM_BASELINE_131_MAPS_PRESERVED_OK",flush=True)
+            g2maps,g2ids,g2comps,g2report,g2plugin=gym.build(finalc2,f08c_ids,f08c_components,{2},{"LEADER_ROARK"},{"GEODUDE","ONIX","CRANIDOS"},set(),ROOT,Path(ow),allow_authored=True)
+            self.assertEqual(g2report["gym_rooms_added"],1,g2report)
+            self.assertEqual(g2report["sprite_provenance"],"PROJECT_AUTHORED_LEADER_NOT_DONOR")
+            self.assertEqual(len(g2ids),132)
+            self.assertEqual({k:g2ids[k] for k in f08c_ids},f08c_ids)
+            self.assertEqual(g2report["new_portals"],2)
+            g2report["species_and_types_validation"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
+            print("SINNOH_F11A2_GYM_REPORT "+json.dumps(g2report,sort_keys=True),flush=True)
+            gb,gbids,gbcomps,gbreport,gbplugin=gym.build(g2maps,g2ids,g2comps,{2},{"LEADER_GARDENIA"},{"TURTWIG","CHERRIM","ROSERADE"},set(),ROOT,Path(ow),leader="Gardenia",allow_authored=True)
+            self.assertEqual(gbreport["gym_rooms_added"],1,gbreport)
+            self.assertEqual(len(gbids),133)
+            self.assertEqual({k:gbids[k] for k in g2ids},g2ids)
+            self.assertEqual(gbreport["new_portals"],2)
+            self.assertFalse(gbreport["native_verified"])
+            self.assertFalse(gbreport["hm_award_enabled"])
+            for previous,current,city_symbol,oldids in ((finalc2,g2maps,gym.CITY,f08c_ids),(g2maps,gb,gym.GARDENIA_CITY,g2ids)):
+                for path,raw in previous.items():
+                    if path in ("Data/MapInfos.rxdata","Data/Tilesets.rxdata","PBS/map_metadata.txt"):continue
+                    if path=="Data/Map%03d.rxdata"%oldids[city_symbol]:
+                        old=read_marshal(raw,"F11B_OLD");new=read_marshal(current[path],"F11B_NEW")
+                        before=old.attrs.pop("@events");after=new.attrs.pop("@events")
+                        self.assertEqual(serialize(old,connection.EVENT_CLASSES),serialize(new,connection.EVENT_CLASSES))
+                        for eid,event in before.items():
+                            self.assertEqual(serialize(event,connection.EVENT_CLASSES),serialize(after[eid],connection.EVENT_CLASSES))
+                    else:self.assertEqual(current[path],raw)
+            self.assertEqual([r for r in exp.qa_teleport.build(gb,gbids,gbcomps) if r[0] not in (gym.SYMBOL,gym.GARDENIA_SYMBOL)],[r for r in entries if r[0] not in (gym.SYMBOL,gym.GARDENIA_SYMBOL)])
+            self.assertIn(b"BlueSinnohF11B",gbplugin)
+            gbreport["species_and_types_validation"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
+            print("SINNOH_F11B_GYM_REPORT "+json.dumps(gbreport,sort_keys=True),flush=True)
+            print("SINNOH_REAL_F11B_ROARK_GARDENIA_133_MAPS_BASELINE_PRESERVED_OK",flush=True)
+
 
 
 
@@ -1859,6 +1890,72 @@ puts "F10B4_DOUBLE_ATOMIC_VICTORY_OK"
             result=subprocess.run(["ruby","-e",fixture,str(path)],capture_output=True,text=True,encoding="utf-8")
             self.assertEqual(result.returncode,0,result.stdout+result.stderr)
             self.assertIn("F10B4_DOUBLE_ATOMIC_VICTORY_OK",result.stdout)
+
+    @unittest.skipUnless(shutil.which("ruby"),"Requires Ruby runtime")
+    def test_f11b_gardenia_requires_coal_and_confirmed_win(self):
+        source=(ROOT/"scripts/regions/SinnohF11B.rb").read_text("utf-8").replace(
+            "__F11B_SPEC__", '["LEADER_GARDENIA","Gardenia",11002,581,[["TURTWIG",20],["CHERRIM",20],["ROSERADE",22]]]')
+        fixture=r'''
+module BlueSinnohExperimental
+  def self.private_copy?; true; end
+end
+module BlueSinnohPilot
+  def self.regional_state; $state; end
+  def self.profile_error(*args); raise args.last; end
+end
+module BlueRegions
+  def self.valid_sinnoh_badges?(s);s["current"]=="SINNOH" && s["badges"].is_a?(Array);end
+  def self.local_achievements(s,r);s["badges"];end
+  def self.award(s,r,b);return false if s["badges"].include?(b);s["badges"] << b;true;end
+end
+module BlueKantoTitle
+  def self.sinnoh_experimental_barry_compiled?;true;end
+end
+module BlueCampaign
+  module Teams;end
+  def self.active?;true;end
+end
+class Battle;prepend BlueCampaign::Teams;end
+module BlueStory
+  def self.regional_first_boss?(a);a.first.trainer_type=="LEADER_GARDENIA";end
+end
+module BlueSinnohF10B
+  def self.valid_team?(s);true;end
+end
+module TrainerBattle
+  def self.start_core(*args);$calls+=1;$outcome;end
+end
+def _INTL(s);s;end
+def pbMessage(s);end
+Mon=Struct.new(:hp) {def egg?;false;end}
+$player=Struct.new(:party).new([Mon.new(10)])
+$game_map=Struct.new(:map_id).new(581)
+$game_temp=Struct.new(:waiting_trainer,:battle_rules).new(nil,{})
+$state={"current"=>"SINNOH","badges"=>[],"native"=>[false],"hm"=>[]}
+$calls=0;$outcome=1
+load ARGV[0]
+raise "bypass" if BlueSinnohF11B.battle
+raise "battle started before COAL" unless $calls==0
+$state["badges"] << "COAL"
+[2,3,nil].each do |result|
+  $outcome=result
+  raise "invalid award" if BlueSinnohF11B.battle
+end
+raise "loss changed badges" unless $state["badges"]==["COAL"]
+$outcome=1
+raise "win" unless BlueSinnohF11B.battle
+raise "badge" unless $state["badges"]==["COAL","FOREST"]
+raise "native changed" unless $state["native"]==[false] && $state["hm"].empty?
+before=$calls
+raise "repeat" unless BlueSinnohF11B.battle
+raise "duplicate" unless $calls==before
+puts "F11B_COAL_THEN_FOREST_WIN_ONLY_OK"
+'''
+        with tempfile.TemporaryDirectory() as td:
+            path=Path(td)/"F11B.rb";path.write_text(source,encoding="utf-8")
+            result=subprocess.run(["ruby","-e",fixture,str(path)],capture_output=True,text=True,encoding="utf-8")
+            self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+            self.assertIn("F11B_COAL_THEN_FOREST_WIN_ONLY_OK",result.stdout)
 
     def test_f11a_gym_contract_and_collision_guards(self):
         import sinnoh_f11a_gym as g
