@@ -313,3 +313,8 @@ F12A job 138918141829 HEAD 31e1f2f212da60c87bed2a0a79dec184e05151cd: 238 mapas-f
 ### F12B3 — pré-voo do Blue-Story (bloqueado até evidência de acesso e eventos)
 
 F12B1 job 138919751871 HEAD 209c4acf1a34a104b3f7340130a2224339565f89 confirmou Map581 na prévia, chegada [17,14], 180 células conectadas, 140 mapas na prévia, 139 anteriores intactos. O instalador agora calcula diagnóstico F12B3 somente para baseline completo F11H e inclui o resultado no manifesto QA. Candidatos de acesso, Mars, Works Key e PBS não são autorização: sem implementação revisada, a área não é instalada, nenhum portal ou evento é acrescentado. Falhas da auditoria permanecem explícitas e não bloqueiam a exploração F11 já preparada. Sem alteração de MapIDs, saves, recompensas, scripts de outras regiões ou QA nativa. CI pendente.
+
+
+### F12B4 — acesso de exploração condicionado à costura original
+
+F12B2 job 138921338468 confirmou cinco eventos, quatro chamadas de item não identificadas, zero identidades Mars, zero Works Key, zero PBS de treinadores/itens e duas conexões originais. F12B3 job 138922763649 confirmou o bloqueio de história. O instalador passa a tentar a costura exata 111 W 0 / 94 E 57 somente se houver células ordinárias conectadas às chegadas dos dois mapas e nenhuma colisão de lado/ID/registro. A outra conexão 111 W 252 / 199 E 0 não tem interseção dimensional; não é habilitada. Se não houver prova geométrica, retorna os 139 mapas sem alterações. Se aprovada, acrescenta apenas Windworks, 1 conexão contínua, 0 portais, 0 eventos e 0 itens. Map581 é o ID da fixture, alocação local livre obrigatória. Preserva hashes dos mapas anteriores e compatibilidade de saves por manifesto. Sem QA nativa. CI pendente.

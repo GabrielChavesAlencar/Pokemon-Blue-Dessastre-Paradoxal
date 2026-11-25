@@ -533,7 +533,7 @@
       "id": "F12",
       "title": "História, Equipe Galactic e itens-chave",
       "status": "implementation_pending_ci",
-      "followup": "F12B3_INSTALLER_PREFLIGHT_PENDING_CI",
+      "followup": "F12B4_EXPLORATION_SEAM_PENDING_CI",
       "story_checkpoints_scope": 14,
       "hm_contracts_scope": 8,
       "native_bindings": 0,
@@ -562,7 +562,30 @@
         14
       ],
       "windworks_preview_connected_cells": 180,
-      "windworks_runtime_install_enabled": false
+      "windworks_runtime_install_enabled": false,
+      "f12b2_real_job": 138921338468,
+      "f12b3_real_job": 138922763649,
+      "windworks_source_seams": [
+        [
+          111,
+          "W",
+          0,
+          94,
+          "E",
+          57
+        ],
+        [
+          111,
+          "W",
+          252,
+          199,
+          "E",
+          0
+        ]
+      ],
+      "windworks_events_audited": 5,
+      "windworks_item_call_candidates": 4,
+      "windworks_source_pbs_files": 0
     },
     {
       "id": "F13",
