@@ -542,7 +542,7 @@
       "id": "F12",
       "title": "História, Equipe Galactic e itens-chave",
       "status": "implementation_pending_ci",
-      "followup": "F12D3_DRY_NETWORK_FIXTURE_PENDING_CI",
+      "followup": "F12D3_DIRECTIONAL_NETWORK_PENDING_CI",
       "story_checkpoints_scope": 14,
       "hm_contracts_scope": 8,
       "native_bindings": 0,
@@ -1287,7 +1287,41 @@
         "N",
         0
       ],
-      "f12d3_dry_network_installed": false
+      "f12d3_dry_network_installed": false,
+      "f12d3_dry_network_prior_head": "b20e50dcaacb00206317e961a2050a46455cba77",
+      "f12d3_dry_network_prior_real_job": 139325594132,
+      "f12d3_dry_network_prior_marker_confirmed": true,
+      "f12d3_dry_network_corrected_head": "01eff869977c0cb31ceceb48e15af8729fa540f9",
+      "f12d3_dry_network_unit_tests": 14,
+      "f12d3_dry_network_unit_job": 139327426958,
+      "f12d3_dry_network_free_intervals": 451,
+      "f12d3_dry_network_reserved_intervals": 1055,
+      "f12d3_dry_network_pastoria_approach_cells": 2076,
+      "f12d3_dry_network_celestic_approach_cells": 438,
+      "f12d3_dry_network_complete_candidates": 0,
+      "f12d3_dry_network_minimum_edits": null,
+      "f12d3_dry_network_reverse_components": {
+        "80": [],
+        "116": [
+          1,
+          2,
+          6,
+          8,
+          16,
+          17
+        ],
+        "126": []
+      },
+      "f12d3_dry_network_extra_potential_axes": 8,
+      "f12d3_dry_network_protected_counts": {
+        "80": 54,
+        "116": 83,
+        "126": 86,
+        "222": 61,
+        "223": 83
+      },
+      "f12d3_directional_network_pending_ci": true,
+      "f12d3_directional_network_installed": false
     },
     {
       "id": "F13",

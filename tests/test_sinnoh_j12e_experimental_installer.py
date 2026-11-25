@@ -1619,6 +1619,13 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                         self.assertEqual(nr["changed_cells_installed"],0)
                         print("SINNOH_F12D3_DRY_NETWORK_REPORT "+json.dumps(nr,sort_keys=True),flush=True)
                         print("SINNOH_REAL_F12D3_DRY_NETWORK_AUDITED_OK",flush=True)
+                        dnr=network.inspect(chased,expanded,expanded_comps,cr,ext,dr,Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]),ROOT,directional_repair=True)
+                        self.assertEqual(chased,snapshot)
+                        self.assertFalse(dnr["activation_allowed"])
+                        self.assertFalse(dnr["native_verified"])
+                        self.assertEqual(dnr["changed_cells_installed"],0)
+                        print("SINNOH_F12D3_DIRECTIONAL_NETWORK_REPORT "+json.dumps(dnr,sort_keys=True),flush=True)
+                        print("SINNOH_REAL_F12D3_DIRECTIONAL_NETWORK_AUDITED_OK",flush=True)
                         print("SINNOH_REAL_F12D3_GATED_ALIGNMENT_EVIDENCE_PRESERVED_OK",flush=True)
                         print("SINNOH_REAL_F12D3_ROUTE210_RECOVERY_EVIDENCE_PRESERVED_OK",flush=True)
                     else:
@@ -3374,6 +3381,20 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertFalse(b.cut_witness(opened,prior|far,prior,barrier,473))
         self.assertFalse(b.cut_witness(opened,{(528,0,0)},prior,barrier,473))
         self.assertFalse(b.cut_witness(opened|{(472,1,1)},prior,prior,barrier,473))
+
+    def test_f12d3_directional_network_preserves_forbidden_edges(self):
+        import sinnoh_f12d3_dry_network as n
+        dry=((0,),(0,));partial=((2,),(0,));wall=((15,),(0,));special=((2,),(1,))
+        self.assertTrue(n.dry_partial(partial,partial))
+        self.assertFalse(n.dry_partial(wall,wall))
+        self.assertFalse(n.dry_partial(special,special))
+        self.assertFalse(n.dry_partial(partial,dry))
+        self.assertFalse(n.permitted_step(partial,dry,(-1,0),True,False))
+        self.assertTrue(n.permitted_step(partial,dry,(1,0),True,False))
+        shapes={(0,1):dry,(1,1):partial,(2,1):dry}
+        after={q:dry for q in shapes}
+        self.assertFalse(n.new_dry_edges_allowed(shapes,after,{(1,1)},{(1,1)},set()))
+        self.assertTrue(n.new_dry_edges_allowed(shapes,after,{(1,1)},{(1,1)},{(0,1)}))
 
     def test_f12d3_dry_network_requires_connected_approaches(self):
         import sinnoh_f12d3_dry_network as n
