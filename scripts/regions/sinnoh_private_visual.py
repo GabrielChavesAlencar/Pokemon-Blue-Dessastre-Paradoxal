@@ -851,7 +851,22 @@ def movement_plugin(masks,route202=None):
             return
           end
           cell=BlueSinnohSafeMovement.cell(*facing)
-          return if cell.nil? || cell=="#"
+          return if cell.nil?
+          if defined?(BlueSinnohF12DIntegrated)
+            current=[$game_map.map_id,x,y]
+            origin=BlueSinnohF12DIntegrated.surf_route_mode(current)
+            target=BlueSinnohF12DIntegrated.surf_route_mode(facing)
+            if origin=="surf" || target=="surf"
+              return unless BlueSinnohF12DIntegrated.runtime_surf_step_allowed?(current,facing)
+              # Only the verified water edge may bypass the conservative
+              # dry mask. Never override native passable?, jump or walls.
+              return if cell=="#" && target!="surf"
+            elsif cell=="#"
+              return
+            end
+          elsif cell=="#"
+            return
+          end
           if cell=="g" && !BlueSinnohSafeMovement.has_pokemon?
             unless @blue_sinnoh_grass_warning
               @blue_sinnoh_grass_warning=true

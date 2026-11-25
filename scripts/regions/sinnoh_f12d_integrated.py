@@ -140,7 +140,7 @@ def lake_surface_path(modes,start,goal,allow_surf=False):
     while q is not None:path.append(q);q=previous[q]
     return list(reversed(path))
 
-def lake_surf_geometry(data,mapping,source,root,previews):
+def lake_surf_geometry(data,mapping,source,root,previews,runtime_routes=None):
     catalog,_,_=conn.graph(root)
     targets={215:("SINNOH_LAKE_VALOR",(45,6),(26,24)),
         161:("SINNOH_LAKE_ACUITY",(8,49),tuple(previews["ACUITY"]["stand"]) if "ACUITY" in previews else None)}
@@ -180,6 +180,10 @@ def lake_surf_geometry(data,mapping,source,root,previews):
                 "dry_path":dry is not None,"surf_candidate":path is not None,
                 "terrain_changes":0,"native_verified":False}
             if path:
+                if runtime_routes is not None and any(modes[q]=="surf" for q in path):
+                    # Private runtime receives only matched cardinal path cells,
+                    # never source assets or a blanket mask-15 exception.
+                    runtime_routes[mid]=[[*q,modes[q]] for q in path]
                 row.update(steps=len(path)-1,water_steps=sum(modes[q]=="surf" for q in path),
                     transitions=[{"from":list(a),"to":list(b),"mode":modes[b]} for a,b in zip(path,path[1:]) if modes[a]!=modes[b]],
                     path_sha256=hashlib.sha256(json.dumps(path,separators=(",",":")).encode("ascii")).hexdigest())
@@ -533,7 +537,8 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
                 result["surf_pickup"].update(prepared=True,location=loc)
     # All three legs must be proved before any original seam is staged.
     original_trial,entry_report=original_lake_candidates(reopened,mapping,components,root,source,rock,valor_rock,lake_seed)
-    surf_geometry=lake_surf_geometry(reopened,mapping,source,root,result["lake_local_previews"])
+    surf_routes={}
+    surf_geometry=lake_surf_geometry(reopened,mapping,source,root,result["lake_local_previews"],surf_routes)
     recovered,lake_seams,lake_recovery=recover_lake_seams(original_trial,mapping,components,root,expanded,lake_seed,result["lake_local_previews"],rock,valor_rock,surf_geometry)
     result["lake_original_seam_recovery"]=lake_recovery
     result["lake_original_entries"]=entry_report
@@ -636,6 +641,11 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
         result["reason"]="final_lake_gate_graph_failed";return {},result,b""
     result["pre_chase_graph_checks"]=checks
     template=template.replace("__LOCATIONS__",ruby_hash(literal)).replace("__SPECS__",ruby_hash(specs))
+    # Water route proof is independent of ordinary dry reachability. Bind
+    # only when the local pickup event was actually prepared.
+    if template.count("__SURF_ROUTES__")!=1:raise ValueError("F12D_SURF_ROUTE_TEMPLATE")
+    template=template.replace("__SURF_ROUTES__",ruby_hash(surf_routes if "SURF_HM03" in locations else {}))
+    result["surf_pickup"]["runtime_route_count"]=len(surf_routes) if "SURF_HM03" in locations else 0
     for key,value in (("__EDIT_CELLS__",edits),("__CHASE_LANES__",chase_lanes),("__CELESTIC_LANES__",celestic_lanes)):
         if template.count(key)!=1:raise ValueError("F12D_INTEGRATED_GATE_TEMPLATE")
         template=template.replace(key,json.dumps(value))

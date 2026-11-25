@@ -5,6 +5,7 @@ module BlueSinnohF12DIntegrated
   EDIT_CELLS=__EDIT_CELLS__.freeze
   CHASE_LANES=__CHASE_LANES__.freeze
   CELESTIC_LANES=__CELESTIC_LANES__.freeze
+  SURF_ROUTES=__SURF_ROUTES__.freeze
   LAKE_ORDER=%w[VALOR VERITY ACUITY].freeze
   LAKE_LEDGER="sinnoh_f12d_lakes".freeze
   T=BlueSinnohF12D3Transaction
@@ -192,6 +193,57 @@ module BlueSinnohF12DIntegrated
   rescue StandardError
     :unavailable
   end
+  def self.surf_route_mode(cell)
+    return nil unless cell.is_a?(Array) && cell.length==3
+    route=SURF_ROUTES[cell[0]]
+    row=route && route.find { |q| q[0]==cell[1] && q[1]==cell[2] }
+    row && row[2]
+  end
+  def self.surf_route_edge?(a,b)
+    return false unless a.is_a?(Array) && b.is_a?(Array) && a.length==3 && b.length==3 && a[0]==b[0]
+    return false unless (a[1]-b[1]).abs+(a[2]-b[2]).abs==1
+    route=SURF_ROUTES[a[0]]
+    return false unless route
+    route.each_cons(2).any? { |x,y| [x[0,2],y[0,2]]==[a[1,2],b[1,2]] || [y[0,2],x[0,2]]==[a[1,2],b[1,2]] }
+  end
+  def self.surf_step_allowed?(s,bag,party,surfing,a,b,boarding=false)
+    return false unless surf_route_edge?(a,b) && surf_permission(s,bag,party)==:allowed
+    origin=surf_route_mode(a);target=surf_route_mode(b)
+    return origin=="walk" && target=="surf" && !surfing if boarding
+    surfing && origin=="surf" && ["walk","surf"].include?(target)
+  end
+  def self.runtime_surf_step_allowed?(a,b,boarding=false)
+    return false unless LOCATIONS.key?("SURF_HM03") && $PokemonGlobal && $game_map && $game_player
+    return false unless surf_step_allowed?(state,$bag,$player && $player.party,$PokemonGlobal.surfing,a,b,boarding)
+    return false unless a[0]==$game_map.map_id && a[1]==$game_player.x && a[2]==$game_player.y
+    tag=$game_map.terrain_tag(b[1],b[2])
+    water=surf_route_mode(b)=="surf"
+    return false unless tag && (water ? tag.can_surf_freely : !tag.can_surf)
+    # Reject all occupied targets, including invisible scripted events,
+    # in the aquatic exception. Native collision checks still apply.
+    return false if $game_map.events.values.any? { |event| event.at_coordinate?(b[1],b[2]) }
+    true
+  rescue StandardError
+    false
+  end
+  module NativeSurfEntry
+    def pbStartSurfing(*args,&block)
+      return super unless defined?(BlueSinnohExperimental) && BlueSinnohExperimental.private_copy?
+      return false unless $game_player && $game_map && $map_factory && $PokemonGlobal
+      a=[$game_map.map_id,$game_player.x,$game_player.y]
+      b=$map_factory.getFacingTile($game_player.direction,$game_player)
+      return false unless BlueSinnohF12DIntegrated.runtime_surf_step_allowed?(a,b,true)
+      # Native pbStartSurfing sets surfing and calls jumpForward. Do not
+      # manufacture movement with moveto, through or altered passages.
+      result=super
+      unless $game_player.x==b[1] && $game_player.y==b[2] && $PokemonGlobal.surfing
+        pbCancelVehicles
+        return false
+      end
+      result
+    end
+    private :pbStartSurfing
+  end
   def self.offer_surf(s)
     return false unless near?("SURF_HM03") && s && !s.frozen? && state.equal?(s) &&
       defined?(BlueKantoTitle) && BlueKantoTitle.sinnoh_experimental_barry_compiled?
@@ -238,10 +290,68 @@ module BlueSinnohF12DIntegrated
     raise "Sinnoh HM03 missing item" unless surf_permission(saved,PokemonBag.new,[])==:hm
     true
   end
+  # Read the actual private RXDATA and use Game_Map/Game_Player native
+  # collision methods. This verifies the complete path in both directions,
+  # including boarding and landing collision, not scene animation or QA.
+  def self.verify_native_surf_map_collision!
+    raise "Sinnoh Surf terrain" unless lake_surf_terrain_reference?
+    raise "Sinnoh Surf hooks" unless Object.ancestors.include?(NativeSurfEntry)
+    prev=[$game_map,$map_factory,$game_player,$DEBUG,$game_switches,$game_variables,$game_self_switches,$game_temp,$PokemonGlobal]
+    begin
+      $DEBUG=false;$map_factory=nil
+      $game_switches=Game_Switches.new;$game_variables=Game_Variables.new
+      $game_self_switches=Game_SelfSwitches.new;$game_temp=Game_Temp.new
+      $PokemonGlobal=PokemonGlobalMetadata.new
+      $game_player=Game_Player.new
+      p=$game_player
+      p.instance_variable_set(:@width,1);p.instance_variable_set(:@height,1)
+      p.instance_variable_set(:@through,false);p.instance_variable_set(:@character_name,"Probe")
+      tiles=load_data("Data/Tilesets.rxdata")
+      SURF_ROUTES.each do |mid,route|
+        raw=load_data(sprintf("Data/Map%03d.rxdata",mid))
+        ts=tiles[raw.tileset_id]
+        $game_map=Game_Map.new
+        {map_id:mid,map:raw,passages:ts.passages,priorities:ts.priorities,terrain_tags:ts.terrain_tags,events:{}}.each do |k,v|
+          $game_map.instance_variable_set(:"@#{k}",v)
+        end
+        # The static witness excluded every event coordinate; recheck it
+        # on the actual compiled private map before probing collision.
+        occupied=raw.events.values.map { |event| [event.x,event.y] }
+        route.each do |x,y,mode|
+          raise "Sinnoh Surf occupied path #{mid}" if occupied.include?([x,y])
+          tag=$game_map.terrain_tag(x,y)
+          raise "Sinnoh Surf changed terrain #{mid}" unless tag && (mode=="surf" ? tag.can_surf_freely : !tag.can_surf)
+        end
+        count=0
+        [route,route.reverse].each do |path|
+          path.each_cons(2) do |a,b|
+            ax,ay,am=a;bx,by,bm=b
+            next if am=="walk" && bm=="walk"
+            dir=bx>ax ? 6 : bx<ax ? 4 : by>ay ? 2 : 8
+            p.instance_variable_set(:@x,ax);p.instance_variable_set(:@y,ay)
+            $PokemonGlobal.surfing=false
+            raise "Sinnoh Surf water walk leak #{mid}" if bm=="surf" && p.passable?(ax,ay,dir)
+            $PokemonGlobal.surfing=true
+            raise "Sinnoh Surf native collision #{mid} #{ax},#{ay}" unless p.passable?(ax,ay,dir)
+            count+=1
+          end
+        end
+        raise "Sinnoh Surf missing aquatic edges" if count==0
+        puts "SINNOH_F12D_NATIVE_SURF_MAP_COLLISION_MAP #{mid} #{count}"
+      end
+      true
+    ensure
+      $game_map,$map_factory,$game_player,$DEBUG,$game_switches,$game_variables,$game_self_switches,$game_temp,$PokemonGlobal=*prev
+    end
+  end
   def self.verify_compiled!
     if LOCATIONS.key?("SURF_HM03")
       verify_native_surf_pickup!
       puts "SINNOH_F12D_NATIVE_SURF_PICKUP_TRANSACTION_OK"
+      unless SURF_ROUTES.empty?
+        verify_native_surf_map_collision!
+        puts "SINNOH_F12D_NATIVE_SURF_MAP_COLLISION_OK"
+      end
     end
     puts(lake_surf_terrain_reference? ? "SINNOH_F12D_NATIVE_LAKE_SURF_TERRAIN_REFERENCE_OK" : "SINNOH_F12D_NATIVE_LAKE_SURF_TERRAIN_REFERENCE_BLOCKED")
     raise "Sinnoh F12D3: terreno Rock incompatível" unless rock_reference_valid?
@@ -394,6 +504,7 @@ module BlueSinnohF12DIntegrated
       return false unless defined?(BlueRegionalPolicy)
       klass=BlueRegionalPolicy.singleton_class
       klass.prepend(PrivateSurfPolicy) unless klass.ancestors.include?(PrivateSurfPolicy)
+      Object.prepend(NativeSurfEntry) unless Object.ancestors.include?(NativeSurfEntry)
     end
     true
   end

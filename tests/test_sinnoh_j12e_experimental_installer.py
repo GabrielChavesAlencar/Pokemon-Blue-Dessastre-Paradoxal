@@ -3592,6 +3592,17 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertLess(main.index("TRANSACTION_PROBE_OK"),main.index("ALL_VERIFIERS_PASSED"))
         self.assertIn("Compiler.singleton_class.send(:define_method, :compile_all, blue_sinnoh_core)",main)
 
+    def test_f12d_surf_route_native_guard_preserves_dry_mask(self):
+        source=(ROOT/"scripts/regions/SinnohF12DIntegrated.rb").read_text("utf-8")
+        self.assertIn("SURF_ROUTES=__SURF_ROUTES__.freeze",source)
+        self.assertIn("p.passable?(ax,ay,dir)",source)
+        self.assertIn("raw.events.values",source)
+        self.assertIn("return false unless BlueSinnohF12DIntegrated.runtime_surf_step_allowed?(a,b,true)",source)
+        self.assertIn("SINNOH_F12D_NATIVE_SURF_MAP_COLLISION_OK",source)
+        guard=exp.private_visual.movement_plugin({529:[".#."]}).decode("utf-8")
+        self.assertIn('return if cell=="#" && target!="surf"',guard)
+        self.assertIn("runtime_surf_step_allowed?(current,facing)",guard)
+
     def test_f12d_surf_pickup_candidate_uses_native_regional_receipt(self):
         source=(ROOT/"scripts/regions/SinnohF12DIntegrated.rb").read_text("utf-8")
         self.assertIn('BlueRegions.record_sinnoh_hm(next_s,"SURF",:HM03,next_bag,true)',source)
@@ -3746,7 +3757,7 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertIsNone(i.lake_contract("VALOR",types,species,{("GALACTIC_ADMIN","Saturn",15001)}))
         self.assertIsNone(i.lake_contract("VERITY",types,{"GOLBAT"},set()))
         if shutil.which("ruby"):
-            code=(ROOT/"scripts/regions/SinnohF12D3Transaction.rb").read_text("utf-8")+"\n"+(ROOT/"scripts/regions/SinnohF12DIntegrated.rb").read_text("utf-8").replace("__LOCATIONS__","{}").replace("__SPECS__","{}").replace("__EDIT_CELLS__","[[473,1,1]]").replace("__CHASE_LANES__","[[472,1,0,473,1,31]]").replace("__CELESTIC_LANES__","[[473,0,14,458,3,4]]")
+            code=(ROOT/"scripts/regions/SinnohF12D3Transaction.rb").read_text("utf-8")+"\n"+(ROOT/"scripts/regions/SinnohF12DIntegrated.rb").read_text("utf-8").replace("__LOCATIONS__","{}").replace("__SPECS__","{}").replace("__EDIT_CELLS__","[[473,1,1]]").replace("__CHASE_LANES__","[[472,1,0,473,1,31]]").replace("__CELESTIC_LANES__","[[473,0,14,458,3,4]]").replace("__SURF_ROUTES__","{}")
             fixture=code+'''\ns={"current"=>"SINNOH","sinnoh_f12d_quest"=>%w[PASTORIA ROUTE_213 VALOR_BATTLE],"sinnoh_f12d3_quest"=>%w[SECRETPOTION_RECEIVED PSYDUCK_CLEARED]}\nm=BlueSinnohF12DIntegrated\nraise unless m.lake_allowed?(s,"VALOR",["MINE"])\nraise if m.lake_allowed?(s,"VERITY",["MINE"])\nraise if m.lake_allowed?(s,"VALOR",[])\ns[m::LAKE_LEDGER]=%w[VALOR VERITY]\nraise if m.lake_allowed?(s,"ACUITY",["MINE"])\nraise unless m.lake_allowed?(s,"ACUITY",["MINE","ICICLE"])\ns=Marshal.load(Marshal.dump(s))\nraise unless m.lake_allowed?(s,"ACUITY",["MINE","ICICLE"])\nraise if m.movement_allowed?(nil,[473,2,1],[473,1,1])\nraise if m.movement_allowed?(nil,[472,1,0],[473,1,31])\nraise if m.movement_allowed?(nil,[473,0,14],[458,3,4])\nraise unless m.movement_allowed?(s,[473,0,14],[458,3,4])\nraise unless m.movement_allowed?(nil,[473,2,1],[473,2,2])\n'''
             run=subprocess.run([shutil.which("ruby"),"-e",fixture],capture_output=True,text=True,timeout=30)
             self.assertEqual(run.returncode,0,run.stderr)
