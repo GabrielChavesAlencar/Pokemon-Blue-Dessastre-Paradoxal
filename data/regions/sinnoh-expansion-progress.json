@@ -391,10 +391,10 @@
       "id": "F11",
       "title": "Oito ginásios e insígnias",
       "status": "implementation_pending_ci",
-      "followup": "F11E_PENDING_CI",
+      "followup": "F11E_PENDING_MAIN_CI",
       "gym_count": 8,
-      "gym_rooms_confirmed": 4,
-      "gym_leaders_confirmed": 4,
+      "gym_rooms_confirmed": 5,
+      "gym_leaders_confirmed": 5,
       "native_verified": false,
       "hm_award_enabled": false,
       "f11a_pr": 303,
@@ -422,7 +422,8 @@
         "SINNOH_OREBURGH_GYM": 573,
         "SINNOH_ETERNA_GYM": 574,
         "SINNOH_HEARTHOME_GYM": 575,
-        "SINNOH_VEILSTONE_GYM": 576
+        "SINNOH_VEILSTONE_GYM": 576,
+        "Crasher Wake": 577
       },
       "species_and_types_validation": "REFERENCE_FIXTURE_NOT_LOCAL_DATABASE",
       "f11c_candidate": "Fantina",
@@ -451,11 +452,11 @@
       "f11c_merge_commit": "7a9692f2e987cf8f861e6c9399c4c4ecf67560c2",
       "f11c_ci_workflows": 11,
       "f11c_ci_checks": 26,
-      "f11d_real_head": "f63da0ea25fa4b2bfa7e01707268ed0ecdef5365",
-      "f11d_real_job": 138907082865,
+      "f11d_real_head": "c6b148b5d8f4a0b531d2c9d407dc291e784a357c",
+      "f11d_real_job": 138912109452,
       "f11d_fixture_maps": 135,
       "f11d_fixture_portals": 81,
-      "f11d_main_ci_pending": true,
+      "f11d_main_ci_pending": false,
       "f11e_candidate": "Crasher Wake",
       "f11e_prerequisites": [
         "COAL",
@@ -463,8 +464,16 @@
         "RELIC",
         "COBBLE"
       ],
-      "f11e_fixture_rooms": 0,
-      "f11e_native_verified": false
+      "f11e_fixture_rooms": 1,
+      "f11e_native_verified": false,
+      "f11d_merge_commit": "a8c3ede9193a89034ff8f7d343198e411b1360ac",
+      "f11d_ci_workflows": 11,
+      "f11d_ci_checks": 26,
+      "f11e_fixture_maps": 136,
+      "f11e_fixture_portals": 83,
+      "f11e_real_head": "533ee072d9f239326bbd0e9781d01e9ac601cf95",
+      "f11e_real_job": 138912147891,
+      "f11e_main_ci_pending": true
     },
     {
       "id": "F12",
@@ -780,10 +789,10 @@
   },
   "f11": {
     "status": "implementation_pending_ci",
-    "followup": "F11E_PENDING_CI",
+    "followup": "F11E_PENDING_MAIN_CI",
     "gym_count": 8,
-    "gym_rooms_confirmed": 4,
-    "gym_leaders_confirmed": 4,
+    "gym_rooms_confirmed": 5,
+    "gym_leaders_confirmed": 5,
     "native_verified": false,
     "hm_award_enabled": false,
     "f11a_pr": 303,
@@ -811,7 +820,8 @@
       "SINNOH_OREBURGH_GYM": 573,
       "SINNOH_ETERNA_GYM": 574,
       "SINNOH_HEARTHOME_GYM": 575,
-      "SINNOH_VEILSTONE_GYM": 576
+      "SINNOH_VEILSTONE_GYM": 576,
+      "Crasher Wake": 577
     },
     "species_and_types_validation": "REFERENCE_FIXTURE_NOT_LOCAL_DATABASE",
     "f11c_candidate": "Fantina",
@@ -840,11 +850,11 @@
     "f11c_merge_commit": "7a9692f2e987cf8f861e6c9399c4c4ecf67560c2",
     "f11c_ci_workflows": 11,
     "f11c_ci_checks": 26,
-    "f11d_real_head": "f63da0ea25fa4b2bfa7e01707268ed0ecdef5365",
-    "f11d_real_job": 138907082865,
+    "f11d_real_head": "c6b148b5d8f4a0b531d2c9d407dc291e784a357c",
+    "f11d_real_job": 138912109452,
     "f11d_fixture_maps": 135,
     "f11d_fixture_portals": 81,
-    "f11d_main_ci_pending": true,
+    "f11d_main_ci_pending": false,
     "f11e_candidate": "Crasher Wake",
     "f11e_prerequisites": [
       "COAL",
@@ -852,7 +862,15 @@
       "RELIC",
       "COBBLE"
     ],
-    "f11e_fixture_rooms": 0,
-    "f11e_native_verified": false
+    "f11e_fixture_rooms": 1,
+    "f11e_native_verified": false,
+    "f11d_merge_commit": "a8c3ede9193a89034ff8f7d343198e411b1360ac",
+    "f11d_ci_workflows": 11,
+    "f11d_ci_checks": 26,
+    "f11e_fixture_maps": 136,
+    "f11e_fixture_portals": 83,
+    "f11e_real_head": "533ee072d9f239326bbd0e9781d01e9ac601cf95",
+    "f11e_real_job": 138912147891,
+    "f11e_main_ci_pending": true
   }
 }
