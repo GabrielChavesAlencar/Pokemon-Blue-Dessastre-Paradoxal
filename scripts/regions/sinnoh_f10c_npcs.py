@@ -41,7 +41,9 @@ def authored_sheet(role):
               "interior_resident":((139,87,118),(105,151,119),(84,51,35)),
               "south_gate_resident":((66,111,103),(194,160,76),(57,47,44)),
               "north_gate_resident":((83,96,155),(160,185,196),(103,70,45)),
-              "gym_guide":((65,78,110),(225,189,78),(78,52,37))}
+              "gym_guide":((65,78,110),(225,189,78),(78,52,37)),
+              "gym_roark":((103,105,113),(207,85,49),(151,80,40)),
+              "gym_gardenia":((74,129,66),(231,184,75),(171,83,47))}
     shirt,accent,hair=palettes[role]
     w=h=128;raw=bytearray(w*h*4);ink=(42,44,52);skin=(222,178,138)
     for direction in range(4):
@@ -57,6 +59,12 @@ def authored_sheet(role):
                 rect(11,9+bob,21,15+bob,skin)
                 if direction in (0,1):rect(12,11+bob,14,13+bob,ink)
                 if direction in (0,2):rect(18,11+bob,20,13+bob,ink)
+            if role=="gym_roark":
+                rect(8,3+bob,24,8+bob,ink);rect(9,4+bob,23,7+bob,(207,85,49))
+                rect(11,9+bob,21,10+bob,ink)
+            if role=="gym_gardenia":
+                rect(8,5+bob,24,8+bob,hair);rect(9,8+bob,12,16+bob,hair);rect(20,8+bob,23,16+bob,hair)
+                rect(11,7+bob,21,9+bob,accent)
             rect(9,16+bob,23,26+bob,ink);rect(10,17+bob,22,25+bob,shirt)
             x=(10,10,19,13)[direction];rect(x,17+bob,x+3,24+bob,accent)
             stride=(0,1,0,-1)[frame]

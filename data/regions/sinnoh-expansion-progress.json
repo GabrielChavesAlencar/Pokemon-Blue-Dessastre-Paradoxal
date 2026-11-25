@@ -391,10 +391,10 @@
       "id": "F11",
       "title": "Oito ginásios e insígnias",
       "status": "implementation_pending_ci",
-      "followup": "F11A_ROARK_AUTHORED_QA_ROOM",
+      "followup": "F11A2_F11B_PENDING_CI",
       "gym_count": 8,
-      "gym_rooms_confirmed": 0,
-      "gym_leaders_confirmed": 0,
+      "gym_rooms_confirmed": 2,
+      "gym_leaders_confirmed": 2,
       "native_verified": false,
       "hm_award_enabled": false,
       "f11a_pr": 303,
@@ -403,7 +403,26 @@
       "f11a_fixture_rooms": 0,
       "f11a_fixture_leaders": 0,
       "f11a_blocker": "roark_overworld_missing_or_ambiguous",
-      "f11a_main_ci_pending": true
+      "f11a_main_ci_pending": false,
+      "f11a2_sprite_policy": "PROJECT_AUTHORED_LEADER_NOT_DONOR_IF_NO_EXACT_MATCH",
+      "f11b_candidate": "Gardenia",
+      "f11b_prerequisite": "COAL",
+      "f11b_fixture_rooms": 1,
+      "f11b_native_verified": false,
+      "f11a_merge_commit": "b93c79734fa51867ce681a6eaf2b0e10d40c1556",
+      "f11a_ci_workflows": 11,
+      "f11a_ci_checks": 26,
+      "f11b_real_head": "467d51a6c3e0f484d420418e249bcea9ec1ad106",
+      "f11b_real_job": 138901215154,
+      "f11a2_fixture_rooms": 1,
+      "f11b_fixture_maps": 133,
+      "f11b_fixture_portals": 77,
+      "f11b_main_ci_pending": true,
+      "fixture_gym_mapids": {
+        "SINNOH_OREBURGH_GYM": 573,
+        "SINNOH_ETERNA_GYM": 574
+      },
+      "species_and_types_validation": "REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
     },
     {
       "id": "F12",
@@ -719,10 +738,10 @@
   },
   "f11": {
     "status": "implementation_pending_ci",
-    "followup": "F11A_ROARK_AUTHORED_QA_ROOM",
+    "followup": "F11A2_F11B_PENDING_CI",
     "gym_count": 8,
-    "gym_rooms_confirmed": 0,
-    "gym_leaders_confirmed": 0,
+    "gym_rooms_confirmed": 2,
+    "gym_leaders_confirmed": 2,
     "native_verified": false,
     "hm_award_enabled": false,
     "f11a_pr": 303,
@@ -731,6 +750,25 @@
     "f11a_fixture_rooms": 0,
     "f11a_fixture_leaders": 0,
     "f11a_blocker": "roark_overworld_missing_or_ambiguous",
-    "f11a_main_ci_pending": true
+    "f11a_main_ci_pending": false,
+    "f11a2_sprite_policy": "PROJECT_AUTHORED_LEADER_NOT_DONOR_IF_NO_EXACT_MATCH",
+    "f11b_candidate": "Gardenia",
+    "f11b_prerequisite": "COAL",
+    "f11b_fixture_rooms": 1,
+    "f11b_native_verified": false,
+    "f11a_merge_commit": "b93c79734fa51867ce681a6eaf2b0e10d40c1556",
+    "f11a_ci_workflows": 11,
+    "f11a_ci_checks": 26,
+    "f11b_real_head": "467d51a6c3e0f484d420418e249bcea9ec1ad106",
+    "f11b_real_job": 138901215154,
+    "f11a2_fixture_rooms": 1,
+    "f11b_fixture_maps": 133,
+    "f11b_fixture_portals": 77,
+    "f11b_main_ci_pending": true,
+    "fixture_gym_mapids": {
+      "SINNOH_OREBURGH_GYM": 573,
+      "SINNOH_ETERNA_GYM": 574
+    },
+    "species_and_types_validation": "REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
   }
 }
