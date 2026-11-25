@@ -21,6 +21,7 @@ import sinnoh_f12d3_gated_alignment as gated
 import sinnoh_f12d3_route210_recovery as recovery
 from sinnoh_f12d3_alternate_route212 import reserved,interval
 from build_johto_events import EVENT_CLASSES
+import sinnoh_f12d3_dry_network as dry
 
 # Catalog symbols checked explicitly. Source 22 is Oreburgh, NOT Hearthome.
 SYMBOLS={80:"SINNOH_ROUTE_210",84:"SINNOH_SOLACEON_TOWN",104:"SINNOH_ROUTE_209",
@@ -62,7 +63,19 @@ def trace(p,parent):
         u,r,k=parent[p];out.append((u,p,r,k));p=u
     return out[::-1]
 
-def inspect(blobs,mapping,components,cr,expanded,original,source,root):
+def frontier_summary(forward,reverse,neighbours,reason):
+    """Bounded sanitized boundary report; never authorizes an edit."""
+    def boundary(cells):
+        return {q for p in cells for q in neighbours(p) if q not in cells}
+    a,b=boundary(forward),boundary(reverse)
+    return {"forward_cells":len(forward),"reverse_cells":len(reverse),
+        "overlap":len(forward&reverse),
+        "forward_counts":dict(Counter(reason(q) for q in a)),
+        "reverse_counts":dict(Counter(reason(q) for q in b)),
+        "shared_boundary_count":len(a&b),
+        "shared_boundary":[{"position":list(q),"reason":reason(q)} for q in sorted(a&b)[:64]]}
+
+def inspect(blobs,mapping,components,cr,expanded,original,source,root,directional_repair=False):
     chase.validate(blobs,mapping);before=chase.digest(blobs)
     if expanded.get("input_hashes")!=before or not cr.get("runtime_install_enabled") or original.get("status")!="F12D3_ORIGINAL_NETWORK_EVIDENCE_ONLY":
         raise ValueError("F12D3_CANONICAL_STALE")
@@ -85,7 +98,7 @@ def inspect(blobs,mapping,components,cr,expanded,original,source,root):
     protected={s:set(occupied[s]) for s in bound};source_events={}
     result={"status":"F12D3_CANONICAL_NETWORK_EVIDENCE_ONLY","installed":False,"native_verified":False,
         "activation_allowed":False,"new_maps":0,"new_portals":0,"new_events":0,"changed_cells_installed":0,
-        "budget":BUDGET,"wrong_source_record":list(WRONG),"wrong_source_destination":"SINNOH_OREBURGH_CITY",
+        "budget":BUDGET,"directional_repair":directional_repair,"wrong_source_record":list(WRONG),"wrong_source_destination":"SINNOH_OREBURGH_CITY",
         "authorial_candidates":[],"exact_repair_axes":[],"trials":[],"witness":None}
     def finish(reason):
         if chase.digest(blobs)!=before:raise ValueError("F12D3_CANONICAL_MUTATED")
@@ -118,12 +131,25 @@ def inspect(blobs,mapping,components,cr,expanded,original,source,root):
     result["source_hashes"]={str(s):catalog[s]["sha256"] for s in sorted(bound)}
     result["qa_hashes"]={str(s):hashlib.sha256(blobs["Data/Map%03d.rxdata"%m]).hexdigest() for s,m in sorted(bound.items())}
     result["protected_counts"]={str(s):len(protected[s]) for s in sorted(bound)}
+    def partial(p):
+        s,x,y=p;q=(x,y)
+        if not directional_repair or s not in src or q not in src[s] or q in protected[s] or q in occupied[s]:return False
+        w,h=sdims[s];shape=qa[s][1][q]
+        if not (0<x<w-1 and 0<y<h-1 and dry.dry_partial(src[s][q],shape)):return False
+        # Reject conversion that would open even one prohibited existing dry neighbour.
+        return all(dry.permitted_step(shape,qa[s][1][v],(v[0]-x,v[1]-y),True,False)
+            for v in tp.neighbours(x,y) if v in qa[s][1] and v not in occupied[s] and corridor.ordinary(qa[s][1][v]))
+    def edit_ok(s,q):return corridor.editable(src[s][q],qa[s][1][q]) or partial((s,*q))
+    def local_allowed(p,q):
+        s=p[0]
+        return q[0]==s and q[1:] in qa[s][1] and dry.permitted_step(
+            qa[s][1][p[1:]],qa[s][1][q[1:]],(q[1]-p[1],q[2]-p[2]),partial(p),partial(q))
     def cell_cost(p,edge=False):
         s,x,y=p;q=(x,y)
         if s not in src or q not in src[s] or q in occupied[s] or src[s][q]!=qa[s][1][q]:return None
         shape=qa[s][1][q];w,h=sdims[s]
         if corridor.ordinary(shape):return 0
-        if q in protected[s] or not corridor.editable(src[s][q],shape):return None
+        if q in protected[s] or not edit_ok(s,q):return None
         if edge or (0<x<w-1 and 0<y<h-1):return 1
         return None
     cross={};edge_points=set();kinds={}
@@ -196,7 +222,9 @@ def inspect(blobs,mapping,components,cr,expanded,original,source,root):
     seeds={(inv[m],x,y) for m,x,y in prior if m in inv}
     def cost(p):return cell_cost(p,p in edge_points)
     def adj(p):
-        for q in tp.neighbours(*p[1:]):yield (p[0],*q),(),"local"
+        for q in tp.neighbours(*p[1:]):
+            v=(p[0],*q)
+            if local_allowed(p,v):yield v,(),"local"
         yield from sorted(cross.get(p,()))
     banned_sets=[frozenset()];seen=set()
     while banned_sets and len(result["trials"])<LIMIT:
@@ -207,6 +235,28 @@ def inspect(blobs,mapping,components,cr,expanded,original,source,root):
         if not banned:
             result["reachable_cells_by_source"]={str(s):sum(p[0]==s for p in d) for s in sorted(bound)}
             result["exit_costs"]=[{"position":list(p[1:]),"cost":list(d[p]) if p in d else None} for p in sorted(goals)]
+            # Local reverse search from all five exit cells, never through Celestic.
+            def local_adj(p):
+                return ((v,r,k) for v,r,k in adj(p) if k=="local")
+            reverse,_=path_search(goals,local_adj,cost,frozenset())
+            forward={p for p in d if p[0]==116}
+            def neighbours(p):
+                return ((116,*q) for q in tp.neighbours(*p[1:]) if q in qa[116][1])
+            def reason(p):
+                q=p[1:];shape=qa[116][1][q];masks,tags=shape
+                if q in occupied[116]:return "occupied"
+                if src[116][q]!=shape:return "source_qa_mismatch"
+                if cost(p) is not None:return "admitted_but_disconnected"
+                if q in protected[116]:return "protected"
+                if not masks:return "empty_stack"
+                if any(t not in (0,2) for t in tags):return "special_terrain"
+                if any(0<v<15 for v in masks):return "directional_mask"
+                return "perimeter_or_noneditable"
+            result["celestic_frontier"]=frontier_summary(forward,set(reverse),neighbours,reason)
+            result["celestic_frontier"]["forward_components"]=sorted({idx[bound[116]][p[1:]] for p in forward if p[1:] in idx[bound[116]]})
+            result["celestic_frontier"]["reverse_components"]=sorted({idx[bound[116]][p[1:]] for p in reverse if p[1:] in idx[bound[116]]})
+            result["celestic_frontier"]["goal_admission"]=[{"position":list(p[1:]),"admitted":cost(p) is not None,"reason":None if cost(p) is not None else reason(p)} for p in sorted(goals)]
+            result["partial_candidates"]={str(s):sum(partial((s,*q)) for q in src[s]) for s in sorted(bound)}
         if not goals<=set(d):continue
         goal=min(goals,key=lambda p:(d[p],p));path=trace(goal,parents)
         nodes={p for u,v,r,k in path for p in (u,v)}
@@ -240,14 +290,17 @@ def inspect(blobs,mapping,components,cr,expanded,original,source,root):
             if not floor:failed=True;row["reason"]="no_dry_floor";break
             for x,y in sorted(changes):
                 q=(x,y)
-                if q in protected[s] or not corridor.editable(src[s][q],shapes[q]):raise ValueError("F12D3_CANONICAL_UNSAFE_EDIT")
+                if q in protected[s] or not edit_ok(s,q):raise ValueError("F12D3_CANONICAL_UNSAFE_EDIT")
                 f=min(floor,key=lambda t:(conn.distance(q,t),t[1],t[0]))
                 for z,t in enumerate(stacks[f]):struct.pack_into("<H",patch,20+2*(z*w*h+y*w+x),t)
-                donors.append({"map_id":m,"position":list(q),"floor_reference":list(f)})
+                donors.append({"map_id":m,"position":list(q),"floor_reference":list(f),"directional_conversion":partial((s,*q)),"before_masks":list(shapes[q][0]),"before_tags":list(shapes[q][1])})
             data.data=bytes(patch);out=conn.serialize(world,EVENT_CLASSES)
             check=conn.read_marshal(out,"F12D3_CANONICAL_VERIFY");_,after=corridor.grid(check,tiles)
             if {q for q in shapes if shapes[q]!=after[q]}!=changes or not all(corridor.ordinary(after[q]) for q in changes):
                 raise ValueError("F12D3_CANONICAL_DELTA")
+            partial_edits={q for q in changes if partial((s,*q))}
+            if not dry.new_dry_edges_allowed(shapes,after,partial_edits,changes,occupied[s]):
+                failed=True;row["reason"]="directional_conversion_opens_forbidden_neighbour";break
             data.data=raw;check.attrs["@data"].data=raw
             if conn.serialize(check,EVENT_CLASSES)!=conn.serialize(world,EVENT_CLASSES):raise ValueError("F12D3_CANONICAL_METADATA")
             trial[rel]=out

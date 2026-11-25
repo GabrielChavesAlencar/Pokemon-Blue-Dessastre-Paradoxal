@@ -1642,6 +1642,16 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                         self.assertEqual(cnr["new_portals"],0)
                         print("SINNOH_F12D3_CANONICAL_NETWORK_REPORT "+json.dumps(cnr,sort_keys=True),flush=True)
                         print("SINNOH_REAL_F12D3_CANONICAL_NETWORK_AUDITED_OK",flush=True)
+                        cdr=canonical_network.inspect(chased,expanded,expanded_comps,cr,ext,onr,Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]),ROOT,directional_repair=True)
+                        self.assertEqual(chased,snapshot)
+                        self.assertFalse(cdr["activation_allowed"])
+                        self.assertFalse(cdr["native_verified"])
+                        self.assertEqual(cdr["new_portals"],0)
+                        self.assertEqual(cdr["changed_cells_installed"],0)
+                        self.assertEqual(len(cdr["exit_costs"]),5)
+                        self.assertIn("celestic_frontier",cdr)
+                        print("SINNOH_F12D3_CANONICAL_DIRECTIONAL_REPORT "+json.dumps(cdr,sort_keys=True),flush=True)
+                        print("SINNOH_REAL_F12D3_CANONICAL_DIRECTIONAL_AUDITED_OK",flush=True)
                         print("SINNOH_REAL_F12D3_GATED_ALIGNMENT_EVIDENCE_PRESERVED_OK",flush=True)
                         print("SINNOH_REAL_F12D3_ROUTE210_RECOVERY_EVIDENCE_PRESERVED_OK",flush=True)
                     else:
@@ -3410,6 +3420,17 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertNotIn(c,d)
         self.assertEqual(n.SYMBOLS[123],"SINNOH_HEARTHOME_CITY")
         self.assertNotIn(22,n.SYMBOLS)
+
+    def test_f12d3_canonical_frontier_reports_shared_blocker(self):
+        import sinnoh_f12d3_canonical_network as n
+        a,b,c=(116,0,0),(116,1,0),(116,2,0)
+        adj={a:[b],b:[a,c],c:[b]}
+        report=n.frontier_summary({a},{c},lambda q:adj[q],lambda q:"protected")
+        self.assertEqual(report["overlap"],0)
+        self.assertEqual(report["shared_boundary_count"],1)
+        self.assertEqual(report["shared_boundary"],[{"position":list(b),"reason":"protected"}])
+        self.assertEqual(report["forward_counts"],{"protected":1})
+        self.assertEqual(report["reverse_counts"],{"protected":1})
 
     def test_f12d3_original_network_uses_component_edges_not_map_names(self):
         import sinnoh_f12d3_original_network as n
