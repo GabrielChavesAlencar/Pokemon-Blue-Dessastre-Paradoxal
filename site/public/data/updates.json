@@ -2,6 +2,138 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1d1e001eb721162eeb0e3c5b7371855fe3c57ad1",
+      "date": "2026-11-24T23:17:47-03:00",
+      "title": "Merge pull request #311 from GabrielChavesAlencar/sinnoh-full-expansion-f12a-story-source-audit",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "2b43a10d4ca496deeabbe693550519262ef2dd66",
+      "date": "2026-11-24T23:11:12-03:00",
+      "title": "F12A: reconcile main and consolidate definitive eight-gym and story audit evidence",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "267f9080daa99272d40805d99384d5589ab2bedb",
+      "date": "2026-11-24T23:10:49-03:00",
+      "title": "Merge pull request #310 from GabrielChavesAlencar/sinnoh-full-expansion-f11h-volkner",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "7b556b5518e960ece1eb3699a25569f578e0ee1b",
+      "date": "2026-11-24T23:01:11-03:00",
+      "title": "F11H: reconcile main and preserve definitive Candice and Volkner audit evidence",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "d2cb043773838d22fe0986e3952f21ca093b4e19",
+      "date": "2026-11-24T23:00:52-03:00",
+      "title": "Merge pull request #309 from GabrielChavesAlencar/sinnoh-full-expansion-f11g-candice",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "49d8e87a8597084d4576513a4f640db10aa6f361",
+      "date": "2026-11-24T22:55:05-03:00",
+      "title": "F11G: reconcile main and retain definitive Byron and Candice audit records",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "62d48570c6fb961806e1c48c4af5c1499ff4fe97",
+      "date": "2026-11-24T22:54:41-03:00",
+      "title": "Merge pull request #308 from GabrielChavesAlencar/sinnoh-full-expansion-f11f-byron",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "31e1f2f212da60c87bed2a0a79dec184e05151cd",
+      "date": "2026-11-24T22:50:09-03:00",
+      "title": "Sinnoh F12A: read-only Galactic, story and local item source candidate audit",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "cbe9a88126e712833ae9b021e166c5fb6ed3128b",
+      "date": "2026-11-24T22:48:27-03:00",
+      "title": "F11F: reconcile main and preserve final F11E and F11F evidence",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "8cd5d6d3c66745ded74c4237f6ecdb4319a1d5e1",
+      "date": "2026-11-24T22:47:47-03:00",
+      "title": "Merge pull request #307 from GabrielChavesAlencar/sinnoh-full-expansion-f11e-crasher-wake",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "3aa6644a393294faa173171789913c7911ba258f",
+      "date": "2026-11-24T22:45:07-03:00",
+      "title": "Sinnoh F11H: Volkner electric challenge and sequential BEACON badge with preserved baseline",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "0a7f5a0e36e073e111140319edf6cb1fb052dde4",
+      "date": "2026-11-24T22:42:15-03:00",
+      "title": "Sinnoh F11G: Candice ice challenge and sequential ICICLE badge with preserved baseline",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "045fbf1941061bb9cd8364774765b993215758d0",
+      "date": "2026-11-24T22:41:43-03:00",
+      "title": "F11F: retain F11D/F11E evidence and record six-gym real audit",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "fd229fc550416c49e562481036faa55b996b1de3",
+      "date": "2026-11-24T22:41:27-03:00",
+      "title": "F11E: preserve Maylene merge and record five-gym real audit before main CI",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "a8c3ede9193a89034ff8f7d343198e411b1360ac",
+      "date": "2026-11-24T22:41:07-03:00",
+      "title": "Merge pull request #306 from GabrielChavesAlencar/sinnoh-full-expansion-f11d-maylene",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "3af0c5a9bdfbc359b2b35a6f82ceb3aa4cef7a08",
+      "date": "2026-11-24T22:35:52-03:00",
+      "title": "Sinnoh F11F: Byron steel challenge, sequential MINE badge and preserved baseline",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "533ee072d9f239326bbd0e9781d01e9ac601cf95",
+      "date": "2026-11-24T22:35:03-03:00",
+      "title": "Merge F11D CI isolation into F11E without changing gym evidence",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "c6b148b5d8f4a0b531d2c9d407dc291e784a357c",
+      "date": "2026-11-24T22:35:00-03:00",
+      "title": "CI: isolate Windows workflow concurrency by PR without removing checks",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "7f58e717ff177c5103b6478f7399403f53c8979c",
+      "date": "2026-11-24T22:34:28-03:00",
+      "title": "Reconcile F11E with updated F11D, retaining Fantina evidence and portal history",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "188d2be1ace5bfe727087e62314410dba0b61bf1",
+      "date": "2026-11-24T22:31:26-03:00",
+      "title": "Merge main into F11D; preserve portal update history and reconciled Fantina/Maylene evidence",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "27cb651580dd0597c384955af0abab1b0d5f1582",
+      "date": "2026-11-24T22:30:53-03:00",
+      "title": "Sinnoh F11E: sequential Crasher Wake gym with field abilities still gated",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "74be0947d333a148ced580a53a1659133fe7c325",
+      "date": "2026-11-24T22:30:05-03:00",
+      "title": "Reconcile Fantina evidence with verified Maylene fixture and trigger main CI",
+      "category": "Melhorias"
+    },
+    {
       "sha": "7a9692f2e987cf8f861e6c9399c4c4ecf67560c2",
       "date": "2026-11-24T22:29:46-03:00",
       "title": "Merge pull request #305 from GabrielChavesAlencar/sinnoh-full-expansion-f11c-fantina",
@@ -17,6 +149,12 @@
       "sha": "31709a5c044142bccf6127db743f1d658721b14b",
       "date": "2026-11-24T22:23:00-03:00",
       "title": "Merge pull request #304 from GabrielChavesAlencar/sinnoh-full-expansion-f11b-gardenia",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "f63da0ea25fa4b2bfa7e01707268ed0ecdef5365",
+      "date": "2026-11-24T22:22:39-03:00",
+      "title": "Sinnoh F11D: sequential Maylene gym and append-only save compatibility",
       "category": "Melhorias"
     },
     {
