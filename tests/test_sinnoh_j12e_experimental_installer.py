@@ -1611,6 +1611,14 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                         self.assertEqual(dr["changed_cells_installed"],0)
                         print("SINNOH_F12D3_DRY_RECOVERY_REPORT "+json.dumps(dr,sort_keys=True),flush=True)
                         print("SINNOH_REAL_F12D3_DRY_RECOVERY_AUDITED_OK",flush=True)
+                        import sinnoh_f12d3_dry_network as network
+                        nr=network.inspect(chased,expanded,expanded_comps,cr,ext,dr,Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]),ROOT)
+                        self.assertEqual(chased,snapshot)
+                        self.assertFalse(nr["activation_allowed"])
+                        self.assertFalse(nr["native_verified"])
+                        self.assertEqual(nr["changed_cells_installed"],0)
+                        print("SINNOH_F12D3_DRY_NETWORK_REPORT "+json.dumps(nr,sort_keys=True),flush=True)
+                        print("SINNOH_REAL_F12D3_DRY_NETWORK_AUDITED_OK",flush=True)
                         print("SINNOH_REAL_F12D3_GATED_ALIGNMENT_EVIDENCE_PRESERVED_OK",flush=True)
                         print("SINNOH_REAL_F12D3_ROUTE210_RECOVERY_EVIDENCE_PRESERVED_OK",flush=True)
                     else:
@@ -3366,6 +3374,18 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertFalse(b.cut_witness(opened,prior|far,prior,barrier,473))
         self.assertFalse(b.cut_witness(opened,{(528,0,0)},prior,barrier,473))
         self.assertFalse(b.cut_witness(opened|{(472,1,1)},prior,prior,barrier,473))
+
+    def test_f12d3_dry_network_requires_connected_approaches(self):
+        import sinnoh_f12d3_dry_network as n
+        nodes={(1,0,0):0,(1,1,0):1,(2,0,0):0}
+        edges={(1,0,0):[(1,1,0)],(1,1,0):[(1,0,0),(2,0,0)],(2,0,0):[(1,1,0)]}
+        d,p=n.search([(1,0,0)],lambda q:edges[q],nodes.get)
+        self.assertEqual(d[(2,0,0)],(1,2))
+        self.assertEqual(n.trace((2,0,0),p),[(1,0,0),(1,1,0),(2,0,0)])
+        d,p=n.search([(1,0,0)],lambda q:edges[q],lambda q:None if q==(1,1,0) else nodes.get(q))
+        self.assertNotIn((2,0,0),d)
+        self.assertIsNone(n.endpoint((2,0,0),d,p,0,[(1,1,0)]))
+        self.assertEqual(n.endpoint((1,1,0),d,p,1,[(1,0,0)]),((1,1),[(1,0,0),(1,1,0)]))
 
     def test_f12d3_dry_recovery_minimizes_edits_and_protects_terrain(self):
         import sinnoh_f12d3_dry_recovery as d
