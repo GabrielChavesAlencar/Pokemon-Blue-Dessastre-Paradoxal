@@ -1521,6 +1521,21 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                         self.assertEqual(cr["new_seams"],0)
                         print("SINNOH_REAL_F12D2_RUNTIME_BLOCKED_BASELINE_PRESERVED_OK",flush=True)
                     print("SINNOH_F12D_RUNTIME_FIXTURE_REPORT "+json.dumps(cr,sort_keys=True),flush=True)
+                    if cr["runtime_install_enabled"]:
+                        import sinnoh_f12d3_secretpotion_audit as potion
+                        snapshot=dict(chased)
+                        pr=potion.audit(chased,expanded,expanded_comps,cr,Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]),ROOT)
+                        self.assertEqual(pr["status"],"F12D3_SOURCE_GEOMETRY_AUDITED")
+                        self.assertEqual(pr["baseline_maps"],144)
+                        self.assertEqual(len(pr["maps"]),3)
+                        self.assertEqual(pr["items_granted"],0)
+                        self.assertFalse(pr["runtime_install_enabled"])
+                        self.assertFalse(pr["native_verified"])
+                        self.assertEqual(chased,snapshot)
+                        print("SINNOH_F12D3_SECRETPOTION_PSYDUCK_REPORT "+json.dumps(pr,sort_keys=True),flush=True)
+                        print("SINNOH_REAL_F12D3_SOURCE_GEOMETRY_AUDITED_144_BASELINE_PRESERVED_OK",flush=True)
+                    else:
+                        print("SINNOH_REAL_F12D3_BLOCKED_REQUIRES_F12D2",flush=True)
                 jr["catalog_provenance"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
                 print("SINNOH_F12C3_QUEST_CANDIDATE_REPORT "+json.dumps(jr,sort_keys=True),flush=True)
             qo,qr,qp=quest.build(wo,wi,wc,{"GALACTIC_GRUNT","GALACTIC_ADMIN"},{"GLAMEOW","STUNKY","ZUBAT","PURUGLY"},{"WORKSKEY"},set(),ROOT)
@@ -3143,6 +3158,18 @@ puts "F12B5_AUTHORED_QUEST_CONFIRMED_WINS_KEY_SCOPE_OK"
         self.assertIsNone(c.shortest((1,1),(4,0),shapes,source,set(),(6,3),budget=2,perimeter_edits=link))
         shapes[2,0]=special
         self.assertIsNone(c.shortest((1,1),(4,0),shapes,dict(shapes),set(),(6,3),budget=3,perimeter_edits=link))
+
+    def test_f12d3_exact_markers_and_complete_chase_prerequisite(self):
+        import sinnoh_f12d3_secretpotion_audit as p
+        self.assertEqual(p.tokens(b"pbReceiveItem(:SECRETPOTION); Cynthia; PSYDUCK"),["CYNTHIA","PSYDUCK","SECRETPOTION"])
+        self.assertEqual(p.tokens(b"NOTPSYDUCK SECRETPOTION2 CYNTHIAX"),[])
+        report={"status":"F12D_RUNTIME_PREPARED","runtime_install_enabled":True,"baseline_maps":144,
+                "new_events":3,"new_seams":2,"new_portals":0,"new_maps":0,
+                "placements":[{"id":k} for k in ("PASTORIA","ROUTE_213","VALOR_BATTLE")]}
+        self.assertTrue(p.chase_prepared(report))
+        self.assertFalse(p.chase_prepared(dict(report,runtime_install_enabled=False)))
+        self.assertFalse(p.chase_prepared(dict(report,placements=report["placements"][:2])))
+        self.assertFalse(p.chase_prepared(dict(report,new_portals=1)))
 
     def test_f12d_exact_edge_axes_and_source_walkability(self):
         import sinnoh_f12d_seams as seams
