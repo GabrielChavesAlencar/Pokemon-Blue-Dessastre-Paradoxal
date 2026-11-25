@@ -28,11 +28,20 @@ SPECS={
              "Cuide dos seus Pokémon e explore com calma. Cada lugar tem algo novo para descobrir."]),
 }
 PENDING={(148,4):(13,7),(149,2):(12,7)}
+EXTRA={
+    (148,4):("SINNOH_F07_INTERIOR_148",(13,7),"south_gate_resident",
+             ["Você está no portão sul da Cycling Road.","Confira os requisitos de acesso antes de continuar."]),
+    (149,2):("SINNOH_F07_INTERIOR_149",(12,7),"north_gate_resident",
+             ["Este é o portão norte da Cycling Road.","As rotas de Sinnoh têm caminhos diferentes. Planeje sua viagem!"]),
+}
 
 def authored_sheet(role):
     # Two distinct, neutral resident designs, no donor image or likeness.
     palettes={"route_resident":((71,103,142),(200,146,71),(77,60,47)),
-              "interior_resident":((139,87,118),(105,151,119),(84,51,35))}
+              "interior_resident":((139,87,118),(105,151,119),(84,51,35)),
+              "south_gate_resident":((66,111,103),(194,160,76),(57,47,44)),
+              "north_gate_resident":((83,96,155),(160,185,196),(103,70,45)),
+              "gym_guide":((65,78,110),(225,189,78),(78,52,37))}
     shirt,accent,hair=palettes[role]
     w=h=128;raw=bytearray(w*h*4);ink=(42,44,52);skin=(222,178,138)
     for direction in range(4):
@@ -72,7 +81,7 @@ def safe_cell(points,xy,reserved,occupied):
     if any(abs(x-xy[0])+abs(y-xy[1])<=1 for x,y in occupied):return False
     return trainers.non_cut(points-occupied,xy)
 
-def build(blobs,mapping,masks,components,path,base=None,root=trainers.ROOT):
+def build(blobs,mapping,masks,components,path,base=None,root=trainers.ROOT,revision=1):
     if len(mapping)!=131 or len(set(mapping.values()))!=131:raise ValueError("F10C_MAPIDS")
     source,_,_=conn.graph(root);source={**source,**{r["source_id"]:r for r in f08c.rows(root)}}
     report=inv.audit(blobs,mapping,masks,components,path,root)
@@ -88,28 +97,32 @@ def build(blobs,mapping,masks,components,path,base=None,root=trainers.ROOT):
                     args=c.attrs.get("@parameters",[])
                     if c.attrs.get("@code")==201 and len(args)==6 and args[0]==0 and all(type(v) is int for v in args):
                         reserved.add(tuple(args[1:4]))
+    if revision not in (1,2):raise ValueError('F10C_REVISION')
+    specs={**SPECS,**EXTRA} if revision==2 else SPECS
     out=dict(blobs);rows=[];accepted=[];rejected=[]
     with pv.verified_archive(path,"maps") as z:
         for key,q in sorted(queue.items()):
             sid,eid=key;mid=q["qa_map_id"];xy=tuple(q["position"])
             row={"source_id":sid,"source_event_id":eid,"map_id":mid,"position":list(xy)}
-            if key not in SPECS:
+            if key not in specs:
                 if xy!=PENDING[key]:raise ValueError("F10C_PENDING_POSITION")
                 rejected.append({**row,"reason":"outside_original_approved_component"});continue
-            sym,expected,role,messages=SPECS[key]
+            sym,expected,role,messages=specs[key]
             if q["symbol"]!=sym or xy!=expected:raise ValueError("F10C_PIN_CHANGED")
             raw=pv.member(z,pv.MAP_ROOT+"Data/Map%03d.rxdata"%sid)
             if hashlib.sha256(raw).hexdigest()!=source[sid]["sha256"]:raise ValueError("F10C_SOURCE_HASH")
             donor=conn.read_marshal(raw,"F10C_DONOR").attrs["@events"][eid]
             if not dialogue_shape(donor):
                 rejected.append({**row,"reason":"source_not_simple_dialogue"});continue
-            if q["geometry_blockers"]:
+            if q["geometry_blockers"] and not (revision==2 and key in EXTRA and q["geometry_blockers"]==["outside_known_component"]):
                 rejected.append({**row,"reason":"source_geometry_blocked","blockers":q["geometry_blockers"]});continue
             world=worlds[mid];events=world.attrs["@events"]
             occupied={(e.attrs["@x"],e.attrs["@y"]) for e in events.values()}
             tiles=conn.read_marshal(out["Data/Tilesets.rxdata"],"F10C_TILES")
             plain=conn.safe_cells(world,tiles,sym,allowed={0})
-            points=conn.safe_cells(world,tiles,sym,allowed={0,2})&components[sym]
+            points=conn.safe_cells(world,tiles,sym,allowed={0,2})
+            if revision==1 or key not in EXTRA:points&=components[sym]
+            else:points=trainers.component(points-occupied,xy)
             if xy not in plain or not safe_cell(points,xy,{(x,y) for m,x,y in reserved if m==mid},occupied):
                 rejected.append({**row,"reason":"unsafe_or_reserved_cell"});continue
             _,_,index,_,reached,_=gates.access_graph(out,mapping,components,root,directional=True)
@@ -144,5 +157,5 @@ def build(blobs,mapping,masks,components,path,base=None,root=trainers.ROOT):
     if template.count("__F10C_ROWS__")!=1:raise ValueError("F10C_TEMPLATE")
     plugin=template.replace("__F10C_ROWS__",json.dumps(rows,ensure_ascii=False)).encode("utf-8")
     return out,{"maps_audited":131,"source_candidates":len(queue),"accepted":accepted,"rejected":rejected,
-                "new_npcs":len(accepted),"native_verified":False,"source_scripts_executed":False,
+                "new_npcs":len(accepted),"revision":revision,"native_verified":False,"source_scripts_executed":False,
                 "source_dialogue_copied":False,"saves_accessed":False,"water_enabled":False},plugin

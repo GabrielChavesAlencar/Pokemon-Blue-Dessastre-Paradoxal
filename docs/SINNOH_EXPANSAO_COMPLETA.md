@@ -236,3 +236,8 @@ Implementação independente dos seis treinadores pendentes. F10A encontrou quat
 
 
 F10B8 integrada em c151a5da17139072210b07bdeb2a1cd0a7af75bf (11 workflows/26 checks). F10C job 138893998333 confirmou dois NPCs nas posições originais: Rota 207 Map469 evento1028 [24,17], interior081 Map536 evento1002 [5,5]; ambos arte e diálogo autorais. Interior148/149 continuam pendentes de acesso. Seis treinadores anteriores preservados. Sem QA nativa. Dez workflows na base anterior aprovados; CI integral na main exigido.
+
+
+### F10C2 e F11A — ampliação de diálogos e primeiro ginásio
+
+F10C2 testa os dois portões Cycling Road nas posições originais, apenas por acesso direcional existente, sem remover requisitos nem mudar terreno. Preserva o resultado F10C1 e o perfil de saves. F11A cruza os oito contratos S15/CH15 e implementa o primeiro desafio de Roark numa sala de arena autoral de QA, não um ginásio original importado. Reserva um MapID livre (132 total se aceito), guia de acesso em Oreburgh em célula segura e retorno explícito, preserva spawns, 131 MapIDs, eventos, PBS de encontros e conexões. Exige tipo local inequívoco de líder Roark, espécies presentes e sprite Roark exato do pacote; se ausentes ou acesso inseguro, não adiciona nada. Equipe histórica Geodude/Onix/Cranidos, balanceamento existente e proteção de chefe; insígnia COAL regional somente após resultado 1 de batalha, sem HM06 nem mudança de badges Decades. Outros sete ginásios continuam pendentes. Teste Ruby de derrota/fuga, compilação, vitória e repetição, auditoria real e CI pendentes. Não declara instalação ou aprovação Game.exe/JoiPlay.

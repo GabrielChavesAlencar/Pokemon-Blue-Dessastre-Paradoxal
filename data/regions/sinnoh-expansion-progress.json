@@ -202,7 +202,7 @@
       "id": "F10",
       "title": "Todos os treinadores e NPCs",
       "status": "partially_merged",
-      "followup": "F10C_PENDING_CI",
+      "followup": "F10C2_AND_F11A_PENDING_CI",
       "maps_to_audit": 131,
       "source_event_maps_to_audit": 127,
       "new_trainers": 0,
@@ -375,12 +375,20 @@
       "f10c_fixture_recovered": 2,
       "f10c_authored_sprites": 2,
       "f10c_main_ci_pending": true,
-      "f10c_remaining_candidates": 2
+      "f10c_remaining_candidates": 2,
+      "f10c2_extra_dialogue_candidates": 2,
+      "f10c2_native_verified": false
     },
     {
       "id": "F11",
       "title": "Oito ginásios e insígnias",
-      "status": "pending"
+      "status": "implementation_pending_ci",
+      "followup": "F11A_ROARK_AUTHORED_QA_ROOM",
+      "gym_count": 8,
+      "gym_rooms_confirmed": 0,
+      "gym_leaders_confirmed": 0,
+      "native_verified": false,
+      "hm_award_enabled": false
     },
     {
       "id": "F12",
@@ -511,7 +519,7 @@
   },
   "f10": {
     "status": "partially_merged",
-    "followup": "F10C_PENDING_CI",
+    "followup": "F10C2_AND_F11A_PENDING_CI",
     "f10a_pr": 293,
     "f10a_merge_commit": "7302bcc3345dbb8e649b8d8a63498524f6cd9cc5",
     "maps_audited": 131,
@@ -682,6 +690,17 @@
     "f10c_fixture_recovered": 2,
     "f10c_authored_sprites": 2,
     "f10c_main_ci_pending": true,
-    "f10c_remaining_candidates": 2
+    "f10c_remaining_candidates": 2,
+    "f10c2_extra_dialogue_candidates": 2,
+    "f10c2_native_verified": false
+  },
+  "f11": {
+    "status": "implementation_pending_ci",
+    "followup": "F11A_ROARK_AUTHORED_QA_ROOM",
+    "gym_count": 8,
+    "gym_rooms_confirmed": 0,
+    "gym_leaders_confirmed": 0,
+    "native_verified": false,
+    "hm_award_enabled": false
   }
 }
