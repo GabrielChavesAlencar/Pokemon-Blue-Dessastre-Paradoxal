@@ -2,9 +2,27 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "614a9a7c2d95fa4a3ad5cb045e591cb20da567e2",
+      "date": "2026-11-25T12:41:51-03:00",
+      "title": "Sinnoh F12D3F: integrar auditoria da reconstrução seca",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "1b394b7d4f85555315fcda7e21126de0e209860b",
+      "date": "2026-11-25T12:31:08-03:00",
+      "title": "Sinnoh F12D3: sync real negative reports and test bounded dry recovery toward Celestic",
+      "category": "Melhorias"
+    },
+    {
       "sha": "c3d06c1eb7b95feb9cc12c2a674ff474663ad7bf",
       "date": "2026-11-25T12:29:48-03:00",
       "title": "Sinnoh F12D3E: integrar auditoria de topologia alternativa",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "43ddea95020c017f1df31e5c4cb2145e7ac5b038",
+      "date": "2026-11-25T12:07:32-03:00",
+      "title": "Sinnoh F12D3: audit four-Psyduck cut against the actual Celestic exit",
       "category": "Melhorias"
     },
     {
