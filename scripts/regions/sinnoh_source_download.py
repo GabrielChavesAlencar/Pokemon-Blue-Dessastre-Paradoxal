@@ -15,7 +15,8 @@ import os
 from pathlib import Path
 import re
 import tempfile
-from urllib.error import HTTPError
+import time
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
 from urllib.request import Request, build_opener, HTTPRedirectHandler
 
@@ -253,7 +254,20 @@ def download(kind,output):
             stream_to_file(response,output,kind)
 
 
-def ensure_sources(project,fetch=download):
+def retry_download(kind,output,fetch=download,pause=time.sleep):
+    """Retry transient provider failures only; never retry integrity errors."""
+    for attempt in range(3):
+        try:
+            return fetch(kind,output)
+        except (URLError,TimeoutError,ConnectionError) as exc:
+            if isinstance(exc,HTTPError) and exc.code not in (408,429,500,502,503,504):
+                raise
+            if attempt==2:raise
+            output.seek(0);output.truncate(0)
+            print("SINNOH QA: falha transitoria na fonte %s; tentativa %d/3"%(kind,attempt+2),flush=True)
+            pause(2**attempt)
+
+def ensure_sources(project,fetch=retry_download):
     # Explicit Sinnoh click only. Existing valid local archives take precedence.
     from install_sinnoh_experimental_windows import safe_path
     project=safe_path(Path(project).absolute())

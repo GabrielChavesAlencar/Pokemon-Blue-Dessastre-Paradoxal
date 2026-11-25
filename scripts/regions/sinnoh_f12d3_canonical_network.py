@@ -350,6 +350,12 @@ def inspect(blobs,mapping,components,cr,expanded,original,source,root,directiona
     def adj(p):
         for q in tp.neighbours(*p[1:]):
             v=(p[0],*q)
+            if integrated:
+                # A newly cut perimeter cell can be a seam endpoint, not a
+                # cheap path along the map border. Only inward/outward steps.
+                w,h=sdims[p[0]]
+                def perimeter(a):return a[1] in (0,w-1) or a[2] in (0,h-1)
+                if perimeter(p) and perimeter(v) and (cell_cost(p) is None or cell_cost(v) is None):continue
             if local_allowed(p,v):yield v,(),"local"
         yield from sorted(cross.get(p,()))
     banned_sets=[frozenset()];seen=set()

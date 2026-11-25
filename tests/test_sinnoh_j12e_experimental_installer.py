@@ -3472,6 +3472,36 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertEqual(n.SYMBOLS[123],"SINNOH_HEARTHOME_CITY")
         self.assertNotIn(22,n.SYMBOLS)
 
+    def test_f12d_integrated_assets_engine_and_transient_retry(self):
+        import io
+        import struct
+        import zlib
+        from urllib.error import URLError
+        import sinnoh_f12d_assets as a
+        import sinnoh_f12d_integrated as i
+        import sinnoh_source_download as dl
+        sprites=a.build()
+        self.assertEqual(len(sprites),5)
+        self.assertEqual(len(set(sprites.values())),5)
+        for raw in sprites.values():
+            self.assertEqual(raw[:8],b"\\x89PNG\\r\\n\\x1a\\n")
+            self.assertEqual(struct.unpack_from(">II",raw,16),(128,128))
+        code=b"reference"
+        row=[1,b"reference",zlib.compress(code)]
+        refs={"example":i.git_blob_id(code)}
+        self.assertTrue(i.engine_reference_rows([row],refs)["reference_match"])
+        self.assertFalse(i.engine_reference_rows([row,row],refs)["reference_match"])
+        self.assertFalse(i.engine_reference_rows([row],{"example":"0"*40})["reference_match"])
+        self.assertFalse(i.engine_reference_rows([row],refs)["local_engine_native_verified"])
+        out=io.BytesIO();attempts=[];pauses=[]
+        def fetch(kind,stream):
+            attempts.append(kind);stream.write(b"partial" if len(attempts)==1 else b"verified")
+            if len(attempts)==1:raise URLError("transient")
+        dl.retry_download("maps",out,fetch=fetch,pause=pauses.append)
+        self.assertEqual(out.getvalue(),b"verified")
+        self.assertEqual(attempts,["maps","maps"])
+        self.assertEqual(pauses,[1])
+
     def test_f12d_integrated_authorial_paths_and_lake_contracts(self):
         import sinnoh_f12d3_canonical_network as n
         import sinnoh_f12d_integrated as i

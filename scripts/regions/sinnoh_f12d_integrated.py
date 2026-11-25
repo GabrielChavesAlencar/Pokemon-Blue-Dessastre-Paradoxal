@@ -1,6 +1,13 @@
 """Integrated F12D3J-D6 private gameplay compiler; never modifies input maps."""
 import json
 import hashlib
+import re
+import zlib
+import sinnoh_f12d_assets as assets
+import sinnoh_f12d3_secretpotion_catalogue as item_catalogue
+import sinnoh_f12d3_secretpotion_audit as secret_audit
+import sinnoh_f12d3_expanded_evidence as expanded_audit
+import sinnoh_f12d3_original_network as original_audit
 import sinnoh_f12d3_canonical_network as canonical
 import sinnoh_f12d_pastoria_preview as chase
 import sinnoh_f10b7_field_audit as gates
@@ -85,7 +92,9 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
     prepared={}
     report=canonical.inspect(blobs,mapping,components,cr,expanded,original,source,root,
         directional_repair=True,rock_repair=True,rock_network=True,integrated_payload=prepared)
+    sprites=assets.build()
     result={"geometry":report,"status":"F12D_INTEGRATED_BLOCKED","mission_prepared":False,
+        "authored_sprite_hashes":{k:hashlib.sha256(v).hexdigest() for k,v in sprites.items()},
         "lake_contracts":{k:lake_contract(k,types,species,existing) for k in ORDER},
         "lake_placements":{},"lake_local_previews":{},"runtime_install_enabled":False,"native_verified":False,"new_maps":0,"new_portals":0}
     origin=cr["placements"][-1];seed=(origin["map_id"],*origin["stand"])
@@ -181,10 +190,87 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
         if name in blobs:raise ValueError("F12D_INTEGRATED_PBS_COLLISION")
         out[name]=("\n"+"\n".join(pbs)).encode("ascii")
     if chase.digest(blobs)!=before:raise ValueError("F12D_INTEGRATED_INPUT_CHANGED")
+    if set(sprites)&set(blobs):raise ValueError("F12D_INTEGRATED_SPRITE_COLLISION")
+    out.update(sprites)
     delta={k:v for k,v in out.items() if blobs.get(k)!=v}
     result.update(status="F12D_INTEGRATED_GAMEPLAY_FIXTURE",mission_prepared=True,locations=locations,
         lake_payloads=lake_ready,new_events=len(locations),geometry_delta_count=len(prepared["edits"]),
         closed_cells=len(closed),reopened_cells=len(restored),requires_local_engine=True,
-        requires_pre_chase_seam_gate=True,reason="local_engine_sprites_and_progression_activation_pending",
+        requires_pre_chase_seam_gate=True,reason="local_engine_and_progression_activation_pending",
         payload_hashes={k:hashlib.sha256(v).hexdigest() for k,v in delta.items()})
     return delta,result,plugin
+
+# Read-only local engine reference comparison. A matching script blob is NOT
+# proof that plugins have not overridden it, or that native movement works.
+ENGINE_REFS={
+    "terrain_tag":"52ec76c28f718f6fc98a34e5069f28ea3275445c",
+    "game_map":"3fda78303080bf7be450d110ecaf9df834bec691",
+    "game_character":"d7f33659c6627b2bf08fff4e61d43886c76d7b6c",
+    "game_player":"6c03a8b19c35d75163283c6121c062bf78ffd9c5",
+}
+def git_blob_id(raw):
+    return hashlib.sha1(b"blob "+str(len(raw)).encode("ascii")+b"\0"+raw).hexdigest()
+
+def engine_reference_rows(rows,expected=ENGINE_REFS):
+    found={k:0 for k in expected}
+    for row in rows:
+        if not isinstance(row,list) or len(row)<3 or not isinstance(row[2],bytes):
+            raise ValueError("F12D_ENGINE_SCRIPT_SHAPE")
+        raw=zlib.decompress(row[2])
+        digests={git_blob_id(raw),git_blob_id(raw.replace(b"\r\n",b"\n"))}
+        for k,v in expected.items():
+            if v in digests:found[k]+=1
+    return {"reference":"Essentials v21.1","matched_scripts":found,
+        "reference_match":all(n==1 for n in found.values()),"local_engine_native_verified":False,
+        "plugin_overrides_verified":False,"source_scripts_executed":False}
+
+def local_engine(base):
+    path=base/"Data/Scripts.rxdata"
+    try:
+        if path.is_symlink() or not path.is_file():raise ValueError("F12D_ENGINE_MISSING")
+        return engine_reference_rows(conn.read_marshal(path.read_bytes(),"F12D_ENGINE_REFERENCE"))
+    except (OSError,ValueError,TypeError,KeyError,zlib.error) as exc:
+        return {"reference":"Essentials v21.1","reference_match":False,
+            "local_engine_native_verified":False,"plugin_overrides_verified":False,
+            "source_scripts_executed":False,"reason":type(exc).__name__}
+
+def installer_preflight(blobs,mapping,components,cr,base,root,source):
+    """Called by the isolated installer after F12D2. Only stage bytes, never
+    publish an unproved corridor or mutate an existing save. The next native
+    binding must use the exact proof and validate the runtime movement hooks."""
+    result={"status":"F12D_INTEGRATED_INSTALLER_PREFLIGHT","runtime_install_enabled":False,
+        "native_verified":False,"candidate_ready":False,"new_maps":0,"new_portals":0,
+        "engine":local_engine(base),"item_catalogue":item_catalogue.audit(base)}
+    try:
+        if not secret_audit.chase_prepared(cr):raise ValueError("F12D_INTEGRATED_REQUIRES_CHASE")
+        existing=set()
+        for path in (base/"PBS").glob("trainers*.txt"):
+            if path.is_symlink() or not path.is_file():raise ValueError("F12D_INTEGRATED_UNSAFE_PBS")
+            for header in trainers.read_blocks(path):
+                v=[x.strip() for x in header.split(",")]
+                if len(v) in (2,3) and (len(v)==2 or v[2].isdigit()):
+                    existing.add((v[0],v[1],int(v[2]) if len(v)==3 else 0))
+        for path,raw in blobs.items():
+            if path.startswith("PBS/trainers") and path.endswith(".txt"):
+                for header in re.findall(r"^\s*\[([^\]]+)\]\s*$",raw.decode("utf-8-sig"),re.M):
+                    v=[x.strip() for x in header.split(",")]
+                    if len(v) in (2,3) and (len(v)==2 or v[2].isdigit()):
+                        existing.add((v[0],v[1],int(v[2]) if len(v)==3 else 0))
+        if any((base/path).exists() for path in assets.build()):raise ValueError("F12D_INTEGRATED_LOCAL_SPRITE_COLLISION")
+        audited=secret_audit.audit(blobs,mapping,components,cr,source,root)
+        expanded=expanded_audit.inspect(blobs,mapping,components,cr,audited,source,root)
+        original=original_audit.inspect(blobs,mapping,components,cr,expanded,source,root)
+        delta,story,plugin=compile_story(blobs,mapping,components,cr,expanded,original,source,root,
+            trainers.catalogue(base,"trainer_types"),trainers.catalogue(base,"pokemon"),
+            {"SECRETPOTION"} if result["item_catalogue"]["local_catalog_valid"] else set(),existing)
+        # Do not embed private map bytes or huge path reports in the manifest.
+        result.update(story_status=story["status"],mission_prepared=story["mission_prepared"],
+            lake_local_previews=story.get("lake_local_previews",{}),lake_payloads=story.get("lake_payloads",[]),
+            reason=story.get("reason"),candidate_ready=bool(delta and plugin),
+            payload_hashes=story.get("payload_hashes",{}),authored_sprite_hashes=story["authored_sprite_hashes"])
+        if delta and plugin:
+            result["candidate_plugin_sha256"]=hashlib.sha256(plugin).hexdigest()
+            result["reason"]="runtime_movement_binding_and_native_compatibility_pending"
+        return result
+    except (OSError,ValueError,TypeError,KeyError,UnicodeError) as exc:
+        return {**result,"reason":"preflight_failed:"+type(exc).__name__}

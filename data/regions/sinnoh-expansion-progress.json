@@ -1641,7 +1641,12 @@
       "f12d3_rock_cost_network_overlap": 2206,
       "f12d3_rock_cost_network_rejected_trials": 9,
       "f12d_integrated_gate_implemented": true,
-      "f12d_integrated_lake_local_preview_compiler": true
+      "f12d_integrated_lake_local_preview_compiler": true,
+      "f12d_integrated_prior_ci_head": "bd30f1385b999475535e2a5c0493c38486c53943",
+      "f12d_integrated_prior_ci_download_failure": "WinError 10060",
+      "f12d_integrated_sprite_sheets_authored": 5,
+      "f12d_integrated_engine_reference_checks": 4,
+      "f12d_integrated_installer_preflight": true
     },
     {
       "id": "F13",

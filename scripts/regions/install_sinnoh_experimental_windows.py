@@ -59,6 +59,7 @@ import sinnoh_f12c2_eterna_preview as f12c_preview
 import sinnoh_f12c3_jupiter_candidate as f12c_quest
 import sinnoh_f12c4_install as f12c_install
 import sinnoh_f12d_runtime as f12d_runtime
+import sinnoh_f12d_integrated as f12d_integrated
 from audit_sinnoh_rxdata import read_marshal
 from audit_sinnoh_twinleaf_events import MAPS,HANDLERS as CH06_HANDLERS,BALLS as CH06_BALLS
 from build_sinnoh_twinleaf_events import HANDLERS as SCRIPT_HANDLERS
@@ -821,6 +822,7 @@ def build_files(base:Path,project:Path=ROOT):
     f12d_plugin=b""
     f12d_previous_maps=None
     f12d_report={"status":"NOT_EVALUATED","runtime_install_enabled":False,"native_verified":False}
+    f12d_integrated_report={"status":"NOT_EVALUATED","runtime_install_enabled":False,"native_verified":False}
     f12b5_plugin=b""
     f11h_plugin=b""
     f10c_plugin=b""
@@ -935,6 +937,9 @@ def build_files(base:Path,project:Path=ROOT):
             f12d_previous_maps=maps
             maps,f12d_report,f12d_plugin=f12d_runtime.append(maps,mapping,components,base,project,sources["maps"])
             print("SINNOH_F12D_RUNTIME_REPORT "+json.dumps(f12d_report,sort_keys=True),flush=True)
+            if f12d_report.get("runtime_install_enabled"):
+                f12d_integrated_report=f12d_integrated.installer_preflight(maps,mapping,components,f12d_report,base,project,sources["maps"])
+                print("SINNOH_F12D_INTEGRATED_INSTALLER_PREFLIGHT_REPORT "+json.dumps(f12d_integrated_report,sort_keys=True),flush=True)
         gym_symbols=set(mapping)-f08c_expansion.ALL
         if gym_symbols:
             masks=private_visual.movement_masks(maps,mapping,extra_symbols=city_expansion.CITIES|route_expansion.ROUTES|natural_expansion.NATURAL|interior_expansion.INTERIORS|f08c_expansion.EXTERIORS|gym_symbols)
@@ -1024,6 +1029,7 @@ def build_files(base:Path,project:Path=ROOT):
         "f12c_eterna_preflight":f12c_report,
         "f12c4_install":f12c4_report,
         "f12d_runtime":f12d_report,
+        "f12d_integrated":f12d_integrated_report,
         "qa_teleport":{"catalog_count":len(teleport_entries),"available_count":sum(row[3] is not None for row in teleport_entries),"destinations":teleport_entries,"native_verified":False},
         "encounter_coverage":encounter_coverage,"route202_trainers":route_trainers,
         "visual_native_reviewed":False,

@@ -27,8 +27,9 @@ module BlueSinnohF12DIntegrated
   def self.rock_reference_valid?
     return false unless defined?(GameData::TerrainTag)
     tag=GameData::TerrainTag.try_get(4)
-    tag && tag.id==:Rock && !tag.can_surf && !tag.ice && !tag.ledge &&
-      !tag.bridge && !tag.ignore_passability && !tag.must_walk && !tag.must_walk_or_run
+    tag && tag.id==:Rock && tag.id_number==4 && !tag.can_surf && !tag.ice && !tag.ledge &&
+      !tag.bridge && !tag.ignore_passability && !tag.must_walk && !tag.must_walk_or_run &&
+      !tag.waterfall && !tag.waterfall_crest && !tag.can_dive && !tag.deep_bush
   end
   def self.verify_compiled!
     raise "Sinnoh F12D3: terreno Rock incompatível" unless rock_reference_valid?
