@@ -283,18 +283,22 @@ Sexto desafio em Canalave, sala autoral temática Aço. Contrato CH15/S15: Magne
 
 F11F job real 138912475363 HEAD 3af0c5a9bdfbc359b2b35a6f82ceb3aa4cef7a08 confirmou 137 mapas, 85 portais, seis salas, Map578, guia evento 2001 em Canalave Map458 [27,29] retorno [27,28]. Sprite autoral SHA-256 279e2fc9f03b3de652aa6b0f982d6ef2f17ab116c37879ba37fa4c87c344f6af. Catálogo fixture, sem compilação ou QA nativa. CI na main pendente.
 
+F11E integrada em 8cd5d6d3c66745ded74c4237f6ecdb4319a1d5e1 (11 workflows/26 checks na HEAD fd229fc550416c49e562481036faa55b996b1de3, job 138914711407). F11F revalidada na HEAD 045fbf1941061bb9cd8364774765b993215758d0, job 138914801656: 137 mapas, 85 portais, seis salas, Map578, guia evento 2001 em Canalave Map458 [27,29] retorno [27,28]. Catálogo fixture, sem QA nativa. CI na main pendente.
 
 ### F11G — Candice
 
 Sétimo desafio em Snowpoint, sala autoral temática Gelo, sem simular o puzzle original nem alterar terreno ou regras de campo. Contrato CH15/S15: Sneasel/Piloswine/Abomasnow/Froslass (40/40/42/44 históricos, não níveis fixos em runtime). Requer COAL, FOREST, RELIC, COBBLE, FEN e MINE; ICICLE somente após vitória confirmada. Não concede HM08 nem ativa Rock Climb. Geração sequencial, MapID livre, dois portais seguros, sprite exato ou autoral sem ambiguidade. Meta: 138 mapas, 87 portais, sete ginásios e preservação integral do baseline anterior. CI e catálogo local pendentes; QA nativa não executada.
 
+F11F integrada em 62d48570c6fb961806e1c48c4af5c1499ff4fe97 (11 workflows/26 checks na HEAD cbe9a88126e712833ae9b021e166c5fb6ed3128b, job real 138918264409 após retry). F11G job 138915913881 HEAD 0a7f5a0e36e073e111140319edf6cb1fb052dde4: Map579, Snowpoint Map460 [19,32] retorno [19,31], 138 mapas/87 portais. Sprite autoral SHA-256 ee326fcf3ac5aef01569d59cdcf1ead7c0f9760e39fd0bb439dfb06c7e99f8e1. Catálogo fixture, sem QA nativa. CI na main pendente.
 
 ### F11H — Volkner
 
 Oitavo desafio em Sunyshore, sala autoral temática Elétrico, sem reproduzir puzzle original ou alterar regras de campo. Contrato CH15/S15: Jolteon/Raichu/Luxray/Electivire (46/46/48/50 históricos, não níveis fixos em runtime). Requer COAL, FOREST, RELIC, COBBLE, FEN, MINE e ICICLE; BEACON somente após vitória confirmada. Não concede HM07 nem ativa Waterfall ou acesso automático à Liga. Geração sequencial, MapID livre, dois portais seguros, sprite exato ou autoral sem ambiguidade. Meta: 139 mapas, 89 portais, oito ginásios e preservação integral do baseline anterior. CI e catálogo local pendentes; QA nativa não executada.
 
-F11E integrada em 8cd5d6d3c66745ded74c4237f6ecdb4319a1d5e1 (11 workflows/26 checks). F11F job 138914801656 HEAD 045fbf1941061bb9cd8364774765b993215758d0; F11G job 138915913881 HEAD 0a7f5a0e36e073e111140319edf6cb1fb052dde4: Map579, Snowpoint Map460 [19,32] retorno [19,31], 138 mapas/87 portais. F11H job 138916172371 HEAD 3aa6644a393294faa173171789913c7911ba258f: Map580, Sunyshore Map463 [41,21] retorno [40,21], 139 mapas/89 portais, oito salas autorais. F11F/G/H CI na main pendente, sem QA nativa.
+F11G integrada em d2cb043773838d22fe0986e3952f21ca093b4e19 (11 workflows/26 checks na HEAD 49d8e87a8597084d4576513a4f640db10aa6f361, job 138920079093). F11H job 138916172371 HEAD 3aa6644a393294faa173171789913c7911ba258f: Map580, Sunyshore Map463 [41,21] retorno [40,21], 139 mapas/89 portais e sete conexões preservadas. Sprite autoral SHA-256 be76b59e7228cd02ce9de4212928b95e611b3f18ed919a7c6e42e22af1540693. Catálogo fixture, sem QA nativa. CI na main pendente.
 
 ### F12A — auditoria de história, Equipe Galactic e itens-chave
 
 Primeira etapa F12, dependente da F11H auditada e integração sequencial. Inventário somente leitura do ZIP original validado; cruzamento de MapIDs e hashes, 14 checkpoints CH14 (fases 5–8) e oito HMs S16. Identifica candidatos por marcadores e chamadas literais, sem publicar texto ou scripts doador, sem aprovar automaticamente identidade, posição ou resultado. Nenhuma batalha, coleta, flag, HM ou teleporte habilitado. F12B deverá reconstruir apenas eventos com evidência suficiente e testes de acesso. CI pendente; nenhuma QA nativa presumida.
+
+F11H integrada em 267f9080daa99272d40805d99384d5589ab2bedb (11 workflows/26 checks na HEAD 7b556b5518e960ece1eb3699a25569f578e0ee1b, job 138922435524). Oito salas QA, 139 mapas, 89 portais, sete conexões. Sem QA nativa. F12A job 138918141829 HEAD 31e1f2f212da60c87bed2a0a79dec184e05151cd: 238 mapas-fonte, 2867 eventos, 13 candidatos, 10 mapeados; 14 checkpoints e oito HMs sem binding. CI na main pendente.
