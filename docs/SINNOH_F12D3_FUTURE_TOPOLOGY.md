@@ -1,0 +1,5 @@
+# F12D3 future topology (audit only, stacked on #328)
+
+#328 HEAD 3bd3303b1e3931db66cc81195b5e71e48af02776, main 75bbb56c9159fad2fe4f219c76322a3e6653d5ec: 10/11 workflows, 25/26 jobs, nine F12D3 unit tests passed (139290245298). Live job 139294072568 pending at preparation. No merge, no installation.
+
+Prior real job 139285530145: 17 continuity offsets; all overlap physical side intervals reserved by Route 215 and Route 212 segment 2; 15 overlap dry Pastoria axes Y46–50. Offsets 49/50 do not eliminate full interval conflicts. New audit computes full geometric overlaps for all four competing records, hashes neighboring source maps from the verified archive and separates known dry lanes from unknown evidence. Unit and live regression added; not yet executed. This is not a topology resolution; activation remains blocked pending a non-conflicting continuous route and a positive barrier report, with future original records preserved. No teleport, no save, balance, MapID, event or portal changes. No native QA.

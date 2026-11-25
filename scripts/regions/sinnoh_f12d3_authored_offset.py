@@ -23,6 +23,40 @@ def offset_rows(east,west,continuation):
             "lanes":lanes,"reaches_segment2":any(x["segment2_components"] for x in lanes)})
     return rows
 
+def competing_side_report(candidates,competitors,dims,edge_candidates):
+    """Conservative reservation of the entire aligned interval, not just dry cells."""
+    def oriented(record,sid,side):
+        return next((r for r in seams.ends(record) if r[:2]==(sid,side)),None)
+    def axes(record):
+        a,da,oa,b,db,ob=record
+        return {n+oa for n in seams.aligned_axes(da,oa,dims[a],db,ob,dims[b])}
+    def known_dry(record,sid,side):
+        edge=next((e for e in edge_candidates if tuple(e["source_record"]) in seams.ends(record)),None)
+        if edge is None:
+            return None
+        end=oriented(tuple(edge["source_record"]),sid,side)
+        return {n+end[2] for n in edge["matching_walkable_axes"]}
+    result=[]
+    for row in candidates:
+        if not row["reaches_segment2"]:continue
+        record=(80,"E",row["offset_east"],219,"W",row["offset_west"])
+        conflicts=[]
+        for competitor in competitors:
+            for sid,side,key in ((80,"E","east_y"),(219,"W","west_y")):
+                other=oriented(tuple(competitor),sid,side)
+                if other is None:continue
+                own=axes(oriented(record,sid,side))
+                reserved=axes(other)
+                common=own&reserved
+                dry=known_dry(tuple(competitor),sid,side)
+                dry_overlap=None if dry is None else sorted(dry&{x[key] for x in row["lanes"]})
+                conflicts.append({"source_id":sid,"side":side,"competitor":list(competitor),
+                    "candidate_interval":sorted(own),"reserved_interval":sorted(reserved),
+                    "geometric_overlap":sorted(common),"dry_overlap":dry_overlap})
+        result.append({"record":list(record),"competing_sides":conflicts,
+            "activation_allowed":bool(conflicts) and not any(x["geometric_overlap"] or x["dry_overlap"] is None for x in conflicts)})
+    return result
+
 def inspect(blobs,mapping,components,chase_report,expanded,source,root):
     chase.validate(blobs,mapping)
     before=chase.digest(blobs)
@@ -66,11 +100,21 @@ def inspect(blobs,mapping,components,chase_report,expanded,source,root):
             if x in idx[a] and y in idx[s]:continuation.setdefault(idx[a][x],set()).add(idx[s][y])
         candidates=offset_rows(east,west,continuation)
         competitors=[list(r) for r in rows if r!=ORIGINAL and any((u,d) in {(80,"E"),(219,"W")} for u,d,*_ in seams.ends(r))]
+        dims={sid:(w.attrs["@width"],w.attrs["@height"]) for sid,w in src.items()}
+        neighbor_hashes={}
+        for sid in sorted({sid for r in competitors for sid in (r[0],r[3])}-set(dims)):
+            raw=pv.member(z,pv.MAP_ROOT+"Data/Map%03d.rxdata"%sid)
+            world=conn.read_marshal(raw,"F12D3_FUTURE_NEIGHBOR")
+            dims[sid]=(world.attrs["@width"],world.attrs["@height"])
+            neighbor_hashes[str(sid)]=hashlib.sha256(raw).hexdigest()
+        future=competing_side_report(candidates,competitors,dims,expanded["edge_candidates"])
     if before!=chase.digest(blobs):raise ValueError("F12D3_OFFSET_MUTATED")
     return {"status":"F12D3_AUTHORED_OFFSET_EVIDENCE_ONLY","original_record":list(ORIGINAL),
         "source_layout":"PROJECT_AUTHORED_ALIGNMENT_HYPOTHESIS_NOT_CANONICAL",
         "east_dry_axes":sorted(east),"west_reachable_dry_axes":sorted(west),
         "candidate_offsets":candidates,"continuation_axes":edge["matching_walkable_axes"],
         "candidate_offsets_reaching_both":sum(r["reaches_segment2"] for r in candidates),
-        "competing_source_records":competitors,"new_seams":0,"new_portals":0,
+        "competing_source_records":competitors,"future_topology_conflicts":future,
+        "future_neighbor_hashes":neighbor_hashes,"future_activation_allowed":any(x["activation_allowed"] for x in future),
+        "new_seams":0,"new_portals":0,
         "native_verified":False,"installed":False}

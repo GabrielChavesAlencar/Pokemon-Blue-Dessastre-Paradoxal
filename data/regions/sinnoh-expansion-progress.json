@@ -542,7 +542,7 @@
       "id": "F12",
       "title": "História, Equipe Galactic e itens-chave",
       "status": "implementation_pending_ci",
-      "followup": "F12D3_GATED_ALIGNMENT_AND_PSYDUCK_CUT_PENDING_CI",
+      "followup": "F12D3_FUTURE_TOPOLOGY_CONFLICT_AUDIT_PENDING_CI",
       "story_checkpoints_scope": 14,
       "hm_contracts_scope": 8,
       "native_bindings": 0,
@@ -1162,7 +1162,18 @@
       ],
       "f12d3_offset_competing_source_records": 4,
       "f12d3_gated_alignment_pending_ci": true,
-      "f12d3_psyduck_cut_pending_ci": true
+      "f12d3_psyduck_cut_pending_ci": true,
+      "f12d3_gated_unit_tests_approved": 9,
+      "f12d3_gated_unit_tests_job": 139290245298,
+      "f12d3_gated_partial_head": "3bd3303b1e3931db66cc81195b5e71e48af02776",
+      "f12d3_gated_partial_base": "75bbb56c9159fad2fe4f219c76322a3e6653d5ec",
+      "f12d3_gated_partial_ci_workflows": 10,
+      "f12d3_gated_partial_ci_checks": 25,
+      "f12d3_future_topology_audit_pending_ci": true,
+      "f12d3_future_topology_activation_blocked": true,
+      "f12d3_future_geometry_conflicting_candidates": 17,
+      "f12d3_future_pastoria_dry_conflicting_candidates": 15,
+      "f12d3_future_evidence_job": 139285530145
     },
     {
       "id": "F13",

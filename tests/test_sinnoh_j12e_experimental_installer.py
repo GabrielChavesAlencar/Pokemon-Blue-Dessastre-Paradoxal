@@ -1561,6 +1561,13 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                         self.assertFalse(off["native_verified"])
                         self.assertEqual(chased,snapshot)
                         print("SINNOH_F12D3_AUTHORED_OFFSET_REPORT "+json.dumps(off,sort_keys=True),flush=True)
+                        future=off["future_topology_conflicts"]
+                        self.assertEqual(len(future),off["candidate_offsets_reaching_both"])
+                        self.assertEqual(len(future),17)
+                        self.assertFalse(off["future_activation_allowed"])
+                        self.assertTrue(all(any(c["geometric_overlap"] for c in row["competing_sides"]) for row in future))
+                        print("SINNOH_F12D3_FUTURE_TOPOLOGY_REPORT "+json.dumps(future,sort_keys=True),flush=True)
+                        print("SINNOH_REAL_F12D3_FUTURE_TOPOLOGY_CONFLICTS_AUDITED_OK",flush=True)
                         import sinnoh_f12d3_gated_alignment as gated
                         linked,gr=gated.prepare(chased,expanded,expanded_comps,cr,ext,off,ROOT)
                         self.assertEqual(chased,snapshot)
@@ -3334,6 +3341,23 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertFalse(b.cut_witness(opened,prior|far,prior,barrier,473))
         self.assertFalse(b.cut_witness(opened,{(528,0,0)},prior,barrier,473))
         self.assertFalse(b.cut_witness(opened|{(472,1,1)},prior,prior,barrier,473))
+
+    def test_f12d3_future_topology_reserves_full_intervals(self):
+        import sinnoh_f12d3_authored_offset as a
+        dims={80:(98,87),219:(64,67),126:(104,72),223:(134,38)}
+        candidates=[{"offset_east":0,"offset_west":49,"reaches_segment2":True,
+            "lanes":[{"east_y":2,"west_y":51},{"east_y":3,"west_y":52}]}]
+        competitors=[[126,"W",0,80,"E",0],[223,"E",0,219,"W",34]]
+        edges=[{"source_record":competitors[0],"matching_walkable_axes":[45,46]},
+               {"source_record":competitors[1],"matching_walkable_axes":[12,13,14,15,16]}]
+        report=a.competing_side_report(candidates,competitors,dims,edges)
+        self.assertEqual(len(report),1)
+        self.assertFalse(report[0]["activation_allowed"])
+        self.assertTrue(all(x["geometric_overlap"] for x in report[0]["competing_sides"]))
+        self.assertTrue(all(x["dry_overlap"]==[] for x in report[0]["competing_sides"]))
+        unknown=a.competing_side_report(candidates,competitors,dims,[])
+        self.assertFalse(unknown[0]["activation_allowed"])
+        self.assertTrue(all(x["dry_overlap"] is None for x in unknown[0]["competing_sides"]))
 
     def test_f12d3_all_aligned_lanes_are_counted(self):
         import sinnoh_f12d3_gated_alignment as g
