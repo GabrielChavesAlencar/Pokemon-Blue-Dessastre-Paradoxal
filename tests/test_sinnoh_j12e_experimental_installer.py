@@ -1673,6 +1673,19 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                         self.assertEqual(len(rock["exit_costs"]),5)
                         print("SINNOH_F12D3_ROCK_FRONTIER_NETWORK_REPORT "+json.dumps(rock,sort_keys=True),flush=True)
                         print("SINNOH_REAL_F12D3_ROCK_FRONTIER_NETWORK_AUDITED_OK",flush=True)
+                        network=canonical_network.inspect(chased,expanded,expanded_comps,cr,ext,onr,Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]),ROOT,directional_repair=True,rock_repair=True,rock_network=True)
+                        self.assertEqual(chased,snapshot)
+                        self.assertEqual(network["rock_network_model"]["original_budget"],32)
+                        self.assertGreaterEqual(network["rock_network_model"]["accepted_total"],3)
+                        self.assertFalse(network["activation_allowed"])
+                        self.assertFalse(network["native_verified"])
+                        self.assertEqual(network["changed_cells_installed"],0)
+                        self.assertEqual(network["new_portals"],0)
+                        self.assertEqual(len(network["exit_costs"]),5)
+                        for trial in network["trials"]:
+                            self.assertEqual(sum(x["count"] for x in trial["edit_attribution"]),trial["unique_edits"])
+                        print("SINNOH_F12D3_ROCK_COST_NETWORK_REPORT "+json.dumps(network,sort_keys=True),flush=True)
+                        print("SINNOH_REAL_F12D3_ROCK_COST_NETWORK_AUDITED_OK",flush=True)
                         print("SINNOH_REAL_F12D3_GATED_ALIGNMENT_EVIDENCE_PRESERVED_OK",flush=True)
                         print("SINNOH_REAL_F12D3_ROUTE210_RECOVERY_EVIDENCE_PRESERVED_OK",flush=True)
                     else:
@@ -3441,6 +3454,19 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertNotIn(c,d)
         self.assertEqual(n.SYMBOLS[123],"SINNOH_HEARTHOME_CITY")
         self.assertNotIn(22,n.SYMBOLS)
+
+    def test_f12d3_rock_network_rejects_perimeter_and_attributes_edits(self):
+        import sinnoh_f12d3_canonical_network as n
+        args=[(4,5),(10,10),(3225,0,0),(462,0,0),((0,),(4,)),((0,),(4,)),0,0,".",False,False]
+        self.assertTrue(n.rock_network_match(*args))
+        for index,value in ((0,(0,5)),(0,(9,5)),(2,(3226,0,0)),(3,(462,1,0)),(4,((0,),(7,))),(5,((4,),(4,))),(6,1),(7,1),(8,"#"),(9,True),(10,True)):
+            other=list(args);other[index]=value
+            self.assertFalse(n.rock_network_match(*other))
+        a,b,c=(80,1,2),(80,1,3),(116,4,5)
+        rows=n.edit_attribution({a,b,c},lambda p:p==b,{a})
+        self.assertEqual(sum(x["count"] for x in rows),3)
+        self.assertIn({"source_id":80,"kind":"full_wall","location":"seam_endpoint","count":1},rows)
+        self.assertIn({"source_id":80,"kind":"directional","location":"interior","count":1},rows)
 
     def test_f12d3_rock_frontier_is_exact_and_never_converts_terrain(self):
         import sinnoh_f12d3_canonical_network as n
