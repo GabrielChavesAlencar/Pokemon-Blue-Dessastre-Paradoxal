@@ -542,7 +542,7 @@
       "id": "F12",
       "title": "História, Equipe Galactic e itens-chave",
       "status": "implementation_pending_ci",
-      "followup": "F12D3_DRY_RECOVERY_FIXTURE_PENDING_CI",
+      "followup": "F12D3_DRY_NETWORK_FIXTURE_PENDING_CI",
       "story_checkpoints_scope": 14,
       "hm_contracts_scope": 8,
       "native_bindings": 0,
@@ -1209,7 +1209,7 @@
       "f12d3_alternate_prior_head": "eab6960c3dba9469414c8490149fdb70993f94f5",
       "f12d3_alternate_unit_tests_approved": 11,
       "f12d3_alternate_unit_tests_job": 139299060294,
-      "f12d3_celestic_cut_audit_pending_ci": true,
+      "f12d3_celestic_cut_audit_pending_ci": false,
       "f12d3_celestic_cut_verified": false,
       "f12d3_celestic_cut_source_record": [
         116,
@@ -1249,9 +1249,45 @@
       ],
       "f12d3_celestic_cut_exit_reached": 0,
       "f12d3_celestic_cut_blocker": "celestic_exit_not_reachable",
-      "f12d3_dry_recovery_pending_ci": true,
+      "f12d3_dry_recovery_pending_ci": false,
       "f12d3_dry_recovery_budget": 32,
-      "f12d3_dry_recovery_installed": false
+      "f12d3_dry_recovery_installed": false,
+      "f12d3_dry_recovery_full_ci_approved": true,
+      "f12d3_dry_recovery_validated_head": "1b394b7d4f85555315fcda7e21126de0e209860b",
+      "f12d3_dry_recovery_merge_commit": "614a9a7c2d95fa4a3ad5cb045e591cb20da567e2",
+      "f12d3_dry_recovery_real_job": 139317337788,
+      "f12d3_dry_recovery_ci_workflows": 11,
+      "f12d3_dry_recovery_ci_checks": 26,
+      "f12d3_dry_recovery_unit_tests": 13,
+      "f12d3_dry_recovery_unit_job": 139317338949,
+      "f12d3_dry_recovery_free_intervals": 451,
+      "f12d3_dry_recovery_potential_dry_pairs": 15602,
+      "f12d3_dry_recovery_minimum_edits": null,
+      "f12d3_dry_recovery_frontier_edges": {
+        "directional_mask": 45,
+        "perimeter_or_noneditable": 69,
+        "protected": 43,
+        "special_terrain": 192
+      },
+      "f12d3_dry_recovery_exit_costs": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "f12d3_dry_recovery_blocker": "no_source_matched_dry_corridor",
+      "f12d3_dry_network_pending_ci": true,
+      "f12d3_dry_network_budget": 32,
+      "f12d3_dry_network_original_extra": [
+        116,
+        "S",
+        98,
+        126,
+        "N",
+        0
+      ],
+      "f12d3_dry_network_installed": false
     },
     {
       "id": "F13",

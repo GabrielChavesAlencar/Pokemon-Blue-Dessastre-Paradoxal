@@ -40,7 +40,7 @@ def cuts(cells,ingress,exit_cells,eligible):
             result.append((len(cells-reached-line),tuple(sorted(line))))
     return sorted(result,key=lambda p:(p[0],p[1]))
 
-def inspect(baseline,direct,mapping,components,chase_report,expanded,alternative,root):
+def inspect(baseline,direct,mapping,components,chase_report,expanded,alternative,root,recovered_alternative=None,source_protected=()):
     chase.validate(baseline,mapping);before=chase.digest(baseline)
     direct_hash=chase.digest(direct)
     if expanded.get("input_hashes")!=before or not chase_report.get("runtime_install_enabled"):
@@ -71,6 +71,7 @@ def inspect(baseline,direct,mapping,components,chase_report,expanded,alternative
     if alternative.get("witness") and alternative["witness"].get("fixture_passed"):
         rows=[tuple(r) for r in alternative["fixed_records"]]+[tuple(alternative["witness"]["qa_record"])]
         variants.append(("alternative",append(baseline,rows)))
+    if recovered_alternative is not None:variants.append(("dry_network_candidate",recovered_alternative))
     if direct!=baseline:variants.append(("direct_conflicting_diagnostic",direct))
     if not variants:result["reason"]="no_linked_fixture";return result
     for label,linked in variants:
@@ -115,6 +116,8 @@ def inspect(baseline,direct,mapping,components,chase_report,expanded,alternative
                     if x in cells and (end[3],*y) in opened:ingress.add(x)
         ingress|={(x,y) for m,x,y in protected&opened if m==mid and (x,y) not in exit_xy}
         if origin["map_id"]==mid:ingress.add(tuple(origin["stand"]))
+        # Source-only event cells are immutable, not new entrances.
+        protected.update(source_protected)
         # An ingress on the destination side is a potential bypass, not ignored.
         eligible={xy for xy in cells if 0<xy[0]<w-1 and 0<xy[1]<h-1 and
                   (mid,*xy) not in protected|prior and xy not in ingress|exit_xy and
@@ -132,6 +135,8 @@ def inspect(baseline,direct,mapping,components,chase_report,expanded,alternative
             _,_,ic,_,rc,_=graph(trial);closed=trainers.reached_cells(ic,rc)
             barrier={(mid,*xy) for xy in line}
             stands={(mid,*q) for xy in line for q in tp.neighbours(*xy)}&closed
+            preserve_routes={mapping[s] for s in ("SINNOH_ROUTE_210","SINNOH_ROUTE_212","SINNOH_ROUTE_212_SEGMENT_2","SINNOH_ROUTE_215") if s in mapping}
+            if label=="dry_network_candidate" and any(p[0] in preserve_routes for p in opened-closed):continue
             if not (prior<=closed<=opened and not barrier&closed and not targets&closed and stands and
                     not any(p[0]==town for p in closed) and tp.build(trial,old,components,root)==tp.build(with_exit,old,components,root)):
                 continue
