@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7842dfbc352f1423a2cf35b97b8d33eb50a4be6c",
+      "date": "2026-11-25T09:20:55-03:00",
+      "title": "Merge pull request #322 from GabrielChavesAlencar/sinnoh-full-expansion-f12c4-144-map-installer",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "366e52f1ae5514e13d5dddc0528db16b62289a34",
+      "date": "2026-11-25T09:07:43-03:00",
+      "title": "F12C4: reconcile main and preserve definitive Jupiter evidence before full installation CI",
+      "category": "Melhorias"
+    },
+    {
       "sha": "79f2f50c76c30cee84bfc794a60ade669f3ed7e2",
       "date": "2026-11-25T09:06:54-03:00",
       "title": "Merge pull request #321 from GabrielChavesAlencar/sinnoh-full-expansion-f12c3-jupiter-quest-candidate",
@@ -92,6 +104,12 @@
       "category": "Melhorias"
     },
     {
+      "sha": "97736bd909bf3ebd0f147db2dea5a5b52a90b6f1",
+      "date": "2026-11-25T06:53:33-03:00",
+      "title": "F12C4: preserve parent sprite fix and remove shadowed patch import",
+      "category": "Melhorias"
+    },
+    {
       "sha": "fe641df6e079126bf5ff24e0fbcf9337ff3fbe3a",
       "date": "2026-11-25T06:53:20-03:00",
       "title": "F12C3: implement missing authored Jupiter and rescue sprites and test palettes",
@@ -107,6 +125,18 @@
       "sha": "7f42a0e1379a29f7585c41aae624196c6c9396c0",
       "date": "2026-11-25T06:46:46-03:00",
       "title": "Merge pull request #315 from GabrielChavesAlencar/sinnoh-full-expansion-f12b4-windworks-access",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "0f707c64d55daba97f33e0ddc418a231c7efcb6a",
+      "date": "2026-11-25T06:46:31-03:00",
+      "title": "F12C4: verify successful 144-map installer assembly against source and fixture catalog",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "8415a811eb8e8fea0a472a95de994ec6808487f8",
+      "date": "2026-11-25T06:45:45-03:00",
+      "title": "F12C4: conditionally install 144-map QA with regional HM receipt and title guard",
       "category": "Melhorias"
     },
     {
