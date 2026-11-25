@@ -3599,6 +3599,9 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertIn("raw.events.values",source)
         self.assertIn("return false unless BlueSinnohF12DIntegrated.runtime_surf_step_allowed?(a,b,true)",source)
         self.assertIn("SINNOH_F12D_NATIVE_SURF_MAP_COLLISION_OK",source)
+        self.assertIn("Sinnoh Surf native dry approach",source)
+        self.assertIn("count+dry_count==2*(route.length-1)",source)
+        self.assertIn("[a,b].each do |cell|",source)
         guard=exp.private_visual.movement_plugin({529:[".#."]}).decode("utf-8")
         self.assertIn('return if cell=="#" && target!="surf"',guard)
         self.assertIn("runtime_surf_step_allowed?(current,facing)",guard)
@@ -3692,8 +3695,12 @@ raise "restore error" unless original==[$game_variables,$game_switches,$game_sel
                        "SINNOH_F12D_NATIVE_LAKE_SURF_TERRAIN_REFERENCE_OK",
                        "SINNOH_F12D_NATIVE_SURF_MAP_COLLISION_OK",
                        "SINNOH_F12D_NATIVE_SURF_MAP_COLLISION_MAP",
-                       "SINNOH_F12D_NATIVE_SURF_SHORE_JUMP_MAP"):
+                       "SINNOH_F12D_NATIVE_SURF_SHORE_JUMP_MAP",
+                       "SINNOH_F12D_NATIVE_SURF_FULL_ROUTE_MAP"):
             self.assertIn(marker,workflow)
+        self.assertIn('2*row["steps"]',workflow)
+        self.assertIn('$expected.shore',workflow)
+        self.assertIn('$expected.steps',workflow)
         self.assertIn('pickup.get("runtime_route_count")==len(surf_maps)',workflow)
         self.assertIn('$collision.Count -ne 1 -or $shore.Count -ne 1',workflow)
 

@@ -278,8 +278,10 @@ jobs:
           assert len(integrated["pre_chase_graph_checks"])==3
           assert integrated["geometry_delta_count"]==71
           pickup=integrated.get("surf_pickup",{})
-          surf_maps=sorted(row["map_id"] for row in integrated.get("lake_surf_geometry",{}).get("maps",{}).values()
-                           if row.get("surf_candidate") and row.get("water_steps",0)>0)
+          surf_rows=[row for row in integrated.get("lake_surf_geometry",{}).get("maps",{}).values()
+                     if row.get("surf_candidate") and row.get("water_steps",0)>0]
+          surf_maps=sorted(row["map_id"] for row in surf_rows)
+          surf_expected={str(row["map_id"]):{"steps":2*row["steps"],"shore":len(row["transitions"])} for row in surf_rows}
           assert pickup.get("prepared") is True, "regional HM03 pickup not prepared"
           assert len(surf_maps)==len(set(surf_maps))==2 and pickup.get("runtime_route_count")==len(surf_maps), "expected two original aquatic route witnesses"
           assert not report["main_game_modified"] and not report["personal_saves_copied"]
@@ -287,7 +289,7 @@ jobs:
           assert snapshot()==before,"source game changed"
           (root/".blue-work"/"sinnoh-f12d-ci-copy.json").write_text(json.dumps({
               "directory":str(dest),"compile_token":report["compile_token"],"base_before":before,
-              "surf_maps":surf_maps}),"utf-8")
+              "surf_maps":surf_maps,"surf_expected":surf_expected}),"utf-8")
           print("SINNOH_F12D_ACTUAL_PRIVATE_COPY_PREPARED_OK",flush=True)
           '@ | python -
           if($LASTEXITCODE -ne 0){throw 'Sinnoh actual private copy preparation failed'}
@@ -335,7 +337,11 @@ jobs:
             $collision=[regex]::Matches($nativeStages, "(?m)^SINNOH_F12D_NATIVE_SURF_MAP_COLLISION_MAP $mid ([1-9][0-9]*)\s*$")
             $shore=[regex]::Matches($nativeStages, "(?m)^SINNOH_F12D_NATIVE_SURF_SHORE_JUMP_MAP $mid ([1-9][0-9]*) ([1-9][0-9]*)\s*$")
             if($collision.Count -ne 1 -or $shore.Count -ne 1){throw "Missing or duplicate native Surf map receipt: $mid"}
-            if([int]$shore[0].Groups[1].Value -lt 2 -or [int]$shore[0].Groups[2].Value -lt 2){throw "Missing bidirectional shoreline jumps: $mid"}
+            $expected=$receipt.surf_expected.PSObject.Properties[[string]$mid].Value
+            $full=[regex]::Matches($nativeStages, "(?m)^SINNOH_F12D_NATIVE_SURF_FULL_ROUTE_MAP $mid ([1-9][0-9]*) ([0-9]+)\s*$")
+            if($null -eq $expected -or $full.Count -ne 1){throw "Missing full route proof: $mid"}
+            if([int]$shore[0].Groups[1].Value -ne $expected.shore -or [int]$shore[0].Groups[2].Value -ne $expected.shore -or $expected.shore -lt 2){throw "Incomplete bidirectional shoreline jumps: $mid"}
+            if([int]$full[0].Groups[1].Value -ne $expected.steps -or ([int]$full[0].Groups[2].Value + [int]$collision[0].Groups[1].Value) -ne $expected.steps){throw "Incomplete native route steps: $mid"}
           }
           if((Get-Content "$qa/Data/sinnoh-experimental-compiled.txt" -Raw).Trim() -ne $receipt.compile_token){throw 'Sinnoh compile token mismatch'}
           if(-not (Test-Path "$qa/Data/items.dat")){throw 'Sinnoh compiled item catalogue missing'}

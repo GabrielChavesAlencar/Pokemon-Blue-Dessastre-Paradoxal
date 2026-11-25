@@ -221,9 +221,13 @@ module BlueSinnohF12DIntegrated
     return false unless LOCATIONS.key?("SURF_HM03") && $PokemonGlobal && $game_map && $game_player
     return false unless surf_step_allowed?(state,$bag,$player && $player.party,$PokemonGlobal.surfing,a,b,boarding)
     return false unless a[0]==$game_map.map_id && a[1]==$game_player.x && a[2]==$game_player.y
-    tag=$game_map.terrain_tag(b[1],b[2])
-    water=surf_route_mode(b)=="surf"
-    return false unless tag && (water ? tag.can_surf_freely : !tag.can_surf)
+    # Both endpoints must still match the certified terrain. A stale
+    # shoreline or changed origin must not authorize the aquatic exception.
+    [a,b].each do |cell|
+      tag=$game_map.terrain_tag(cell[1],cell[2])
+      water=surf_route_mode(cell)=="surf"
+      return false unless tag && (water ? tag.can_surf_freely : !tag.can_surf)
+    end
     # Reject all occupied targets, including invisible scripted events,
     # in the aquatic exception. Native collision checks still apply.
     return false if $game_map.events.values.any? { |event| event.at_coordinate?(b[1],b[2]) }
@@ -392,14 +396,19 @@ module BlueSinnohF12DIntegrated
           tag=$game_map.terrain_tag(x,y)
           raise "Sinnoh Surf changed terrain #{mid}" unless tag && (mode=="surf" ? tag.can_surf_freely : !tag.can_surf)
         end
-        count=0;boardings=0;landings=0
+        count=0;dry_count=0;boardings=0;landings=0
         [route,route.reverse].each do |path|
           path.each_cons(2) do |a,b|
             ax,ay,am=a;bx,by,bm=b
-            next if am=="walk" && bm=="walk"
+            raise "Sinnoh Surf noncardinal witness #{mid}" unless (ax-bx).abs+(ay-by).abs==1
             dir=bx>ax ? 6 : bx<ax ? 4 : by>ay ? 2 : 8
             p.instance_variable_set(:@x,ax);p.instance_variable_set(:@y,ay)
             $PokemonGlobal.surfing=false
+            if am=="walk" && bm=="walk"
+              raise "Sinnoh Surf native dry approach #{mid} #{ax},#{ay}" unless p.passable?(ax,ay,dir)
+              dry_count+=1
+              next
+            end
             raise "Sinnoh Surf water walk leak #{mid}" if bm=="surf" && p.passable?(ax,ay,dir)
             $PokemonGlobal.surfing=true
             raise "Sinnoh Surf native collision #{mid} #{ax},#{ay}" unless p.passable?(ax,ay,dir)
@@ -418,6 +427,8 @@ module BlueSinnohF12DIntegrated
         puts "SINNOH_F12D_NATIVE_SURF_MAP_COLLISION_MAP #{mid} #{count}"
         raise "Sinnoh Surf missing shoreline jump" unless boardings>0 && landings>0
         puts "SINNOH_F12D_NATIVE_SURF_SHORE_JUMP_MAP #{mid} #{boardings} #{landings}"
+        raise "Sinnoh Surf incomplete route #{mid}" unless count+dry_count==2*(route.length-1)
+        puts "SINNOH_F12D_NATIVE_SURF_FULL_ROUTE_MAP #{mid} #{count+dry_count} #{dry_count}"
       end
       true
     ensure
