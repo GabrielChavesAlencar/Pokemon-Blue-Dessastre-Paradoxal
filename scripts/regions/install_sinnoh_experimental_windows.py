@@ -50,6 +50,7 @@ import sinnoh_f10b_trainers as f10b_trainers
 import sinnoh_f10b7_field_audit as f10b7_field_audit
 import sinnoh_f10c_npcs as f10c_npcs
 import sinnoh_f11a_gym as f11a_gym
+import sinnoh_f12b3_windworks_preflight as f12b3_windworks
 from audit_sinnoh_rxdata import read_marshal
 from audit_sinnoh_twinleaf_events import MAPS,HANDLERS as CH06_HANDLERS,BALLS as CH06_BALLS
 from build_sinnoh_twinleaf_events import HANDLERS as SCRIPT_HANDLERS
@@ -793,6 +794,7 @@ def build_files(base:Path,project:Path=ROOT):
     f11g_plugin=b""
     f11g_maps=None
     f11h_report={}
+    f12b3_report=f12b3_windworks.blocked("requires_full_f11h_baseline")
     f11h_plugin=b""
     f10c_plugin=b""
     encounter_expected={}
@@ -877,6 +879,8 @@ def build_files(base:Path,project:Path=ROOT):
         f11g_maps=maps
         maps,mapping,components,f11h_report,f11h_plugin=f11a_gym.append(maps,mapping,components,occupied,base,project,sources.get("overworlds"),leader="Volkner",allow_authored=True)
         print("SINNOH_F11H_GYM_REPORT "+json.dumps(f11h_report,sort_keys=True),flush=True)
+        f12b3_report=f12b3_windworks.preflight(maps,mapping,sources["maps"],project)
+        print("SINNOH_F12B3_WINDWORKS_INSTALLER_PREFLIGHT "+json.dumps(f12b3_report,sort_keys=True),flush=True)
         gym_symbols=set(mapping)-f08c_expansion.ALL
         if gym_symbols:
             masks=private_visual.movement_masks(maps,mapping,extra_symbols=city_expansion.CITIES|route_expansion.ROUTES|natural_expansion.NATURAL|interior_expansion.INTERIORS|f08c_expansion.EXTERIORS|gym_symbols)
@@ -958,6 +962,7 @@ def build_files(base:Path,project:Path=ROOT):
         "f09c_refinement":f09c_report,
         "f09d_relative":f09d_report,
         "f10b_trainers":f10b_report,"f10b7_field_gate_audit":f10b7_report,"f10c_npcs":f10c_report,"f11a_gym":f11a_report,"f11b_gym":f11b_report,"f11c_gym":f11c_report,"f11d_gym":f11d_report,"f11e_gym":f11e_report,"f11f_gym":f11f_report,"f11g_gym":f11g_report,"f11h_gym":f11h_report,
+        "f12b3_windworks_preflight":f12b3_report,
         "qa_teleport":{"catalog_count":len(teleport_entries),"available_count":sum(row[3] is not None for row in teleport_entries),"destinations":teleport_entries,"native_verified":False},
         "encounter_coverage":encounter_coverage,"route202_trainers":route_trainers,
         "visual_native_reviewed":False,
