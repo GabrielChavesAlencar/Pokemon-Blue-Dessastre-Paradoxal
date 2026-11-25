@@ -123,7 +123,8 @@ def build(blobs,mapping,components,types,species,items,existing,root=ROOT):
                   for s in specs.values() if s[0]).encode("ascii")
     template=(root/"scripts/regions/SinnohF12B5.rb").read_text("utf-8")
     if template.count("__F12B5_SPECS__")!=1 or template.count("__F12B5_KEY__")!=1:raise ValueError("F12B5_TEMPLATE")
-    plugin=template.replace("__F12B5_SPECS__",json.dumps(specs,ensure_ascii=True).replace("null","nil")).replace("__F12B5_KEY__",json.dumps(key)).encode("utf-8")
+    literal="{"+",".join(json.dumps(k)+"=>"+json.dumps(v,ensure_ascii=True).replace("null","nil") for k,v in specs.items())+"}"
+    plugin=template.replace("__F12B5_SPECS__",literal).replace("__F12B5_KEY__",json.dumps(key)).encode("utf-8")
     return out,{"status":"AUTHORED_QUEST_PREPARED","new_events":5,"native_bindings":0,"items_granted":0,
          "candidate_runtime_handlers":5,"native_verified":False,"placements":locations,"teams":{k:s[4] for k,s in specs.items() if s[0]},
          "local_key_id":key,"source_layout":"PROJECT_AUTHORED_CONDENSED_EXTERIOR_MARS",

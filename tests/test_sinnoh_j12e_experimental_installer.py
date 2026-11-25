@@ -2742,6 +2742,127 @@ puts "F11H_SEVEN_BADGES_THEN_BEACON_WIN_ONLY_OK"
         self.assertIsNone(quest.PICKUP.fullmatch(b"pbItemBall(:POTION); other()"))
         self.assertEqual(quest.build({}, {}, {}, set(),set(),set(),set(),ROOT)[1]["new_events"],0)
 
+    @unittest.skipUnless(shutil.which("ruby"),"Requires Ruby runtime")
+    def test_f12b5_quest_requires_real_wins_local_key_and_scope(self):
+        source=(ROOT/"scripts/regions/SinnohF12B5.rb").read_text("utf-8")
+        specs={"WINDWORKS_GUARD":["GALACTIC_GRUNT","Grunt",12001,581,[["GLAMEOW",13]]],
+               "MEADOW_GRUNT_1":["GALACTIC_GRUNT","Grunt",12002,504,[["STUNKY",13]]],
+               "MEADOW_GRUNT_2":["GALACTIC_GRUNT","Grunt",12003,504,[["ZUBAT",11],["ZUBAT",11]]],
+               "WORKS_KEY":[None,None,None,504,[]],
+               "MARS":["GALACTIC_ADMIN","Mars",12005,581,[["ZUBAT",15],["PURUGLY",17]]]}
+        literal="{"+",".join(json.dumps(k)+"=>"+json.dumps(v).replace("null","nil") for k,v in specs.items())+"}"
+        source=source.replace("__F12B5_SPECS__",literal).replace("__F12B5_KEY__",'"WORKSKEY"')
+        fixture=r'''
+module BlueSinnohExperimental
+  def self.private_copy?; $private_copy; end
+end
+module BlueSinnohPilot
+  def self.regional_state; $state; end
+  def self.profile_error(*args); raise args.last; end
+end
+module BlueRegions
+  def self.valid_sinnoh_badges?(s);s["current"]=="SINNOH";end
+end
+module BlueRegionTravel
+  def self.regional_item?(i); i==:WORKSKEY; end
+end
+module GameData
+  class Item
+    def self.try_get(i);i==:WORKSKEY ? new : nil;end
+    def is_key_item?;true;end
+  end
+end
+module BlueKantoTitle
+  def self.sinnoh_experimental_barry_compiled?;$compiled;end
+end
+module BlueCampaign
+  module Teams;end
+  def self.active?;true;end
+  def self.boss?(trainer);false;end
+end
+class Battle;prepend BlueCampaign::Teams;end
+module BlueStory
+  def self.regional_first_boss?(trainers);false;end
+end
+module BlueSinnohF10B
+  def self.valid_team?(s);true;end
+end
+Foe=Struct.new(:trainer_type,:name,:version)
+module TrainerBattle
+  def self.start_core(spec)
+    $calls+=1
+    if spec[1]=="Mars"
+      foe=Foe.new(*spec)
+      raise "Mars preservation missing" unless BlueCampaign.boss?(foe) && BlueStory.regional_first_boss?([foe])
+      raise "unrelated boss changed" if BlueCampaign.boss?(Foe.new(:OTHER,"Mars",12005))
+    end
+    $outcome
+  end
+end
+def _INTL(s);s;end
+def pbMessage(s);end
+class Bag
+  attr_reader :grants
+  def initialize;@items=[];@grants=0;end
+  def has?(i);@items.include?(i);end
+  def add(i);return false unless $add_ok;@items<<i;@grants+=1;true;end
+end
+Mon=Struct.new(:hp) {def egg?;false;end}
+$player=Struct.new(:party).new([Mon.new(10)])
+$game_map=Struct.new(:map_id).new(581)
+$game_temp=Struct.new(:waiting_trainer,:battle_rules).new(nil,{})
+$state={"version"=>1,"current"=>"SINNOH","native"=>["untouched"],"sinnoh_ch14"=>[]}
+$bag=Bag.new
+$private_copy=true;$compiled=true;$outcome=1;$add_ok=true;$calls=0
+load ARGV[0]
+q=BlueSinnohF12B5
+raise "compiled" unless q.verify_compiled!
+raise "Mars bypass" if q.interact("MARS")
+raise "wrong map" if q.interact("MEADOW_GRUNT_1")
+$private_copy=false
+raise "outside copy" if q.interact("WINDWORKS_GUARD")
+$private_copy=true
+$compiled=false
+raise "without compiled" if q.interact("WINDWORKS_GUARD")
+$compiled=true
+[2,3,nil].each do |o|
+  $outcome=o
+  raise "loss treated as win" if q.interact("WINDWORKS_GUARD")
+end
+raise "loss mutated" if $state.key?(q::LEDGER)
+$outcome=1
+raise "guard win" unless q.interact("WINDWORKS_GUARD")
+$game_map.map_id=504
+raise "key bypass" if q.interact("WORKS_KEY")
+raise "grunt 1" unless q.interact("MEADOW_GRUNT_1")
+raise "grunt 2" unless q.interact("MEADOW_GRUNT_2")
+$add_ok=false
+raise "failed key grant" if q.interact("WORKS_KEY")
+raise "failed grant mutated" unless $state[q::LEDGER].length==3 && $bag.grants==0
+$add_ok=true
+raise "key grant" unless q.interact("WORKS_KEY")
+raise "repeat key" unless q.interact("WORKS_KEY") && $bag.grants==1
+$game_map.map_id=581
+$outcome=2
+raise "Mars loss" if q.interact("MARS")
+raise "loss recorded" unless $state[q::LEDGER].length==4
+$outcome=1
+raise "Mars win" unless q.interact("MARS")
+raise "ledger" unless $state[q::LEDGER]==q::ORDER
+before=$calls
+raise "repeat battle" unless q.interact("MARS") && $calls==before
+raise "boss leaked" if BlueCampaign.boss?(Foe.new(:GALACTIC_ADMIN,"Mars",12005))
+raise "other save fields changed" unless $state["native"]==["untouched"] && $state["sinnoh_ch14"]==[]
+$state["current"]="KANTO"
+raise "cross region" if q.interact("MARS")
+puts "F12B5_AUTHORED_QUEST_CONFIRMED_WINS_KEY_SCOPE_OK"
+'''
+        with tempfile.TemporaryDirectory() as td:
+            path=Path(td)/"F12B5.rb";path.write_text(source,encoding="utf-8")
+            result=subprocess.run(["ruby","-e",fixture,str(path)],capture_output=True,text=True,encoding="utf-8")
+            self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+            self.assertIn("F12B5_AUTHORED_QUEST_CONFIRMED_WINS_KEY_SCOPE_OK",result.stdout)
+
     def test_f11a_gym_contract_and_collision_guards(self):
         import sinnoh_f11a_gym as g
         self.assertEqual(len(g.roster(ROOT)),8)
