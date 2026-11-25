@@ -315,3 +315,10 @@ F12B1 integrada em 375ab415184881fe130300ae08cf30dc06b64405 (11 workflows / 26 j
 ### F12B2 — evidências individuais, acesso e PBS
 
 F12A job 138918141829 HEAD 31e1f2f212da60c87bed2a0a79dec184e05151cd: 238 mapas-fonte, 2867 eventos, 13 candidatos, 10 mapeados, zero Mars/Works Key e zero chamadas literais de coleta no primeiro scanner. F12B2 audita todos os cinco eventos de Map111, inclusive parâmetros de scripts condicionais (111/12), metadados de páginas e SHA-256 sem expor scripts/textos. Varre transferências estáticas de todos os mapas para 111, conexões PBS e arquivos de treinadores/tipos/itens; verifica hashes e contagens de 91/94/96/98/111. Não habilita acessos, batalhas, itens ou flags sem evidência suficiente. CI pendente; sem QA nativa.
+
+F12B2 integrada em a3913a9fa3c2b85349016a29cd50fd31e315d5e0 (11 workflows / 26 jobs; HEAD 459c3ddd28380d3dc2900d72d15be2ec178e4f34, job 139103767056). Cinco eventos auditados; prévia de 140 mapas, sem instalação nativa.
+
+
+### F12B3 — pré-voo do Blue-Story (bloqueado até evidência de acesso e eventos)
+
+F12B1 job 138919751871 HEAD 209c4acf1a34a104b3f7340130a2224339565f89 confirmou Map581 na prévia, chegada [17,14], 180 células conectadas, 140 mapas na prévia, 139 anteriores intactos. O instalador agora calcula diagnóstico F12B3 somente para baseline completo F11H e inclui o resultado no manifesto QA. Candidatos de acesso, Mars, Works Key e PBS não são autorização: sem implementação revisada, a área não é instalada, nenhum portal ou evento é acrescentado. Falhas da auditoria permanecem explícitas e não bloqueiam a exploração F11 já preparada. Sem alteração de MapIDs, saves, recompensas, scripts de outras regiões ou QA nativa. CI pendente.

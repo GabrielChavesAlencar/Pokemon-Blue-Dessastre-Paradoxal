@@ -542,7 +542,7 @@
       "id": "F12",
       "title": "História, Equipe Galactic e itens-chave",
       "status": "implementation_pending_ci",
-      "followup": "F12B2_WINDWORKS_EVIDENCE_PENDING_CI",
+      "followup": "F12B3_INSTALLER_PREFLIGHT_PENDING_CI",
       "story_checkpoints_scope": 14,
       "hm_contracts_scope": 8,
       "native_bindings": 0,
@@ -575,7 +575,12 @@
       "f12b1_ci_workflows": 11,
       "f12b1_ci_checks": 26,
       "mars_native_bound": false,
-      "works_key_native_granted": false
+      "works_key_native_granted": false,
+      "f12b2_real_head": "459c3ddd28380d3dc2900d72d15be2ec178e4f34",
+      "f12b2_real_job": 139103767056,
+      "f12b2_merge_commit": "a3913a9fa3c2b85349016a29cd50fd31e315d5e0",
+      "f12b2_ci_workflows": 11,
+      "f12b2_ci_checks": 26
     },
     {
       "id": "F13",

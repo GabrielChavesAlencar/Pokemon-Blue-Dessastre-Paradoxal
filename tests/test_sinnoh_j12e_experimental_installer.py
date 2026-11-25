@@ -1353,6 +1353,16 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
             self.assertTrue(evidence["baseline_preserved"])
             print("SINNOH_F12B2_WINDWORKS_EVIDENCE_REPORT "+json.dumps(evidence,sort_keys=True),flush=True)
             print("SINNOH_REAL_F12B2_FIVE_EVENTS_ACCESS_PBS_AUDITED_OK",flush=True)
+            import sinnoh_f12b3_windworks_preflight as wind_preflight
+            gate=wind_preflight.assess(evidence,ghids)
+            self.assertEqual(gate["status"],"WINDWORKS_BLOCKED")
+            self.assertEqual(gate["source_events_reviewed"],5)
+            self.assertFalse(gate["runtime_install_enabled"])
+            self.assertEqual(gate["new_maps"],0)
+            self.assertEqual(gate["new_portals"],0)
+            self.assertEqual(gate["items_granted"],0)
+            print("SINNOH_F12B3_WINDWORKS_INSTALLER_PREFLIGHT_REPORT "+json.dumps(gate,sort_keys=True),flush=True)
+            print("SINNOH_REAL_F12B3_WINDWORKS_GATE_139_BASELINE_PRESERVED_OK",flush=True)
             import sinnoh_f12b_windworks as windworks
             preview=windworks.preview(gh,ghids,ghcomps,Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]),{2},ROOT,report)
             self.assertEqual(preview["preview_maps"],140)
@@ -2647,6 +2657,26 @@ puts "F11H_SEVEN_BADGES_THEN_BEACON_WIN_ONLY_OK"
         self.assertNotIn("pbReceiveItem",json.dumps(row))
         with self.assertRaisesRegex(ValueError,"F12B2_BASELINE"):
             evidence.audit({}, {}, Path("unused"),ROOT)
+
+    def test_f12b3_windworks_preflight_blocks_incomplete_and_invalid_evidence(self):
+        import sinnoh_f12b3_windworks_preflight as preflight
+        from unittest.mock import patch
+        ids=dict(zip(sorted(preflight.wind.gym.GYM_SETS[7]),range(442,581)))
+        self.assertFalse(preflight.preflight({}, {}, Path("unused"),ROOT)["runtime_install_enabled"])
+        self.assertEqual(preflight.assess({},ids)["blockers"],["invalid_evidence_report"])
+        report={"status":"EVIDENCE_ONLY","baseline_maps":139,"baseline_preserved":True,"native_verified":False,
+                "windworks_events":[{"event_id":i,"binding_approved":False} for i in range(1,6)],
+                "nearby_source_maps":[{"source_id":111,"source_sha256":preflight.wind.HASH}],
+                "incoming_static_transfers":[{"source_id":94,"event_id":1}],
+                "windworks_source_seams":[[94,"E",0,111,"W",0]],
+                "mars_literal_candidates":[1],"works_key_script_candidates":[2],
+                "source_pbs_files":[{"file":"trainers.txt"}]}
+        result=preflight.assess(report,ids)
+        self.assertFalse(result["runtime_install_enabled"])
+        self.assertEqual(result["blockers"],["reviewed_access_geometry_and_event_implementation_required"])
+        self.assertEqual(result["items_granted"],0)
+        with patch.object(preflight.evidence,"audit",side_effect=ValueError("unverified")):
+            self.assertEqual(preflight.preflight({},ids,Path("unused"),ROOT)["blockers"],["source_audit_failed:ValueError"])
 
     def test_f11a_gym_contract_and_collision_guards(self):
         import sinnoh_f11a_gym as g
