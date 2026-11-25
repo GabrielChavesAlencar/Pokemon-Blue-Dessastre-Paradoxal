@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "39c7f130c6ded6abcae3db5911ac604a0ad60abb",
+      "date": "2026-11-25T12:02:03-03:00",
+      "title": "Merge pull request #328 from GabrielChavesAlencar/sinnoh-full-expansion-f12d3-gated-route210",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "3bd3303b1e3931db66cc81195b5e71e48af02776",
+      "date": "2026-11-25T11:50:26-03:00",
+      "title": "Sinnoh F12D3: enforce marker capture for recovery and gated branches",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "12b868eaa1be70273f4c33b591f8c4c50a123d9f",
+      "date": "2026-11-25T11:50:08-03:00",
+      "title": "Sinnoh F12D3: verify gated authored connection and Psyduck cut fixtures",
+      "category": "Melhorias"
+    },
+    {
       "sha": "5b47f250ad61edf6507ed1bb4f62f9353ea8db89",
       "date": "2026-11-25T11:48:55-03:00",
       "title": "Sinnoh F12D3C: integrar evidencias de alinhamento Route 210",

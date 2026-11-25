@@ -1568,6 +1568,15 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                         self.assertTrue(all(any(c["geometric_overlap"] for c in row["competing_sides"]) for row in future))
                         print("SINNOH_F12D3_FUTURE_TOPOLOGY_REPORT "+json.dumps(future,sort_keys=True),flush=True)
                         print("SINNOH_REAL_F12D3_FUTURE_TOPOLOGY_CONFLICTS_AUDITED_OK",flush=True)
+                        import sinnoh_f12d3_alternate_route212 as alternate
+                        ar=alternate.inspect(chased,expanded,expanded_comps,cr,ext,Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]),ROOT)
+                        self.assertEqual(chased,snapshot)
+                        self.assertTrue(ar["baseline_preserved"])
+                        self.assertFalse(ar["installed"])
+                        self.assertFalse(ar["native_verified"])
+                        self.assertEqual(ar["new_portals"],0)
+                        print("SINNOH_F12D3_ALTERNATE_ROUTE212_REPORT "+json.dumps(ar,sort_keys=True),flush=True)
+                        print("SINNOH_REAL_F12D3_ALTERNATE_ROUTE212_AUDITED_OK",flush=True)
                         import sinnoh_f12d3_gated_alignment as gated
                         linked,gr=gated.prepare(chased,expanded,expanded_comps,cr,ext,off,ROOT)
                         self.assertEqual(chased,snapshot)
@@ -3341,6 +3350,14 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertFalse(b.cut_witness(opened,prior|far,prior,barrier,473))
         self.assertFalse(b.cut_witness(opened,{(528,0,0)},prior,barrier,473))
         self.assertFalse(b.cut_witness(opened|{(472,1,1)},prior,prior,barrier,473))
+
+    def test_f12d3_alternate_reserves_both_sides_and_component_continuity(self):
+        import sinnoh_f12d3_alternate_route212 as a
+        dims={1:(4,4),2:(4,4),3:(4,4)}
+        self.assertTrue(a.reserved((1,"E",0,2,"W",0),[(3,"E",0,2,"W",0)],dims))
+        self.assertFalse(a.reserved((1,"E",0,2,"W",0),[(3,"E",0,2,"W",5)],dims))
+        self.assertEqual(a.offsets({2,3},{0,1}),[1,2,3])
+        self.assertEqual(a.reachable({(1,0):{(2,0)},(2,1):{(3,0)}},{(1,0)}),{(1,0),(2,0)})
 
     def test_f12d3_future_topology_reserves_full_intervals(self):
         import sinnoh_f12d3_authored_offset as a
