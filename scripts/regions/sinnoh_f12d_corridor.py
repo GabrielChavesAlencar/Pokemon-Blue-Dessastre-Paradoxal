@@ -46,15 +46,17 @@ def editable(source,qa):
     masks,tags=qa
     return source==qa and bool(masks) and 15 in masks and all(m in (0,15) for m in masks) and all(t==0 for t in tags)
 
-def shortest(seed,target,shapes,source,protected,size,existing_edits=(),budget=MAX_EDITS_PER_LEG):
+def shortest(seed,target,shapes,source,protected,size,existing_edits=(),budget=MAX_EDITS_PER_LEG,walkable_protected=()):
     """Lexicographically minimize changed cells, then walking distance.
     Only the requested boundary point may be changed on the map perimeter.
     """
-    w,h=size;already=set(existing_edits)
-    if seed not in shapes or (not ordinary(shapes[seed]) and (seed not in already or seed in protected)):return None
+    w,h=size;already=set(existing_edits);walkable_protected=set(walkable_protected)
+    if seed not in shapes or (seed in protected and seed not in walkable_protected):return None
+    if not ordinary(shapes[seed]) and (seed not in already or seed in protected):return None
     if target not in shapes:return None
     def cost(q):
-        if q in protected:return None
+        if q in protected:
+            return 0 if q in walkable_protected and ordinary(shapes[q]) else None
         if ordinary(shapes[q]) or q in already:return 0
         if q!=target and (q[0] in (0,w-1) or q[1] in (0,h-1)):return None
         if not editable(source[q],shapes[q]):return None
@@ -113,7 +115,9 @@ def repair(original,candidate,mapping,components,source_path,root,report):
             if (w.attrs["@width"],w.attrs["@height"])!=sizes[sid]:raise ValueError("F12D_CORRIDOR_DIMENSIONS")
             src[sid]=grid(w,st)[1]
             protected[sid].update((e.attrs["@x"],e.attrs["@y"]) for e in w.attrs["@events"].values())
-    # Protect every existing QA event and every literal transfer destination.
+    # Keep actual event cells forbidden. Literal landing cells are protected
+    # against edits, not against ordinary walking, unless also occupied.
+    landings={sid:set() for sid in ids}
     for mid in mapping.values():
         w=conn.read_marshal(original["Data/Map%03d.rxdata"%mid],"F12D_CORRIDOR_PORTALS")
         for e in w.attrs["@events"].values():
@@ -124,24 +128,29 @@ def repair(original,candidate,mapping,components,source_path,root,report):
                     a=command.attrs;args=a.get("@parameters",[])
                     if a.get("@code")==201 and len(args)==6 and args[0]==0 and all(type(x) is int for x in args):
                         for sid,id_ in ids.items():
-                            if args[1]==id_:protected[sid].add(tuple(args[2:4]))
-    # Avoid editing cells adjacent to events or arrivals; ordinary traversal
-    # past them remains legal except on actual event/landing cells.
+                            if args[1]==id_:landings[sid].add(tuple(args[2:4]))
+    seeds={sid:arrivals[sym] for sid,(sym,_) in p.SOURCES.items()}
+    for sid in ids:landings[sid].add(seeds[sid])
+    walkable_protected={sid:landings[sid]-protected[sid] for sid in ids}
+    # Preserve every landing and its blocked adjacent cells, but allow
+    # walking over existing dry, unoccupied landing cells.
+    for sid in ids:protected[sid].update(landings[sid])
     forbidden={sid:set(cells) for sid,cells in protected.items()}
     for sid,cells in protected.items():
         forbidden[sid].update(q for xy in cells for q in tp.neighbours(*xy) if q in qa[sid][1] and not ordinary(qa[sid][1][q]))
-    seeds={sid:arrivals[sym] for sid,(sym,_) in p.SOURCES.items()}
     def route(sid,target,edits=(),seed=None,budget=MAX_EDITS_TOTAL):
-        return shortest(seeds[sid] if seed is None else seed,target,qa[sid][1],src[sid],forbidden[sid],sizes[sid],edits,budget=budget)
-    info['search_diagnostics']={'total_edit_budget':MAX_EDITS_TOTAL,'west_candidates':[], 'north_candidates':[]}
+        return shortest(seeds[sid] if seed is None else seed,target,qa[sid][1],src[sid],forbidden[sid],sizes[sid],edits,budget=budget,walkable_protected=walkable_protected[sid])
+    info['search_diagnostics']={'total_edit_budget':MAX_EDITS_TOTAL,'west_candidates':[], 'north_candidates':[],
+        'input_map_hashes':{str(mid):hashlib.sha256(original['Data/Map%03d.rxdata'%mid]).hexdigest() for mid in ids.values()},
+        'protected_landings':{str(ids[sid]):[list(q) for q in sorted(walkable_protected[sid])] for sid in ids}}
     west_options=[]
     for row in west["axis_evidence"]:
         a,b=tuple(row["a"]),tuple(row["b"])
         if not row["a_from_local_spawn"] or not row["source_a"]["ordinary_walkable"] or row["source_b"]["ordinary_walkable"]:continue
-        if a in forbidden[219] or b in forbidden[218]:continue
+        if (a in forbidden[219] and a not in walkable_protected[219]) or b in forbidden[218]:continue
         if row["source_a"]!=row["qa_a"] or row["source_b"]!=row["qa_b"]:continue
         result=route(218,b)
-        info['search_diagnostics']['west_candidates'].append({'axis':row['axis'],'route_213_edits':len(result[1]) if result else None,'route_213_path_length':len(result[0]) if result else None})
+        info['search_diagnostics']['west_candidates'].append({'axis':row['axis'],'route_213_edits':len(result[1]) if result else None,'route_213_path_length':len(result[0]) if result else None,'candidate_path':[list(q) for q in result[0]] if result else None})
         if result:west_options.append((len(result[1]),len(result[0]),row["axis"],result))
     if not west_options:return blocked("no_bounded_dry_west_corridor")
     # North physical lanes already exist. Find a pair of interior approaches
@@ -158,7 +167,8 @@ def repair(original,candidate,mapping,components,source_path,root,report):
         valor[row["axis"]]=vr
         info["search_diagnostics"]["north_candidates"].append({
             "axis":row["axis"],"valor_minimum_edits":len(diagnostic[1]) if diagnostic else None,
-            "valor_within_total_budget":vr is not None,"route_213_attempts":[]})
+            "valor_within_total_budget":vr is not None,"valor_candidate_path":[list(q) for q in vr[0]] if vr else None,
+            "route_213_attempts":[]})
     for _,_,wa,wr in sorted(west_options):
         for row,diag in zip(north_rows,info["search_diagnostics"]["north_candidates"]):
             target=tuple(row["a"]);remaining=MAX_EDITS_TOTAL-len(wr[1])
@@ -168,9 +178,20 @@ def repair(original,candidate,mapping,components,source_path,root,report):
                 rr=route(218,target,wr[1],seed=seed,budget=remaining)
                 if rr:candidates.append(rr)
             rr=min(candidates,key=lambda q:(len(q[1]),len(q[0]))) if candidates else None
+            diagnostic=rr
+            if diagnostic is None:
+                # Find the minimum additional cost for this fixed west path
+                # without the edit cap. This result is evidence only.
+                unlimited=[]
+                for seed in (seeds[218],wr[0][-1]):
+                    q=route(218,target,wr[1],seed=seed,budget=sizes[218][0]*sizes[218][1])
+                    if q:unlimited.append(q)
+                if unlimited:diagnostic=min(unlimited,key=lambda q:(len(q[1]),len(q[0])))
             vr=valor[row["axis"]]
             diag["route_213_attempts"].append({"west_axis":wa,"west_edits":len(wr[1]),
                 "additional_edits":len(rr[1]) if rr else None,
+                "minimum_additional_edits_without_cap":len(diagnostic[1]) if diagnostic else None,
+                "candidate_path":[list(q) for q in rr[0]] if rr else None,
                 "route_213_within_remaining_budget":rr is not None,
                 "combined_edits":len(set(wr[1])|set(rr[1]))+len(vr[1]) if rr and vr else None})
             if not rr or not vr:continue

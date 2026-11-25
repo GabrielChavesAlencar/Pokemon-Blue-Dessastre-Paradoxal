@@ -3065,6 +3065,22 @@ puts "F12B5_AUTHORED_QUEST_CONFIRMED_WINS_KEY_SCOPE_OK"
         self.assertIsNone(c.shortest((0,1),(21,1),shapes,dict(shapes),{(1,1)},(23,3),result[1],budget=0))
         self.assertIsNone(c.shortest((0,1),(21,1),shapes,dict(shapes),{(0,1)},(23,3),result[1],budget=0))
 
+    def test_f12d_protected_landing_walkable_but_never_editable(self):
+        import sinnoh_f12d_corridor as c
+        ground=((0,),(0,))
+        wall=((0,15),(0,0))
+        water=((0,15),(0,7))
+        shapes={(x,y):water for x in range(5) for y in range(3)}
+        for x in (1,2,3):shapes[x,1]=ground
+        protected={(1,1),(2,1)}
+        self.assertIsNone(c.shortest((1,1),(3,1),shapes,dict(shapes),protected,(5,3)))
+        result=c.shortest((1,1),(3,1),shapes,dict(shapes),protected,(5,3),walkable_protected=protected)
+        self.assertEqual(result, ([(1,1),(2,1),(3,1)],[]))
+        self.assertIsNone(c.shortest((1,1),(3,1),shapes,dict(shapes),protected,(5,3),walkable_protected={(1,1)}))
+        shapes[2,1]=wall
+        self.assertIsNone(c.shortest((1,1),(3,1),shapes,dict(shapes),protected,(5,3),walkable_protected=protected))
+        self.assertIsNone(c.shortest((1,1),(3,1),shapes,dict(shapes),protected,(5,3),existing_edits={(2,1)},walkable_protected=protected))
+
     def test_f12d_exact_edge_axes_and_source_walkability(self):
         import sinnoh_f12d_seams as seams
         self.assertEqual(list(seams.aligned_axes("E",1,(64,67),"W",0,(102,70))),list(range(66)))
