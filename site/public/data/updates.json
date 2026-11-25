@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "375ab415184881fe130300ae08cf30dc06b64405",
+      "date": "2026-11-25T06:22:00-03:00",
+      "title": "Merge pull request #312 from GabrielChavesAlencar/sinnoh-full-expansion-f12b-windworks",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "2cf22d131a0036aa165afa9564d835372cd2cee5",
+      "date": "2026-11-24T23:18:03-03:00",
+      "title": "F12B1: reconcile main and retain definitive F12A and Windworks preview evidence",
+      "category": "Melhorias"
+    },
+    {
       "sha": "1d1e001eb721162eeb0e3c5b7371855fe3c57ad1",
       "date": "2026-11-24T23:17:47-03:00",
       "title": "Merge pull request #311 from GabrielChavesAlencar/sinnoh-full-expansion-f12a-story-source-audit",
@@ -41,6 +53,12 @@
       "sha": "62d48570c6fb961806e1c48c4af5c1499ff4fe97",
       "date": "2026-11-24T22:54:41-03:00",
       "title": "Merge pull request #308 from GabrielChavesAlencar/sinnoh-full-expansion-f11f-byron",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "209c4acf1a34a104b3f7340130a2224339565f89",
+      "date": "2026-11-24T22:54:14-03:00",
+      "title": "Sinnoh F12B1: source-pinned Windworks geometry preview and fail-closed Mars/item evidence gate",
       "category": "Melhorias"
     },
     {
