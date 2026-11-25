@@ -1771,7 +1771,16 @@
       "f12d_integrated_valor_rock_reference_cells": 204,
       "f12d_integrated_lake_local_preview_count_reconfirmed": 3,
       "f12d_integrated_valor_local_preview": {"map_id": 531, "position": [16,20], "stand": [15,20]},
-      "f12d_integrated_lake_independent_legs_implemented": true
+      "f12d_integrated_lake_independent_legs_implemented": true,
+      "f12d_integrated_last_full_ci_head": "ae62bbdfbc9212820993149c1a56c7a53c94704e",
+      "f12d_integrated_last_full_ci_base": "0e6367068f47b4b7efb949d93f960efb7628926a",
+      "f12d_integrated_last_full_ci_job": 139397268293,
+      "f12d_integrated_last_full_ci_workflows": 11,
+      "f12d_integrated_last_full_ci_jobs": 26,
+      "f12d_integrated_last_full_ci_f12d_markers": 18,
+      "f12d_integrated_last_full_ci_f12c4_marker": true,
+      "f12d_integrated_actual_private_native_compile_ci_implemented": true,
+      "f12d_integrated_actual_private_native_compile_ci_confirmed": false
     },
     {
       "id": "F13",

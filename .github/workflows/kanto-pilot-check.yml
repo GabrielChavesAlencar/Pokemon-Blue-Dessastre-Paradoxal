@@ -233,6 +233,81 @@ jobs:
           }
           Get-Content .blue-work/kanto-native-out.txt,.blue-work/kanto-native-err.txt,"$pilot/Data/blue-kanto-error.txt","$pilot/errorlog.txt" -ErrorAction SilentlyContinue | Select-Object -Last 100
           throw 'Kanto native proof missing'
+      - name: Compilar a missao integrada de Sinnoh somente na copia privada
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'sinnoh-f12d-integrated-gameplay'
+        timeout-minutes: 22
+        shell: pwsh
+        run: |
+          # The base is the installed Blue from this job; no synthetic catalogue.
+          # Reuse the pinned Mesa driver already verified for Kanto.
+          $ErrorActionPreference = 'Stop'
+          $env:PYTHONIOENCODING = 'utf-8'
+          @'
+          import sys,json,hashlib
+          from pathlib import Path
+          root=Path.cwd()
+          sys.path.insert(0,str(root/"scripts"/"regions"))
+          import install_sinnoh_experimental_windows as install
+          import sinnoh_source_download as source
+          base=root/"game"
+          tracked=("Data/Scripts.rxdata","Data/MapInfos.rxdata","Data/Tilesets.rxdata","Data/System.rxdata","PBS/items.txt","Game.ini","mkxp.json")
+          def snapshot():
+              return {p:hashlib.sha256((base/p).read_bytes()).hexdigest() for p in tracked}
+          before=snapshot()
+          source.ensure_sources(root)
+          outputs,report=install.build_files(base,root)
+          integrated=report["f12d_integrated"]
+          print("SINNOH_F12D_ACTUAL_INSTALLER_RESULT "+json.dumps({
+              "maps_prepared":report["maps_prepared"],"status":integrated["status"],
+              "engine_profile":integrated.get("engine_profile"),"reason":integrated.get("reason"),
+              "candidate_ready":integrated.get("candidate_ready"),"native_verified":False,
+              "runtime_install_enabled":integrated["runtime_install_enabled"],
+              "pre_chase_graph_checks":integrated.get("pre_chase_graph_checks",[]),
+              "lake_payloads":integrated.get("lake_payloads",[]),
+              "lake_independent_legs":integrated.get("lake_independent_legs",{}),
+              "item":integrated.get("item_catalogue",{})},sort_keys=True),flush=True)
+          assert report["maps_prepared"]==144, "actual installed Blue did not prepare all 144 maps"
+          assert integrated["runtime_install_enabled"] and integrated["status"]=="F12D_INTEGRATED_PRIVATE_COPY_PREPARED", "actual private candidate not staged"
+          assert integrated["native_verified"] is False and integrated["normal_launch_allowed"] is False
+          assert len(integrated["pre_chase_graph_checks"])==3
+          assert integrated["geometry_delta_count"]==71
+          assert not report["main_game_modified"] and not report["personal_saves_copied"]
+          dest=install.install_copy(base,outputs,report,root)
+          assert snapshot()==before,"source game changed"
+          (root/".blue-work"/"sinnoh-f12d-ci-copy.json").write_text(json.dumps({
+              "directory":str(dest),"compile_token":report["compile_token"],"base_before":before}),"utf-8")
+          print("SINNOH_F12D_ACTUAL_PRIVATE_COPY_PREPARED_OK",flush=True)
+          '@ | python -
+          if($LASTEXITCODE -ne 0){throw 'Sinnoh actual private copy preparation failed'}
+          $receipt=Get-Content .blue-work/sinnoh-f12d-ci-copy.json -Raw | ConvertFrom-Json
+          $qa=$receipt.directory
+          if(-not (Test-Path "$qa/Data/sinnoh-experimental-compile-request.txt")){throw 'Sinnoh compile-only request missing'}
+          if(Test-Path "$qa/Data/sinnoh-experimental-compiled.txt"){throw 'Stale native compile receipt'}
+          $mesaFolder=Join-Path $env:RUNNER_TEMP 'blue-mesa'
+          Get-ChildItem -LiteralPath $mesaFolder -Recurse -File -Filter '*.dll' |
+            Where-Object { $_.FullName -match '[\\/]x64[\\/]' } |
+            ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $qa }
+          if(-not (Test-Path "$qa/opengl32.dll")){throw 'Sinnoh x64 OpenGL driver missing'}
+          $process=Start-Process -FilePath "$qa/Game.exe" -WorkingDirectory $qa -WindowStyle Hidden -PassThru -RedirectStandardOutput ".blue-work/sinnoh-f12d-compile-out.txt" -RedirectStandardError ".blue-work/sinnoh-f12d-compile-err.txt"
+          $handle=$process.Handle
+          if(-not $process.WaitForExit(240000)){
+            Stop-Process -Id $process.Id -ErrorAction SilentlyContinue
+            Get-Content ".blue-work/sinnoh-f12d-compile-out.txt",".blue-work/sinnoh-f12d-compile-err.txt","$qa/Data/sinnoh-experimental-compile-error.txt" -ErrorAction SilentlyContinue | Select-Object -Last 80
+            throw 'Sinnoh private compile-only process timed out'
+          }
+          if((Test-Path "$qa/Data/sinnoh-experimental-compile-error.txt") -or
+             (-not (Test-Path "$qa/Data/sinnoh-experimental-compiled.txt")) -or
+             (Test-Path "$qa/Data/sinnoh-experimental-compile-request.txt")){
+            Get-Content ".blue-work/sinnoh-f12d-compile-out.txt",".blue-work/sinnoh-f12d-compile-err.txt","$qa/Data/sinnoh-experimental-compile-error.txt" -ErrorAction SilentlyContinue | Select-Object -Last 80
+            throw 'Sinnoh native compilation/collision/transaction proof missing'
+          }
+          if((Get-Content "$qa/Data/sinnoh-experimental-compiled.txt" -Raw).Trim() -ne $receipt.compile_token){throw 'Sinnoh compile token mismatch'}
+          if(-not (Test-Path "$qa/Data/items.dat")){throw 'Sinnoh compiled item catalogue missing'}
+          foreach($entry in $receipt.base_before.PSObject.Properties){
+            if((Get-FileHash -LiteralPath (Join-Path 'game' $entry.Name) -Algorithm SHA256).Hash.ToLower() -ne $entry.Value){throw 'Source Blue changed during Sinnoh compile'}
+          }
+          Write-Host 'SINNOH_F12D_NATIVE_PRIVATE_COMPILE_COLLISION_TRANSACTION_OK'
+          Write-Host 'Native compile-only process ended. No player save or gameplay QA executed; no source files published.'
       - name: Verificar abertura real da janela (diagnostico, sem jogar)
         if: success()
         continue-on-error: true
