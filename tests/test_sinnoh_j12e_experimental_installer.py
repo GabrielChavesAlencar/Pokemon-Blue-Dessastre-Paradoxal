@@ -1363,6 +1363,27 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
             self.assertEqual(gate["items_granted"],0)
             print("SINNOH_F12B3_WINDWORKS_INSTALLER_PREFLIGHT_REPORT "+json.dumps(gate,sort_keys=True),flush=True)
             print("SINNOH_REAL_F12B3_WINDWORKS_GATE_139_BASELINE_PRESERVED_OK",flush=True)
+            import sinnoh_f12b4_windworks_access as access
+            wo,wi,wc,wr=access.append(gh,ghids,ghcomps,Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]),{2},ROOT)
+            self.assertEqual(wr["new_portals"],0)
+            self.assertEqual(wr["items_granted"],0)
+            self.assertFalse(wr["native_verified"])
+            if wr["runtime_install_enabled"]:
+                self.assertEqual(len(wi),140)
+                self.assertEqual(wi[access.SYMBOL],581)
+                self.assertEqual(wr["new_seams"],1)
+                self.assertTrue(wr["shared_lanes"])
+                self.assertEqual({k:wi[k] for k in ghids},ghids)
+                self.assertEqual(read_marshal(wo["Data/map_connections.dat"],"F12B4_NEW")[:-1],read_marshal(gh["Data/map_connections.dat"],"F12B4_OLD"))
+                for mid in ghids.values():
+                    self.assertEqual(wo["Data/Map%03d.rxdata"%mid],gh["Data/Map%03d.rxdata"%mid])
+                print("SINNOH_REAL_F12B4_WINDWORKS_140_MAPS_8_SEAMS_EXPLORATION_PREPARED_OK",flush=True)
+            else:
+                self.assertEqual(wi,ghids)
+                self.assertEqual(wo,gh)
+                self.assertEqual(wr["new_seams"],0)
+                print("SINNOH_REAL_F12B4_ACCESS_BLOCKED_139_BASELINE_PRESERVED_OK",flush=True)
+            print("SINNOH_F12B4_WINDWORKS_ACCESS_REPORT "+json.dumps(wr,sort_keys=True),flush=True)
             import sinnoh_f12b_windworks as windworks
             preview=windworks.preview(gh,ghids,ghcomps,Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]),{2},ROOT,report)
             self.assertEqual(preview["preview_maps"],140)
@@ -2677,6 +2698,13 @@ puts "F11H_SEVEN_BADGES_THEN_BEACON_WIN_ONLY_OK"
         self.assertEqual(result["items_granted"],0)
         with patch.object(preflight.evidence,"audit",side_effect=ValueError("unverified")):
             self.assertEqual(preflight.preflight({},ids,Path("unused"),ROOT)["blockers"],["source_audit_failed:ValueError"])
+
+    def test_f12b4_windworks_exact_edge_alignment_and_gate(self):
+        import sinnoh_f12b4_windworks_access as access
+        self.assertEqual(access.shared_edge({(0,1),(0,2)}, {(31,58),(31,60)},(33,29),(32,88)),[1])
+        self.assertEqual(access.shared_edge({(0,1)}, {(31,1)},(33,29),(32,88)),[])
+        self.assertEqual(access.component({(0,0),(1,0),(3,0)},(0,0)),{(0,0),(1,0)})
+        self.assertEqual(access.append({}, {}, {}, Path("unused"),set(),ROOT)[3]["runtime_install_enabled"],False)
 
     def test_f11a_gym_contract_and_collision_guards(self):
         import sinnoh_f11a_gym as g

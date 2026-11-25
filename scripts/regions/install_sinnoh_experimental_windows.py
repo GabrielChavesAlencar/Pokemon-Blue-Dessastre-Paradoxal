@@ -51,6 +51,7 @@ import sinnoh_f10b7_field_audit as f10b7_field_audit
 import sinnoh_f10c_npcs as f10c_npcs
 import sinnoh_f11a_gym as f11a_gym
 import sinnoh_f12b3_windworks_preflight as f12b3_windworks
+import sinnoh_f12b4_windworks_access as f12b4_windworks
 from audit_sinnoh_rxdata import read_marshal
 from audit_sinnoh_twinleaf_events import MAPS,HANDLERS as CH06_HANDLERS,BALLS as CH06_BALLS
 from build_sinnoh_twinleaf_events import HANDLERS as SCRIPT_HANDLERS
@@ -340,7 +341,7 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile
         fail("ESSENTIALS_MAIN_BOOTSTRAP_NOT_RECOGNIZED")
     if "sinnoh-experimental-compile-request" in code:fail("QA_ALREADY_PATCHED")
     if not re.fullmatch(r"[a-f0-9]{12}",token):fail("INVALID_QA_TOKEN")
-    if map_ids and (len(map_ids) not in (9,10,22,56,natural_expansion.COUNT,interior_expansion.COUNT,f08c_expansion.COUNT,f08c_expansion.COUNT+1,f08c_expansion.COUNT+2,f08c_expansion.COUNT+3,f08c_expansion.COUNT+4,f08c_expansion.COUNT+5,f08c_expansion.COUNT+6,f08c_expansion.COUNT+7,f08c_expansion.COUNT+8) or len(set(map_ids))!=len(map_ids) or
+    if map_ids and (len(map_ids) not in (9,10,22,56,natural_expansion.COUNT,interior_expansion.COUNT,f08c_expansion.COUNT,f08c_expansion.COUNT+1,f08c_expansion.COUNT+2,f08c_expansion.COUNT+3,f08c_expansion.COUNT+4,f08c_expansion.COUNT+5,f08c_expansion.COUNT+6,f08c_expansion.COUNT+7,f08c_expansion.COUNT+8,f08c_expansion.COUNT+9) or len(set(map_ids))!=len(map_ids) or
                     any(type(n) is not int or not 442<=n<=(599 if len(map_ids)>=natural_expansion.COUNT else 517) for n in map_ids)):
         fail("INVALID_QA_COMPILE_MAP_IDS")
     scope='File.basename(Dir.pwd) == "game-sinnoh-experimental-'+token+'" && '
@@ -695,12 +696,13 @@ def compatible_save_token(project,mapping,base_hash,generated_maps=None,previous
                          (set(prior) in (city_expansion.OLD,route_expansion.PRIOR,route_expansion.ALL,natural_expansion.ALL,interior_expansion.ALL,f08c_expansion.ALL,*f11a_gym.GYM_SETS[:4]) and set(mapping)==f11a_gym.GYM_SETS[4]) or
                          (set(prior) in (city_expansion.OLD,route_expansion.PRIOR,route_expansion.ALL,natural_expansion.ALL,interior_expansion.ALL,f08c_expansion.ALL,*f11a_gym.GYM_SETS[:5]) and set(mapping)==f11a_gym.GYM_SETS[5]) or
                          (set(prior) in (city_expansion.OLD,route_expansion.PRIOR,route_expansion.ALL,natural_expansion.ALL,interior_expansion.ALL,f08c_expansion.ALL,*f11a_gym.GYM_SETS[:6]) and set(mapping)==f11a_gym.GYM_SETS[6]) or
-                         (set(prior) in (city_expansion.OLD,route_expansion.PRIOR,route_expansion.ALL,natural_expansion.ALL,interior_expansion.ALL,f08c_expansion.ALL,*f11a_gym.GYM_SETS[:7]) and set(mapping)==f11a_gym.GYM_SETS[7])) and
+                         (set(prior) in (city_expansion.OLD,route_expansion.PRIOR,route_expansion.ALL,natural_expansion.ALL,interior_expansion.ALL,f08c_expansion.ALL,*f11a_gym.GYM_SETS[:7]) and set(mapping)==f11a_gym.GYM_SETS[7]) or
+                         (set(prior) in (f11a_gym.GYM_SETS[7],) and set(mapping)==f12b4_windworks.ALL)) and
                         all(mapping.get(k)==v for k,v in prior.items())):continue
                 hashes=data.get("file_sha256",{})
                 if not isinstance(hashes,dict):continue
                 if not any(all(hashes.get(f"Data/Map{mid:03d}.rxdata")==sha(candidate.get(f"Data/Map{mid:03d}.rxdata",b"")) for mid in prior.values()) for candidate in (generated_maps,previous_maps,intermediate_maps,refined_maps,pre_f10b_maps,f10b2_maps,f10b3_maps,f10b4_maps,f10b5_maps,f10b6_maps,f10b8_maps,f10c1_maps,f10c2_maps,f11a_maps,f11b_maps,f11c_maps,f11d_maps,f11e_maps,f11f_maps,f11g_maps) if candidate):continue
-            elif set(mapping) in (interior_expansion.ALL,f08c_expansion.ALL,*f11a_gym.GYM_SETS):
+            elif set(mapping) in (interior_expansion.ALL,f08c_expansion.ALL,*f11a_gym.GYM_SETS,f12b4_windworks.ALL):
                 hashes=data.get("file_sha256",{})
                 if not isinstance(hashes,dict) or not any(all(hashes.get(f"Data/Map{mid:03d}.rxdata")==sha(candidate.get(f"Data/Map{mid:03d}.rxdata",b"")) for mid in mapping.values()) for candidate in (generated_maps,previous_maps,intermediate_maps,refined_maps,pre_f10b_maps,f10b2_maps,f10b3_maps,f10b4_maps,f10b5_maps,f10b6_maps,f10b8_maps,f10c1_maps,f10c2_maps,f11a_maps,f11b_maps,f11c_maps,f11d_maps,f11e_maps,f11f_maps,f11g_maps) if candidate):continue
             config_path=folder/"mkxp.json";regular(config_path)
@@ -795,6 +797,7 @@ def build_files(base:Path,project:Path=ROOT):
     f11g_maps=None
     f11h_report={}
     f12b3_report=f12b3_windworks.blocked("requires_full_f11h_baseline")
+    f12b4_report={"status":"WINDWORKS_ACCESS_BLOCKED","new_seams":0,"runtime_install_enabled":False}
     f11h_plugin=b""
     f10c_plugin=b""
     encounter_expected={}
@@ -881,6 +884,8 @@ def build_files(base:Path,project:Path=ROOT):
         print("SINNOH_F11H_GYM_REPORT "+json.dumps(f11h_report,sort_keys=True),flush=True)
         f12b3_report=f12b3_windworks.preflight(maps,mapping,sources["maps"],project)
         print("SINNOH_F12B3_WINDWORKS_INSTALLER_PREFLIGHT "+json.dumps(f12b3_report,sort_keys=True),flush=True)
+        maps,mapping,components,f12b4_report=f12b4_windworks.append(maps,mapping,components,sources["maps"],occupied,project)
+        print("SINNOH_F12B4_WINDWORKS_ACCESS_REPORT "+json.dumps(f12b4_report,sort_keys=True),flush=True)
         gym_symbols=set(mapping)-f08c_expansion.ALL
         if gym_symbols:
             masks=private_visual.movement_masks(maps,mapping,extra_symbols=city_expansion.CITIES|route_expansion.ROUTES|natural_expansion.NATURAL|interior_expansion.INTERIORS|f08c_expansion.EXTERIORS|gym_symbols)
@@ -934,7 +939,7 @@ def build_files(base:Path,project:Path=ROOT):
     # These hashes do not claim human rights approval, or native gameplay acceptance.
     report={"schema":1,"region":"SINNOH","mode":MODE,
         "maps_prepared":len(mapping),"static_events_placed":len(events)+story.get("extra_event_count",0)+len(route_trainers)+len(connection_report.get("portals",[]))+len(f08c_report.get("portals",[]))+f10b_report.get("new_trainers",0)+f10c_report.get("new_npcs",0)+f11a_report.get("gym_leaders_added",0)+f11a_report.get("new_portals",0)+f11b_report.get("gym_leaders_added",0)+f11b_report.get("new_portals",0)+f11c_report.get("gym_leaders_added",0)+f11c_report.get("new_portals",0)+f11d_report.get("gym_leaders_added",0)+f11d_report.get("new_portals",0)+f11e_report.get("gym_leaders_added",0)+f11e_report.get("new_portals",0)+f11f_report.get("gym_leaders_added",0)+f11f_report.get("new_portals",0)+f11g_report.get("gym_leaders_added",0)+f11g_report.get("new_portals",0)+f11h_report.get("gym_leaders_added",0)+f11h_report.get("new_portals",0),
-        "static_warps":16-len(continuity.get("retired_warp_keys",[]))+(3 if story else 0)+len(connection_report.get("portals",[]))+len(f08c_report.get("portals",[])),"native_seam_pairs":sum(not p.get("visual_only") for p in continuity.get("connections",[]))+len(connection_report.get("seams",[])),"static_handlers":5,"static_starter_balls":3,
+        "static_warps":16-len(continuity.get("retired_warp_keys",[]))+(3 if story else 0)+len(connection_report.get("portals",[]))+len(f08c_report.get("portals",[])),"native_seam_pairs":sum(not p.get("visual_only") for p in continuity.get("connections",[]))+len(connection_report.get("seams",[]))+f12b4_report.get("new_seams",0),"static_handlers":5,"static_starter_balls":3,
         "local_reserved_qa_only":True,"independent_r07_approved":False,
         "independent_r08_approved":False,"r09_native_qa_executed":0,
         "game_exe_executed":False,"runtime_playable_verified":False,
@@ -963,6 +968,7 @@ def build_files(base:Path,project:Path=ROOT):
         "f09d_relative":f09d_report,
         "f10b_trainers":f10b_report,"f10b7_field_gate_audit":f10b7_report,"f10c_npcs":f10c_report,"f11a_gym":f11a_report,"f11b_gym":f11b_report,"f11c_gym":f11c_report,"f11d_gym":f11d_report,"f11e_gym":f11e_report,"f11f_gym":f11f_report,"f11g_gym":f11g_report,"f11h_gym":f11h_report,
         "f12b3_windworks_preflight":f12b3_report,
+        "f12b4_windworks_access":f12b4_report,
         "qa_teleport":{"catalog_count":len(teleport_entries),"available_count":sum(row[3] is not None for row in teleport_entries),"destinations":teleport_entries,"native_verified":False},
         "encounter_coverage":encounter_coverage,"route202_trainers":route_trainers,
         "visual_native_reviewed":False,
