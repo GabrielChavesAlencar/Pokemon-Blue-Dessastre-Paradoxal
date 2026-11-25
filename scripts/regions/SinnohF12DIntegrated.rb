@@ -165,8 +165,13 @@ module BlueSinnohF12DIntegrated
     item=GameData::Item.try_get(:HM03)
     !!(item && item.is_HM? && item.move==:SURF && BlueRegionTravel.regional_item?(:HM03))
   end
+  def self.surf_pickup_story_ready?(s)
+    h=T.history(s)
+    return false unless h && h.include?(T::ORDER[0])
+    T.cleared?(s) || (LOCATIONS.key?("SURF_HM03") && LOCATIONS["SURF_HM03"]==LOCATIONS["CYNTHIA"])
+  end
   def self.stage_surf_pickup(s,bag)
-    return nil unless s && T.cleared?(s) && BlueRegions.valid_sinnoh_badges?(s) &&
+    return nil unless s && surf_pickup_story_ready?(s) && BlueRegions.valid_sinnoh_badges?(s) &&
       s["current"]=="SINNOH" && BlueRegions.local_achievements(s,"SINNOH").include?("FEN") && surf_hm_valid?
     claims=BlueRegions.sinnoh_local_hms(s)
     return nil unless claims && !claims.include?("SURF") && bag && bag.quantity(:HM03)==0
@@ -247,7 +252,7 @@ module BlueSinnohF12DIntegrated
   def self.offer_surf(s)
     return false unless near?("SURF_HM03") && s && !s.frozen? && state.equal?(s) &&
       defined?(BlueKantoTitle) && BlueKantoTitle.sinnoh_experimental_barry_compiled?
-    return true if BlueRegions.sinnoh_local_hms(s)&.include?("SURF")
+    return !!($bag && $bag.has?(:HM03)) if BlueRegions.sinnoh_local_hms(s)&.include?("SURF")
     return false unless pbConfirmMessage(_INTL("Cynthia: deseja receber a HM Surf de Sinnoh?"))
     bag=$bag;staged=stage_surf_pickup(s,bag)
     return false unless staged && state.equal?(s) && $bag.equal?(bag)
@@ -273,6 +278,16 @@ module BlueSinnohF12DIntegrated
     b=PokemonBag.new
     raise "Sinnoh HM03 before badge" if stage_surf_pickup(s,b)
     s["achievements"]["SINNOH"]=["FEN"]
+    early=Marshal.load(Marshal.dump(s));early[T::LEDGER]=[]
+    raise "Sinnoh HM03 before potion" if stage_surf_pickup(early,b)
+    preclear=Marshal.load(Marshal.dump(s));preclear[T::LEDGER]=[T::ORDER[0]]
+    if LOCATIONS["SURF_HM03"]==LOCATIONS["CYNTHIA"]
+      early_pair=stage_surf_pickup(preclear,b)
+      raise "Sinnoh HM03 existing Cynthia receipt" unless early_pair
+      raise "Sinnoh HM03 early Surf" unless surf_permission(early_pair[:state],early_pair[:bag],[])==:unavailable
+    else
+      raise "Sinnoh HM03 early Celestic pickup" if stage_surf_pickup(preclear,b)
+    end
     raise "Sinnoh HM03 missing receipt gate" unless surf_permission(s,b,[])==:hm
     foreign=Marshal.load(Marshal.dump(s));foreign["current"]="KANTO"
     raise "Sinnoh HM03 foreign pickup" if stage_surf_pickup(foreign,b)
@@ -288,6 +303,15 @@ module BlueSinnohF12DIntegrated
     no_badge=Marshal.load(Marshal.dump(saved));no_badge["achievements"]["SINNOH"]=[]
     raise "Sinnoh HM03 missing badge" unless surf_permission(no_badge,bag,[])==:badge
     raise "Sinnoh HM03 missing item" unless surf_permission(saved,PokemonBag.new,[])==:hm
+    # Exercise real compiled species compatibility rather than a permissive
+    # party double. The Pokemon is temporary and never written to a save.
+    candidate=[:PIPLUP,:PSYDUCK,:GOLBAT].filter_map do |id|
+      next unless GameData::Species.exists?(id)
+      Pokemon.new(id,20)
+    end.find { |pkmn| !pkmn.egg? && !pkmn.fainted? && pkmn.compatible_with_move?(:SURF) }
+    raise "Sinnoh HM03 compatible native species missing" unless candidate
+    raise "Sinnoh HM03 compatible party" unless surf_permission(saved,bag,[candidate],candidate)==:allowed
+    raise "Sinnoh HM03 selected not in party" unless surf_permission(saved,bag,[],candidate)==:pokemon
     true
   end
   # Read the actual private RXDATA and use Game_Map/Game_Player native
@@ -296,14 +320,18 @@ module BlueSinnohF12DIntegrated
   def self.verify_native_surf_map_collision!
     raise "Sinnoh Surf terrain" unless lake_surf_terrain_reference?
     raise "Sinnoh Surf hooks" unless Object.ancestors.include?(NativeSurfEntry)
-    prev=[$game_map,$map_factory,$game_player,$DEBUG,$game_switches,$game_variables,$game_self_switches,$game_temp,$PokemonGlobal]
+    prev=[$game_map,$map_factory,$game_player,$DEBUG,$game_switches,$game_variables,$game_self_switches,$game_temp,$PokemonGlobal,$stats]
     begin
       $DEBUG=false;$map_factory=nil
       $game_switches=Game_Switches.new;$game_variables=Game_Variables.new
       $game_self_switches=Game_SelfSwitches.new;$game_temp=Game_Temp.new
       $PokemonGlobal=PokemonGlobalMetadata.new
+      $stats=GameStats.new
       $game_player=Game_Player.new
       p=$game_player
+      # Suppress only scene/event notifications in this compile-only
+      # probe. Native jumpForward, jump and passable? remain untouched.
+      def p.triggerLeaveTile; end
       p.instance_variable_set(:@width,1);p.instance_variable_set(:@height,1)
       p.instance_variable_set(:@through,false);p.instance_variable_set(:@character_name,"Probe")
       tiles=load_data("Data/Tilesets.rxdata")
@@ -322,7 +350,7 @@ module BlueSinnohF12DIntegrated
           tag=$game_map.terrain_tag(x,y)
           raise "Sinnoh Surf changed terrain #{mid}" unless tag && (mode=="surf" ? tag.can_surf_freely : !tag.can_surf)
         end
-        count=0
+        count=0;boardings=0;landings=0
         [route,route.reverse].each do |path|
           path.each_cons(2) do |a,b|
             ax,ay,am=a;bx,by,bm=b
@@ -333,15 +361,25 @@ module BlueSinnohF12DIntegrated
             raise "Sinnoh Surf water walk leak #{mid}" if bm=="surf" && p.passable?(ax,ay,dir)
             $PokemonGlobal.surfing=true
             raise "Sinnoh Surf native collision #{mid} #{ax},#{ay}" unless p.passable?(ax,ay,dir)
+            if am!=bm
+              p.instance_variable_set(:@direction,dir)
+              # Test native one-tile boarding/landing displacement against
+              # original masks. The scene vehicle animation and on_step
+              # completion are deliberately not part of this compile probe.
+              raise "Sinnoh Surf native jump #{mid} #{ax},#{ay}" unless p.jumpForward && p.x==bx && p.y==by
+              if bm=="surf";boardings+=1;else;landings+=1;end
+            end
             count+=1
           end
         end
         raise "Sinnoh Surf missing aquatic edges" if count==0
         puts "SINNOH_F12D_NATIVE_SURF_MAP_COLLISION_MAP #{mid} #{count}"
+        raise "Sinnoh Surf missing shoreline jump" unless boardings>0 && landings>0
+        puts "SINNOH_F12D_NATIVE_SURF_SHORE_JUMP_MAP #{mid} #{boardings} #{landings}"
       end
       true
     ensure
-      $game_map,$map_factory,$game_player,$DEBUG,$game_switches,$game_variables,$game_self_switches,$game_temp,$PokemonGlobal=*prev
+      $game_map,$map_factory,$game_player,$DEBUG,$game_switches,$game_variables,$game_self_switches,$game_temp,$PokemonGlobal,$stats=*prev
     end
   end
   def self.verify_compiled!
@@ -396,7 +434,10 @@ module BlueSinnohF12DIntegrated
     @busy=true
     begin
       if key=="CYNTHIA"
-        return true if T.history(s).include?(T::ORDER[0])
+        if T.history(s).include?(T::ORDER[0])
+          return offer_surf(s) if LOCATIONS["SURF_HM03"]==LOCATIONS["CYNTHIA"]
+          return true
+        end
         return false unless commit_item(s,T::ORDER[0])
         pbMessage(_INTL("Cynthia: Use esta SecretPotion para ajudar os Psyduck da Rota 210."))
         return true

@@ -399,8 +399,18 @@ def recover_lake_seams(data,mapping,components,root,expanded,seed,previews,rock,
         loc=previews.get(key)
         goal=(loc["map_id"],*loc["stand"]) if loc else None
         a=node(prior) if prior else None;b=node(goal) if goal else None
-        distances,_=original_audit.component_paths(conditional,[a]) if a is not None else ({},{})
-        conditional_legs[key]={"candidate_reachable":b is not None and b in distances,"native_verified":False}
+        distances,parents=original_audit.component_paths(conditional,[a]) if a is not None else ({},{})
+        reverse,_=original_audit.component_paths(conditional,[b]) if b is not None else ({},{})
+        frontier={u[0] for u in distances};reverse_frontier={u[0] for u in reverse}
+        conditional_legs[key]={"candidate_reachable":b is not None and b in distances,
+            "return_candidate_reachable":a is not None and a in reverse,
+            "reachable_components":len(distances),"reachable_maps":sorted(frontier),
+            "destination_side_maps":sorted(reverse_frontier),
+            "shared_map_ids":sorted(frontier&reverse_frontier),
+            "boundary_candidate_records":[list(r) for r in eligible if (r[0] in frontier)!=(r[3] in frontier)],
+            "minimum_new_original_seams":distances[b][0] if b in distances else None,
+            "witness_records":[list(r) for _,_,r,installed in original_audit.trace(b,parents) if not installed] if b in distances else [],
+            "native_verified":False}
         prior=goal
     report["conditional_surf"]={"edges":surf_edges,"legs":conditional_legs,"activation_allowed":False}
     added=[];predecessor=seed;complete=True
@@ -534,7 +544,18 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
             closed_trial,closed_loc=add_event(out,town,xy,"SURF_HM03","SNQA_F12D_CYNTHIA")
             if closed_loc==loc:
                 reopened=trial;out=closed_trial;loc["stand"]=list(stand);locations["SURF_HM03"]=loc
-                result["surf_pickup"].update(prepared=True,location=loc)
+                result["surf_pickup"].update(prepared=True,location=loc,policy="CELESTIC_POST_PSYDUCK")
+    # Reuse the already-proved Cynthia interaction if a distinct Celestic
+    # placement cannot preserve the QA entries. The pickup can follow the
+    # SecretPotion delivery; actual Surf remains locked until Psyduck clear.
+    if not result["surf_pickup"]["prepared"]:
+        cynthia=locations["CYNTHIA"]
+        stand=(cynthia["map_id"],*cynthia["stand"])
+        if stand not in closed or stand not in restored:
+            result["reason"]="surf_pickup_existing_cynthia_unreachable";return {},result,b""
+        result["surf_pickup"].update(prepared=True,location=cynthia,
+            policy="EXISTING_CYNTHIA_AFTER_SECRETPOTION",reuses_existing_event=True,
+            celestic_candidate_found=bool(pickup))
     # All three legs must be proved before any original seam is staged.
     original_trial,entry_report=original_lake_candidates(reopened,mapping,components,root,source,rock,valor_rock,lake_seed)
     surf_routes={}
@@ -600,6 +621,8 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
     # Staging only until the private engine, sprites and pre-chase seam gate pass.
     template=(root/"scripts/regions/SinnohF12DIntegrated.rb").read_text("utf-8")
     literal={k:[v["map_id"],*v["position"],v["event_id"]] for k,v in locations.items()}
+    if result["surf_pickup"].get("reuses_existing_event"):
+        literal["SURF_HM03"]=literal["CYNTHIA"][:]
     worlds,_,index,_,_,_=gates.access_graph(opened,old,components,root,seed_cells=[seed],
         directional=True,strict_movement=True,rock_cells=rock)
     dims={m:(w.attrs["@width"],w.attrs["@height"]) for m,w in worlds.items()}
@@ -644,8 +667,8 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
     # Water route proof is independent of ordinary dry reachability. Bind
     # only when the local pickup event was actually prepared.
     if template.count("__SURF_ROUTES__")!=1:raise ValueError("F12D_SURF_ROUTE_TEMPLATE")
-    template=template.replace("__SURF_ROUTES__",ruby_hash(surf_routes if "SURF_HM03" in locations else {}))
-    result["surf_pickup"]["runtime_route_count"]=len(surf_routes) if "SURF_HM03" in locations else 0
+    template=template.replace("__SURF_ROUTES__",ruby_hash(surf_routes if "SURF_HM03" in literal else {}))
+    result["surf_pickup"]["runtime_route_count"]=len(surf_routes) if "SURF_HM03" in literal else 0
     for key,value in (("__EDIT_CELLS__",edits),("__CHASE_LANES__",chase_lanes),("__CELESTIC_LANES__",celestic_lanes)):
         if template.count(key)!=1:raise ValueError("F12D_INTEGRATED_GATE_TEMPLATE")
         template=template.replace(key,json.dumps(value))

@@ -1816,11 +1816,11 @@
       "f12d_integrated_native_stage_receipts_implemented": true,
       "f12d_integrated_original_lake_seam_recovery_implemented": true,
       "f12d_integrated_original_lake_sequence_confirmed": false,
-      "f12d_integrated_latest_observed_head": "93b0eaf6d4571470e70162fc6cccdfac3cd9c1f6",
-      "f12d_integrated_latest_observed_native_job": 139449851678,
+      "f12d_integrated_latest_observed_head": "d4fe6d4082e56cd0eeb6163731fd8e76db474f38",
+      "f12d_integrated_latest_observed_native_job": 139459070525,
       "f12d_integrated_latest_observed_source_job": 139449853803,
-      "f12d_integrated_latest_observed_workflows_approved": 9,
-      "f12d_integrated_latest_observed_jobs_approved": 23,
+      "f12d_integrated_latest_observed_workflows_approved": 7,
+      "f12d_integrated_latest_observed_jobs_approved": 19,
       "f12d_integrated_native_request_accepted_confirmed": true,
       "f12d_integrated_native_compiler_return_confirmed": true,
       "f12d_integrated_native_item_probe_confirmed": true,
@@ -1851,7 +1851,7 @@
       "f12d_integrated_valor_exact_threshold_implemented": true,
       "f12d_integrated_current_preflight_failed": false,
       "f12d_integrated_current_preflight_failure": null,
-      "f12d_integrated_current_source_failure": null,
+      "f12d_integrated_current_source_failure": "DOWNLOAD_FAILED:maps:URLError (WinError 10060)",
       "f12d_integrated_current_source_retry_job": 139442635063,
       "f12d_integrated_current_maps_prepared": 144,
       "f12d_integrated_current_markers_reconfirmed": true,
@@ -1860,8 +1860,8 @@
       "f12d_integrated_native_indexed_state_identifiers": [
         "$game_switches"
       ],
-      "f12d_integrated_native_receipt_verified_head": "dce1de6577894dfa350da70cd6bd9ec58c3214ec",
-      "f12d_integrated_native_receipt_verified_job": 139449851678,
+      "f12d_integrated_native_receipt_verified_head": "93b0eaf6d4571470e70162fc6cccdfac3cd9c1f6",
+      "f12d_integrated_native_receipt_verified_job": 139454304404,
       "f12d_integrated_valor_rock_threshold_confirmed": 1,
       "f12d_integrated_surf_source_candidate_steps": {
         "161": 77,
@@ -1912,7 +1912,16 @@
       },
       "f12d_integrated_native_lake_surf_terrain_reference_confirmed": true,
       "f12d_integrated_native_surf_route_guard_implemented_pending_ci": true,
-      "f12d_integrated_native_surf_map_collision_probe_implemented_pending_ci": true
+      "f12d_integrated_native_surf_map_collision_probe_implemented_pending_ci": true,
+      "f12d_integrated_surf_pickup_last_native_prepared": false,
+      "f12d_integrated_surf_pickup_fallback_policy": "EXISTING_CYNTHIA_AFTER_SECRETPOTION_IF_CELESTIC_PLACEMENT_BLOCKED",
+      "f12d_integrated_conditional_lake_legs_observed": {
+        "VALOR": true,
+        "VERITY": false,
+        "ACUITY": false
+      },
+      "f12d_integrated_windows_fixture_timeout_fix_pending_ci": true,
+      "f12d_integrated_surf_native_shore_jump_probe_implemented_pending_ci": true
     },
     {
       "id": "F13",

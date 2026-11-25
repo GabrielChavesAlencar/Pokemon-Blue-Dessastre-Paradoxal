@@ -3627,7 +3627,9 @@ raise "wall" if m.surf_step_allowed?(:allowed,nil,[],true,c,[529,2,1])
 raise "diagonal" if m.surf_step_allowed?(:allowed,nil,[],true,b,d)
 raise "foreign map" if m.surf_step_allowed?(:allowed,nil,[],true,b,[511,2,0])
 '''
-            run=subprocess.run([shutil.which("ruby"),"-e",fixture],capture_output=True,text=True,timeout=30)
+            # Pass the full fixture via stdin; Windows process command-line
+            # length is not a supported transport for a growing Ruby module.
+            run=subprocess.run([shutil.which("ruby"),"-"],input=fixture,capture_output=True,text=True,encoding="utf-8",timeout=30)
             self.assertEqual(run.returncode,0,run.stderr)
 
     def test_f12d_surf_pickup_candidate_uses_native_regional_receipt(self):
@@ -3786,7 +3788,9 @@ raise "foreign map" if m.surf_step_allowed?(:allowed,nil,[],true,b,[511,2,0])
         if shutil.which("ruby"):
             code=(ROOT/"scripts/regions/SinnohF12D3Transaction.rb").read_text("utf-8")+"\n"+(ROOT/"scripts/regions/SinnohF12DIntegrated.rb").read_text("utf-8").replace("__LOCATIONS__","{}").replace("__SPECS__","{}").replace("__EDIT_CELLS__","[[473,1,1]]").replace("__CHASE_LANES__","[[472,1,0,473,1,31]]").replace("__CELESTIC_LANES__","[[473,0,14,458,3,4]]").replace("__SURF_ROUTES__","{}")
             fixture=code+'''\ns={"current"=>"SINNOH","sinnoh_f12d_quest"=>%w[PASTORIA ROUTE_213 VALOR_BATTLE],"sinnoh_f12d3_quest"=>%w[SECRETPOTION_RECEIVED PSYDUCK_CLEARED]}\nm=BlueSinnohF12DIntegrated\nraise unless m.lake_allowed?(s,"VALOR",["MINE"])\nraise if m.lake_allowed?(s,"VERITY",["MINE"])\nraise if m.lake_allowed?(s,"VALOR",[])\ns[m::LAKE_LEDGER]=%w[VALOR VERITY]\nraise if m.lake_allowed?(s,"ACUITY",["MINE"])\nraise unless m.lake_allowed?(s,"ACUITY",["MINE","ICICLE"])\ns=Marshal.load(Marshal.dump(s))\nraise unless m.lake_allowed?(s,"ACUITY",["MINE","ICICLE"])\nraise if m.movement_allowed?(nil,[473,2,1],[473,1,1])\nraise if m.movement_allowed?(nil,[472,1,0],[473,1,31])\nraise if m.movement_allowed?(nil,[473,0,14],[458,3,4])\nraise unless m.movement_allowed?(s,[473,0,14],[458,3,4])\nraise unless m.movement_allowed?(nil,[473,2,1],[473,2,2])\n'''
-            run=subprocess.run([shutil.which("ruby"),"-e",fixture],capture_output=True,text=True,timeout=30)
+            # Pass the full fixture via stdin; Windows process command-line
+            # length is not a supported transport for a growing Ruby module.
+            run=subprocess.run([shutil.which("ruby"),"-"],input=fixture,capture_output=True,text=True,encoding="utf-8",timeout=30)
             self.assertEqual(run.returncode,0,run.stderr)
 
     def test_f12d3_rock_network_rejects_perimeter_and_attributes_edits(self):
