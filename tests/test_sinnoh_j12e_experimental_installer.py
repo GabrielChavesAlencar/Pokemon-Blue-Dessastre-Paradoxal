@@ -1652,6 +1652,16 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                         self.assertIn("celestic_frontier",cdr)
                         print("SINNOH_F12D3_CANONICAL_DIRECTIONAL_REPORT "+json.dumps(cdr,sort_keys=True),flush=True)
                         print("SINNOH_REAL_F12D3_CANONICAL_DIRECTIONAL_AUDITED_OK",flush=True)
+                        sf=cdr["special_terrain_frontier"]
+                        self.assertEqual(sf["status"],"MASK_ONLY_DIAGNOSTIC_NOT_WALK_PROOF")
+                        self.assertFalse(sf["activation_allowed"])
+                        self.assertFalse(sf["native_verified"])
+                        self.assertFalse(sf["installed"])
+                        self.assertEqual(sf["changed_cells"],0)
+                        self.assertEqual(len(sf["exit_paths"]),5)
+                        self.assertEqual(chased,snapshot)
+                        print("SINNOH_F12D3_SPECIAL_TERRAIN_FRONTIER_REPORT "+json.dumps(sf,sort_keys=True),flush=True)
+                        print("SINNOH_REAL_F12D3_SPECIAL_TERRAIN_FRONTIER_AUDITED_OK",flush=True)
                         print("SINNOH_REAL_F12D3_GATED_ALIGNMENT_EVIDENCE_PRESERVED_OK",flush=True)
                         print("SINNOH_REAL_F12D3_ROUTE210_RECOVERY_EVIDENCE_PRESERVED_OK",flush=True)
                     else:
@@ -3420,6 +3430,24 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertNotIn(c,d)
         self.assertEqual(n.SYMBOLS[123],"SINNOH_HEARTHOME_CITY")
         self.assertNotIn(22,n.SYMBOLS)
+
+    def test_f12d3_special_terrain_mask_only_diagnostic_never_opens_blocked_cells(self):
+        import sinnoh_f12d3_canonical_network as n
+        dry=((0,),(0,));special=((0,),(7,));blocked=((4,),(7,))
+        self.assertEqual(n.guard_cell_kind(dry,dry,"."),"ordinary")
+        self.assertEqual(n.guard_cell_kind(special,special,"."),"special_unverified")
+        self.assertIsNone(n.guard_cell_kind(blocked,blocked,"."))
+        self.assertIsNone(n.guard_cell_kind(special,dry,"."))
+        self.assertIsNone(n.guard_cell_kind(special,special,"#"))
+        self.assertIsNone(n.guard_cell_kind(special,special,".",occupied=True))
+        self.assertIsNone(n.guard_cell_kind(special,special,".",protected=True))
+        a,b,c,z=(0,0),(1,0),(2,0),(3,0)
+        adj={a:[b],b:[a,c],c:[b,z],z:[c]}
+        kinds={a:"ordinary",b:"special_unverified",c:"ordinary"}
+        report=n.guard_local_paths({a:(2,1,3,10)},{c,z},lambda q:adj[q],kinds.get)
+        self.assertEqual(report[0]["cost"],[1,2,1,3,12])
+        self.assertEqual(report[0]["special_cells"],[list(b)])
+        self.assertIsNone(report[1]["cost"])
 
     def test_f12d3_canonical_frontier_reports_shared_blocker(self):
         import sinnoh_f12d3_canonical_network as n

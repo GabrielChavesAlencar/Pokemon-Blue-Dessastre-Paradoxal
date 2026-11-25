@@ -542,7 +542,7 @@
       "id": "F12",
       "title": "História, Equipe Galactic e itens-chave",
       "status": "implementation_pending_ci",
-      "followup": "F12D3_CANONICAL_DIRECTIONAL_PENDING_CI",
+      "followup": "F12D3_SPECIAL_TERRAIN_FRONTIER_PENDING_CI",
       "story_checkpoints_scope": 14,
       "hm_contracts_scope": 8,
       "native_bindings": 0,
@@ -1444,7 +1444,7 @@
       "f12d3_canonical_network_reachable_route210_segment2_candidate_cells": 1211,
       "f12d3_canonical_network_trials": 0,
       "f12d3_canonical_network_witness": false,
-      "f12d3_canonical_directional_pending_ci": true,
+      "f12d3_canonical_directional_pending_ci": false,
       "f12d3_canonical_directional_installed": false,
       "f12d3_canonical_directional_budget": 32,
       "f12d3_canonical_network_full_ci_approved": true,
@@ -1485,7 +1485,62 @@
         "219": 3275,
         "222": 12506,
         "223": 3797
-      }
+      },
+      "f12d3_canonical_directional_full_ci_approved": true,
+      "f12d3_canonical_directional_merge_commit": "8c714b2dee76ed4da4df24468a98e26a57acba71",
+      "f12d3_canonical_directional_validated_head": "920b3f14be1482b83c21fc0c9d1ac27d8cbb8198",
+      "f12d3_canonical_directional_real_job": 139347688658,
+      "f12d3_canonical_directional_real_audit_verified": true,
+      "f12d3_canonical_directional_ci_workflows": 11,
+      "f12d3_canonical_directional_ci_checks": 26,
+      "f12d3_canonical_directional_markers": 14,
+      "f12d3_canonical_directional_unit_tests": 18,
+      "f12d3_canonical_directional_forward_cells": 1224,
+      "f12d3_canonical_directional_reverse_cells": 452,
+      "f12d3_canonical_directional_forward_components": [
+        0,
+        4,
+        7,
+        10,
+        11,
+        12
+      ],
+      "f12d3_canonical_directional_reverse_components": [
+        1,
+        2,
+        6,
+        8,
+        16,
+        17
+      ],
+      "f12d3_canonical_directional_shared_cells": [
+        [
+          57,
+          25
+        ],
+        [
+          57,
+          26
+        ],
+        [
+          57,
+          27
+        ]
+      ],
+      "f12d3_canonical_directional_overlap": 0,
+      "f12d3_canonical_directional_partial_candidates": 444,
+      "f12d3_canonical_directional_exit_costs": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "f12d3_canonical_directional_trials": 0,
+      "f12d3_canonical_directional_witness": false,
+      "f12d3_special_terrain_frontier_pending_ci": true,
+      "f12d3_special_terrain_frontier_installed": false,
+      "f12d3_special_terrain_frontier_native_verified": false
     },
     {
       "id": "F13",
