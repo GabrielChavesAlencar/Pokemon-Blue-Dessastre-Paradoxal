@@ -1258,6 +1258,31 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
             gereport["species_and_types_validation"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
             print("SINNOH_F11E_GYM_REPORT "+json.dumps(gereport,sort_keys=True),flush=True)
             print("SINNOH_REAL_F11E_FIVE_GYMS_136_MAPS_BASELINE_PRESERVED_OK",flush=True)
+            gf,gfids,gfcomps,gfreport,gfplugin=gym.build(ge,geids,gecomps,{2},{"LEADER_BYRON"},{"MAGNETON","STEELIX","BASTIODON"},set(),ROOT,Path(ow),leader="Byron",allow_authored=True)
+            self.assertEqual(gfreport["gym_rooms_added"],1,gfreport)
+            self.assertEqual(len(gfids),137)
+            self.assertEqual({k:gfids[k] for k in geids},geids)
+            self.assertEqual(gfreport["new_portals"],2)
+            self.assertFalse(gfreport["native_verified"])
+            self.assertFalse(gfreport["hm_award_enabled"])
+            self.assertFalse(gfreport["water_enabled"])
+            for path,raw in ge.items():
+                if path in ("Data/MapInfos.rxdata","Data/Tilesets.rxdata","PBS/map_metadata.txt"):continue
+                if path=="Data/Map%03d.rxdata"%geids[gym.BYRON_CITY]:
+                    old=read_marshal(raw,"F11F_OLD");new=read_marshal(gf[path],"F11F_NEW")
+                    before=old.attrs.pop("@events");after=new.attrs.pop("@events")
+                    self.assertEqual(serialize(old,connection.EVENT_CLASSES),serialize(new,connection.EVENT_CLASSES))
+                    for eid,event in before.items():
+                        self.assertEqual(serialize(event,connection.EVENT_CLASSES),serialize(after[eid],connection.EVENT_CLASSES))
+                else:self.assertEqual(gf[path],raw)
+            self.assertEqual([r for r in exp.qa_teleport.build(gf,gfids,gfcomps) if r[0]!=gym.BYRON_SYMBOL],[r for r in exp.qa_teleport.build(ge,geids,gecomps) if r[0]!=gym.BYRON_SYMBOL])
+            self.assertIn(b"BlueSinnohF11F",gfplugin)
+            self.assertIn("PBS/trainers_sinnoh_f11f.txt",gf)
+            self.assertIn("Graphics/Characters/SNQA_F11F_BYRON.png",gf)
+            self.assertEqual([r["badge"] for r in gfreport["gyms"] if r["installed"]],["COAL","FOREST","RELIC","COBBLE","FEN","MINE"])
+            gfreport["species_and_types_validation"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
+            print("SINNOH_F11F_GYM_REPORT "+json.dumps(gfreport,sort_keys=True),flush=True)
+            print("SINNOH_REAL_F11F_SIX_GYMS_137_MAPS_BASELINE_PRESERVED_OK",flush=True)
 
 
 
@@ -2245,6 +2270,84 @@ puts "F11E_FOUR_BADGES_THEN_FEN_WIN_ONLY_OK"
             result=subprocess.run(["ruby","-e",fixture,str(path)],capture_output=True,text=True,encoding="utf-8")
             self.assertEqual(result.returncode,0,result.stdout+result.stderr)
             self.assertIn("F11E_FOUR_BADGES_THEN_FEN_WIN_ONLY_OK",result.stdout)
+
+    @unittest.skipUnless(shutil.which("ruby"),"Requires Ruby runtime")
+    def test_f11f_byron_requires_coal_forest_relic_cobble_fen_and_confirmed_win(self):
+        source=(ROOT/"scripts/regions/SinnohF11F.rb").read_text("utf-8").replace(
+            "__F11F_SPEC__", '["LEADER_BYRON","Byron",11006,584,[["MAGNETON",37],["STEELIX",38],["BASTIODON",41]]]')
+        fixture=r'''
+module BlueSinnohExperimental
+  def self.private_copy?; true; end
+end
+module BlueSinnohPilot
+  def self.regional_state; $state; end
+  def self.profile_error(*args); raise args.last; end
+end
+module BlueRegions
+  def self.valid_sinnoh_badges?(s);s["current"]=="SINNOH" && s["badges"].is_a?(Array);end
+  def self.local_achievements(s,r);s["badges"];end
+  def self.award(s,r,b);return false if s["badges"].include?(b);s["badges"] << b;true;end
+end
+module BlueKantoTitle
+  def self.sinnoh_experimental_barry_compiled?;true;end
+end
+module BlueCampaign
+  module Teams;end
+  def self.active?;true;end
+end
+class Battle;prepend BlueCampaign::Teams;end
+module BlueStory
+  def self.regional_first_boss?(a);a.first.trainer_type=="LEADER_BYRON";end
+end
+module BlueSinnohF10B
+  def self.valid_team?(s);true;end
+end
+module TrainerBattle
+  def self.start_core(*args);$calls+=1;$outcome;end
+end
+def _INTL(s);s;end
+def pbMessage(s);end
+Mon=Struct.new(:hp) {def egg?;false;end}
+$player=Struct.new(:party).new([Mon.new(10)])
+$game_map=Struct.new(:map_id).new(584)
+$game_temp=Struct.new(:waiting_trainer,:battle_rules).new(nil,{})
+$state={"current"=>"SINNOH","badges"=>[],"native"=>[false],"hm"=>[]}
+$calls=0;$outcome=1
+load ARGV[0]
+raise "bypass" if BlueSinnohF11F.battle
+raise "battle started before COAL" unless $calls==0
+$state["badges"] << "COAL"
+raise "bypass forest" if BlueSinnohF11F.battle
+raise "battle started before FOREST" unless $calls==0
+$state["badges"] << "FOREST"
+raise "bypass relic" if BlueSinnohF11F.battle
+raise "battle started before RELIC" unless $calls==0
+$state["badges"] << "RELIC"
+raise "bypass cobble" if BlueSinnohF11F.battle
+raise "battle started before COBBLE" unless $calls==0
+$state["badges"] << "COBBLE"
+raise "bypass fen" if BlueSinnohF11F.battle
+raise "battle started before FEN" unless $calls==0
+$state["badges"] << "FEN"
+[2,3,nil].each do |result|
+  $outcome=result
+  raise "invalid award" if BlueSinnohF11F.battle
+end
+raise "loss changed badges" unless $state["badges"]==["COAL","FOREST","RELIC","COBBLE","FEN"]
+$outcome=1
+raise "win" unless BlueSinnohF11F.battle
+raise "badge" unless $state["badges"]==["COAL","FOREST","RELIC","COBBLE","FEN","MINE"]
+raise "native changed" unless $state["native"]==[false] && $state["hm"].empty?
+before=$calls
+raise "repeat" unless BlueSinnohF11F.battle
+raise "duplicate" unless $calls==before
+puts "F11F_FIVE_BADGES_THEN_MINE_WIN_ONLY_OK"
+'''
+        with tempfile.TemporaryDirectory() as td:
+            path=Path(td)/"F11F.rb";path.write_text(source,encoding="utf-8")
+            result=subprocess.run(["ruby","-e",fixture,str(path)],capture_output=True,text=True,encoding="utf-8")
+            self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+            self.assertIn("F11F_FIVE_BADGES_THEN_MINE_WIN_ONLY_OK",result.stdout)
 
     def test_f11a_gym_contract_and_collision_guards(self):
         import sinnoh_f11a_gym as g
