@@ -1921,7 +1921,9 @@
         "ACUITY": false
       },
       "f12d_integrated_windows_fixture_timeout_fix_pending_ci": true,
-      "f12d_integrated_surf_native_shore_jump_probe_implemented_pending_ci": true
+      "f12d_integrated_surf_native_shore_jump_probe_implemented_pending_ci": true,
+      "f12d_integrated_native_surf_markers_required_pending_ci": true,
+      "f12d_integrated_native_surf_compatible_party_negative_gates_implemented_pending_ci": true
     },
     {
       "id": "F13",

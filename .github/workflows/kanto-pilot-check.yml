@@ -277,11 +277,17 @@ jobs:
           assert integrated["native_verified"] is False and integrated["normal_launch_allowed"] is False
           assert len(integrated["pre_chase_graph_checks"])==3
           assert integrated["geometry_delta_count"]==71
+          pickup=integrated.get("surf_pickup",{})
+          surf_maps=sorted(row["map_id"] for row in integrated.get("lake_surf_geometry",{}).get("maps",{}).values()
+                           if row.get("surf_candidate") and row.get("water_steps",0)>0)
+          assert pickup.get("prepared") is True, "regional HM03 pickup not prepared"
+          assert len(surf_maps)==len(set(surf_maps))==2 and pickup.get("runtime_route_count")==len(surf_maps), "expected two original aquatic route witnesses"
           assert not report["main_game_modified"] and not report["personal_saves_copied"]
           dest=install.install_copy(base,outputs,report,root)
           assert snapshot()==before,"source game changed"
           (root/".blue-work"/"sinnoh-f12d-ci-copy.json").write_text(json.dumps({
-              "directory":str(dest),"compile_token":report["compile_token"],"base_before":before}),"utf-8")
+              "directory":str(dest),"compile_token":report["compile_token"],"base_before":before,
+              "surf_maps":surf_maps}),"utf-8")
           print("SINNOH_F12D_ACTUAL_PRIVATE_COPY_PREPARED_OK",flush=True)
           '@ | python -
           if($LASTEXITCODE -ne 0){throw 'Sinnoh actual private copy preparation failed'}
@@ -317,13 +323,19 @@ jobs:
             Get-Content -LiteralPath "$qa/Data/sinnoh-experimental-compile-error.txt" | Write-Host
             Write-Host 'SINNOH_F12D_NATIVE_ERROR_FILE_END'
           }
-          if($compileError -or (-not $compileReceipt) -or $compileRequest){
+          if($process.ExitCode -ne 0 -or $compileError -or (-not $compileReceipt) -or $compileRequest){
             Get-Content ".blue-work/sinnoh-f12d-compile-out.txt" -ErrorAction SilentlyContinue | Select-Object -Last 30
             Get-Content ".blue-work/sinnoh-f12d-compile-err.txt" -ErrorAction SilentlyContinue | Select-Object -Last 30
             throw 'Sinnoh native compilation/collision/transaction proof missing'
           }
-          foreach($marker in @('SINNOH_F12D_NATIVE_STAGE FOREIGN_REQUESTS_ISOLATED','SINNOH_F12D_NATIVE_STAGE CORE_COMPILED_AND_RESTORED','SINNOH_F12D_NATIVE_STAGE COMPILER_RETURNED','SINNOH_F12D_NATIVE_ITEM_COMPILED_OK','SINNOH_F12D_NATIVE_MOVEMENT_PROBE_OK','SINNOH_F12D_NATIVE_TRANSACTION_PROBE_OK','SINNOH_F12D_NATIVE_STAGE ALL_VERIFIERS_PASSED')){
+          foreach($marker in @('SINNOH_F12D_NATIVE_STAGE FOREIGN_REQUESTS_ISOLATED','SINNOH_F12D_NATIVE_STAGE CORE_COMPILED_AND_RESTORED','SINNOH_F12D_NATIVE_STAGE COMPILER_RETURNED','SINNOH_F12D_NATIVE_ITEM_COMPILED_OK','SINNOH_F12D_NATIVE_MOVEMENT_PROBE_OK','SINNOH_F12D_NATIVE_TRANSACTION_PROBE_OK','SINNOH_F12D_NATIVE_SURF_PICKUP_TRANSACTION_OK','SINNOH_F12D_NATIVE_LAKE_SURF_TERRAIN_REFERENCE_OK','SINNOH_F12D_NATIVE_SURF_MAP_COLLISION_OK','SINNOH_F12D_NATIVE_STAGE ALL_VERIFIERS_PASSED')){
             if($nativeStages -notmatch [regex]::Escape($marker)){throw "Missing native stage: $marker"}
+          }
+          foreach($mid in $receipt.surf_maps){
+            $collision=[regex]::Matches($nativeStages, "(?m)^SINNOH_F12D_NATIVE_SURF_MAP_COLLISION_MAP $mid ([1-9][0-9]*)\s*$")
+            $shore=[regex]::Matches($nativeStages, "(?m)^SINNOH_F12D_NATIVE_SURF_SHORE_JUMP_MAP $mid ([1-9][0-9]*) ([1-9][0-9]*)\s*$")
+            if($collision.Count -ne 1 -or $shore.Count -ne 1){throw "Missing or duplicate native Surf map receipt: $mid"}
+            if([int]$shore[0].Groups[1].Value -lt 2 -or [int]$shore[0].Groups[2].Value -lt 2){throw "Missing bidirectional shoreline jumps: $mid"}
           }
           if((Get-Content "$qa/Data/sinnoh-experimental-compiled.txt" -Raw).Trim() -ne $receipt.compile_token){throw 'Sinnoh compile token mismatch'}
           if(-not (Test-Path "$qa/Data/items.dat")){throw 'Sinnoh compiled item catalogue missing'}

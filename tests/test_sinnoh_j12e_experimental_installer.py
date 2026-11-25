@@ -3639,6 +3639,19 @@ raise "foreign map" if m.surf_step_allowed?(:allowed,nil,[],true,b,[511,2,0])
         self.assertIn('SINNOH_F12D_NATIVE_SURF_PICKUP_TRANSACTION_OK',source)
         self.assertIn('BlueSinnohF12DIntegrated.surf_permission',source)
         self.assertIn('Marshal.load(Marshal.dump([next_pair[:state],next_pair[:bag]]))',source)
+        self.assertIn('surf_permission(s,borrowed,[candidate],candidate)==:hm',source)
+        self.assertIn('surf_permission(saved,bag,[incompatible],incompatible)==:pokemon',source)
+        self.assertIn('surf_step_allowed?(s,borrowed,[candidate],false,a,b,true)',source)
+        self.assertIn('SURF_ROUTES.length==2',source)
+        workflow=(ROOT/".github/workflows/kanto-pilot-check.yml").read_text("utf-8")
+        for marker in ("SINNOH_F12D_NATIVE_SURF_PICKUP_TRANSACTION_OK",
+                       "SINNOH_F12D_NATIVE_LAKE_SURF_TERRAIN_REFERENCE_OK",
+                       "SINNOH_F12D_NATIVE_SURF_MAP_COLLISION_OK",
+                       "SINNOH_F12D_NATIVE_SURF_MAP_COLLISION_MAP",
+                       "SINNOH_F12D_NATIVE_SURF_SHORE_JUMP_MAP"):
+            self.assertIn(marker,workflow)
+        self.assertIn('pickup.get("runtime_route_count")==len(surf_maps)',workflow)
+        self.assertIn('$collision.Count -ne 1 -or $shore.Count -ne 1',workflow)
 
     def test_f12d_lake_surf_path_requires_water_mode_and_never_opens_dry_graph(self):
         import sinnoh_f12d_integrated as i

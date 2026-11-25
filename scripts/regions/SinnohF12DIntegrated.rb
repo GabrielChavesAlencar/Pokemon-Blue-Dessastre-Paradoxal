@@ -293,7 +293,7 @@ module BlueSinnohF12DIntegrated
     raise "Sinnoh HM03 foreign pickup" if stage_surf_pickup(foreign,b)
     borrowed=PokemonBag.new
     raise "Sinnoh HM03 test bag" unless borrowed.add(:HM03,1)
-    raise "Sinnoh HM03 borrowed item" if stage_surf_pickup(s,borrowed) || surf_permission(s,borrowed,[])==:allowed
+    raise "Sinnoh HM03 borrowed item" if stage_surf_pickup(s,borrowed)
     next_pair=stage_surf_pickup(s,b)
     raise "Sinnoh HM03 staged receipt" unless next_pair && b.quantity(:HM03)==0 && BlueRegions.sinnoh_local_hms(s).empty?
     saved,bag=Marshal.load(Marshal.dump([next_pair[:state],next_pair[:bag]]))
@@ -312,6 +312,28 @@ module BlueSinnohF12DIntegrated
     raise "Sinnoh HM03 compatible native species missing" unless candidate
     raise "Sinnoh HM03 compatible party" unless surf_permission(saved,bag,[candidate],candidate)==:allowed
     raise "Sinnoh HM03 selected not in party" unless surf_permission(saved,bag,[],candidate)==:pokemon
+    # An actual compatible Pokemon must not mask a missing regional receipt,
+    # badge or item. An empty party alone cannot establish those gates.
+    raise "Sinnoh HM03 borrowed receipt gate" unless surf_permission(s,borrowed,[candidate],candidate)==:hm
+    raise "Sinnoh HM03 badge with compatible party" unless surf_permission(no_badge,bag,[candidate],candidate)==:badge
+    raise "Sinnoh HM03 item with compatible party" unless surf_permission(saved,PokemonBag.new,[candidate],candidate)==:hm
+    incompatible=[:STARLY,:SHINX,:BIDOOF,:WURMPLE].filter_map do |id|
+      next unless GameData::Species.exists?(id)
+      Pokemon.new(id,20)
+    end.find { |pkmn| !pkmn.egg? && !pkmn.fainted? && !pkmn.compatible_with_move?(:SURF) }
+    raise "Sinnoh HM03 incompatible native species missing" unless incompatible
+    raise "Sinnoh HM03 incompatible native party" unless surf_permission(saved,bag,[incompatible],incompatible)==:pokemon
+    SURF_ROUTES.each do |mid,route|
+      shore=route.each_cons(2).find { |a,b| a[2]=="walk" && b[2]=="surf" }
+      raise "Sinnoh HM03 route lacks boarding #{mid}" unless shore
+      a,b=shore.map { |x,y,_| [mid,x,y] }
+      raise "Sinnoh HM03 permitted boarding #{mid}" unless surf_step_allowed?(saved,bag,[candidate],false,a,b,true)
+      raise "Sinnoh HM03 borrowed boarding #{mid}" if surf_step_allowed?(s,borrowed,[candidate],false,a,b,true)
+      raise "Sinnoh HM03 badge boarding #{mid}" if surf_step_allowed?(no_badge,bag,[candidate],false,a,b,true)
+      raise "Sinnoh HM03 item boarding #{mid}" if surf_step_allowed?(saved,PokemonBag.new,[candidate],false,a,b,true)
+      raise "Sinnoh HM03 incompatible boarding #{mid}" if surf_step_allowed?(saved,bag,[incompatible],false,a,b,true)
+      raise "Sinnoh HM03 dry movement #{mid}" if surf_step_allowed?(saved,bag,[candidate],false,a,b)
+    end
     true
   end
   # Read the actual private RXDATA and use Game_Map/Game_Player native
@@ -383,15 +405,14 @@ module BlueSinnohF12DIntegrated
     end
   end
   def self.verify_compiled!
-    if LOCATIONS.key?("SURF_HM03")
-      verify_native_surf_pickup!
-      puts "SINNOH_F12D_NATIVE_SURF_PICKUP_TRANSACTION_OK"
-      unless SURF_ROUTES.empty?
-        verify_native_surf_map_collision!
-        puts "SINNOH_F12D_NATIVE_SURF_MAP_COLLISION_OK"
-      end
-    end
-    puts(lake_surf_terrain_reference? ? "SINNOH_F12D_NATIVE_LAKE_SURF_TERRAIN_REFERENCE_OK" : "SINNOH_F12D_NATIVE_LAKE_SURF_TERRAIN_REFERENCE_BLOCKED")
+    raise "Sinnoh F12D: regional Surf pickup missing" unless LOCATIONS.key?("SURF_HM03")
+    raise "Sinnoh F12D: original Surf routes missing" unless SURF_ROUTES.length==2
+    verify_native_surf_pickup!
+    puts "SINNOH_F12D_NATIVE_SURF_PICKUP_TRANSACTION_OK"
+    verify_native_surf_map_collision!
+    puts "SINNOH_F12D_NATIVE_SURF_MAP_COLLISION_OK"
+    raise "Sinnoh F12D: native Surf terrain missing" unless lake_surf_terrain_reference?
+    puts "SINNOH_F12D_NATIVE_LAKE_SURF_TERRAIN_REFERENCE_OK"
     raise "Sinnoh F12D3: terreno Rock incompatível" unless rock_reference_valid?
     raise "Sinnoh F12D3: item regional invalido" unless T.compiled_item_valid?
     raise "Sinnoh F12D lagos: equipes invalidas" unless SPECS.values.all? { |spec| BlueSinnohF10B.valid_team?(spec) }
