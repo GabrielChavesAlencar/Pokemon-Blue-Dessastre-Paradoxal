@@ -128,7 +128,8 @@ def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=Fal
     worlds={mid:conn.read_marshal(blobs["Data/Map%03d.rxdata"%mid],"F10B7_QA") for mid in reverse}
     index={};groups={};free={};passages={}
     rock_cells=set(rock_cells)
-    if rock_cells and (not directional or not strict_movement or reverse.get(473)!="SINNOH_ROUTE_210_SEGMENT_2" or not rock_cells<={(473,57,y) for y in (25,26,27)}):
+    rock_symbols={"SINNOH_ROUTE_210","SINNOH_SOLACEON_TOWN","SINNOH_ROUTE_209","SINNOH_ROUTE_210_SEGMENT_2","SINNOH_HEARTHOME_CITY","SINNOH_F07_INTERIOR_125","SINNOH_ROUTE_215","SINNOH_VEILSTONE_CITY","SINNOH_ROUTE_214","SINNOH_VALOR_LAKEFRONT","SINNOH_ROUTE_213","SINNOH_PASTORIA_CITY","SINNOH_ROUTE_212","SINNOH_ROUTE_212_SEGMENT_2"}
+    if rock_cells and (not directional or not strict_movement or reverse.get(473)!="SINNOH_ROUTE_210_SEGMENT_2" or any(reverse.get(m) not in rock_symbols for m,x,y in rock_cells)):
         raise ValueError("F12D3_ROCK_GRAPH_SCOPE")
     for mid,world in worlds.items():
         occupied={(e.attrs["@x"],e.attrs["@y"]) for e in world.attrs["@events"].values()}
@@ -140,11 +141,14 @@ def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=Fal
                 passages[mid]={xy:mask for xy,mask in passages[mid].items() if mask==0}
             for _,x,y in sorted(p for p in rock_cells if p[0]==mid):
                 a=world.attrs;w,h=a["@width"],a["@height"]
-                shape=cell_shape(world,tiles,(x,y))
+                if not (0<x<w-1 and 0<y<h-1):raise ValueError("F12D3_ROCK_GRAPH_PERIMETER")
                 raw=a["@data"].data
                 stack=tuple(struct.unpack_from("<H",raw,20+2*(z*w*h+y*w+x))[0] for z in range(3))
-                priority=struct.unpack_from("<H",tiles[a["@tileset_id"]].attrs["@priorities"].data,20+2*462)[0]
-                if stack!=(462,0,0) or shape.get("passage_masks")!=[0] or shape.get("terrain_tags")!=[4] or priority!=0 or (x,y) in occupied:
+                ta=tiles[a["@tileset_id"]].attrs
+                priority=struct.unpack_from("<H",ta["@priorities"].data,20+2*462)[0]
+                mask=struct.unpack_from("<H",ta["@passages"].data,20+2*462)[0]&15
+                tag=struct.unpack_from("<H",ta["@terrain_tags"].data,20+2*462)[0]
+                if stack!=(462,0,0) or mask!=0 or tag!=4 or priority!=0 or (x,y) in occupied:
                     raise ValueError("F12D3_ROCK_GRAPH_CELL_CHANGED")
                 passages[mid][x,y]=0
             free[mid]=set(passages[mid])-occupied

@@ -121,7 +121,23 @@ def rock_frontier_match(q,source_stack,qa_stack,source_shape,qa_shape,source_pri
         and source_shape==qa_shape==((0,),(4,)) and source_priority==qa_priority==0
         and guard=="." and not occupied and not protected)
 
-def inspect(blobs,mapping,components,cr,expanded,original,source,root,directional_repair=False,rock_repair=False):
+def rock_network_match(q,dims,source_stack,qa_stack,source_shape,qa_shape,source_priority,qa_priority,guard,occupied,protected):
+    """Identical known Rock tile pair, interior only; no boundary expansion."""
+    x,y=q;w,h=dims
+    return (0<x<w-1 and 0<y<h-1 and
+        source_stack==(3225,0,0) and qa_stack==(462,0,0)
+        and source_shape==qa_shape==((0,),(4,)) and source_priority==qa_priority==0
+        and guard=="." and not occupied and not protected)
+
+def edit_attribution(edits,partial,edge_points):
+    counts=Counter()
+    for p in edits:
+        counts[(p[0],"directional" if partial(p) else "full_wall",
+            "seam_endpoint" if p in edge_points else "interior")]+=1
+    return [{"source_id":s,"kind":k,"location":where,"count":n}
+        for (s,k,where),n in sorted(counts.items())]
+
+def inspect(blobs,mapping,components,cr,expanded,original,source,root,directional_repair=False,rock_repair=False,rock_network=False):
     chase.validate(blobs,mapping);before=chase.digest(blobs)
     if expanded.get("input_hashes")!=before or not cr.get("runtime_install_enabled") or original.get("status")!="F12D3_ORIGINAL_NETWORK_EVIDENCE_ONLY":
         raise ValueError("F12D3_CANONICAL_STALE")
@@ -142,7 +158,8 @@ def inspect(blobs,mapping,components,cr,expanded,original,source,root,directiona
     def qr(r):return (bound[r[0]],r[1],r[2],bound[r[3]],r[4],r[5])
     qa={s:corridor.grid(worlds[m],tiles) for s,m in bound.items()};src={};sdims={}
     occupied={s:{(e.attrs["@x"],e.attrs["@y"]) for e in worlds[m].attrs["@events"].values()} for s,m in bound.items()}
-    protected={s:set(occupied[s]) for s in bound};source_events={};source_mid_stacks={};source_mid_priorities=()
+    protected={s:set(occupied[s]) for s in bound};source_events={};source_mid_stacks={};source_mid_priorities=();source_stacks={};source_priorities={}
+    if rock_network and not rock_repair:raise ValueError("F12D3_ROCK_NETWORK_REQUIRES_FRONTIER")
     result={"status":"F12D3_CANONICAL_NETWORK_EVIDENCE_ONLY","installed":False,"native_verified":False,
         "activation_allowed":False,"new_maps":0,"new_portals":0,"new_events":0,"changed_cells_installed":0,
         "budget":BUDGET,"directional_repair":directional_repair,"wrong_source_record":list(WRONG),"wrong_source_destination":"SINNOH_OREBURGH_CITY",
@@ -171,10 +188,11 @@ def inspect(blobs,mapping,components,cr,expanded,original,source,root,directiona
             if hashlib.sha256(raw).hexdigest()!=catalog[s]["sha256"] or sdims[s]!=dims[bound[s]]:
                 raise ValueError("F12D3_CANONICAL_HASH")
             source_grid=corridor.grid(w,st);src[s]=source_grid[1]
-            if s==116:
-                source_mid_stacks=source_grid[0]
+            if s==116 or rock_network:
+                source_stacks[s]=source_grid[0]
                 raw_priorities=st[w.attrs["@tileset_id"]].attrs["@priorities"].data[20:]
-                source_mid_priorities=struct.unpack("<%dH"%(len(raw_priorities)//2),raw_priorities)
+                source_priorities[s]=struct.unpack("<%dH"%(len(raw_priorities)//2),raw_priorities)
+                if s==116:source_mid_stacks=source_stacks[s];source_mid_priorities=source_priorities[s]
             source_events[s]={(e.attrs["@x"],e.attrs["@y"]) for e in w.attrs["@events"].values()}
             protected[s].update(source_events[s])
             protected[s].update(q for xy in tuple(protected[s]) for q in tp.neighbours(*xy)
@@ -197,13 +215,36 @@ def inspect(blobs,mapping,components,cr,expanded,original,source,root,directiona
             "accepted":[list(p) for p in sorted(accepted)],"engine_reference":"Essentials v21.1 Rock tag 4",
             "local_engine_verified":False,"runtime_changed":False}
         if len(accepted)!=3:return finish("rock_frontier_identity_mismatch")
+        if rock_network:
+            guards=pv.movement_masks(blobs,mapping,extra_symbols=set(SYMBOLS.values()))
+            counts={};other_pairs={}
+            for s,m in sorted(bound.items()):
+                raw=tiles[worlds[m].attrs["@tileset_id"]].attrs["@priorities"].data[20:]
+                qp=struct.unpack("<%dH"%(len(raw)//2),raw)
+                other=Counter()
+                for q,a in source_stacks[s].items():
+                    b=qa[s][0][q]
+                    if src[s][q]!=qa[s][1][q] or src[s][q]!=((0,),(4,)):continue
+                    if a[1:]!=(0,0) or b[1:]!=(0,0):continue
+                    if rock_network_match(q,sdims[s],a,b,src[s][q],qa[s][1][q],
+                        source_priorities[s][a[0]],qp[b[0]],guards[m][q[1]][q[0]],
+                        q in occupied[s],q in protected[s]):
+                        accepted.add((m,*q))
+                    elif a[0]!=3225 or b[0]!=462:
+                        other[(a[0],b[0])]+=1
+                counts[str(s)]=sum(p[0]==m for p in accepted)
+                other_pairs[str(s)]=[{"source_tile":a,"qa_tile":b,"count":n} for (a,b),n in sorted(other.items())]
+            result["rock_network_model"]={"status":"EXACT_TILE_PAIR_INTERIOR_REFERENCE_ONLY",
+                "accepted_counts_by_source":counts,"accepted_total":len(accepted),
+                "other_pairs_not_admitted":other_pairs,"local_engine_verified":False,
+                "runtime_changed":False,"original_budget":BUDGET}
         rock_cells=frozenset(accepted)
         _,_,idx,_,rr,_=graph(blobs)
         augmented=trainers.reached_cells(idx,rr)
         if not prior<=augmented:raise ValueError("F12D3_ROCK_PRIOR_LOSS")
         result["rock_model"]["baseline_reach_delta"]=len(augmented-prior)
         prior=augmented
-        protected[116].update(ROCK_FRONTIER)
+        for m,x,y in rock_cells:protected[inv[m]].add((x,y))
     def ordinary_at(s,q):
         return corridor.ordinary(qa[s][1][q]) or (bound[s],*q) in rock_cells
     def partial(p):
@@ -379,6 +420,12 @@ def inspect(blobs,mapping,components,cr,expanded,original,source,root,directiona
                 endpoints.update((u,v))
                 if r not in additions:additions.append(r)
         row={"cost":list(d[goal]),"qa_records":[list(r) for r in additions],"fixture_passed":False}
+        if rock_repair:
+            row["edit_attribution"]=edit_attribution(edits,partial,edge_points)
+            row["unique_edits"]=len(edits)
+            row["rock_cells_on_path"]=[list(p) for p in sorted(nodes) if (bound[p[0]],*p[1:]) in rock_cells]
+            row["crossings"]=[{"from":list(u),"to":list(v),"record":list(r),"kind":k} for u,v,r,k in path if k!="local"]
+            if not banned:row["candidate_edits"]=[{"position":list(p),"qa_map_id":bound[p[0]],"masks":list(qa[p[0]][1][p[1:]][0]),"tags":list(qa[p[0]][1][p[1:]][1])} for p in sorted(edits)]
         result["trials"].append(row)
         for r in additions:
             if kinds[r]=="authorial":banned_sets.append(banned|{r})
