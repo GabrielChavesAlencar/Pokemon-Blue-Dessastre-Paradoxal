@@ -283,31 +283,40 @@ Sexto desafio em Canalave, sala autoral temática Aço. Contrato CH15/S15: Magne
 
 F11F job real 138912475363 HEAD 3af0c5a9bdfbc359b2b35a6f82ceb3aa4cef7a08 confirmou 137 mapas, 85 portais, seis salas, Map578, guia evento 2001 em Canalave Map458 [27,29] retorno [27,28]. Sprite autoral SHA-256 279e2fc9f03b3de652aa6b0f982d6ef2f17ab116c37879ba37fa4c87c344f6af. Catálogo fixture, sem compilação ou QA nativa. CI na main pendente.
 
+F11E integrada em 8cd5d6d3c66745ded74c4237f6ecdb4319a1d5e1 (11 workflows/26 checks na HEAD fd229fc550416c49e562481036faa55b996b1de3, job 138914711407). F11F revalidada na HEAD 045fbf1941061bb9cd8364774765b993215758d0, job 138914801656: 137 mapas, 85 portais, seis salas, Map578, guia evento 2001 em Canalave Map458 [27,29] retorno [27,28]. Catálogo fixture, sem QA nativa. CI na main pendente.
 
 ### F11G — Candice
 
 Sétimo desafio em Snowpoint, sala autoral temática Gelo, sem simular o puzzle original nem alterar terreno ou regras de campo. Contrato CH15/S15: Sneasel/Piloswine/Abomasnow/Froslass (40/40/42/44 históricos, não níveis fixos em runtime). Requer COAL, FOREST, RELIC, COBBLE, FEN e MINE; ICICLE somente após vitória confirmada. Não concede HM08 nem ativa Rock Climb. Geração sequencial, MapID livre, dois portais seguros, sprite exato ou autoral sem ambiguidade. Meta: 138 mapas, 87 portais, sete ginásios e preservação integral do baseline anterior. CI e catálogo local pendentes; QA nativa não executada.
 
+F11F integrada em 62d48570c6fb961806e1c48c4af5c1499ff4fe97 (11 workflows/26 checks na HEAD cbe9a88126e712833ae9b021e166c5fb6ed3128b, job real 138918264409 após retry). F11G job 138915913881 HEAD 0a7f5a0e36e073e111140319edf6cb1fb052dde4: Map579, Snowpoint Map460 [19,32] retorno [19,31], 138 mapas/87 portais. Sprite autoral SHA-256 ee326fcf3ac5aef01569d59cdcf1ead7c0f9760e39fd0bb439dfb06c7e99f8e1. Catálogo fixture, sem QA nativa. CI na main pendente.
 
 ### F11H — Volkner
 
 Oitavo desafio em Sunyshore, sala autoral temática Elétrico, sem reproduzir puzzle original ou alterar regras de campo. Contrato CH15/S15: Jolteon/Raichu/Luxray/Electivire (46/46/48/50 históricos, não níveis fixos em runtime). Requer COAL, FOREST, RELIC, COBBLE, FEN, MINE e ICICLE; BEACON somente após vitória confirmada. Não concede HM07 nem ativa Waterfall ou acesso automático à Liga. Geração sequencial, MapID livre, dois portais seguros, sprite exato ou autoral sem ambiguidade. Meta: 139 mapas, 89 portais, oito ginásios e preservação integral do baseline anterior. CI e catálogo local pendentes; QA nativa não executada.
 
-F11E integrada em 8cd5d6d3c66745ded74c4237f6ecdb4319a1d5e1 (11 workflows/26 checks). F11F job 138914801656 HEAD 045fbf1941061bb9cd8364774765b993215758d0; F11G job 138915913881 HEAD 0a7f5a0e36e073e111140319edf6cb1fb052dde4: Map579, Snowpoint Map460 [19,32] retorno [19,31], 138 mapas/87 portais. F11H job 138916172371 HEAD 3aa6644a393294faa173171789913c7911ba258f: Map580, Sunyshore Map463 [41,21] retorno [40,21], 139 mapas/89 portais, oito salas autorais. F11F/G/H CI na main pendente, sem QA nativa.
+F11G integrada em d2cb043773838d22fe0986e3952f21ca093b4e19 (11 workflows/26 checks na HEAD 49d8e87a8597084d4576513a4f640db10aa6f361, job 138920079093). F11H job 138916172371 HEAD 3aa6644a393294faa173171789913c7911ba258f: Map580, Sunyshore Map463 [41,21] retorno [40,21], 139 mapas/89 portais e sete conexões preservadas. Sprite autoral SHA-256 be76b59e7228cd02ce9de4212928b95e611b3f18ed919a7c6e42e22af1540693. Catálogo fixture, sem QA nativa. CI na main pendente.
 
 ### F12A — auditoria de história, Equipe Galactic e itens-chave
 
 Primeira etapa F12, dependente da F11H auditada e integração sequencial. Inventário somente leitura do ZIP original validado; cruzamento de MapIDs e hashes, 14 checkpoints CH14 (fases 5–8) e oito HMs S16. Identifica candidatos por marcadores e chamadas literais, sem publicar texto ou scripts doador, sem aprovar automaticamente identidade, posição ou resultado. Nenhuma batalha, coleta, flag, HM ou teleporte habilitado. F12B deverá reconstruir apenas eventos com evidência suficiente e testes de acesso. CI pendente; nenhuma QA nativa presumida.
 
+F11H integrada em 267f9080daa99272d40805d99384d5589ab2bedb (11 workflows/26 checks na HEAD 7b556b5518e960ece1eb3699a25569f578e0ee1b, job 138922435524). Oito salas QA, 139 mapas, 89 portais, sete conexões. Sem QA nativa. F12A job 138918141829 HEAD 31e1f2f212da60c87bed2a0a79dec184e05151cd: 238 mapas-fonte, 2867 eventos, 13 candidatos, 10 mapeados; 14 checkpoints e oito HMs sem binding. CI na main pendente.
 
 ### F12B1 — Valley Windworks: prévia isolada e análise de evidência
 
 F03 job 138719583390: fonte 111 Valley Windworks, 33x29, tileset 24, SHA-256 62646bd742809cf4ad65760e812f58c34169933d2dc26a0128853609a8cf9dac, cinco eventos e três comandos script, zero transferências estáticas. A prévia reconstrói somente geometria em memória, valida MapID livre, componente caminhável, chegada e preservação dos 139 mapas. Meta 140 mapas na prévia, não instalação. Sem inventar conexão, identidade/equipe de Mars ou recibo da Works Key. Os candidatos F12A são triados sem copiar scripts. Nenhum checkpoint ou item concedido. CI real pendente.
 
+F12A integrada em 1d1e001eb721162eeb0e3c5b7371855fe3c57ad1 (11 workflows/26 checks, HEAD 2b43a10d4ca496deeabbe693550519262ef2dd66, job 138926465068). F12B1 HEAD 209c4acf1a34a104b3f7340130a2224339565f89 job 138919751871: Map581, 140 mapas somente na prévia, chegada [17,14], 180 células conectadas. 139 anteriores preservados, sem QA nativa. CI na main pendente.
+
+F12B1 integrada em 375ab415184881fe130300ae08cf30dc06b64405 (11 workflows / 26 jobs; HEAD 2cf22d131a0036aa165afa9564d835372cd2cee5, job 138930816377). Prévia confirmada, sem instalação nativa.
+
 
 ### F12B2 — evidências individuais, acesso e PBS
 
 F12A job 138918141829 HEAD 31e1f2f212da60c87bed2a0a79dec184e05151cd: 238 mapas-fonte, 2867 eventos, 13 candidatos, 10 mapeados, zero Mars/Works Key e zero chamadas literais de coleta no primeiro scanner. F12B2 audita todos os cinco eventos de Map111, inclusive parâmetros de scripts condicionais (111/12), metadados de páginas e SHA-256 sem expor scripts/textos. Varre transferências estáticas de todos os mapas para 111, conexões PBS e arquivos de treinadores/tipos/itens; verifica hashes e contagens de 91/94/96/98/111. Não habilita acessos, batalhas, itens ou flags sem evidência suficiente. CI pendente; sem QA nativa.
+
+F12B2 integrada em a3913a9fa3c2b85349016a29cd50fd31e315d5e0 (11 workflows / 26 jobs; HEAD 459c3ddd28380d3dc2900d72d15be2ec178e4f34, job 139103767056). Cinco eventos auditados; prévia de 140 mapas, sem instalação nativa.
 
 
 ### F12B3 — pré-voo do Blue-Story (bloqueado até evidência de acesso e eventos)
