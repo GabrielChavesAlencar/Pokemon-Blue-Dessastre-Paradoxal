@@ -391,7 +391,7 @@
       "id": "F11",
       "title": "Oito ginásios e insígnias",
       "status": "implementation_pending_ci",
-      "followup": "F11C_PENDING_CI",
+      "followup": "F11D_PENDING_CI",
       "gym_count": 8,
       "gym_rooms_confirmed": 2,
       "gym_leaders_confirmed": 2,
@@ -429,7 +429,15 @@
         "FOREST"
       ],
       "f11c_fixture_rooms": 0,
-      "f11c_native_verified": false
+      "f11c_native_verified": false,
+      "f11d_candidate": "Maylene",
+      "f11d_prerequisites": [
+        "COAL",
+        "FOREST",
+        "RELIC"
+      ],
+      "f11d_fixture_rooms": 0,
+      "f11d_native_verified": false
     },
     {
       "id": "F12",
@@ -745,7 +753,7 @@
   },
   "f11": {
     "status": "implementation_pending_ci",
-    "followup": "F11C_PENDING_CI",
+    "followup": "F11D_PENDING_CI",
     "gym_count": 8,
     "gym_rooms_confirmed": 2,
     "gym_leaders_confirmed": 2,
@@ -783,6 +791,14 @@
       "FOREST"
     ],
     "f11c_fixture_rooms": 0,
-    "f11c_native_verified": false
+    "f11c_native_verified": false,
+    "f11d_candidate": "Maylene",
+    "f11d_prerequisites": [
+      "COAL",
+      "FOREST",
+      "RELIC"
+    ],
+    "f11d_fixture_rooms": 0,
+    "f11d_native_verified": false
   }
 }

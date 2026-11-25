@@ -1210,6 +1210,30 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
             gcreport["species_and_types_validation"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
             print("SINNOH_F11C_GYM_REPORT "+json.dumps(gcreport,sort_keys=True),flush=True)
             print("SINNOH_REAL_F11C_ROARK_GARDENIA_FANTINA_134_MAPS_BASELINE_PRESERVED_OK",flush=True)
+            gd,gdids,gdcomps,gdreport,gdplugin=gym.build(gc,gcids,gccomps,{2},{"LEADER_MAYLENE"},{"MEDITITE","MACHOKE","LUCARIO"},set(),ROOT,Path(ow),leader="Maylene",allow_authored=True)
+            self.assertEqual(gdreport["gym_rooms_added"],1,gdreport)
+            self.assertEqual(len(gdids),135)
+            self.assertEqual({k:gdids[k] for k in gcids},gcids)
+            self.assertEqual(gdreport["new_portals"],2)
+            self.assertFalse(gdreport["native_verified"])
+            self.assertFalse(gdreport["hm_award_enabled"])
+            for path,raw in gc.items():
+                if path in ("Data/MapInfos.rxdata","Data/Tilesets.rxdata","PBS/map_metadata.txt"):continue
+                if path=="Data/Map%03d.rxdata"%gcids[gym.MAYLENE_CITY]:
+                    old=read_marshal(raw,"F11D_OLD");new=read_marshal(gd[path],"F11D_NEW")
+                    before=old.attrs.pop("@events");after=new.attrs.pop("@events")
+                    self.assertEqual(serialize(old,connection.EVENT_CLASSES),serialize(new,connection.EVENT_CLASSES))
+                    for eid,event in before.items():
+                        self.assertEqual(serialize(event,connection.EVENT_CLASSES),serialize(after[eid],connection.EVENT_CLASSES))
+                else:self.assertEqual(gd[path],raw)
+            self.assertEqual([r for r in exp.qa_teleport.build(gd,gdids,gdcomps) if r[0]!=gym.MAYLENE_SYMBOL],[r for r in exp.qa_teleport.build(gc,gcids,gccomps) if r[0]!=gym.MAYLENE_SYMBOL])
+            self.assertIn(b"BlueSinnohF11D",gdplugin)
+            self.assertIn("PBS/trainers_sinnoh_f11d.txt",gd)
+            self.assertEqual([r["badge"] for r in gdreport["gyms"] if r["installed"]],["COAL","FOREST","RELIC","COBBLE"])
+            gdreport["species_and_types_validation"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
+            print("SINNOH_F11D_GYM_REPORT "+json.dumps(gdreport,sort_keys=True),flush=True)
+            print("SINNOH_REAL_F11D_FOUR_GYMS_135_MAPS_BASELINE_PRESERVED_OK",flush=True)
+
 
 
 
@@ -2048,6 +2072,78 @@ puts "F11C_COAL_FOREST_THEN_RELIC_WIN_ONLY_OK"
             result=subprocess.run(["ruby","-e",fixture,str(path)],capture_output=True,text=True,encoding="utf-8")
             self.assertEqual(result.returncode,0,result.stdout+result.stderr)
             self.assertIn("F11C_COAL_FOREST_THEN_RELIC_WIN_ONLY_OK",result.stdout)
+
+    @unittest.skipUnless(shutil.which("ruby"),"Requires Ruby runtime")
+    def test_f11d_maylene_requires_coal_forest_relic_and_confirmed_win(self):
+        source=(ROOT/"scripts/regions/SinnohF11D.rb").read_text("utf-8").replace(
+            "__F11D_SPEC__", '["LEADER_MAYLENE","Maylene",11004,583,[["MEDITITE",28],["MACHOKE",29],["LUCARIO",32]]]')
+        fixture=r'''
+module BlueSinnohExperimental
+  def self.private_copy?; true; end
+end
+module BlueSinnohPilot
+  def self.regional_state; $state; end
+  def self.profile_error(*args); raise args.last; end
+end
+module BlueRegions
+  def self.valid_sinnoh_badges?(s);s["current"]=="SINNOH" && s["badges"].is_a?(Array);end
+  def self.local_achievements(s,r);s["badges"];end
+  def self.award(s,r,b);return false if s["badges"].include?(b);s["badges"] << b;true;end
+end
+module BlueKantoTitle
+  def self.sinnoh_experimental_barry_compiled?;true;end
+end
+module BlueCampaign
+  module Teams;end
+  def self.active?;true;end
+end
+class Battle;prepend BlueCampaign::Teams;end
+module BlueStory
+  def self.regional_first_boss?(a);a.first.trainer_type=="LEADER_MAYLENE";end
+end
+module BlueSinnohF10B
+  def self.valid_team?(s);true;end
+end
+module TrainerBattle
+  def self.start_core(*args);$calls+=1;$outcome;end
+end
+def _INTL(s);s;end
+def pbMessage(s);end
+Mon=Struct.new(:hp) {def egg?;false;end}
+$player=Struct.new(:party).new([Mon.new(10)])
+$game_map=Struct.new(:map_id).new(583)
+$game_temp=Struct.new(:waiting_trainer,:battle_rules).new(nil,{})
+$state={"current"=>"SINNOH","badges"=>[],"native"=>[false],"hm"=>[]}
+$calls=0;$outcome=1
+load ARGV[0]
+raise "bypass" if BlueSinnohF11D.battle
+raise "battle started before COAL" unless $calls==0
+$state["badges"] << "COAL"
+raise "bypass forest" if BlueSinnohF11D.battle
+raise "battle started before FOREST" unless $calls==0
+$state["badges"] << "FOREST"
+raise "bypass relic" if BlueSinnohF11D.battle
+raise "battle started before RELIC" unless $calls==0
+$state["badges"] << "RELIC"
+[2,3,nil].each do |result|
+  $outcome=result
+  raise "invalid award" if BlueSinnohF11D.battle
+end
+raise "loss changed badges" unless $state["badges"]==["COAL","FOREST","RELIC"]
+$outcome=1
+raise "win" unless BlueSinnohF11D.battle
+raise "badge" unless $state["badges"]==["COAL","FOREST","RELIC","COBBLE"]
+raise "native changed" unless $state["native"]==[false] && $state["hm"].empty?
+before=$calls
+raise "repeat" unless BlueSinnohF11D.battle
+raise "duplicate" unless $calls==before
+puts "F11D_COAL_FOREST_RELIC_THEN_COBBLE_WIN_ONLY_OK"
+'''
+        with tempfile.TemporaryDirectory() as td:
+            path=Path(td)/"F11D.rb";path.write_text(source,encoding="utf-8")
+            result=subprocess.run(["ruby","-e",fixture,str(path)],capture_output=True,text=True,encoding="utf-8")
+            self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+            self.assertIn("F11D_COAL_FOREST_RELIC_THEN_COBBLE_WIN_ONLY_OK",result.stdout)
 
     def test_f11a_gym_contract_and_collision_guards(self):
         import sinnoh_f11a_gym as g

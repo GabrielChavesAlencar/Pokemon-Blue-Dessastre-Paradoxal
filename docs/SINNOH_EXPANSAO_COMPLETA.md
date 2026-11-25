@@ -257,3 +257,8 @@ F11A integrada em b93c79734fa51867ce681a6eaf2b0e10d40c1556 (11 workflows/26 chec
 ### F11C — Fantina
 
 Terceiro desafio em Hearthome, sala autoral de tipo Fantasma, não importação do layout original. Referência CH15/S15 Duskull/Haunter/Mismagius (24/24/26 históricos). Exige COAL e FOREST antes da batalha e antes da concessão RELIC, vitória confirmada pelo motor, compilação verificada e balanceamento/proteção de chefes existentes. Não concede HM05. Geração somente após os dois ginásios anteriores, com MapID livre, dois portais seguros, sprite exato ou autoral identificado sem ambiguidade. Testes reais exigem 134 mapas, preservação dos 133 anteriores, incluindo salas Roark/Gardenia, 79 portais esperados e saves por hashes. Nenhuma aprovação nativa ou instalação presumida. CI pendente.
+
+
+### F11D — Maylene
+
+Quarto desafio em Veilstone, sala autoral de tipo Lutador, não importação do layout original. Referência CH15/S15 Meditite/Machoke/Lucario (28/29/32 históricos). Exige COAL, FOREST e RELIC antes da batalha e antes da concessão COBBLE, vitória confirmada pelo motor, compilação verificada e balanceamento/proteção de chefes existentes. Não concede HM02. Geração somente após os três ginásios anteriores, com MapID livre, dois portais seguros, sprite exato ou autoral identificado sem ambiguidade. Testes reais exigem 135 mapas, preservação dos 134 anteriores, 81 portais esperados e saves por hashes. Nenhuma aprovação nativa ou instalação presumida. CI pendente.

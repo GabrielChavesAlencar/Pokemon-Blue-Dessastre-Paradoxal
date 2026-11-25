@@ -44,7 +44,8 @@ def authored_sheet(role):
               "gym_guide":((65,78,110),(225,189,78),(78,52,37)),
               "gym_roark":((103,105,113),(207,85,49),(151,80,40)),
               "gym_gardenia":((74,129,66),(231,184,75),(171,83,47)),
-              "gym_fantina":((115,69,150),(229,190,218),(139,86,177))}
+              "gym_fantina":((115,69,150),(229,190,218),(139,86,177)),
+              "gym_maylene":((235,222,206),(166,55,65),(211,103,126))}
     shirt,accent,hair=palettes[role]
     w=h=128;raw=bytearray(w*h*4);ink=(42,44,52);skin=(222,178,138)
     for direction in range(4):
@@ -69,7 +70,12 @@ def authored_sheet(role):
             if role=="gym_fantina":
                 rect(7,4+bob,12,12+bob,hair);rect(20,4+bob,25,12+bob,hair)
                 rect(11,3+bob,21,7+bob,hair);rect(14,4+bob,18,6+bob,accent)
+            if role=="gym_maylene":
+                rect(8,5+bob,12,13+bob,hair);rect(20,5+bob,24,13+bob,hair)
+                rect(11,3+bob,21,7+bob,hair);rect(13,6+bob,19,8+bob,(235,155,172))
             rect(9,16+bob,23,26+bob,ink);rect(10,17+bob,22,25+bob,shirt)
+            if role=="gym_maylene":
+                rect(10,22+bob,22,24+bob,accent)
             x=(10,10,19,13)[direction];rect(x,17+bob,x+3,24+bob,accent)
             stride=(0,1,0,-1)[frame]
             for x,dy in ((11,stride),(17,-stride)):

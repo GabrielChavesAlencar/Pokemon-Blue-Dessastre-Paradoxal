@@ -32,13 +32,19 @@ FANTINA_CITY="SINNOH_HEARTHOME_CITY"
 FANTINA_TEAM=[["DUSKULL",24],["HAUNTER",24],["MISMAGIUS",26]]
 FANTINA_TYPES=("LEADER_FANTINA","LEADER_Fantina","LEADERFANTINA","BLUE_SINNOH_LEADER_FANTINA")
 FANTINA_VERSION=11003
-GYM_SETS=(f08c.ALL|{SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL,FANTINA_SYMBOL})
+MAYLENE_SYMBOL="SINNOH_VEILSTONE_GYM"
+MAYLENE_CITY="SINNOH_VEILSTONE_CITY"
+MAYLENE_TEAM=[["MEDITITE",28],["MACHOKE",29],["LUCARIO",32]]
+MAYLENE_TYPES=("LEADER_MAYLENE","LEADER_Maylene","LEADERMAYLENE","BLUE_SINNOH_LEADER_MAYLENE")
+MAYLENE_VERSION=11004
+GYM_SETS=(f08c.ALL|{SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL,FANTINA_SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL,FANTINA_SYMBOL,MAYLENE_SYMBOL})
 GYM_SPECS={
     "Roark":(SYMBOL,CITY,TEAM,TYPE_ALIASES,VERSION,"F11A","Oreburgh Gym - QA"),
     "Gardenia":(GARDENIA_SYMBOL,GARDENIA_CITY,GARDENIA_TEAM,GARDENIA_TYPES,GARDENIA_VERSION,"F11B","Eterna Gym - QA"),
     "Fantina":(FANTINA_SYMBOL,FANTINA_CITY,FANTINA_TEAM,FANTINA_TYPES,FANTINA_VERSION,"F11C","Hearthome Gym - QA"),
+    "Maylene":(MAYLENE_SYMBOL,MAYLENE_CITY,MAYLENE_TEAM,MAYLENE_TYPES,MAYLENE_VERSION,"F11D","Veilstone Gym - QA"),
 }
-LEADER_ORDER=("Roark","Gardenia","Fantina")
+LEADER_ORDER=("Roark","Gardenia","Fantina","Maylene")
 W,H=15,12
 LEADER=(7,3)
 EXIT=(7,10)
@@ -56,6 +62,9 @@ def roster(root):
     third=gyms[2];t=next(t for t in teams["trainers"] if t["id"]==third["id"])
     if third["id"]!="SINNOH_FANTINA" or third["badge"]!="RELIC" or third["prerequisite_badges"]!=["COAL","FOREST"] or list(map(list,zip(t["first_battle"]["species"],t["first_battle"]["historical_levels"])))!=FANTINA_TEAM:
         raise ValueError("F11C_GYM_CONTRACT_CHANGED")
+    fourth=gyms[3];m=next(t for t in teams["trainers"] if t["id"]==fourth["id"])
+    if fourth["id"]!="SINNOH_MAYLENE" or fourth["badge"]!="COBBLE" or fourth["prerequisite_badges"]!=["COAL","FOREST","RELIC"] or list(map(list,zip(m["first_battle"]["species"],m["first_battle"]["historical_levels"])))!=MAYLENE_TEAM:
+        raise ValueError("F11D_GYM_CONTRACT_CHANGED")
     return [{"id":g["id"],"badge":g["badge"],"order":g["order"],"installed":False} for g in gyms]
 
 def tileset_png(leader='Roark'):
@@ -63,7 +72,8 @@ def tileset_png(leader='Roark'):
     w,h=256,32;raw=bytearray(w*h*4)
     colors={"Roark":[(148,139,123),(65,61,58),(193,157,95),(93,83,72)],
             "Gardenia":[(125,158,106),(53,91,64),(222,196,106),(69,119,75)],
-            "Fantina":[(100,83,142),(45,34,72),(179,153,215),(66,53,103)]}[leader]
+            "Fantina":[(100,83,142),(45,34,72),(179,153,215),(66,53,103)],
+            "Maylene":[(156,111,91),(73,55,49),(227,190,144),(112,78,68)]}[leader]
     for y in range(h):
         for x in range(w):
             tile=x//32;xx=x%32
@@ -155,7 +165,7 @@ def build(blobs,mapping,components,occupied,types,species,existing,root=f.ROOT,o
     template=conn.read_marshal(blobs["Data/Map%03d.rxdata"%mapping["SINNOH_PLAYER_HOUSE_1F"]],"F11A_TEMPLATE")
     tile=copy.deepcopy(tiles[template.attrs["@tileset_id"]]);tid=len(tiles)
     if tid>=5000:raise ValueError("F11A_TILESET_CAPACITY")
-    name="SNQA_"+tag+("_ROCK_GYM","_GRASS_GYM","_GHOST_GYM")[order]
+    name="SNQA_"+tag+("_ROCK_GYM","_GRASS_GYM","_GHOST_GYM","_FIGHTING_GYM")[order]
     tile.attrs.update({"@id":tid,"@name":name.encode(),"@tileset_name":name.encode(),
                        "@autotile_names":[b""]*7,"@passages":pv.table1([15]*384+[0,15,0,15,15,15,15,15]),
                        "@priorities":pv.table1([0]*392),"@terrain_tags":pv.table1([0]*392)})
@@ -165,7 +175,9 @@ def build(blobs,mapping,components,occupied,types,species,existing,root=f.ROOT,o
     for y in range(H):
         for x in range(W):
             cells[y*W+x]=385 if (x,y) not in floor else (386 if 5<=x<=9 and 2<=y<=4 else 384)
-    pillars=((3,4),(11,4),(3,6),(11,6)) if order<2 else ((3,3),(11,3),(5,6),(9,6),(3,8),(11,8))
+    pillars=(((3,4),(11,4),(3,6),(11,6)) if order<2 else
+             ((3,3),(11,3),(5,6),(9,6),(3,8),(11,8)) if order==2 else
+             ((4,3),(10,3),(4,5),(10,5),(4,7),(10,7),(2,8),(12,8)))
     for xy in pillars:
         cells[xy[1]*W+xy[0]]=387;floor.remove(xy)
     room=copy.deepcopy(template)
