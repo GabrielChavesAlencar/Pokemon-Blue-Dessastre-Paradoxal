@@ -2,6 +2,210 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "31709a5c044142bccf6127db743f1d658721b14b",
+      "date": "2026-11-24T22:23:00-03:00",
+      "title": "Merge pull request #304 from GabrielChavesAlencar/sinnoh-full-expansion-f11b-gardenia",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "fc4e71d5e3817398c23deabafd573637cb2754a9",
+      "date": "2026-11-24T22:16:41-03:00",
+      "title": "Record two verified gym fixture rooms and trigger full main-target CI",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "b93c79734fa51867ce681a6eaf2b0e10d40c1556",
+      "date": "2026-11-24T22:16:18-03:00",
+      "title": "Merge pull request #303 from GabrielChavesAlencar/sinnoh-full-expansion-f11a-roark-gym",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "467d51a6c3e0f484d420418e249bcea9ec1ad106",
+      "date": "2026-11-24T22:07:02-03:00",
+      "title": "Sinnoh F11A2 and F11B: authored leader fallback and sequential Gardenia gym",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "c92dfcc8e4aa7ce9ea1a018e908fb0b3b70936bd",
+      "date": "2026-11-24T22:05:48-03:00",
+      "title": "Record real F11A sprite blocker and F10C2 evidence; run full main-target CI",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "50c3a10d35232bb11d38ae3bd4b1820cbb97277f",
+      "date": "2026-11-24T22:05:19-03:00",
+      "title": "Merge pull request #302 from GabrielChavesAlencar/sinnoh-full-expansion-f10c-npc-dialogue",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "848fc824e838e2797047bf6614960ce981029502",
+      "date": "2026-11-24T22:00:30-03:00",
+      "title": "Sinnoh F10C2 and F11A: expand safe dialogue and first authored Roark gym challenge",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "f9e7f3e875a7c6bb5e3aeeab9baf5d1f852b368e",
+      "date": "2026-11-24T21:58:22-03:00",
+      "title": "Record real F10C two-resident evidence and trigger complete main-target CI",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "c151a5da17139072210b07bdeb2a1cd0a7af75bf",
+      "date": "2026-11-24T21:58:00-03:00",
+      "title": "Merge pull request #301 from GabrielChavesAlencar/sinnoh-full-expansion-f10b8-origin-access",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "2470b0ef9903ff3497092f2615615353a1c19f6c",
+      "date": "2026-11-24T21:50:17-03:00",
+      "title": "Sinnoh F10C: implement stationary dialogue NPCs in PT-BR with preserved access and saves",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "9b90e26ed656c9e3e8cd268a26dbcbb2890b2551",
+      "date": "2026-11-24T21:49:08-03:00",
+      "title": "Record six independent trainer blockers and trigger complete F10B8 main CI",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "bfa9a4e8bb94bb18747451a73f394131ebcafe62",
+      "date": "2026-11-24T21:48:50-03:00",
+      "title": "Merge pull request #300 from GabrielChavesAlencar/sinnoh-full-expansion-f10b7-field-gate-audit",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "bd04f82c7747c649d85e50b42cd71350f9066bef",
+      "date": "2026-11-24T21:41:18-03:00",
+      "title": "Revalidate unchanged F10B7 tree against main after #299 merge; real source job 138875575915 passed",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "822a013dc94b7c234dc4394b01d801e668e53348",
+      "date": "2026-11-24T21:40:46-03:00",
+      "title": "Merge pull request #299 from GabrielChavesAlencar/sinnoh-full-expansion-f10b6-kath-authored-sprite",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "e2b05546c26b10b56abf2e469295fdb40e46abe0",
+      "date": "2026-11-24T21:14:13-03:00",
+      "title": "F10B8: use conservative directional passage bits after real F10B7 report",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "06c22cd80ac05d6508804beefb5c9973cb3faefa",
+      "date": "2026-11-24T21:13:12-03:00",
+      "title": "Sinnoh F10B8: conditional trainer recovery via named ordinary route origins",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "5742046845613b54ee421eb240da8dbc9fb29831",
+      "date": "2026-11-24T21:09:14-03:00",
+      "title": "Sinnoh F10B7: audit six remaining field gates and multi-hop ordinary access",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "16abceab6a41027c5e3470d5ead45a1132f142ee",
+      "date": "2026-11-24T21:08:18-03:00",
+      "title": "Record F10B6 real evidence and run complete main-target regression suite",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "96ee503f3fc8b7d94044ccb8afb17c431db8f879",
+      "date": "2026-11-24T21:07:48-03:00",
+      "title": "Merge pull request #298 from GabrielChavesAlencar/sinnoh-full-expansion-f10b5-access-witnesses",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "8d576f14f5dfb9670929b26a86dbdc0dfa253a49",
+      "date": "2026-11-24T20:54:54-03:00",
+      "title": "Sinnoh F10B6: authored Kath sprite with original access and save baselines",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "44026f61f3a15bcc42d027ef8480e23e3de420bf",
+      "date": "2026-11-24T20:54:15-03:00",
+      "title": "Record F10B5 real access evidence and trigger complete main-target CI",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "805f9253951216e4987d427362579d3916cad2ad",
+      "date": "2026-11-24T20:53:38-03:00",
+      "title": "Merge pull request #297 from GabrielChavesAlencar/sinnoh-full-expansion-f10b4-double-battles",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "0962eced89a2306032752756d7de4eee2e7fc109",
+      "date": "2026-11-24T20:43:17-03:00",
+      "title": "Sinnoh F10B5: recover remaining trainers only through existing access witnesses",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "5ecba8c1f7800df567e3a0aae098aa8b8ff98976",
+      "date": "2026-11-24T20:41:50-03:00",
+      "title": "Fix stale single-trainer regression fixture and record real F10B4 evidence",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "f28ad9e06e02cf45133b63bc60fdcc169f064d5c",
+      "date": "2026-11-24T20:41:12-03:00",
+      "title": "Merge pull request #296 from GabrielChavesAlencar/sinnoh-full-expansion-f10b3-trainer-variants",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "f43e93b885c45a32b313f9806517e9bd80db143d",
+      "date": "2026-11-24T20:35:54-03:00",
+      "title": "Keep single-trainer fixture separate from reserved double-battle keys",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "ea5b8eea7ea816210da7ce3afb3988efafcb18f8",
+      "date": "2026-11-24T20:35:43-03:00",
+      "title": "Sinnoh F10B4: atomic double trainers, scoped Master offsets and safe stationary candidate",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "b7d13da7fb5a99cee2a37636d2d4f773da0b60fc",
+      "date": "2026-11-24T20:34:26-03:00",
+      "title": "Record real F10B3 evidence and validate full main-target regression suite",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "b0a5868130429ed2cdcf05f5c8688bc8d42227e3",
+      "date": "2026-11-24T20:33:23-03:00",
+      "title": "Merge pull request #295 from GabrielChavesAlencar/sinnoh-full-expansion-f10b2-trainer-assets",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "fd2e7908e70490b6c718aa7cc8b36655fd3ed5a6",
+      "date": "2026-11-24T20:27:21-03:00",
+      "title": "Sinnoh F10B3: explicit Sean sprite variant and stable F10B2 save compatibility",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "95c2ea9b397d5e1e03adf398a1149ba6703d8e55",
+      "date": "2026-11-24T20:22:22-03:00",
+      "title": "Sinnoh F10B2: recover unique class sprites and diagnose all twelve trainer identities",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "9a261b423c2982f8651edf5779dc77d492727aa9",
+      "date": "2026-11-24T20:21:43-03:00",
+      "title": "Merge pull request #294 from GabrielChavesAlencar/sinnoh-full-expansion-f10b-trainers",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "da117e9de383693731c81ae94d7a43f641e4a6e0",
+      "date": "2026-11-24T20:07:07-03:00",
+      "title": "Test Sinnoh F10B victory persistence, scaling gate and literal identity",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "e4b429da059b7d7da3fcfb6c9fec3098bba048df",
+      "date": "2026-11-24T20:06:45-03:00",
+      "title": "Sinnoh F10B: evidence-gated trainer reconstruction and native battle persistence",
+      "category": "Melhorias"
+    },
+    {
       "sha": "7302bcc3345dbb8e649b8d8a63498524f6cd9cc5",
       "date": "2026-11-24T20:05:14-03:00",
       "title": "Merge pull request #293 from GabrielChavesAlencar/sinnoh-full-expansion-f10a-trainer-npc-audit",
