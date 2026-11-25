@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bf88d490d9c125d6399d4abc24f7192d51dbde2b",
+      "date": "2026-11-25T06:35:54-03:00",
+      "title": "Merge pull request #314 from GabrielChavesAlencar/sinnoh-full-expansion-f12b3-windworks-preflight",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "5c03c53ec7ed7e6eef84ea957fbf1ab369854526",
+      "date": "2026-11-25T06:29:34-03:00",
+      "title": "F12B3: reconcile main and preserve definitive five-event evidence",
+      "category": "Melhorias"
+    },
+    {
       "sha": "a3913a9fa3c2b85349016a29cd50fd31e315d5e0",
       "date": "2026-11-25T06:29:07-03:00",
       "title": "Merge pull request #313 from GabrielChavesAlencar/sinnoh-full-expansion-f12b2-windworks-evidence",
@@ -41,6 +53,12 @@
       "sha": "267f9080daa99272d40805d99384d5589ab2bedb",
       "date": "2026-11-24T23:10:49-03:00",
       "title": "Merge pull request #310 from GabrielChavesAlencar/sinnoh-full-expansion-f11h-volkner",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "8e85a1b3844c7276f3f9df1e7964495b9e7f6ebe",
+      "date": "2026-11-24T23:01:57-03:00",
+      "title": "Sinnoh F12B3: Blue-Story read-only Windworks eligibility preflight, keep area blocked until reviewed proof",
       "category": "Melhorias"
     },
     {
