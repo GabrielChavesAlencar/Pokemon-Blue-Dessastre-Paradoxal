@@ -2,9 +2,27 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "50c3a10d35232bb11d38ae3bd4b1820cbb97277f",
+      "date": "2026-11-24T22:05:19-03:00",
+      "title": "Merge pull request #302 from GabrielChavesAlencar/sinnoh-full-expansion-f10c-npc-dialogue",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "f9e7f3e875a7c6bb5e3aeeab9baf5d1f852b368e",
+      "date": "2026-11-24T21:58:22-03:00",
+      "title": "Record real F10C two-resident evidence and trigger complete main-target CI",
+      "category": "Melhorias"
+    },
+    {
       "sha": "c151a5da17139072210b07bdeb2a1cd0a7af75bf",
       "date": "2026-11-24T21:58:00-03:00",
       "title": "Merge pull request #301 from GabrielChavesAlencar/sinnoh-full-expansion-f10b8-origin-access",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "2470b0ef9903ff3497092f2615615353a1c19f6c",
+      "date": "2026-11-24T21:50:17-03:00",
+      "title": "Sinnoh F10C: implement stationary dialogue NPCs in PT-BR with preserved access and saves",
       "category": "Melhorias"
     },
     {
