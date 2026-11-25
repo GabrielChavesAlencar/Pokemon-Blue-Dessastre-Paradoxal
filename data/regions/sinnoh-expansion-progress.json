@@ -542,7 +542,7 @@
       "id": "F12",
       "title": "História, Equipe Galactic e itens-chave",
       "status": "implementation_pending_ci",
-      "followup": "F12D3_CELESTIC_EXIT_CUT_AUDIT_PENDING_CI",
+      "followup": "F12D3_DRY_RECOVERY_FIXTURE_PENDING_CI",
       "story_checkpoints_scope": 14,
       "hm_contracts_scope": 8,
       "native_bindings": 0,
@@ -1169,7 +1169,7 @@
       "f12d3_gated_partial_base": "75bbb56c9159fad2fe4f219c76322a3e6653d5ec",
       "f12d3_gated_partial_ci_workflows": 10,
       "f12d3_gated_partial_ci_checks": 25,
-      "f12d3_future_topology_audit_pending_ci": true,
+      "f12d3_future_topology_audit_pending_ci": false,
       "f12d3_future_topology_activation_blocked": true,
       "f12d3_future_geometry_conflicting_candidates": 17,
       "f12d3_future_pastoria_dry_conflicting_candidates": 15,
@@ -1204,7 +1204,7 @@
       "f12d3_future_prior_failure": "DOWNLOAD_FAILED:maps:URLError (WinError 10060)",
       "f12d3_future_prior_unit_job": 139295554227,
       "f12d3_future_prior_unit_tests_approved": 10,
-      "f12d3_alternate_route212_pending_ci": true,
+      "f12d3_alternate_route212_pending_ci": false,
       "f12d3_alternate_route212_installed": false,
       "f12d3_alternate_prior_head": "eab6960c3dba9469414c8490149fdb70993f94f5",
       "f12d3_alternate_unit_tests_approved": 11,
@@ -1219,7 +1219,39 @@
         "E",
         5
       ],
-      "f12d3_celestic_cut_authorial_positions_installed": 0
+      "f12d3_celestic_cut_authorial_positions_installed": 0,
+      "f12d3_future_topology_full_ci_approved": true,
+      "f12d3_future_topology_merge_commit": "c3d06c1eb7b95feb9cc12c2a674ff474663ad7bf",
+      "f12d3_future_topology_real_job": 139300958245,
+      "f12d3_future_topology_ci_workflows": 11,
+      "f12d3_future_topology_ci_checks": 26,
+      "f12d3_alternate_route212_offsets": 39,
+      "f12d3_alternate_route212_reserved": 39,
+      "f12d3_alternate_route212_verified": false,
+      "f12d3_celestic_cut_prior_head": "43ddea95020c017f1df31e5c4cb2145e7ac5b038",
+      "f12d3_celestic_cut_prior_real_job": 139301613888,
+      "f12d3_celestic_cut_prior_workflows": 10,
+      "f12d3_celestic_cut_prior_checks": 25,
+      "f12d3_celestic_cut_prior_unit_tests": 12,
+      "f12d3_celestic_cut_prior_unit_job": 139301609460,
+      "f12d3_celestic_cut_entry_components": [
+        12
+      ],
+      "f12d3_celestic_cut_exit_components": [
+        6
+      ],
+      "f12d3_celestic_cut_exit_axes": [
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "f12d3_celestic_cut_exit_reached": 0,
+      "f12d3_celestic_cut_blocker": "celestic_exit_not_reachable",
+      "f12d3_dry_recovery_pending_ci": true,
+      "f12d3_dry_recovery_budget": 32,
+      "f12d3_dry_recovery_installed": false
     },
     {
       "id": "F13",

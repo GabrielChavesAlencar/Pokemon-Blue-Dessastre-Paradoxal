@@ -2,9 +2,27 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c3d06c1eb7b95feb9cc12c2a674ff474663ad7bf",
+      "date": "2026-11-25T12:29:48-03:00",
+      "title": "Sinnoh F12D3E: integrar auditoria de topologia alternativa",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "eab6960c3dba9469414c8490149fdb70993f94f5",
+      "date": "2026-11-25T12:03:50-03:00",
+      "title": "Sinnoh F12D3: sync #328 evidence and audit alternative Route212/215 seams",
+      "category": "Melhorias"
+    },
+    {
       "sha": "39c7f130c6ded6abcae3db5911ac604a0ad60abb",
       "date": "2026-11-25T12:02:03-03:00",
       "title": "Merge pull request #328 from GabrielChavesAlencar/sinnoh-full-expansion-f12d3-gated-route210",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "354f4f776a6ba32792ed85c517981d30e3d43d9c",
+      "date": "2026-11-25T11:58:27-03:00",
+      "title": "Sinnoh F12D3: audit future seam reservations before runtime activation",
       "category": "Melhorias"
     },
     {

@@ -1603,6 +1603,14 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                         self.assertEqual(cut_report["new_events"],0)
                         print("SINNOH_F12D3_CELESTIC_CUT_REPORT "+json.dumps(cut_report,sort_keys=True),flush=True)
                         print("SINNOH_REAL_F12D3_CELESTIC_CUT_AUDITED_OK",flush=True)
+                        import sinnoh_f12d3_dry_recovery as dry
+                        dr=dry.inspect(chased,linked,expanded,expanded_comps,cr,ext,ar,Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]),ROOT)
+                        self.assertEqual(chased,snapshot)
+                        self.assertFalse(dr["activation_allowed"])
+                        self.assertFalse(dr["native_verified"])
+                        self.assertEqual(dr["changed_cells_installed"],0)
+                        print("SINNOH_F12D3_DRY_RECOVERY_REPORT "+json.dumps(dr,sort_keys=True),flush=True)
+                        print("SINNOH_REAL_F12D3_DRY_RECOVERY_AUDITED_OK",flush=True)
                         print("SINNOH_REAL_F12D3_GATED_ALIGNMENT_EVIDENCE_PRESERVED_OK",flush=True)
                         print("SINNOH_REAL_F12D3_ROUTE210_RECOVERY_EVIDENCE_PRESERVED_OK",flush=True)
                     else:
@@ -3358,6 +3366,21 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertFalse(b.cut_witness(opened,prior|far,prior,barrier,473))
         self.assertFalse(b.cut_witness(opened,{(528,0,0)},prior,barrier,473))
         self.assertFalse(b.cut_witness(opened|{(472,1,1)},prior,prior,barrier,473))
+
+    def test_f12d3_dry_recovery_minimizes_edits_and_protects_terrain(self):
+        import sinnoh_f12d3_dry_recovery as d
+        dry=((0,),(0,));wall=((15,),(0,));water=((15,),(1,))
+        shapes={(x,1):dry for x in range(5)}
+        shapes[2,1]=wall
+        dist,prev=d.path_search(shapes,shapes,{(0,1)},set(),set(),(5,3))
+        self.assertEqual(dist[4,1],(1,4))
+        self.assertEqual(d.witness((4,1),prev,shapes)[1],[(2,1)])
+        for occupied,protected in (({(2,1)},set()),(set(),{(2,1)})):
+            dist,_=d.path_search(shapes,shapes,{(0,1)},occupied,protected,(5,3))
+            self.assertNotIn((4,1),dist)
+        src=dict(shapes);src[2,1]=water
+        dist,_=d.path_search(shapes,src,{(0,1)},set(),set(),(5,3))
+        self.assertNotIn((4,1),dist)
 
     def test_f12d3_celestic_cut_rejects_bypass_and_protected_positions(self):
         import sinnoh_f12d3_celestic_cut as c

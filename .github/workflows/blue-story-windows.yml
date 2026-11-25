@@ -12,6 +12,7 @@ on:
       - scripts/regions/sinnoh_f12d3_authored_offset.py
       - scripts/regions/sinnoh_f12d3_alternate_route212.py
       - scripts/regions/sinnoh_f12d3_celestic_cut.py
+      - scripts/regions/sinnoh_f12d3_dry_recovery.py
       - scripts/regions/sinnoh_f12d3_gated_alignment.py
       - scripts/regions/sinnoh_f12d3_psyduck_barrier.py
       - scripts/regions/sinnoh_f12d3_secretpotion_catalogue.py
@@ -55,6 +56,7 @@ on:
       - scripts/regions/sinnoh_f12d3_authored_offset.py
       - scripts/regions/sinnoh_f12d3_alternate_route212.py
       - scripts/regions/sinnoh_f12d3_celestic_cut.py
+      - scripts/regions/sinnoh_f12d3_dry_recovery.py
       - scripts/regions/sinnoh_f12d3_gated_alignment.py
       - scripts/regions/sinnoh_f12d3_psyduck_barrier.py
       - scripts/regions/sinnoh_f12d3_secretpotion_catalogue.py
@@ -193,6 +195,7 @@ jobs:
                       if os.environ.get("GITHUB_HEAD_REF") in ("sinnoh-full-expansion-f12d3-future-topology","sinnoh-full-expansion-f12d3-celestic-cut") and "SINNOH_REAL_F12D3_FUTURE_TOPOLOGY_CONFLICTS_AUDITED_OK" not in markers: raise RuntimeError("F12D3_FUTURE_TOPOLOGY_EVIDENCE_MISSING")
                       if os.environ.get("GITHUB_HEAD_REF") in ("sinnoh-full-expansion-f12d3-future-topology","sinnoh-full-expansion-f12d3-celestic-cut") and "SINNOH_REAL_F12D3_ALTERNATE_ROUTE212_AUDITED_OK" not in markers: raise RuntimeError("F12D3_ALTERNATE_ROUTE212_EVIDENCE_MISSING")
                       if os.environ.get("GITHUB_HEAD_REF") == "sinnoh-full-expansion-f12d3-celestic-cut" and "SINNOH_REAL_F12D3_CELESTIC_CUT_AUDITED_OK" not in markers: raise RuntimeError("F12D3_CELESTIC_CUT_EVIDENCE_MISSING")
+                      if os.environ.get("GITHUB_HEAD_REF") == "sinnoh-full-expansion-f12d3-celestic-cut" and "SINNOH_REAL_F12D3_DRY_RECOVERY_AUDITED_OK" not in markers: raise RuntimeError("F12D3_DRY_RECOVERY_EVIDENCE_MISSING")
                   else:
                       subprocess.run(cmd,env=env,check=True)
               if os.environ.get("GITHUB_HEAD_REF") == "sinnoh-full-expansion-f03-inventory":
