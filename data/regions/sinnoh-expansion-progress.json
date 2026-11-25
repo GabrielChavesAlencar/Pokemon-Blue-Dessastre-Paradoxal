@@ -1649,7 +1649,46 @@
       "f12d_integrated_installer_preflight": true,
       "f12d_integrated_exact_four_vertex_cut": true,
       "f12d_integrated_local_base_ci_preflight": true,
-      "f12d_integrated_local_engine_verified": false
+      "f12d_integrated_local_engine_verified": false,
+      "f12d_integrated_prior_report_head": "bd30f1385b999475535e2a5c0493c38486c53943",
+      "f12d_integrated_prior_report_job": 139380780104,
+      "f12d_integrated_prior_report_markers": 18,
+      "f12d_integrated_prior_report_perimeter_rejections": 9,
+      "f12d_integrated_local_lake_preview_count": 2,
+      "f12d_integrated_local_lake_previews": {
+        "VERITY": {
+          "map_id": 447,
+          "position": [
+            48,
+            25
+          ],
+          "stand": [
+            48,
+            26
+          ]
+        },
+        "ACUITY": {
+          "map_id": 511,
+          "position": [
+            32,
+            11
+          ],
+          "stand": [
+            32,
+            10
+          ]
+        }
+      },
+      "f12d_integrated_current_standalone_job": 139385408938,
+      "f12d_integrated_current_standalone_passed": 160,
+      "f12d_integrated_current_standalone_skipped": 2,
+      "f12d_integrated_actual_engine_job": 139383552588,
+      "f12d_integrated_engine_matched_scripts": 3,
+      "f12d_integrated_engine_game_player_match": false,
+      "f12d_integrated_local_item_missing": true,
+      "f12d_integrated_authorial_item_preparation": true,
+      "f12d_integrated_player_method_receipts": 14,
+      "f12d_integrated_valor_rock_reference_implemented": true
     },
     {
       "id": "F13",

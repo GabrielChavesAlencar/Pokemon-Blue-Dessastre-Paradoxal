@@ -110,7 +110,8 @@ module BlueSinnohF12DIntegrated
       if defined?($game_self_switches) && $game_self_switches &&
         BlueSinnohF12DIntegrated::LOCATIONS.any? { |key,loc| key.start_with?("PSYDUCK_") && loc[0]==@map_id && loc[3]==@id }
         s=BlueSinnohF12DIntegrated.state
-        $game_self_switches[[@map_id,@id,"A"]]=!!(s && BlueSinnohF12DIntegrated::T.cleared?(s))
+        key=[@map_id,@id,"A"];value=!!(s && BlueSinnohF12DIntegrated::T.cleared?(s))
+        $game_self_switches[key]=value if $game_self_switches[key]!=value
       end
       super(*args)
     end

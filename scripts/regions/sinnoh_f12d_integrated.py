@@ -3,6 +3,9 @@ import json
 import hashlib
 import re
 import zlib
+import struct
+import sinnoh_f12d_corridor as corridor
+import sinnoh_private_visual as pv
 import sinnoh_f12d_assets as assets
 import sinnoh_f12d3_secretpotion_catalogue as item_catalogue
 import sinnoh_f12d3_secretpotion_audit as secret_audit
@@ -25,9 +28,9 @@ LAKES={
     "VERITY":("SINNOH_LAKE_VERITY","Mars",mars.COMMANDERS,15002,(("GOLBAT",38),("BRONZOR",38),("PURUGLY",40))),
     "ACUITY":("SINNOH_LAKE_ACUITY","Jupiter",(),15003,()),
 }
-def graph(data,mapping,components,root,seed,rock=()):
+def graph(data,mapping,components,root,seed,rock=(),valor_rock=()):
     old={k:v for k,v in mapping.items() if k in chase.prior.ALL}
-    w,t,i,_,r,_=gates.access_graph(data,old,components,root,seed_cells=[seed],directional=True,strict_movement=True,rock_cells=rock)
+    w,t,i,_,r,_=gates.access_graph(data,old,components,root,seed_cells=[seed],directional=True,strict_movement=True,rock_cells=rock,valor_rock=valor_rock)
     return w,t,trainers.reached_cells(i,r)
 
 def add_event(data,mid,xy,key,sprite,cleared=False):
@@ -60,22 +63,45 @@ def protected(data,mapping,components,root):
             if tr:result.add((tr[2],tr[3],tr[4]))
     return result
 
-def placement(data,mapping,components,root,mid,seed,rock=()):
-    worlds,tiles,reached=graph(data,mapping,components,root,seed,rock)
+def placement(data,mapping,components,root,mid,seed,rock=(),valor_rock=()):
+    worlds,tiles,reached=graph(data,mapping,components,root,seed,rock,valor_rock)
     if mid not in worlds:return None
     world=worlds[mid];w,h=world.attrs["@width"],world.attrs["@height"]
     forbid=protected(data,mapping,components,root)|{seed}
     candidates={(x,y) for m,x,y in reached if m==mid and 1<x<w-2 and 1<y<h-2 and
-        (m,x,y) not in forbid and gates.cell_shape(world,tiles,(x,y))["ordinary_walkable"]}
+        (m,x,y) not in forbid and (gates.cell_shape(world,tiles,(x,y))["ordinary_walkable"] or (m,x,y) in valor_rock)}
     for xy in sorted(candidates,key=lambda q:(abs(q[0]-w//2)+abs(q[1]-h//2),q)):
         stands=[q for q in tp.neighbours(*xy) if (mid,*q) in reached and (mid,*q) not in forbid]
         if not stands:continue
         trial,loc=add_event(data,mid,xy,"PLACEMENT_PROBE","")
-        _,_,after=graph(trial,mapping,components,root,seed,rock)
+        _,_,after=graph(trial,mapping,components,root,seed,rock,valor_rock)
         if reached-{(mid,*xy)}<=after:
             for q in sorted(stands):
                 if (mid,*q) in after:return xy,q
     return None
+
+def valor_rock_reference(blobs,mapping,source):
+    """Pinned source 217 only; matching local Rock stacks, never conversion."""
+    mid=mapping["SINNOH_VALOR_CAVERN"]
+    world=conn.read_marshal(blobs["Data/Map%03d.rxdata"%mid],"F12D_VALOR_QA")
+    tiles=conn.read_marshal(blobs["Data/Tilesets.rxdata"],"F12D_VALOR_TILES")
+    with pv.verified_archive(source,"maps") as z:
+        raw=pv.member(z,pv.MAP_ROOT+"Data/Map217.rxdata")
+        if hashlib.sha256(raw).hexdigest()!="e7d80aa507ee7112ccf301d5cc441ad8184a50054a7cca5dcc027dd544cc35b6":
+            raise ValueError("F12D_VALOR_SOURCE_HASH")
+        src=conn.read_marshal(raw,"F12D_VALOR_SOURCE")
+        st=conn.read_marshal(pv.member(z,pv.MAP_ROOT+"Data/Tilesets.rxdata"),"F12D_VALOR_SOURCE_TILES")
+    ss,sh=corridor.grid(src,st);qs,qh=corridor.grid(world,tiles)
+    if set(ss)!=set(qs):raise ValueError("F12D_VALOR_DIMENSIONS")
+    w,h=world.attrs["@width"],world.attrs["@height"]
+    guard=pv.movement_masks(blobs,mapping,extra_symbols={"SINNOH_VALOR_CAVERN"})[mid]
+    def zero_priority(a,ts,stack):
+        data=ts[a.attrs["@tileset_id"]].attrs["@priorities"].data
+        return all(struct.unpack_from("<H",data,20+2*k)[0]==0 for k in stack if k)
+    return {(mid,x,y):qs[x,y] for x,y in qs if 0<x<w-1 and 0<y<h-1 and
+        sh[x,y]==qh[x,y] and 4 in qh[x,y][1] and all(k in (0,4) for k in qh[x,y][1])
+        and all(k==0 for k in qh[x,y][0]) and guard[y][x]=="." and
+        zero_priority(src,st,ss[x,y]) and zero_priority(world,tiles,qs[x,y])}
 
 def lake_contract(key,types,species,existing):
     symbol,name,aliases,version,team=LAKES[key]
@@ -102,19 +128,21 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
     # are local placement evidence, not proof of progression travel.
     old={k:v for k,v in mapping.items() if k in chase.prior.ALL}
     entries=tp.build(blobs,old,components,root)
+    valor_rock=valor_rock_reference(blobs,mapping,source)
+    result["valor_rock_reference_cells"]=len(valor_rock)
     for key in ORDER:
         contract=result["lake_contracts"][key]
         if not contract or contract["symbol"] not in mapping:continue
         mid=mapping[contract["symbol"]]
         local_seed=next((tuple(r[3]) for r in entries if r[3] and r[3][0]==mid),None)
         if local_seed:
-            local=placement(blobs,mapping,components,root,mid,local_seed)
+            local=placement(blobs,mapping,components,root,mid,local_seed,valor_rock=valor_rock)
             if local:
                 preview,loc=add_event(blobs,mid,local[0],key,"SNQA_F12D_"+key)
                 loc.update(stand=list(local[1]),qa_seed=list(local_seed),walk_from_predecessor_proved=False,
                     candidate_map_sha256=hashlib.sha256(preview["Data/Map%03d.rxdata"%mid]).hexdigest())
                 result["lake_local_previews"][key]=loc
-        pos=placement(blobs,mapping,components,root,mid,seed)
+        pos=placement(blobs,mapping,components,root,mid,seed,valor_rock=valor_rock)
         if pos:result["lake_placements"][key]={"map_id":mid,"position":list(pos[0]),"stand":list(pos[1]),"from_chase_only":True}
     if not prepared:
         result["reason"]="geometry_or_four_cell_cut_unproved";return {},result,b""
@@ -152,7 +180,7 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
     for key in ORDER:
         contract=result["lake_contracts"][key]
         if not contract or contract["symbol"] not in mapping:break
-        lm=mapping[contract["symbol"]];pos=placement(reopened,mapping,components,root,lm,lake_seed,rock)
+        lm=mapping[contract["symbol"]];pos=placement(reopened,mapping,components,root,lm,lake_seed,rock,valor_rock)
         if not pos:break
         xy,stand=pos;sprite="SNQA_F12D_"+key
         out,loc=add_event(out,lm,xy,key,sprite)
@@ -211,16 +239,31 @@ ENGINE_REFS={
 def git_blob_id(raw):
     return hashlib.sha1(b"blob "+str(len(raw)).encode("ascii")+b"\0"+raw).hexdigest()
 
+PLAYER_METHOD_REFS={"passable?":"977b23fd76fe77c4e1354afdd16c91a83503ec69","move_generic":"7f8264d1f61a9c5d39560e71ce5c979e1f3baf74","turn_generic":"1af790fbb2dc434267b0d65213733df9d784bb2f","jump":"e50b4e66179b41222ff406811078df8b988c9318","pbTerrainTag":"fc0c1f63f8766e8397276e0dd16ffef8def34cda","pbFacingTerrainTag":"affd58d712dc601b572ca564491aee86b69d176d","map":"18b03922821628a5827127991217889aae678de1","map_id":"e7520df7bf974bc7e29106a9f8090581fbe8227f","moveto":"4e353355950f307ae0cafc272545fa61eb24043d","update":"782cd09f1cc6d4d08e204082e1bbb1955893b293","update_command_new":"93431966887129b10736486956bb062b56a6217d","update_move":"26db92af0cdd30dd91be314ae44e5abd04fb7bf8","update_stop":"5ff90a8a99cc761065227f218abf3e254f208aeb","update_event_triggering":"00efca900d69a4d834e2378d2897866eb7c08e05"}
+def player_method_receipt(raw,expected=PLAYER_METHOD_REFS):
+    lines=raw.replace(b"\r\n",b"\n").split(b"\n")
+    result={}
+    for name,digest in expected.items():
+        prefix=b"  def "+name.encode("ascii")
+        starts=[i for i,line in enumerate(lines) if line==prefix or line.startswith(prefix+b"(")]
+        if len(starts)!=1:result[name]="missing_or_duplicate";continue
+        start=starts[0]
+        end=next((i for i in range(start+1,len(lines)) if lines[i]==b"  end"),None)
+        result[name]="match" if end is not None and hashlib.sha1(b"\n".join(lines[start:end+1])).hexdigest()==digest else "different"
+    return result
+
 def engine_reference_rows(rows,expected=ENGINE_REFS):
-    found={k:0 for k in expected}
+    found={k:0 for k in expected};player_rows=[]
     for row in rows:
         if not isinstance(row,list) or len(row)<3 or not isinstance(row[2],bytes):
             raise ValueError("F12D_ENGINE_SCRIPT_SHAPE")
         raw=zlib.decompress(row[2])
+        if re.search(rb"(?m)^class Game_Player\b",raw):player_rows.append(raw)
         digests={git_blob_id(raw),git_blob_id(raw.replace(b"\r\n",b"\n"))}
         for k,v in expected.items():
             if v in digests:found[k]+=1
     return {"reference":"Essentials v21.1","matched_scripts":found,
+        "game_player_script_count":len(player_rows),"game_player_methods":player_method_receipt(player_rows[0]) if len(player_rows)==1 else {},
         "reference_match":all(n==1 for n in found.values()),"local_engine_native_verified":False,
         "plugin_overrides_verified":False,"source_scripts_executed":False}
 
@@ -257,18 +300,22 @@ def installer_preflight(blobs,mapping,components,cr,base,root,source):
                     if len(v) in (2,3) and (len(v)==2 or v[2].isdigit()):
                         existing.add((v[0],v[1],int(v[2]) if len(v)==3 else 0))
         if any((base/path).exists() for path in assets.build()):raise ValueError("F12D_INTEGRATED_LOCAL_SPRITE_COLLISION")
+        item_delta,item_report=item_catalogue.prepare_missing(base,blobs)
+        result["item_catalogue"]=item_report
         audited=secret_audit.audit(blobs,mapping,components,cr,source,root)
         expanded=expanded_audit.inspect(blobs,mapping,components,cr,audited,source,root)
         original=original_audit.inspect(blobs,mapping,components,cr,expanded,source,root)
         delta,story,plugin=compile_story(blobs,mapping,components,cr,expanded,original,source,root,
             trainers.catalogue(base,"trainer_types"),trainers.catalogue(base,"pokemon"),
-            {"SECRETPOTION"} if result["item_catalogue"]["local_catalog_valid"] else set(),existing)
+            {"SECRETPOTION"} if item_report["local_catalog_valid"] or item_delta else set(),existing)
         # Do not embed private map bytes or huge path reports in the manifest.
         result.update(story_status=story["status"],mission_prepared=story["mission_prepared"],
             lake_local_previews=story.get("lake_local_previews",{}),lake_payloads=story.get("lake_payloads",[]),
             reason=story.get("reason"),candidate_ready=bool(delta and plugin),
             payload_hashes=story.get("payload_hashes",{}),authored_sprite_hashes=story["authored_sprite_hashes"])
         if delta and plugin:
+            delta.update(item_delta)
+            result["payload_hashes"]={k:hashlib.sha256(v).hexdigest() for k,v in delta.items()}
             result["candidate_plugin_sha256"]=hashlib.sha256(plugin).hexdigest()
             result["reason"]="runtime_movement_binding_and_native_compatibility_pending"
         return result

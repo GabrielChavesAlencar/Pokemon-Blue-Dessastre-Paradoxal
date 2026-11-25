@@ -3472,6 +3472,28 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertEqual(n.SYMBOLS[123],"SINNOH_HEARTHOME_CITY")
         self.assertNotIn(22,n.SYMBOLS)
 
+    def test_f12d_integrated_missing_item_and_player_methods(self):
+        import tempfile
+        import hashlib
+        from pathlib import Path
+        import sinnoh_f12d_integrated as i
+        import sinnoh_f12d3_secretpotion_catalogue as c
+        with tempfile.TemporaryDirectory() as temp:
+            base=Path(temp);(base/"PBS").mkdir()
+            (base/"PBS/items.txt").write_text("[POTION]\nName = Potion\nPocket = 1\n","utf-8")
+            delta,report=c.prepare_missing(base,{})
+            self.assertEqual(set(delta),{c.FRAGMENT})
+            self.assertTrue(report["authored_candidate"])
+            self.assertIn(b"Flags = KeyItem",delta[c.FRAGMENT])
+            self.assertFalse((base/c.FRAGMENT).exists())
+            self.assertEqual(c.prepare_missing(base,{c.FRAGMENT:c.DEFINITION})[0],{})
+            (base/"PBS/items.txt").write_bytes(c.DEFINITION)
+            self.assertEqual(c.prepare_missing(base,{})[0],{})
+        raw=b"  def move_generic(dir)\n    nil\n  end"
+        expected={"move_generic":hashlib.sha1(raw).hexdigest()}
+        self.assertEqual(i.player_method_receipt(raw,expected),{"move_generic":"match"})
+        self.assertEqual(i.player_method_receipt(raw.replace(b"nil",b"true"),expected),{"move_generic":"different"})
+
     def test_f12d_integrated_noncollinear_four_vertex_cut(self):
         import sinnoh_f12d3_celestic_cut as c
         # Four disjoint lanes with staggered eligible positions; no straight

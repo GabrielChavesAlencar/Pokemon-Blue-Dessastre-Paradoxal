@@ -122,12 +122,14 @@ def closure(edges,seeds):
             if node not in seen:seen.add(node);todo.append(node)
     return seen
 
-def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=False,seed_cells=None,strict_movement=False,rock_cells=()):
+def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=False,seed_cells=None,strict_movement=False,rock_cells=(),valor_rock=()):
     reverse={mid:sym for sym,mid in mapping.items()}
     tiles=conn.read_marshal(blobs["Data/Tilesets.rxdata"],"F10B7_QA_TILES")
     worlds={mid:conn.read_marshal(blobs["Data/Map%03d.rxdata"%mid],"F10B7_QA") for mid in reverse}
     index={};groups={};free={};passages={}
-    rock_cells=set(rock_cells)
+    rock_cells=set(rock_cells);valor_rock=dict(valor_rock)
+    if valor_rock and (not directional or not strict_movement or any(reverse.get(m)!="SINNOH_VALOR_CAVERN" for m,x,y in valor_rock)):
+        raise ValueError("F12D_VALOR_ROCK_SCOPE")
     rock_symbols={"SINNOH_ROUTE_210","SINNOH_SOLACEON_TOWN","SINNOH_ROUTE_209","SINNOH_ROUTE_210_SEGMENT_2","SINNOH_HEARTHOME_CITY","SINNOH_F07_INTERIOR_125","SINNOH_ROUTE_215","SINNOH_VEILSTONE_CITY","SINNOH_ROUTE_214","SINNOH_VALOR_LAKEFRONT","SINNOH_ROUTE_213","SINNOH_PASTORIA_CITY","SINNOH_ROUTE_212","SINNOH_ROUTE_212_SEGMENT_2"}
     if rock_cells and (not directional or not strict_movement or reverse.get(473)!="SINNOH_ROUTE_210_SEGMENT_2" or any(reverse.get(m) not in rock_symbols for m,x,y in rock_cells)):
         raise ValueError("F12D3_ROCK_GRAPH_SCOPE")
@@ -150,6 +152,18 @@ def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=Fal
                 tag=struct.unpack_from("<H",ta["@terrain_tags"].data,20+2*462)[0]
                 if stack!=(462,0,0) or mask!=0 or tag!=4 or priority!=0 or (x,y) in occupied:
                     raise ValueError("F12D3_ROCK_GRAPH_CELL_CHANGED")
+                passages[mid][x,y]=0
+            for (m,x,y),expected in valor_rock.items():
+                if m!=mid:continue
+                a=world.attrs;w,h=a["@width"],a["@height"]
+                if not (0<x<w-1 and 0<y<h-1):raise ValueError("F12D_VALOR_ROCK_PERIMETER")
+                stack=tuple(struct.unpack_from("<H",a["@data"].data,20+2*(z*w*h+y*w+x))[0] for z in range(3))
+                ts=tiles[a["@tileset_id"]].attrs
+                tags=[struct.unpack_from("<H",ts["@terrain_tags"].data,20+2*k)[0] for k in stack if k]
+                if stack!=expected or 4 not in tags or any(tag not in (0,4) for tag in tags) or any(
+                    struct.unpack_from("<H",ts["@passages"].data,20+2*k)[0]&15 or
+                    struct.unpack_from("<H",ts["@priorities"].data,20+2*k)[0]!=0 for k in stack if k):
+                    raise ValueError("F12D_VALOR_ROCK_CHANGED")
                 passages[mid][x,y]=0
             free[mid]=set(passages[mid])-occupied
             index[mid],groups[mid]=index_components(free[mid],passages[mid])
