@@ -1118,6 +1118,47 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                 self.assertIn(row["key"].encode("ascii"),pluginc)
             print("SINNOH_F10C_NPC_REPORT "+json.dumps(reportc,sort_keys=True),flush=True)
             print("SINNOH_REAL_F10C_131_MAPS_4_DIALOGUE_CANDIDATES_BASELINE_PRESERVED_OK",flush=True)
+            finalc2,reportc2,pluginc2=f10c.build(final8,f08c_ids,masks,f08c_components,source,root=ROOT,revision=2)
+            self.assertTrue({r["key"] for r in reportc["accepted"]}<={r["key"] for r in reportc2["accepted"]})
+            for path,raw in finalc.items():
+                if path.startswith("Data/Map") and path.endswith(".rxdata") and path!="Data/MapInfos.rxdata":
+                    old=read_marshal(raw,"F10C1_OLD");new=read_marshal(finalc2[path],"F10C2_NEW")
+                    before=old.attrs.pop("@events");after=new.attrs.pop("@events")
+                    self.assertEqual(serialize(old,connection.EVENT_CLASSES),serialize(new,connection.EVENT_CLASSES))
+                    for eid,event in before.items():
+                        self.assertEqual(serialize(event,connection.EVENT_CLASSES),serialize(after[eid],connection.EVENT_CLASSES))
+                else:self.assertEqual(finalc2[path],raw)
+            self.assertEqual(exp.qa_teleport.build(finalc2,f08c_ids,f08c_components),entries)
+            print("SINNOH_F10C2_NPC_REPORT "+json.dumps(reportc2,sort_keys=True),flush=True)
+            import sinnoh_f11a_gym as gym
+            gmaps,gids,gcomps,greport,gplugin=gym.build(finalc2,f08c_ids,f08c_components,{2},{"LEADER_ROARK"},{"GEODUDE","ONIX","CRANIDOS"},set(),ROOT,Path(ow))
+            self.assertEqual(len(greport["gyms"]),8)
+            self.assertEqual({k:gids[k] for k in f08c_ids},f08c_ids)
+            self.assertFalse(greport["native_verified"])
+            self.assertFalse(greport["hm_award_enabled"])
+            self.assertEqual(greport["gym_rooms_added"],greport["gym_leaders_added"])
+            self.assertIn(greport["gym_rooms_added"],(0,1))
+            self.assertEqual(len(gids),131+greport["gym_rooms_added"])
+            for path,raw in finalc2.items():
+                if path in ("Data/MapInfos.rxdata","Data/Tilesets.rxdata","PBS/map_metadata.txt"):continue
+                if path=="Data/Map%03d.rxdata"%f08c_ids[gym.CITY]:
+                    old=read_marshal(raw,"F11A_OLD");new=read_marshal(gmaps[path],"F11A_NEW")
+                    before=old.attrs.pop("@events");after=new.attrs.pop("@events")
+                    self.assertEqual(serialize(old,connection.EVENT_CLASSES),serialize(new,connection.EVENT_CLASSES))
+                    for eid,event in before.items():
+                        self.assertEqual(serialize(event,connection.EVENT_CLASSES),serialize(after[eid],connection.EVENT_CLASSES))
+                else:self.assertEqual(gmaps[path],raw)
+            new_entries=exp.qa_teleport.build(gmaps,gids,gcomps)
+            self.assertEqual([r for r in new_entries if r[0]!=gym.SYMBOL],[r for r in entries if r[0]!=gym.SYMBOL])
+            if greport["gym_rooms_added"]:
+                self.assertEqual(greport["new_portals"],2)
+                self.assertIn(b"BlueSinnohF11A",gplugin)
+                self.assertIn("PBS/trainers_sinnoh_f11a.txt",gmaps)
+            else:self.assertIn("blocker",greport)
+            greport["species_and_types_validation"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
+            print("SINNOH_F11A_GYM_REPORT "+json.dumps(greport,sort_keys=True),flush=True)
+            print("SINNOH_REAL_F11A_ROARK_GYM_BASELINE_131_MAPS_PRESERVED_OK",flush=True)
+
 
 
 
@@ -1818,6 +1859,85 @@ puts "F10B4_DOUBLE_ATOMIC_VICTORY_OK"
             result=subprocess.run(["ruby","-e",fixture,str(path)],capture_output=True,text=True,encoding="utf-8")
             self.assertEqual(result.returncode,0,result.stdout+result.stderr)
             self.assertIn("F10B4_DOUBLE_ATOMIC_VICTORY_OK",result.stdout)
+
+    def test_f11a_gym_contract_and_collision_guards(self):
+        import sinnoh_f11a_gym as g
+        self.assertEqual(len(g.roster(ROOT)),8)
+        self.assertEqual(g.exact_leader_type({"LEADER_ROARK"}),"LEADER_ROARK")
+        self.assertIsNone(g.exact_leader_type({"HIKER"}))
+        self.assertIsNone(g.exact_leader_type({"LEADER_ROARK","LEADER_Roark"}))
+        self.assertEqual(g.allocate({"a":442},{443},{444:None}),445)
+        self.assertIsNone(g.allocate({},set(range(442,600)),{}))
+        self.assertEqual(g.pv.dims(g.tileset_png()),(256,32))
+
+    @unittest.skipUnless(shutil.which("ruby"),"Requires Ruby runtime")
+    def test_f11a_ruby_only_confirmed_victory_awards_local_badge_once(self):
+        source=(ROOT/"scripts/regions/SinnohF11A.rb").read_text("utf-8").replace(
+            "__F11A_SPEC__", '["LEADER_ROARK","Roark",11001,580,[["GEODUDE",12],["ONIX",12],["CRANIDOS",14]]]')
+        fixture=r'''
+module BlueSinnohExperimental
+  def self.private_copy?; $private; end
+end
+module BlueSinnohPilot
+  def self.regional_state; $state; end
+  def self.profile_error(*args); raise args.last; end
+end
+module BlueRegions
+  def self.valid_sinnoh_badges?(s);s["current"]=="SINNOH" && s["badges"].is_a?(Array);end
+  def self.local_achievements(s,r);s["badges"];end
+  def self.award(s,r,b);return false if s["badges"].include?(b);s["badges"] << b;true;end
+end
+module BlueKantoTitle
+  def self.sinnoh_experimental_barry_compiled?;true;end
+end
+module BlueCampaign
+  module Teams;end
+  def self.active?; $campaign;end
+end
+class Battle;prepend BlueCampaign::Teams;end
+module BlueStory
+  def self.regional_first_boss?(a);a.first.trainer_type=="LEADER_ROARK";end
+end
+module BlueSinnohF10B
+  def self.valid_team?(s);$compiled;end
+end
+module TrainerBattle
+  def self.start_core(*args);$calls+=1;$outcome;end
+end
+def _INTL(s);s;end
+def pbMessage(s);end
+Mon=Struct.new(:hp) {def egg?;false;end}
+$player=Struct.new(:party).new([Mon.new(10)])
+$game_map=Struct.new(:map_id).new(580)
+$game_temp=Struct.new(:waiting_trainer,:battle_rules).new(nil,{})
+$private=true;$campaign=true;$compiled=true;$calls=0
+$state={"current"=>"SINNOH","badges"=>[],"native"=>[false],"hm"=>[]}
+load ARGV[0]
+[2,3,nil].each do |result|
+  $outcome=result
+  raise "invalid award" if BlueSinnohF11A.battle
+end
+raise "mutated" unless $state["badges"].empty?
+$compiled=false;$outcome=1
+raise "uncompiled" if BlueSinnohF11A.battle
+$compiled=true;$campaign=false
+raise "unscaled" if BlueSinnohF11A.battle
+$campaign=true
+raise "win" unless BlueSinnohF11A.battle
+raise "badge" unless $state["badges"]==["COAL"]
+raise "native changed" unless $state["native"]==[false] && $state["hm"].empty?
+before=$calls
+raise "repeat" unless BlueSinnohF11A.battle
+raise "duplicate" unless $calls==before && $state["badges"]==["COAL"]
+$private=false
+raise "outside QA" if BlueSinnohF11A.battle
+puts "F11A_LOCAL_BADGE_WIN_ONLY_OK"
+'''
+        with tempfile.TemporaryDirectory() as td:
+            path=Path(td)/"F11A.rb";path.write_text(source,encoding="utf-8")
+            result=subprocess.run(["ruby","-e",fixture,str(path)],capture_output=True,text=True,encoding="utf-8")
+            self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+            self.assertIn("F11A_LOCAL_BADGE_WIN_ONLY_OK",result.stdout)
 
     def test_f10c_authored_sheets_and_safe_placement(self):
         import sinnoh_f10c_npcs as n
