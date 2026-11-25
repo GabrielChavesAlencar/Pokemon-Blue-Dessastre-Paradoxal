@@ -1534,6 +1534,14 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                         self.assertEqual(chased,snapshot)
                         print("SINNOH_F12D3_SECRETPOTION_PSYDUCK_REPORT "+json.dumps(pr,sort_keys=True),flush=True)
                         print("SINNOH_REAL_F12D3_SOURCE_GEOMETRY_AUDITED_144_BASELINE_PRESERVED_OK",flush=True)
+                        import sinnoh_f12d3_expanded_evidence as follow
+                        ext=follow.inspect(chased,expanded,expanded_comps,cr,pr,Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]),ROOT)
+                        self.assertEqual(ext["status"],"F12D3_EXPANDED_EVIDENCE_ONLY")
+                        self.assertEqual(ext["source_maps_scanned"],238)
+                        self.assertEqual(len(ext["unidentified_groups"]),2)
+                        self.assertEqual(chased,snapshot)
+                        print("SINNOH_F12D3_EXPANDED_EVIDENCE_REPORT "+json.dumps(ext,sort_keys=True),flush=True)
+                        print("SINNOH_REAL_F12D3_EXPANDED_EVIDENCE_144_BASELINE_PRESERVED_OK",flush=True)
                     else:
                         print("SINNOH_REAL_F12D3_BLOCKED_REQUIRES_F12D2",flush=True)
                 jr["catalog_provenance"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
@@ -3170,6 +3178,96 @@ puts "F12B5_AUTHORED_QUEST_CONFIRMED_WINS_KEY_SCOPE_OK"
         self.assertFalse(p.chase_prepared(dict(report,runtime_install_enabled=False)))
         self.assertFalse(p.chase_prepared(dict(report,placements=report["placements"][:2])))
         self.assertFalse(p.chase_prepared(dict(report,new_portals=1)))
+
+    def test_f12d3_secretpotion_local_catalogue(self):
+        import sinnoh_f12d3_secretpotion_catalogue as c
+        with tempfile.TemporaryDirectory() as td:
+            base=Path(td);pbs=base/"PBS";pbs.mkdir()
+            self.assertFalse(c.audit(base)["local_catalog_valid"])
+            path=pbs/"items.txt"
+            path.write_text("[SECRETPOTION]\nName = SecretPotion\nPocket = 8\nFlags = KeyItem\n",encoding="utf-8")
+            self.assertTrue(c.audit(base)["local_catalog_valid"])
+            self.assertFalse(c.audit(base)["compiled_catalog_verified"])
+            (pbs/"items_extra.txt").write_text(path.read_text("utf-8"),encoding="utf-8")
+            self.assertFalse(c.audit(base)["local_catalog_valid"])
+            (pbs/"items_extra.txt").unlink()
+            path.write_text("[SECRETPOTION]\nName = SecretPotion\nPocket = 8\nFlags = Other\n",encoding="utf-8")
+            self.assertFalse(c.audit(base)["local_catalog_valid"])
+
+    @unittest.skipUnless(shutil.which("ruby"),"Requires Ruby runtime")
+    def test_f12d3_staged_transaction_and_reload(self):
+        fixture=r'''
+module GameData
+  class Item
+    def self.try_get(id); $valid ? Struct.new(:id).new(id).tap { |v| def v.is_key_item?; true; end } : nil; end
+  end
+end
+# Avoid singleton object serialization; only Bag is staged.
+module BlueRegionTravel
+  def self.regional_item?(id); id==:SECRETPOTION; end
+end
+class Bag
+  attr_accessor :qty,:fail
+  def initialize; @qty=0; @fail=false; end
+  def quantity(id); @qty; end
+  def add(id,n); @qty+=n; !@fail; end
+  def remove(id,n); @qty-=n; !@fail; end
+end
+load ARGV[0]
+m=BlueSinnohF12D3Transaction
+$valid=true
+s={"current"=>"SINNOH","sinnoh_f12d_quest"=>m::CHASE}
+b=Bag.new
+opts={catalogue_verified:true,geometry_verified:true}
+give,clear=m::ORDER
+raise "missing geometry accepted" if m.stage(s,b,give)
+raise "premature clear" if m.stage(s,b,clear,**opts)
+raise "other region accepted" if m.stage(s.merge("current"=>"KANTO"),b,give,**opts)
+raise "incomplete chase accepted" if m.stage(s.merge("sinnoh_f12d_quest"=>[]),b,give,**opts)
+$valid=false
+raise "invalid catalogue accepted" if m.stage(s,b,give,**opts)
+$valid=true
+b.qty=1
+raise "foreign item accepted" if m.stage(s,b,give,**opts)
+b.qty=0;b.fail=true
+raise "failed grant accepted" if m.stage(s,b,give,**opts)
+raise "original bag changed" unless b.qty==0 && !s.key?(m::LEDGER)
+b.fail=false
+x=m.stage(s,b,give,**opts)
+raise "grant failed" unless x && x[:bag].qty==1 && x[:history]==[give] && b.qty==0 && !s.key?(m::LEDGER)
+s,b=Marshal.load(Marshal.dump([x[:state],x[:bag]]))
+raise "duplicate grant" if m.stage(s,b,give,**opts)
+raise "premature unlock" if m.cleared?(s)
+b.fail=true
+raise "failed consume accepted" if m.stage(s,b,clear,**opts)
+raise "failed consume mutated" unless b.qty==1 && !m.cleared?(s)
+b.fail=false
+x=m.stage(s,b,clear,**opts)
+raise "consume failed" unless x && x[:bag].qty==0 && b.qty==1
+s,b=Marshal.load(Marshal.dump([x[:state],x[:bag]]))
+raise "reload lost clearance" unless m.cleared?(s) && b.qty==0
+raise "duplicate consume" if m.stage(s,b,clear,**opts)
+raise "malformed ledger unlocked" if m.cleared?(s.merge(m::LEDGER=>[clear]))
+puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
+'''
+        result=subprocess.run(["ruby","-e",fixture,str(ROOT/"scripts/regions/SinnohF12D3Transaction.rb")],
+            capture_output=True,text=True,encoding="utf-8")
+        self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+        self.assertIn("F12D3_STAGED_TRANSACTION_FIXTURE_OK",result.stdout)
+
+    def test_f12d3_reached_source_ids_use_integer_component_labels(self):
+        import sinnoh_f12d3_expanded_evidence as f
+        from sinnoh_f10b7_field_audit import index_components
+        _,g=index_components({(0,0),(1,0),(4,0)})
+        self.assertEqual(len(g),2)
+        self.assertEqual(f.reached_source_ids({214:528,80:472,116:473},
+            {528:g,472:[{(0,0)}],473:[]},{(528,1)}),{214})
+        self.assertEqual(f.reached_source_ids({214:528},{528:g},set()),set())
+
+    def test_f12d3_topology_is_not_walk_witness(self):
+        import sinnoh_f12d3_expanded_evidence as f
+        self.assertEqual(f.topology_path({1:{2},2:{3}}, {1},3),[1,2,3])
+        self.assertIsNone(f.topology_path({1:{2}}, {1},3))
 
     def test_f12d_exact_edge_axes_and_source_walkability(self):
         import sinnoh_f12d_seams as seams
