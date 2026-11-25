@@ -3580,7 +3580,10 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         main=zlib.decompress(rows[0][2]).decode("utf-8")
         self.assertIn("Compiler.method(:compile_all)",main)
         self.assertIn("blue_sinnoh_restore.call",main)
-        self.assertIn("raise unless error.success? && blue_sinnoh_core_compiled",main)
+        self.assertNotIn("POST_COMPILE_EXIT_RETRY",main)
+        self.assertIn("FOREIGN_REQUESTS_ISOLATED",main)
+        self.assertIn("Data/blue-verify-request.txt",main)
+        self.assertLess(main.index("FOREIGN_REQUESTS_ISOLATED"),main.index("PluginManager.runPlugins"))
         self.assertIn("CORE_COMPILED_AND_RESTORED",main)
         self.assertIn("raise \"Sinnoh F12D: core did not compile fresh PBS\"",main)
         self.assertLess(main.index("CORE_COMPILED_AND_RESTORED"),main.index("COMPILER_RETURNED"))
@@ -4736,6 +4739,17 @@ puts "SINNOH_LAB_REWARD_AND_STARTER_HIDE_OK"
         files=exp.scan_source(self.base)
         self.assertNotIn("Data/File A.rxdata",files)
         self.assertFalse(any("Saves" in x for x in files))
+    def test_private_copy_excludes_foreign_one_shot_requests(self):
+        requests=["blue-verify-request.txt","BLUE-BATTLE-LAB-REQUEST.TXT","blue-reference-export-request.txt"]
+        for name in requests:(self.base/"Data"/name).write_bytes(b"base request")
+        files=exp.scan_source(self.base)
+        self.assertFalse(any(p.casefold() in exp.PRIVATE_EXCLUDED_REQUESTS for p in files))
+        report={"profile_token":"abc123abc123","mapids":{},"save_profile":{},"file_sha256":{}}
+        dest=exp.install_copy(self.base,{},report,self.proj)
+        for name in requests:
+            self.assertEqual((self.base/"Data"/name).read_bytes(),b"base request")
+            self.assertFalse((dest/"Data"/name).exists())
+
     def test_27_only_expected_root_files_are_copied(self):
         (self.base/"private-secrets.txt").write_text("do not copy")
         files=exp.scan_source(self.base)

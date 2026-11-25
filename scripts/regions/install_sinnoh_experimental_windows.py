@@ -87,6 +87,11 @@ ROOT_COPY={"Game.exe","Game.ini","mkxp.json","preload.rb","soundfont.sf2","Credi
 ROOT_DIRS={"Data","Audio","Graphics","Fonts","PBS","Plugins","Scripts"}
 SKIP_PARTS={"saves","save","savedata","backups","backup","logs","tmp","cache"}
 SKIP_FILES=re.compile(r"(File\s*[A-H]|Auto\s*[1-9]|Save\d*|Game)\.rxdata(?:\.bak)?\Z",re.I)
+PRIVATE_EXCLUDED_REQUESTS=frozenset({
+    "data/blue-verify-request.txt",
+    "data/blue-battle-lab-request.txt",
+    "data/blue-reference-export-request.txt",
+})
 MAX_FILES=45000
 MAX_BYTES=8*1024*1024*1024
 ANCHORS={
@@ -470,7 +475,7 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile
         # Capture the exact request before plugin load, and keep it immutable
         # through compilation rather than re-evaluating the filesystem scope.
         hook=hook.replace("    if __QA_SCOPE__","    blue_sinnoh_compile_only = (__QA_SCOPE__)\n    if blue_sinnoh_compile_only",1)
-        hook=hook.replace("      $DEBUG = true","      blue_sinnoh_request = File.binread(\"Data/sinnoh-experimental-compile-request.txt\").strip\n      raise \"Sinnoh F12D: invalid compile token\" unless blue_sinnoh_request.match?(/\\A[a-f0-9]{64}\\z/)\n      $DEBUG = true\n      puts \"SINNOH_F12D_NATIVE_STAGE REQUEST_ACCEPTED\"",1)
+        hook=hook.replace("      $DEBUG = true","      blue_sinnoh_request = File.binread(\"Data/sinnoh-experimental-compile-request.txt\").strip\n      raise \"Sinnoh F12D: invalid compile token\" unless blue_sinnoh_request.match?(/\\A[a-f0-9]{64}\\z/)\n      raise \"Sinnoh F12D: foreign diagnostic request in private copy\" if File.exist?(\"Data/blue-verify-request.txt\") || File.exist?(\"Data/blue-battle-lab-request.txt\") || File.exist?(\"Data/blue-reference-export-request.txt\")\n      puts \"SINNOH_F12D_NATIVE_STAGE FOREIGN_REQUESTS_ISOLATED\"\n      $DEBUG = true\n      puts \"SINNOH_F12D_NATIVE_STAGE REQUEST_ACCEPTED\"",1)
         guarded=guarded.replace("if __QA_SCOPE__","if blue_sinnoh_compile_only",1)
         # The core compiler returns before the Blue/Decades alias chain has
         # finished. Restore the pinned QA bytes at that boundary, not only
@@ -498,22 +503,7 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile
           end
         end
         begin
-          begin
-            Compiler.main
-          rescue SystemExit => error
-            # A successful exit after the real core compiled is not acceptance.
-            # Finish the actual alias chain once, without a second forced PBS
-            # rewrite. Any further exit or error is a hard failure.
-            raise unless error.success? && blue_sinnoh_core_compiled
-            puts "SINNOH_F12D_NATIVE_STAGE POST_COMPILE_EXIT_RETRY"
-            blue_sinnoh_previous_debug = $DEBUG
-            begin
-              $DEBUG = false
-              Compiler.main
-            ensure
-              $DEBUG = blue_sinnoh_previous_debug
-            end
-          end
+          Compiler.main
           raise "Sinnoh F12D: core did not compile fresh PBS" unless blue_sinnoh_core_compiled
           puts "SINNOH_F12D_NATIVE_STAGE COMPILER_RETURNED"
         rescue Exception => error
@@ -1148,6 +1138,9 @@ def scan_source(base:Path):
             if not path.is_file():fail("NONFILE_SOURCE_ENTRY")
             relpath=path.relative_to(base).as_posix()
             key=relpath.casefold()
+            if key in PRIVATE_EXCLUDED_REQUESTS:
+                # The live official verification request stays untouched.
+                continue
             if key in seen:fail("WINDOWS_CASE_COLLISION")
             seen.add(key);files[relpath]=path
             total+=path.stat().st_size
@@ -1175,6 +1168,8 @@ def install_copy(base:Path,outputs:dict,report:dict,project:Path=ROOT):
         fail("OUTPUT_EXISTS_OR_UNSAFE")
     original=scan_source(base)
     for rel in outputs:
+        if isinstance(rel,str) and rel.casefold() in PRIVATE_EXCLUDED_REQUESTS:
+            fail("QA_FOREIGN_REQUEST_NOT_ALLOWED")
         if not isinstance(rel,str) or "\\" in rel or ".." in PurePosixPath(rel).parts:
             fail("UNSAFE_OUTPUT_PATH")
         if rel.startswith("Data/Map") and re.fullmatch(r"Data/Map\d{3}\.rxdata",rel):

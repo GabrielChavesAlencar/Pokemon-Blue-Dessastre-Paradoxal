@@ -113,6 +113,120 @@ def lake_contract(key,types,species,existing):
 def ruby_hash(mapping):
     return "{"+",".join(json.dumps(k)+"=>"+json.dumps(v) for k,v in sorted(mapping.items()))+"}"
 
+def original_lake_candidates(data,mapping,components,root,source,rock,valor_rock,seed):
+    import copy
+    from build_johto_events import command
+    from sinnoh_f08c_expansion import rows
+    catalog,_,_=conn.graph(root)
+    catalog={**catalog,**{r["source_id"]:r for r in rows(root)}}
+    bound={sid:mapping[r["symbol"]] for sid,r in catalog.items() if r["symbol"] in mapping}
+    focus={159,161,162,195,196,197,214,215,216,217}
+    result={"source_entries":[],"missing_dependencies":[],"candidate_records":[],"accepted_records":[]}
+    old={k:v for k,v in mapping.items() if k in chase.prior.ALL}
+    worlds,tiles,ix,_,_,_=gates.access_graph(data,old,components,root,seed_cells=[seed],
+        directional=True,strict_movement=True,rock_cells=rock,valor_rock=valor_rock,post_chase_story=True)
+    staged={}
+    with pv.verified_archive(source,"maps") as z:
+        st=conn.read_marshal(pv.member(z,pv.MAP_ROOT+"Data/Tilesets.rxdata"),"F12D_LAKE_SOURCE_TILES")
+        infos=conn.read_marshal(pv.member(z,pv.MAP_ROOT+"Data/MapInfos.rxdata"),"F12D_LAKE_SOURCE_INFOS")
+        donor={};hashes={}
+        for sid in sorted(focus):
+            raw=pv.member(z,pv.MAP_ROOT+"Data/Map%03d.rxdata"%sid)
+            digest=hashlib.sha256(raw).hexdigest()
+            if sid not in catalog or digest!=catalog[sid]["sha256"]:raise ValueError("F12D_LAKE_SOURCE_HASH")
+            hashes[sid]=digest;donor[sid]=conn.read_marshal(raw,"F12D_LAKE_SOURCE_MAP")
+        missing=set()
+        for sid in sorted(focus):
+            w=donor[sid]
+            for eid,e in sorted(w.attrs["@events"].items()):
+                targets=conn.static_targets({eid:e})
+                if not targets:continue
+                missing.update(t for t in targets if t not in bound)
+                row={"source_id":sid,"event_id":eid,"target_source_ids":sorted(targets),
+                    "source_position":[e.attrs["@x"],e.attrs["@y"]],"source_map_sha256":hashes[sid]}
+                result["source_entries"].append(row)
+                if len(targets)!=1:row["reason"]="ambiguous_targets";continue
+                dst=next(iter(targets))
+                if dst not in bound:row["reason"]="unmapped_source_dependency";continue
+                if (sid,dst) not in gates.ORIGINAL_LAKE_PAIRS:
+                    row["reason"]="outside_reciprocal_lake_scope";continue
+                cloned=copy.deepcopy(e);pages=cloned.attrs.get("@pages",[])
+                if len(pages)!=1:row["reason"]="conditional_or_multiple_pages";continue
+                page=pages[0].attrs
+                ops=page.get("@list",[]);scripts=[q for q in ops if q.attrs.get("@code") in (355,655)]
+                call=None
+                if scripts:
+                    q=scripts[0].attrs;args=q.get("@parameters",[])
+                    if len(scripts)!=1 or q.get("@code")!=355 or q.get("@indent")!=0 or len(args)!=1 or not isinstance(args[0],bytes):
+                        row["reason"]="unknown_source_script_shape";continue
+                    name=args[0].strip()
+                    if name.endswith(b"()"):name=name[:-2]
+                    row["source_script_sha256"]=hashlib.sha256(args[0]).hexdigest()
+                    if name not in gates.ORIGINAL_CAVE_CALLS or ops.index(scripts[0])>next((i for i,op in enumerate(ops) if op.attrs.get("@code")==201),-1):
+                        row["reason"]="unrecognised_source_transition_script";continue
+                    call=name;row["canonical_transition"]=name.decode("ascii")
+                    page["@list"]=[op for op in ops if op is not scripts[0]]
+                transfer,why=conn.classify_transfer(cloned)
+                if not transfer:row["reason"]=why;continue
+                x,y,t,dx,dy,direction,fade=transfer
+                if t!=dst:row["reason"]="source_destination_mismatch";continue
+                a,b=bound[sid],bound[dst];xy=(x,y);landing=(dx,dy)
+                row["from"]=[a,x,y];row["to"]=[b,dx,dy]
+                if a not in worlds or b not in worlds:row["reason"]="missing_local_map";continue
+                wa,wb=worlds[a],worlds[b]
+                def exact_ground(source_world,qa_world,mid,point):
+                    sa=gates.cell_shape(source_world,st,point);qa=gates.cell_shape(qa_world,tiles,point)
+                    return sa==qa and (qa.get("ordinary_walkable") is True or (mid,*point) in valor_rock)
+                if not exact_ground(w,wa,a,xy) or not exact_ground(donor[dst],wb,b,landing):
+                    row["reason"]="source_or_destination_ground_unproved";continue
+                if landing not in ix[b] or not any(n in ix[a] for n in tp.neighbours(*xy)):
+                    row["reason"]="local_component_unproved";continue
+                if any((v.attrs["@x"],v.attrs["@y"])==xy for v in wa.attrs["@events"].values()):
+                    row["reason"]="existing_event_preserved";continue
+                key=(sid,dst);staged.setdefault(key,[]).append((row,eid,call,page["@trigger"],direction,fade))
+                row["reason"]="exact_original_candidate"
+        for sid in sorted(missing):
+            info=infos.get(sid);path=pv.MAP_ROOT+"Data/Map%03d.rxdata"%sid
+            exists=path in z.namelist()
+            entry={"source_id":sid,"present_in_archive":exists,"mapped":False}
+            if info:
+                name=info.attrs.get("@name",b"")
+                if isinstance(name,bytes):entry["name"]=name.decode("utf-8","replace")[:100]
+            if exists:
+                raw=pv.member(z,path);world=conn.read_marshal(raw,"F12D_LAKE_DEPENDENCY")
+                entry.update(sha256=hashlib.sha256(raw).hexdigest(),
+                    dimensions=[world.attrs["@width"],world.attrs["@height"]],
+                    original_targets=sorted(conn.static_targets(world.attrs["@events"])))
+            result["missing_dependencies"].append(entry)
+    # No arbitrary landing/door shift. Require both directions of an exact
+    # original pair; never attach the nonreciprocal source 216 variant.
+    trial=dict(data)
+    for sid,dst in sorted(staged):
+        if (dst,sid) not in staged:continue
+        for row,eid,call,trigger,direction,fade in staged[sid,dst]:
+            a,x,y=row["from"];b,dx,dy=row["to"]
+            rel="Data/Map%03d.rxdata"%a
+            world=conn.read_marshal(trial[rel],"F12D_ORIGINAL_LAKE_TRIAL")
+            events=world.attrs["@events"]
+            if any((e.attrs["@x"],e.attrs["@y"])==(x,y) for e in events.values()):continue
+            p=event_page(warp=(b,dx,dy),touch=trigger!=0);p.attrs["@trigger"]=trigger;p.attrs["@through"]=True
+            transfer=p.attrs["@list"][0];transfer.attrs["@indent"]=1;transfer.attrs["@parameters"][4:6]=[direction,fade]
+            guard=command(111,12,("BlueSinnohF12DIntegrated.original_lake_entry_allowed?(%d,%d)"%(sid,dst)).encode("ascii"))
+            body=[guard]
+            if call:
+                q=command(355,call);q.attrs["@indent"]=1;body.append(q)
+            ending=command(0);ending.attrs["@indent"]=1
+            p.attrs["@list"]=body+[transfer,ending,command(412),command(0)]
+            new_id=max(max(events,default=0)+1,3001)
+            e=ruby("RPG::Event",id=new_id,name=("SN_F12D_ORIGINAL_LAKE_%d_%d_%d"%(sid,eid,dst)).encode("ascii"),x=x,y=y,pages=[p])
+            if not gates.verified_original_lake_entry(e,a,mapping):raise ValueError("F12D_ORIGINAL_LAKE_GATE")
+            events[new_id]=e;trial[rel]=conn.serialize(world,EVENT_CLASSES)
+            result["candidate_records"].append({**row,"event_id_local":new_id})
+    if tp.build(trial,old,components,root)!=tp.build(data,old,components,root):
+        result["reason"]="qa_entries_changed";return data,result
+    result["reason"]="complete_sequence_required"
+    return trial,result
+
 def recover_lake_seams(data,mapping,components,root,expanded,seed,previews,rock,valor_rock):
     from sinnoh_f12d3_alternate_route212 import reserved
     import sinnoh_f12d3_route210_recovery as recovery
@@ -168,12 +282,13 @@ def recover_lake_seams(data,mapping,components,root,expanded,seed,previews,rock,
             if reserved(r,current+added,dims):
                 complete=False;report["legs"][key]["reason"]="candidate_interval_conflict";break
             added.append(r)
-    if not complete or not added or len(added)>12:
-        report["reason"]="complete_original_sequence_not_proved" if not complete else "no_additive_recovery_needed_or_budget_exceeded"
+    if not complete or len(added)>12:
+        report["reason"]="complete_original_sequence_not_proved" if not complete else "original_seam_budget_exceeded"
         return data,[],report
     trial=dict(data)
-    trial["PBS/map_connections.txt"]=data["PBS/map_connections.txt"]+("\n# F12D verified original lake seams\n"+"\n".join(",".join(map(str,r)) for r in added)+"\n").encode("ascii")
-    trial["Data/map_connections.dat"]=conn.serialize([recovery.encode(r) for r in current+added])
+    if added:
+        trial["PBS/map_connections.txt"]=data["PBS/map_connections.txt"]+("\n# F12D verified original lake seams\n"+"\n".join(",".join(map(str,r)) for r in added)+"\n").encode("ascii")
+        trial["Data/map_connections.dat"]=conn.serialize([recovery.encode(r) for r in current+added])
     if tp.build(trial,old,components,root)!=tp.build(data,old,components,root):
         report["reason"]="qa_entries_changed";return data,[],report
     predecessor=seed
@@ -255,9 +370,24 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
     result["lake_sequence_seed"]=list(lake_seed)
     result["lake_sequence_checks"]={}
     # All three legs must be proved before any original seam is staged.
-    recovered,lake_seams,lake_recovery=recover_lake_seams(reopened,mapping,components,root,expanded,lake_seed,result["lake_local_previews"],rock,valor_rock)
+    original_trial,entry_report=original_lake_candidates(reopened,mapping,components,root,source,rock,valor_rock,lake_seed)
+    recovered,lake_seams,lake_recovery=recover_lake_seams(original_trial,mapping,components,root,expanded,lake_seed,result["lake_local_previews"],rock,valor_rock)
     result["lake_original_seam_recovery"]=lake_recovery
-    if lake_seams:
+    result["lake_original_entries"]=entry_report
+    accepted_entries=[]
+    if lake_recovery.get("reason")=="complete_original_sequence_fixture_proved":
+        accepted_entries=entry_report["candidate_records"] if original_trial!=reopened else []
+        # Reapply only the new original portals to the still-closed mission
+        # maps; never copy the reopened Psyduck map wholesale.
+        for row in accepted_entries:
+            a,x,y=row["from"];rel="Data/Map%03d.rxdata"%a
+            before_world=conn.read_marshal(out[rel],"F12D_LAKE_CLOSED_MAP")
+            after_world=conn.read_marshal(recovered[rel],"F12D_LAKE_OPEN_MAP")
+            eid=row["event_id_local"]
+            if eid in before_world.attrs["@events"]:raise ValueError("F12D_LAKE_EVENT_COLLISION")
+            before_world.attrs["@events"][eid]=after_world.attrs["@events"][eid]
+            out[rel]=conn.serialize(before_world,EVENT_CLASSES)
+        entry_report["accepted_records"]=accepted_entries
         for path in ("PBS/map_connections.txt","Data/map_connections.dat"):
             out[path]=recovered[path]
         reopened=recovered
@@ -296,7 +426,7 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
             specs[key]=spec
             pbs.append("[%s,%s,%d]\nLoseText = Voce venceu!\n%s\n"%(spec[0],spec[1],spec[2],"\n".join("Pokemon = %s,%d"%tuple(p) for p in spec[4])))
         result["lake_placements"][key]=loc
-    if lake_seams and lake_ready!=list(ORDER):
+    if (lake_seams or accepted_entries) and lake_ready!=list(ORDER):
         result["reason"]="original_lake_sequence_events_not_proved";return {},result,b""
     # Staging only until the private engine, sprites and pre-chase seam gate pass.
     template=(root/"scripts/regions/SinnohF12DIntegrated.rb").read_text("utf-8")
@@ -324,7 +454,7 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
                 celestic_lanes.extend([left+right,right+left])
         celestic_lanes=sorted(celestic_lanes)
     blocked={tuple(q) for q in edits};lanes={tuple(q) for q in chase_lanes+celestic_lanes}
-    event_cells={(v["map_id"],*v["position"]) for v in locations.values()}
+    event_cells={(v["map_id"],*v["position"]) for v in locations.values()}|{tuple(row["from"]) for row in accepted_entries}
     checks=[]
     for sym in ("SINNOH_TWINLEAF_TOWN","SINNOH_PASTORIA_CITY","SINNOH_VALOR_LAKEFRONT"):
         start=next((tuple(row[3]) for row in entries if row[0]==sym and row[3]),None)
@@ -357,7 +487,7 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
     out.update(sprites)
     delta={k:v for k,v in out.items() if blobs.get(k)!=v}
     result.update(status="F12D_INTEGRATED_GAMEPLAY_FIXTURE",mission_prepared=True,locations=locations,
-        lake_payloads=lake_ready,new_events=len(locations),new_seams=len(prepared["connections"])+1+len(lake_seams),geometry_delta_count=len(prepared["edits"]),
+        lake_payloads=lake_ready,restored_original_portals=len(accepted_entries),new_events=len(locations)+len(accepted_entries),new_seams=len(prepared["connections"])+1+len(lake_seams),geometry_delta_count=len(prepared["edits"]),
         closed_cells=len(closed),reopened_cells=len(restored),requires_local_engine=True,
         requires_pre_chase_seam_gate=True,reason="local_engine_and_progression_activation_pending",
         payload_hashes={k:hashlib.sha256(v).hexdigest() for k,v in delta.items()})
@@ -545,6 +675,8 @@ def installer_preflight(blobs,mapping,components,cr,base,root,source,staged=None
             lake_sequence_checks=story.get("lake_sequence_checks",{}),
             lake_independent_legs=story.get("lake_independent_legs",{}),
             lake_original_seam_recovery=story.get("lake_original_seam_recovery",{}),
+            lake_original_entries=story.get("lake_original_entries",{}),
+            restored_original_portals=story.get("restored_original_portals",0),
             pre_chase_graph_checks=story.get("pre_chase_graph_checks",[]),
             geometry_delta_count=story.get("geometry_delta_count",0),
             progression_gate=story.get("progression_gate",{}),

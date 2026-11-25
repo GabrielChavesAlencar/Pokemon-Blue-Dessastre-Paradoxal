@@ -1806,9 +1806,9 @@
       "f12d_integrated_native_stage_receipts_implemented": true,
       "f12d_integrated_original_lake_seam_recovery_implemented": true,
       "f12d_integrated_original_lake_sequence_confirmed": false,
-      "f12d_integrated_latest_observed_head": "d9295be538806e7ad54ee546551829d6f7f28cb0",
-      "f12d_integrated_latest_observed_native_job": 139416151438,
-      "f12d_integrated_latest_observed_source_job": 139416152125,
+      "f12d_integrated_latest_observed_head": "d35425651178300e2e30573bbb9cb8dfce7d2d41",
+      "f12d_integrated_latest_observed_native_job": 139423849655,
+      "f12d_integrated_latest_observed_source_job": 139423850367,
       "f12d_integrated_latest_observed_workflows_approved": 10,
       "f12d_integrated_latest_observed_jobs_approved": 25,
       "f12d_integrated_native_request_accepted_confirmed": true,
@@ -1820,7 +1820,13 @@
       "f12d_integrated_original_lake_seams_accepted_observed": 0,
       "f12d_integrated_original_lake_legs_confirmed": 0,
       "f12d_integrated_core_compiler_boundary_restore_implemented": true,
-      "f12d_integrated_existing_portal_arrival_model_implemented": true
+      "f12d_integrated_existing_portal_arrival_model_implemented": true,
+      "f12d_integrated_native_core_compiled_restored_confirmed": true,
+      "f12d_integrated_native_exit_owner_confirmed": "Blue Official Rules Verify.rb:69",
+      "f12d_integrated_native_foreign_request_isolation_implemented": true,
+      "f12d_integrated_original_lake_candidate_recovery_implemented": true,
+      "f12d_integrated_original_lake_dependencies_observed": [25, 26],
+      "f12d_integrated_lake_directed_edges_observed": 175
     },
     {
       "id": "F13",

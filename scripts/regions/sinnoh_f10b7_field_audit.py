@@ -141,6 +141,35 @@ def verified_verity_entry(event,src,mapping):
     if dst is None or len(a)!=6 or a[:5]!=[0,dst,44+lane,42,8] or a[5] not in (0,1):return None
     return (10+lane,2,dst,44+lane,42,8,a[5])
 
+ORIGINAL_LAKE_SYMBOLS={159:"SINNOH_ACUITY_LAKEFRONT",161:"SINNOH_LAKE_ACUITY",
+    162:"SINNOH_ACUITY_CAVERN",215:"SINNOH_LAKE_VALOR",217:"SINNOH_VALOR_CAVERN"}
+ORIGINAL_LAKE_PAIRS={(159,161),(161,159),(161,162),(162,161),(215,217),(217,215)}
+ORIGINAL_CAVE_CALLS={b"pbCaveEntrance",b"pbCaveExit"}
+
+def verified_original_lake_entry(event,src,mapping):
+    name=event.attrs.get("@name",b"")
+    if not isinstance(name,bytes):return None
+    match=re.fullmatch(rb"SN_F12D_ORIGINAL_LAKE_(\d+)_(\d+)_(\d+)",name)
+    if not match:return None
+    a,eid,b=map(int,match.groups())
+    if (a,b) not in ORIGINAL_LAKE_PAIRS or src!=mapping.get(ORIGINAL_LAKE_SYMBOLS[a]):return None
+    dst=mapping.get(ORIGINAL_LAKE_SYMBOLS[b])
+    pages=event.attrs.get("@pages",[])
+    if dst is None or len(pages)!=1:return None
+    p=pages[0].attrs;condition=p.get("@condition")
+    if p.get("@trigger") not in (0,1,2) or p.get("@move_type")!=0 or p.get("@through") is not True or condition is None or any(
+        condition.attrs.get("@"+k) is not False for k in ("switch1_valid","switch2_valid","variable_valid","self_switch_valid")):return None
+    ops=[c.attrs for c in p.get("@list",[])]
+    if len(ops)<5 or ops[0].get("@code")!=111 or ops[0].get("@indent")!=0 or ops[0].get("@parameters")!=[12,("BlueSinnohF12DIntegrated.original_lake_entry_allowed?(%d,%d)"%(a,b)).encode("ascii")]:return None
+    if [c.get("@code") for c in ops[-3:]]!=[0,412,0] or [c.get("@indent") for c in ops[-3:]]!=[1,0,0]:return None
+    body=ops[1:-3]
+    if not body or body[-1].get("@code")!=201 or any(c.get("@indent")!=1 for c in body):return None
+    if len(body)>2:return None
+    if len(body)==2 and (body[0].get("@code")!=355 or len(body[0].get("@parameters",[]))!=1 or body[0]["@parameters"][0] not in ORIGINAL_CAVE_CALLS):return None
+    v=body[-1].get("@parameters",[])
+    if len(v)!=6 or any(type(x) is not int for x in v) or v[:2]!=[0,dst] or v[4] not in (0,2,4,6,8) or v[5] not in (0,1):return None
+    return (event.attrs["@x"],event.attrs["@y"],dst,*v[2:])
+
 def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=False,seed_cells=None,strict_movement=False,rock_cells=(),valor_rock=(),blocked_cells=(),blocked_lanes=(),post_chase_story=False,edge_sink=None):
     reverse={mid:sym for sym,mid in mapping.items()}
     tiles=conn.read_marshal(blobs["Data/Tilesets.rxdata"],"F10B7_QA_TILES")
@@ -165,7 +194,7 @@ def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=Fal
                 if len(events)!=1:continue
                 e=events[0]
                 transfer,_=conn.classify_transfer(e)
-                if not transfer:transfer=verified_verity_entry(e,mid,mapping)
+                if not transfer:transfer=verified_verity_entry(e,mid,mapping) or verified_original_lake_entry(e,mid,mapping)
                 if not transfer:continue
                 p=e.attrs["@pages"][0].attrs
                 if p.get("@through") is not True:continue
@@ -242,7 +271,7 @@ def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=Fal
     for mid,world in worlds.items():
         for e in world.attrs["@events"].values():
             transfer,why=conn.classify_transfer(e)
-            if not transfer and post_chase_story:transfer=verified_verity_entry(e,mid,mapping)
+            if not transfer and post_chase_story:transfer=verified_verity_entry(e,mid,mapping) or verified_original_lake_entry(e,mid,mapping)
             if not transfer:continue
             x,y,dst,dx,dy,_,_=transfer
             # Native action portal can be activated from a safe adjacent cell.

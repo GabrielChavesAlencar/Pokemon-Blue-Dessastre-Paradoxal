@@ -24,6 +24,14 @@ module BlueSinnohF12DIntegrated
     return nil unless s && BlueSinnohF12D.ready?(s) && T.history(s)
     s
   end
+  def self.original_lake_entry_allowed?(a,b)
+    s=state
+    return false unless s && T.cleared?(s) && defined?(BlueRegions)
+    badges=BlueRegions.local_achievements(s,"SINNOH")
+    return false unless badges.include?("MINE")
+    return badges.include?("ICICLE") if [[159,161],[161,159],[161,162],[162,161]].include?([a,b])
+    [[215,217],[217,215]].include?([a,b])
+  end
   def self.rock_reference_valid?
     return false unless defined?(GameData::TerrainTag)
     tag=GameData::TerrainTag.try_get(4)
