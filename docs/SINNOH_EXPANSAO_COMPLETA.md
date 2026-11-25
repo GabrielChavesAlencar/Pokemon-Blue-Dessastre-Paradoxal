@@ -287,3 +287,8 @@ F11F job real 138912475363 HEAD 3af0c5a9bdfbc359b2b35a6f82ceb3aa4cef7a08 confirm
 ### F11G — Candice
 
 Sétimo desafio em Snowpoint, sala autoral temática Gelo, sem simular o puzzle original nem alterar terreno ou regras de campo. Contrato CH15/S15: Sneasel/Piloswine/Abomasnow/Froslass (40/40/42/44 históricos, não níveis fixos em runtime). Requer COAL, FOREST, RELIC, COBBLE, FEN e MINE; ICICLE somente após vitória confirmada. Não concede HM08 nem ativa Rock Climb. Geração sequencial, MapID livre, dois portais seguros, sprite exato ou autoral sem ambiguidade. Meta: 138 mapas, 87 portais, sete ginásios e preservação integral do baseline anterior. CI e catálogo local pendentes; QA nativa não executada.
+
+
+### F11H — Volkner
+
+Oitavo desafio em Sunyshore, sala autoral temática Elétrico, sem reproduzir puzzle original ou alterar regras de campo. Contrato CH15/S15: Jolteon/Raichu/Luxray/Electivire (46/46/48/50 históricos, não níveis fixos em runtime). Requer COAL, FOREST, RELIC, COBBLE, FEN, MINE e ICICLE; BEACON somente após vitória confirmada. Não concede HM07 nem ativa Waterfall ou acesso automático à Liga. Geração sequencial, MapID livre, dois portais seguros, sprite exato ou autoral sem ambiguidade. Meta: 139 mapas, 89 portais, oito ginásios e preservação integral do baseline anterior. CI e catálogo local pendentes; QA nativa não executada.

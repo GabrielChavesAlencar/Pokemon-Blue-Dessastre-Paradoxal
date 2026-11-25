@@ -48,7 +48,8 @@ def authored_sheet(role):
               "gym_maylene":((235,222,206),(166,55,65),(211,103,126)),
               "gym_crasher_wake":((48,107,176),(235,173,57),(57,84,126)),
               "gym_byron":((89,105,120),(199,152,69),(86,70,62)),
-              "gym_candice":((122,157,186),(240,240,230),(58,57,70))}
+              "gym_candice":((122,157,186),(240,240,230),(58,57,70)),
+              "gym_volkner":((48,69,111),(236,201,77),(205,169,74))}
     shirt,accent,hair=palettes[role]
     w=h=128;raw=bytearray(w*h*4);ink=(42,44,52);skin=(222,178,138)
     for direction in range(4):
@@ -76,6 +77,9 @@ def authored_sheet(role):
             if role=="gym_maylene":
                 rect(8,5+bob,12,13+bob,hair);rect(20,5+bob,24,13+bob,hair)
                 rect(11,3+bob,21,7+bob,hair);rect(13,6+bob,19,8+bob,(235,155,172))
+            if role=="gym_volkner":
+                rect(8,4+bob,24,8+bob,hair);rect(10,3+bob,14,6+bob,hair)
+                rect(16,2+bob,20,6+bob,hair);rect(20,7+bob,24,12+bob,hair)
             if role=="gym_candice":
                 rect(7,5+bob,12,16+bob,hair);rect(20,5+bob,25,16+bob,hair)
                 rect(10,3+bob,22,8+bob,hair);rect(12,6+bob,20,8+bob,accent)
