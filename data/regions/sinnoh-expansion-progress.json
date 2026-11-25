@@ -1924,7 +1924,8 @@
       "f12d_integrated_surf_native_shore_jump_probe_implemented_pending_ci": true,
       "f12d_integrated_native_surf_markers_required_pending_ci": true,
       "f12d_integrated_native_surf_compatible_party_negative_gates_implemented_pending_ci": true,
-      "f12d_integrated_source_redirect_retry_backoff_implemented_pending_ci": true
+      "f12d_integrated_source_redirect_retry_backoff_implemented_pending_ci": true,
+      "f12d_integrated_surf_shore_component_recovery_implemented_pending_ci": true
     },
     {
       "id": "F13",

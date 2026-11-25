@@ -353,7 +353,43 @@ def original_lake_candidates(data,mapping,components,root,source,rock,valor_rock
     result["reason"]="complete_sequence_required"
     return trial,result
 
-def recover_lake_seams(data,mapping,components,root,expanded,seed,previews,rock,valor_rock,surf_geometry=None):
+def conditional_surf_shores(routes,index,occupied):
+    """Use the actual dry shore components around each aquatic run.
+
+    A portal landing component is directional: linking the two arbitrary
+    route endpoints as if they were shores can lose a real return path or
+    invent a connection across an automatic transfer. Only event-free
+    shore cells on the verified cardinal witness qualify for Surf edges.
+    """
+    witnesses=[]
+    for mid,route in sorted(routes.items()):
+        if not route or route[0][2]!="walk" or route[-1][2]!="walk":
+            raise ValueError("F12D_SURF_WITNESS_ENDPOINT")
+        if any(len(q)!=3 or q[2] not in ("walk","surf") for q in route):
+            raise ValueError("F12D_SURF_WITNESS_MODE")
+        if any(abs(a[0]-b[0])+abs(a[1]-b[1])!=1 for a,b in zip(route,route[1:])):
+            raise ValueError("F12D_SURF_WITNESS_CARDINAL")
+        start=None
+        for i,(a,b) in enumerate(zip(route,route[1:])):
+            if a[2]=="walk" and b[2]=="surf":start=i
+            elif a[2]=="surf" and b[2]=="walk":
+                if start is None:raise ValueError("F12D_SURF_WITNESS_ORDER")
+                segment=route[start:i+2];p=tuple(segment[0][:2]);q=tuple(segment[-1][:2])
+                row={"map_id":mid,"from":list(p),"to":list(q),"water_steps":len(segment)-2,
+                     "requires":"SINNOH_HM03_FEN_LOCAL_RECEIPT_COMPATIBLE_PARTY_NATIVE_SURF"}
+                ia=index.get(mid,{})
+                if any((mid,*v[:2]) in occupied for v in segment):
+                    row["reason"]="occupied_shore_or_water"
+                elif p not in ia or q not in ia:
+                    row["reason"]="missing_dry_shore_component"
+                else:
+                    row["components"]=[ia[p],ia[q]]
+                    row["reason"]="same_dry_component" if ia[p]==ia[q] else "matched_aquatic_run"
+                witnesses.append(row);start=None
+        if start is not None:raise ValueError("F12D_SURF_WITNESS_UNCLOSED")
+    return witnesses
+
+def recover_lake_seams(data,mapping,components,root,expanded,seed,previews,rock,valor_rock,surf_geometry=None,surf_routes=None):
     from sinnoh_f12d3_alternate_route212 import reserved
     import sinnoh_f12d3_route210_recovery as recovery
     old={k:v for k,v in mapping.items() if k in chase.prior.ALL}
@@ -386,21 +422,32 @@ def recover_lake_seams(data,mapping,components,root,expanded,seed,previews,rock,
     # Conditional witnesses are an independent graph: never install these
     # edges in the dry graph or accept them as native movement evidence.
     conditional={k:set(v) for k,v in edges.items()}
+    expected={row["map_id"]:row for row in (surf_geometry or {}).get("maps",{}).values()
+              if row.get("surf_candidate") and row.get("water_steps")}
+    routes=surf_routes or {}
+    if set(routes)!=set(expected):raise ValueError("F12D_SURF_WITNESS_MAPS")
+    for mid,route in routes.items():
+        row=expected[mid]
+        if route[0][:2]!=row["start"] or route[-1][:2]!=row["goal"] or sum(q[2]=="surf" for q in route)!=row["water_steps"]:
+            raise ValueError("F12D_SURF_WITNESS_RECEIPT")
+        digest=hashlib.sha256(json.dumps([q[:2] for q in route],separators=(",",":")).encode("ascii")).hexdigest()
+        if digest!=row["path_sha256"]:raise ValueError("F12D_SURF_WITNESS_HASH")
+    occupied={(mid,e.attrs["@x"],e.attrs["@y"]) for mid,w in worlds.items() for e in w.attrs["@events"].values()}
+    shore_witnesses=conditional_surf_shores(routes,index,occupied)
     surf_edges=[]
-    for row in (surf_geometry or {}).get("maps",{}).values():
-        if not row.get("surf_candidate") or not row.get("water_steps"):continue
-        a=node((row["map_id"],*row["start"]));b=node((row["map_id"],*row["goal"]))
-        if a is None or b is None or a==b:continue
+    for row in shore_witnesses:
+        if row["reason"]!="matched_aquatic_run":continue
+        mid=row["map_id"];a,b=((mid,n) for n in row["components"])
         conditional.setdefault(a,set()).add((b,(),True))
         conditional.setdefault(b,set()).add((a,(),True))
-        surf_edges.append({"map_id":row["map_id"],"from":row["start"],"to":row["goal"],"requires":"SINNOH_HM03_FEN_LOCAL_RECEIPT_COMPATIBLE_PARTY_NATIVE_SURF"})
+        surf_edges.append(row)
     conditional_legs={};prior=seed
     for key in ORDER:
         loc=previews.get(key)
         goal=(loc["map_id"],*loc["stand"]) if loc else None
         a=node(prior) if prior else None;b=node(goal) if goal else None
         distances,parents=original_audit.component_paths(conditional,[a]) if a is not None else ({},{})
-        reverse,_=original_audit.component_paths(conditional,[b]) if b is not None else ({},{})
+        reverse,reverse_parents=original_audit.component_paths(conditional,[b]) if b is not None else ({},{})
         frontier={u[0] for u in distances};reverse_frontier={u[0] for u in reverse}
         conditional_legs[key]={"candidate_reachable":b is not None and b in distances,
             "return_candidate_reachable":a is not None and a in reverse,
@@ -410,9 +457,14 @@ def recover_lake_seams(data,mapping,components,root,expanded,seed,previews,rock,
             "boundary_candidate_records":[list(r) for r in eligible if (r[0] in frontier)!=(r[3] in frontier)],
             "minimum_new_original_seams":distances[b][0] if b in distances else None,
             "witness_records":[list(r) for _,_,r,installed in original_audit.trace(b,parents) if not installed] if b in distances else [],
+            "return_witness_records":[list(r) for _,_,r,installed in original_audit.trace(a,reverse_parents) if not installed] if a in reverse else [],
+            "forward_component_path":[[list(u),list(v)] for u,v,_,_ in original_audit.trace(b,parents)] if b in distances else [],
+            "return_component_path":[[list(u),list(v)] for u,v,_,_ in original_audit.trace(a,reverse_parents)] if a in reverse else [],
             "native_verified":False}
         prior=goal
-    report["conditional_surf"]={"edges":surf_edges,"legs":conditional_legs,"activation_allowed":False}
+    report["conditional_surf"]={"edges":surf_edges,"shore_witnesses":shore_witnesses,"legs":conditional_legs,
+        "model":"VERIFIED_SHORE_COMPONENTS_WITH_DIRECTED_EXISTING_PORTALS",
+        "activation_allowed":False}
     added=[];predecessor=seed;complete=True
     for key in ORDER:
         loc=previews.get(key)
@@ -560,7 +612,7 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
     original_trial,entry_report=original_lake_candidates(reopened,mapping,components,root,source,rock,valor_rock,lake_seed)
     surf_routes={}
     surf_geometry=lake_surf_geometry(reopened,mapping,source,root,result["lake_local_previews"],surf_routes)
-    recovered,lake_seams,lake_recovery=recover_lake_seams(original_trial,mapping,components,root,expanded,lake_seed,result["lake_local_previews"],rock,valor_rock,surf_geometry)
+    recovered,lake_seams,lake_recovery=recover_lake_seams(original_trial,mapping,components,root,expanded,lake_seed,result["lake_local_previews"],rock,valor_rock,surf_geometry,surf_routes)
     result["lake_original_seam_recovery"]=lake_recovery
     result["lake_original_entries"]=entry_report
     result["lake_surf_geometry"]=surf_geometry

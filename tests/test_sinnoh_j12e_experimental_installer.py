@@ -3668,6 +3668,26 @@ raise "foreign map" if m.surf_step_allowed?(:allowed,nil,[],true,b,[511,2,0])
         del modes[(1,0)]
         self.assertIsNone(i.lake_surface_path(modes,(0,0),(2,0),True))
 
+    def test_f12d_conditional_surf_uses_actual_shores_not_portal_endpoints(self):
+        import sinnoh_f12d_integrated as i
+        # Endpoints may be automatic portal arrival components. They cannot
+        # stand in for the two dry shores that are actually jumped between.
+        route=[[0,0,"walk"],[1,0,"walk"],[2,0,"surf"],[3,0,"surf"],
+               [4,0,"walk"],[5,0,"walk"]]
+        index={529:{(0,0):8,(1,0):1,(4,0):2,(5,0):9}}
+        rows=i.conditional_surf_shores({529:route},index,{(529,0,0),(529,5,0)})
+        self.assertEqual(len(rows),1)
+        self.assertEqual(rows[0]["components"],[1,2])
+        self.assertEqual(rows[0]["from"],[1,0])
+        self.assertEqual(rows[0]["to"],[4,0])
+        self.assertEqual(rows[0]["reason"],"matched_aquatic_run")
+        rows=i.conditional_surf_shores({529:route},index,{(529,4,0)})
+        self.assertEqual(rows[0]["reason"],"occupied_shore_or_water")
+        rows=i.conditional_surf_shores({529:route},{529:{(1,0):1}},set())
+        self.assertEqual(rows[0]["reason"],"missing_dry_shore_component")
+        with self.assertRaises(ValueError):
+            i.conditional_surf_shores({529:[[0,0,"walk"],[2,0,"surf"],[3,0,"walk"]]},index,set())
+
     def test_f12d_valor_rock_npc_occupancy_preserves_terrain_and_blocks_cell(self):
         import sinnoh_f10b7_field_audit as g
         # NPC placement must be evaluated by component continuity, not fail
