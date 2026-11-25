@@ -3102,6 +3102,23 @@ puts "F12B5_AUTHORED_QUEST_CONFIRMED_WINS_KEY_SCOPE_OK"
         shapes[3,2]=dry
         self.assertTrue(c.blocked_frontier((1,2),(5,2),shapes,dict(shapes),protected,(7,5),walkable_protected=protected)["reachable"])
 
+    def test_f12d_evidenced_north_dry_pair_only(self):
+        import sinnoh_f12d_corridor as c
+        a,b=(84,0),(52,55)
+        dry_wall=((15,),(0,))
+        shape={"in_bounds":True,"ordinary_walkable":False,"passage_masks":[15],"terrain_tags":[0]}
+        row={"axis":52,"a":list(a),"b":list(b),"eligible":False,"occupied_a":False,"occupied_b":False,
+             "source_a":shape,"qa_a":shape,"source_b":shape,"qa_b":shape}
+        src={218:{a:dry_wall},214:{b:dry_wall}}
+        qa={218:({},dict(src[218])),214:({},dict(src[214]))}
+        protected={218:set(),214:set()}
+        self.assertTrue(c.north_lane_candidate(row,qa,src,protected))
+        self.assertFalse(c.north_lane_candidate(dict(row,axis=54),qa,src,protected))
+        self.assertFalse(c.north_lane_candidate(dict(row,occupied_a=True),qa,src,protected))
+        self.assertFalse(c.north_lane_candidate(row,qa,src,{218:{a},214:set()}))
+        qa[214][1][b]=((15,),(7,))
+        self.assertFalse(c.north_lane_candidate(row,qa,src,protected))
+
     def test_f12d_exact_edge_axes_and_source_walkability(self):
         import sinnoh_f12d_seams as seams
         self.assertEqual(list(seams.aligned_axes("E",1,(64,67),"W",0,(102,70))),list(range(66)))

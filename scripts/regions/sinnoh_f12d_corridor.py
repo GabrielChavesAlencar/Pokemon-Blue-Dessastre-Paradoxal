@@ -17,6 +17,8 @@ WEST=(219,"E",1,218,"W",0)
 NORTH=(218,"N",32,214,"S",0)
 MAX_EDITS_PER_LEG=16
 MAX_EDITS_TOTAL=32
+# Live frontier 139236325903: dry mask-15 cells on both aligned sides.
+NORTH_DRY_FRONTIER_AXES=frozenset((52,53))
 
 def grid(world,tiles):
     a=world.attrs;w,h=a["@width"],a["@height"]
@@ -45,6 +47,18 @@ def editable(source,qa):
     # a partially directional tile. Limit to proven fully blocked dry stacks.
     masks,tags=qa
     return source==qa and bool(masks) and 15 in masks and all(m in (0,15) for m in masks) and all(t==0 for t in tags)
+
+def north_lane_candidate(row,qa,src,forbidden):
+    """Only original ordinary lanes or the two evidenced dry frontier pairs."""
+    if row["eligible"]:return True
+    if row["axis"] not in NORTH_DRY_FRONTIER_AXES:return False
+    if row["occupied_a"] or row["occupied_b"]:return False
+    if row["source_a"]!=row["qa_a"] or row["source_b"]!=row["qa_b"]:return False
+    a,b=tuple(row["a"]),tuple(row["b"])
+    if a in forbidden[218] or b in forbidden[214]:return False
+    # Exact evidence from the pinned maps, not arbitrary new edge openings.
+    return (qa[218][1][a]==src[218][a]==((15,),(0,)) and
+            qa[214][1][b]==src[214][b]==((15,),(0,)))
 
 def cell_cost(q,target,shapes,source,protected,size,already,walkable_protected):
     if q in protected:
@@ -199,7 +213,8 @@ def repair(original,candidate,mapping,components,source_path,root,report):
     # North physical lanes already exist. Find a pair of interior approaches
     # connecting the two arrival components, minimizing edits over both legs.
     options=[]
-    north_rows=[row for row in north["axis_evidence"] if row["eligible"]]
+    north_rows=[row for row in north["axis_evidence"] if north_lane_candidate(row,qa,src,forbidden)]
+    info["search_diagnostics"]["authored_north_candidate_axes"]=[row["axis"] for row in north_rows if not row["eligible"]]
     # Allocate the existing 32-cell total budget across the legs.
     # Diagnostic-only searches do not mutate any map.
     valor={}
@@ -209,7 +224,7 @@ def repair(original,candidate,mapping,components,source_path,root,report):
         diagnostic=vr or route(214,target,budget=sizes[214][0]*sizes[214][1])
         valor[row["axis"]]=vr
         info["search_diagnostics"]["north_candidates"].append({
-            "axis":row["axis"],"valor_minimum_edits":len(diagnostic[1]) if diagnostic else None,
+            "axis":row["axis"],"authored_boundary_pair":not row["eligible"],"valor_minimum_edits":len(diagnostic[1]) if diagnostic else None,
             "valor_within_total_budget":vr is not None,"valor_candidate_path":[list(q) for q in vr[0]] if vr else None,
             "valor_blocked_frontier":blocked_frontier(seeds[214],target,qa[214][1],src[214],forbidden[214],sizes[214],
                 walkable_protected=walkable_protected[214]) if diagnostic is None else None,
@@ -249,6 +264,16 @@ def repair(original,candidate,mapping,components,source_path,root,report):
     if not options:return blocked("no_bounded_dry_north_corridor")
     _,_,wa,na,wr,rr,vr=min(options,key=lambda x:x[:4])
     edits={218:set(wr[1])|set(rr[1]),214:set(vr[1])}
+    selected_north=next(row for row in north_rows if row["axis"]==na)
+    # Both new dry endpoints must be part of the chosen edit set. No other
+    # perimeter edits are permitted beyond the selected west/north endpoints.
+    endpoints={218:{tuple(wr[0][-1]),tuple(selected_north["a"])},214:{tuple(selected_north["b"])}}
+    if not selected_north["eligible"] and any(tuple(selected_north[k]) not in edits[sid] for sid,k in ((218,"a"),(214,"b"))):
+        raise ValueError("F12D_NORTH_PAIRED_EDIT_MISSING")
+    for sid,positions in edits.items():
+        w,h=sizes[sid]
+        if any((x in (0,w-1) or y in (0,h-1)) and (x,y) not in endpoints[sid] for x,y in positions):
+            raise ValueError("F12D_UNRELATED_PERIMETER_EDIT")
     out=dict(candidate);records=[]
     for sid,positions in edits.items():
         if not positions:continue
@@ -292,6 +317,7 @@ def repair(original,candidate,mapping,components,source_path,root,report):
     if any(out[k]!=v for k,v in candidate.items() if k not in allowed):raise ValueError("F12D_CORRIDOR_UNRELATED_CHANGE")
     info.update(status="F12D_AUTHORED_CORRIDOR_CANDIDATE",reason=None,changed_cells=len(records),
                 new_seams=1,edits=records,west_axis=wa,north_axis=na,
+                authored_north_boundary_pair=not selected_north["eligible"],
                 path_lengths=[len(wr[0]),len(rr[0]),len(vr[0])],
                 path_witnesses=[{'source_id':218,'cells':[list(q) for q in wr[0]]},
                     {'source_id':218,'cells':[list(q) for q in rr[0]]},

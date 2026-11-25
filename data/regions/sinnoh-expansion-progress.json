@@ -542,7 +542,7 @@
       "id": "F12",
       "title": "História, Equipe Galactic e itens-chave",
       "status": "implementation_pending_ci",
-      "followup": "F12D2_SOURCE_ONLY_CELL_AND_FRONTIER_PENDING_CI",
+      "followup": "F12D2_EVIDENCED_DRY_NORTH_PAIR_PENDING_CI",
       "story_checkpoints_scope": 14,
       "hm_contracts_scope": 8,
       "native_bindings": 0,
@@ -720,11 +720,11 @@
       "f12d2_preview_marker": "SINNOH_REAL_F12D2_CHASE_BLOCKED_BASELINE_PRESERVED_OK",
       "f12d2_runtime_pr": 324,
       "f12d2_source_seam_repair_pending_ci": true,
-      "f12d2_prior_ci_head": "3f5d1bee1dcdea8eee0175d086ff62fb9f6750f4",
+      "f12d2_prior_ci_head": "ed6687ae53aa17e9f6389f3eebb5ef323d42c7a7",
       "f12d2_prior_ci_base": "abceaee75463b38f90248066a1acea3c3612a378",
       "f12d2_prior_ci_workflows": 11,
       "f12d2_prior_ci_jobs": 26,
-      "f12d2_prior_real_job": 139232041170,
+      "f12d2_prior_real_job": 139236325903,
       "f12d2_prior_runtime_marker": "SINNOH_REAL_F12D2_RUNTIME_BLOCKED_BASELINE_PRESERVED_OK",
       "f12d2_prior_runtime_blocker": "geometry_unproved",
       "f12d2_prior_shared_lanes": [
@@ -821,8 +821,8 @@
       ],
       "f12d2_north_route_only_additional_edits": 8,
       "f12d2_north_valor_only_edits": 2,
-      "f12d2_source_only_walkable_pending_ci": true,
-      "f12d2_frontier_diagnostics_pending_ci": true,
+      "f12d2_source_only_walkable_pending_ci": false,
+      "f12d2_frontier_diagnostics_pending_ci": false,
       "f12d2_prior_unbounded_route_213_blocked_axes": [
         56,
         57,
@@ -867,7 +867,62 @@
             28
           ]
         ]
-      }
+      },
+      "f12d2_evidenced_north_pair_pending_ci": true,
+      "f12d2_prior_frontier_counts": {
+        "477": {
+          "directional_mask": 29,
+          "perimeter": 89,
+          "protected": 34,
+          "special_terrain": 313,
+          "reachable_cells": 2475
+        },
+        "528": {
+          "directional_mask": 66,
+          "perimeter": 165,
+          "protected": 19,
+          "special_terrain": 97,
+          "reachable_cells": 2585
+        }
+      },
+      "f12d2_prior_source_only_walkable_counts": {
+        "462": 2,
+        "477": 19,
+        "528": 3
+      },
+      "f12d2_prior_qa_occupied_counts": {
+        "462": 3,
+        "477": 0,
+        "528": 0
+      },
+      "f12d2_evidenced_dry_north_axes": [
+        52,
+        53
+      ],
+      "f12d2_evidenced_dry_north_cells": [
+        {
+          "axis": 52,
+          "route213": [
+            84,
+            0
+          ],
+          "valor": [
+            52,
+            55
+          ]
+        },
+        {
+          "axis": 53,
+          "route213": [
+            85,
+            0
+          ],
+          "valor": [
+            53,
+            55
+          ]
+        }
+      ]
     },
     {
       "id": "F13",
