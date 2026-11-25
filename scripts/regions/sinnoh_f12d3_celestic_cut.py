@@ -40,7 +40,7 @@ def cuts(cells,ingress,exit_cells,eligible):
             result.append((len(cells-reached-line),tuple(sorted(line))))
     return sorted(result,key=lambda p:(p[0],p[1]))
 
-def inspect(baseline,direct,mapping,components,chase_report,expanded,alternative,root,recovered_alternative=None,source_protected=()):
+def inspect(baseline,direct,mapping,components,chase_report,expanded,alternative,root,recovered_alternative=None,source_protected=(),rock_cells=()):
     chase.validate(baseline,mapping);before=chase.digest(baseline)
     direct_hash=chase.digest(direct)
     if expanded.get("input_hashes")!=before or not chase_report.get("runtime_install_enabled"):
@@ -49,7 +49,7 @@ def inspect(baseline,direct,mapping,components,chase_report,expanded,alternative
     origin=chase_report["placements"][-1]
     def graph(data):
         return gates.access_graph(data,old,components,root,seed_cells=[(origin["map_id"],*origin["stand"])],
-            directional=True,strict_movement=True)
+            directional=True,strict_movement=True,rock_cells=rock_cells)
     def append(data,rows):
         out=dict(data);current=pv.parse_connections(data["PBS/map_connections.txt"])
         if conn.read_marshal(data["Data/map_connections.dat"],"F12D3_CUT_COMPILED")!=[recovery.encode(r) for r in current]:
