@@ -1595,6 +1595,14 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                         self.assertFalse(br["native_verified"])
                         self.assertEqual(chased,snapshot)
                         print("SINNOH_F12D3_PSYDUCK_BARRIER_REPORT "+json.dumps(br,sort_keys=True),flush=True)
+                        import sinnoh_f12d3_celestic_cut as cut
+                        cut_report=cut.inspect(chased,linked,expanded,expanded_comps,cr,ext,ar,ROOT)
+                        self.assertEqual(chased,snapshot)
+                        self.assertFalse(cut_report["activation_allowed"])
+                        self.assertFalse(cut_report["native_verified"])
+                        self.assertEqual(cut_report["new_events"],0)
+                        print("SINNOH_F12D3_CELESTIC_CUT_REPORT "+json.dumps(cut_report,sort_keys=True),flush=True)
+                        print("SINNOH_REAL_F12D3_CELESTIC_CUT_AUDITED_OK",flush=True)
                         print("SINNOH_REAL_F12D3_GATED_ALIGNMENT_EVIDENCE_PRESERVED_OK",flush=True)
                         print("SINNOH_REAL_F12D3_ROUTE210_RECOVERY_EVIDENCE_PRESERVED_OK",flush=True)
                     else:
@@ -3350,6 +3358,15 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertFalse(b.cut_witness(opened,prior|far,prior,barrier,473))
         self.assertFalse(b.cut_witness(opened,{(528,0,0)},prior,barrier,473))
         self.assertFalse(b.cut_witness(opened|{(472,1,1)},prior,prior,barrier,473))
+
+    def test_f12d3_celestic_cut_rejects_bypass_and_protected_positions(self):
+        import sinnoh_f12d3_celestic_cut as c
+        cells={(x,y) for x in range(5) for y in range(4)}
+        line={(2,y) for y in range(4)}
+        self.assertEqual(c.cuts(cells,{(0,0)},{(4,0)},line),[(8,tuple(sorted(line)))])
+        self.assertEqual(c.cuts(cells|{(x,4) for x in range(5)},{(0,0)},{(4,0)},line),[])
+        self.assertEqual(c.cuts(cells,{(0,0)},{(4,0)},line-{(2,0)}),[])
+        self.assertEqual(c.cuts(cells,{(0,0),(4,1)},{(4,0)},line),[])
 
     def test_f12d3_alternate_reserves_both_sides_and_component_continuity(self):
         import sinnoh_f12d3_alternate_route212 as a

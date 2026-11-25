@@ -542,7 +542,7 @@
       "id": "F12",
       "title": "História, Equipe Galactic e itens-chave",
       "status": "implementation_pending_ci",
-      "followup": "F12D3_ALTERNATE_ROUTE212_AUDIT_PENDING_CI",
+      "followup": "F12D3_CELESTIC_EXIT_CUT_AUDIT_PENDING_CI",
       "story_checkpoints_scope": 14,
       "hm_contracts_scope": 8,
       "native_bindings": 0,
@@ -1205,7 +1205,21 @@
       "f12d3_future_prior_unit_job": 139295554227,
       "f12d3_future_prior_unit_tests_approved": 10,
       "f12d3_alternate_route212_pending_ci": true,
-      "f12d3_alternate_route212_installed": false
+      "f12d3_alternate_route212_installed": false,
+      "f12d3_alternate_prior_head": "eab6960c3dba9469414c8490149fdb70993f94f5",
+      "f12d3_alternate_unit_tests_approved": 11,
+      "f12d3_alternate_unit_tests_job": 139299060294,
+      "f12d3_celestic_cut_audit_pending_ci": true,
+      "f12d3_celestic_cut_verified": false,
+      "f12d3_celestic_cut_source_record": [
+        116,
+        "W",
+        0,
+        77,
+        "E",
+        5
+      ],
+      "f12d3_celestic_cut_authorial_positions_installed": 0
     },
     {
       "id": "F13",
