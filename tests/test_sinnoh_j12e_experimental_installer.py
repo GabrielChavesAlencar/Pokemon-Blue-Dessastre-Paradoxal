@@ -1455,6 +1455,29 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                     ir["catalog_provenance"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
                     print("SINNOH_F12C4_INSTALL_FIXTURE_REPORT "+json.dumps(ir,sort_keys=True),flush=True)
                     print("SINNOH_REAL_F12C4_144_MAP_INSTALL_FIXTURE_140_BASELINE_PRESERVED_OK",flush=True)
+                    import sinnoh_f12d_pastoria_preview as pastoria
+                    dr=pastoria.audit(installed,expanded,Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]))
+                    self.assertEqual(dr["status"],"F12D1_SOURCE_AUDITED")
+                    self.assertEqual(len(dr["maps"]),3)
+                    self.assertTrue(dr["baseline_preserved"])
+                    print("SINNOH_F12D1_PASTORIA_SOURCE_REPORT "+json.dumps(dr,sort_keys=True),flush=True)
+                    print("SINNOH_REAL_F12D1_144_BASELINE_SOURCE_AUDITED_OK",flush=True)
+                    pd,dp=pastoria.preview(installed,expanded,expanded_comps,ROOT)
+                    self.assertTrue(dp["baseline_preserved"])
+                    self.assertFalse(dp["runtime_install_enabled"])
+                    self.assertFalse(dp["native_verified"])
+                    self.assertEqual(dp["new_portals"],0)
+                    self.assertEqual(dp["new_seams"],0)
+                    if pd:
+                        self.assertEqual(dp["status"],"F12D2_EVENT_PREVIEW")
+                        self.assertEqual(len(dp["placements"]),3)
+                        self.assertEqual(len(pd),3)
+                        print("SINNOH_REAL_F12D2_144_MAP_CHASE_PREVIEW_OK",flush=True)
+                    else:
+                        self.assertEqual(dp["status"],"F12D2_BLOCKED")
+                        self.assertTrue(dp["reason"].startswith("no_safe_walkable_chase_witness:"))
+                        print("SINNOH_REAL_F12D2_CHASE_BLOCKED_BASELINE_PRESERVED_OK",flush=True)
+                    print("SINNOH_F12D2_CHASE_PREVIEW_REPORT "+json.dumps(dp,sort_keys=True),flush=True)
                 jr["catalog_provenance"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
                 print("SINNOH_F12C3_QUEST_CANDIDATE_REPORT "+json.dumps(jr,sort_keys=True),flush=True)
             qo,qr,qp=quest.build(wo,wi,wc,{"GALACTIC_GRUNT","GALACTIC_ADMIN"},{"GLAMEOW","STUNKY","ZUBAT","PURUGLY"},{"WORKSKEY"},set(),ROOT)
@@ -2970,6 +2993,15 @@ puts "F12B5_AUTHORED_QUEST_CONFIRMED_WINS_KEY_SCOPE_OK"
         self.assertFalse(delta)
         self.assertFalse(report["runtime_install_enabled"])
 
+    def test_f12d_pastoria_requires_exact_144_map_baseline(self):
+        import sinnoh_f12d_pastoria_preview as d
+        self.assertEqual(d.ORDER,("PASTORIA","ROUTE_213","VALOR_BATTLE"))
+        self.assertEqual(d.TEAM,(("CROAGUNK",31),))
+        with self.assertRaisesRegex(ValueError,"F12D_REQUIRES_144_BASELINE"):
+            d.preview({}, {}, {}, ROOT)
+        with self.assertRaisesRegex(ValueError,"F12D_REQUIRES_144_BASELINE"):
+            d.audit({}, {}, Path("missing"))
+        
     def test_f12c3_requires_geometry_and_preserves_candidate_scope(self):
         import sinnoh_f12c3_jupiter_candidate as j
         self.assertEqual([r[0] for r in j.ROWS],["GRUNT_1","GRUNT_2","GRUNT_3","JUPITER","RESCUE","BICYCLE"])
