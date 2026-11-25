@@ -910,8 +910,9 @@ def build_files(base:Path,project:Path=ROOT):
         if set(mapping)==f12b4_windworks.ALL:
             try:
                 audit=f12c_audit.audit(maps,mapping,sources["maps"])
-                _,pr=f12c_preview.preview(maps,mapping,components,occupied,audit,project)
-                f12c_report={"source":audit,"preview":pr,"entry_source":f12c_quest.entrance_source(sources["maps"]),"runtime_install_enabled":False,"native_verified":False}
+                delta,pr=f12c_preview.preview(maps,mapping,components,occupied,audit,project)
+                local_quest=f12c_quest.local_preview(maps,mapping,delta,pr,base,project)
+                f12c_report={"source":audit,"preview":pr,"entry_source":f12c_quest.entrance_source(sources["maps"]),"local_quest":local_quest,"runtime_install_enabled":False,"native_verified":False}
             except (OSError,ValueError,TypeError,KeyError,UnicodeError) as exc:
                 f12c_report={"status":"BLOCKED","reason":"audit_failed:"+type(exc).__name__,"runtime_install_enabled":False,"native_verified":False}
             print("SINNOH_F12C_INSTALLER_PREFLIGHT_REPORT "+json.dumps(f12c_report,sort_keys=True),flush=True)

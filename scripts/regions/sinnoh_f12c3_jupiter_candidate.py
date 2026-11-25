@@ -88,3 +88,38 @@ def build(blobs,mapping,delta,report,types,species,items,existing,root):
         "placements":positions,"new_events":6,"battle_candidates":4,"entry_candidate":entry,"items_granted":0,
         "native_verified":False,"runtime_install_enabled":False,"local_bike_id":bike,
         "historical_jupiter_team":specs["JUPITER"][4],"catalog_provenance":"CALLER_SUPPLIED_NOT_COMPILED"},template.encode("utf-8")
+
+
+def local_preview(blobs,mapping,delta,report,base,root):
+    """Read local PBS only; return diagnostic, never candidate payloads."""
+    def blocked(reason):
+        return {"status":"F12C3_BLOCKED","reason":reason,"catalog_provenance":"LOCAL_PBS_READ_ONLY",
+                "runtime_install_enabled":False,"native_verified":False,"items_granted":0}
+    if not delta:return blocked("requires_valid_144_map_preview")
+    pbs=base/"PBS"
+    if pbs.is_symlink() or not pbs.is_dir() or not (pbs/"items.txt").is_file():
+        return blocked("local_catalog_missing")
+    try:
+        for prefix in ("items","pokemon","trainer_types","trainers"):
+            files=sorted(pbs.glob(prefix+"*.txt"))
+            if not files or any(p.is_symlink() or not p.is_file() for p in files):
+                return blocked("local_catalog_missing_or_unsafe:"+prefix)
+        existing=set()
+        for p in pbs.glob("trainers*.txt"):
+            for header in trainers.read_blocks(p):
+                v=[s.strip() for s in header.split(",")]
+                if len(v) in (2,3) and (len(v)==2 or v[2].isdigit()):
+                    existing.add((v[0],v[1],int(v[2]) if len(v)==3 else 0))
+        counts={}
+        for p in sorted(pbs.glob("items*.txt")):
+            for key in trainers.read_blocks(p):
+                if key in BIKES:counts[key]=counts.get(key,0)+1
+        if len(counts)!=1 or next(iter(counts.values()))!=1:
+            return blocked("local_bicycle_missing_or_ambiguous")
+        _,diagnostic,_=build(blobs,mapping,delta,report,trainers.catalogue(base,"trainer_types"),
+            trainers.catalogue(base,"pokemon"),set(counts),existing,root)
+        diagnostic["catalog_provenance"]="LOCAL_PBS_READ_ONLY"
+        diagnostic["compiled_catalog_verified"]=False
+        return diagnostic
+    except (OSError,ValueError,TypeError,KeyError,UnicodeError) as exc:
+        return blocked("local_catalog_audit_failed:"+type(exc).__name__)
