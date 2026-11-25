@@ -58,7 +58,8 @@ def endpoint(q,dist,parents,cost,neighbours):
 
 def inspect(blobs,mapping,components,cr,expanded,previous,source_path,root):
     chase.validate(blobs,mapping);before=chase.digest(blobs)
-    if expanded.get("input_hashes")!=before or not cr.get("runtime_install_enabled"):
+    if (expanded.get("input_hashes")!=before or not cr.get("runtime_install_enabled") or
+        previous.get("status")!="F12D3_DRY_RECOVERY_EVIDENCE_ONLY" or previous.get("activation_allowed") is not False):
         raise ValueError("F12D3_NETWORK_STALE")
     old={k:v for k,v in mapping.items() if k in chase.prior.ALL};origin=cr["placements"][-1]
     def graph(data):

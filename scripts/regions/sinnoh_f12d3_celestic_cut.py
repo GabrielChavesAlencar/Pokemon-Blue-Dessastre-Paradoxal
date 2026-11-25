@@ -106,7 +106,6 @@ def inspect(baseline,direct,mapping,components,chase_report,expanded,alternative
                 trans,_=conn.classify_transfer(event)
                 if trans:
                     _,_,dst,x,y,_,_=trans;protected.add((dst,x,y))
-        protected.update(source_protected)
         cells={(x,y) for m,x,y in opened if m==mid}
         exit_xy={(x,y) for _,x,y in targets}
         ingress=set()
@@ -117,6 +116,8 @@ def inspect(baseline,direct,mapping,components,chase_report,expanded,alternative
                     if x in cells and (end[3],*y) in opened:ingress.add(x)
         ingress|={(x,y) for m,x,y in protected&opened if m==mid and (x,y) not in exit_xy}
         if origin["map_id"]==mid:ingress.add(tuple(origin["stand"]))
+        # Source-only event cells are immutable, not new entrances.
+        protected.update(source_protected)
         # An ingress on the destination side is a potential bypass, not ignored.
         eligible={xy for xy in cells if 0<xy[0]<w-1 and 0<xy[1]<h-1 and
                   (mid,*xy) not in protected|prior and xy not in ingress|exit_xy and
