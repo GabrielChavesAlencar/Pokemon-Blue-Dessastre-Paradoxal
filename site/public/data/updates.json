@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d2cb043773838d22fe0986e3952f21ca093b4e19",
+      "date": "2026-11-24T23:00:52-03:00",
+      "title": "Merge pull request #309 from GabrielChavesAlencar/sinnoh-full-expansion-f11g-candice",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "49d8e87a8597084d4576513a4f640db10aa6f361",
+      "date": "2026-11-24T22:55:05-03:00",
+      "title": "F11G: reconcile main and retain definitive Byron and Candice audit records",
+      "category": "Melhorias"
+    },
+    {
       "sha": "62d48570c6fb961806e1c48c4af5c1499ff4fe97",
       "date": "2026-11-24T22:54:41-03:00",
       "title": "Merge pull request #308 from GabrielChavesAlencar/sinnoh-full-expansion-f11f-byron",
@@ -17,6 +29,12 @@
       "sha": "8cd5d6d3c66745ded74c4237f6ecdb4319a1d5e1",
       "date": "2026-11-24T22:47:47-03:00",
       "title": "Merge pull request #307 from GabrielChavesAlencar/sinnoh-full-expansion-f11e-crasher-wake",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "0a7f5a0e36e073e111140319edf6cb1fb052dde4",
+      "date": "2026-11-24T22:42:15-03:00",
+      "title": "Sinnoh F11G: Candice ice challenge and sequential ICICLE badge with preserved baseline",
       "category": "Melhorias"
     },
     {
