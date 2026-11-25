@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bb9fae59462fa624ba9e4de6c911bd09853938ed",
+      "date": "2026-11-25T13:57:09-03:00",
+      "title": "Merge PR #336: Sinnoh F12D3I exact Rock frontier network audit",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "1380a0b7188aca1a33b9389f5b83e7112ef3860c",
+      "date": "2026-11-25T13:45:50-03:00",
+      "title": "Sinnoh F12D3I: combine exact Rock frontier with bounded canonical network fixture",
+      "category": "Melhorias"
+    },
+    {
       "sha": "c5dbde4b37e387f6bdf90988a33a1774149fa1b2",
       "date": "2026-11-25T13:44:45-03:00",
       "title": "Merge PR #335: Sinnoh F12D3I special terrain frontier audit",
