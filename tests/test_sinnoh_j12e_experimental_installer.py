@@ -1094,6 +1094,31 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
             report8["species_and_types_validation"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
             print("SINNOH_F10B8_TRAINER_REPORT "+json.dumps(report8,sort_keys=True),flush=True)
             print("SINNOH_REAL_F10B8_131_MAPS_NAMED_ORIGIN_ACCESS_BASELINE_PRESERVED_OK",flush=True)
+            import sinnoh_f10c_npcs as f10c
+            finalc,reportc,pluginc=f10c.build(final8,f08c_ids,masks,f08c_components,source,root=ROOT)
+            self.assertEqual(reportc["source_candidates"],4)
+            self.assertEqual(reportc["new_npcs"],len(reportc["accepted"]))
+            self.assertEqual(len(reportc["accepted"])+len(reportc["rejected"]),4)
+            self.assertTrue({(r["source_id"],r["source_event_id"]) for r in reportc["accepted"]}<=set(f10c.SPECS))
+            self.assertFalse(reportc["native_verified"])
+            self.assertFalse(reportc["source_dialogue_copied"])
+            self.assertFalse(reportc["source_scripts_executed"])
+            for path,raw in final8.items():
+                if path.startswith("Data/Map") and path.endswith(".rxdata") and path!="Data/MapInfos.rxdata":
+                    old=read_marshal(raw,"F10B8_OLD");new=read_marshal(finalc[path],"F10C_NEW")
+                    before=old.attrs.pop("@events");after=new.attrs.pop("@events")
+                    self.assertEqual(serialize(old,connection.EVENT_CLASSES),serialize(new,connection.EVENT_CLASSES))
+                    for eid,event in before.items():
+                        self.assertEqual(serialize(event,connection.EVENT_CLASSES),serialize(after[eid],connection.EVENT_CLASSES))
+                else:self.assertEqual(finalc[path],raw)
+            self.assertEqual(exp.qa_teleport.build(finalc,f08c_ids,f08c_components),entries)
+            for row in reportc["accepted"]:
+                self.assertGreaterEqual(row["event_id"],1000)
+                self.assertEqual(row["dialogue_language"],"pt-BR")
+                self.assertIn(row["key"].encode("ascii"),pluginc)
+            print("SINNOH_F10C_NPC_REPORT "+json.dumps(reportc,sort_keys=True),flush=True)
+            print("SINNOH_REAL_F10C_131_MAPS_4_DIALOGUE_CANDIDATES_BASELINE_PRESERVED_OK",flush=True)
+
 
 
 
@@ -1793,6 +1818,52 @@ puts "F10B4_DOUBLE_ATOMIC_VICTORY_OK"
             result=subprocess.run(["ruby","-e",fixture,str(path)],capture_output=True,text=True,encoding="utf-8")
             self.assertEqual(result.returncode,0,result.stdout+result.stderr)
             self.assertIn("F10B4_DOUBLE_ATOMIC_VICTORY_OK",result.stdout)
+
+    def test_f10c_authored_sheets_and_safe_placement(self):
+        import sinnoh_f10c_npcs as n
+        self.assertEqual(n.pv.dims(n.authored_sheet("route_resident")),(128,128))
+        self.assertNotEqual(n.authored_sheet("route_resident"),n.authored_sheet("interior_resident"))
+        self.assertEqual(n.authored_sheet("route_resident"),n.authored_sheet("route_resident"))
+        points={(x,y) for x in range(4) for y in range(4)}
+        self.assertTrue(n.safe_cell(points,(1,1),set(),set()))
+        self.assertFalse(n.safe_cell(points,(1,1),{(1,2)},set()))
+        self.assertFalse(n.safe_cell(points,(1,1),set(),{(2,1)}))
+        self.assertFalse(n.safe_cell({(0,0),(1,0),(2,0)},(1,0),set(),set()))
+
+    @unittest.skipUnless(shutil.which("ruby"),"Requires Ruby runtime")
+    def test_f10c_ruby_dialogue_scoped_and_no_save_mutation(self):
+        source=(ROOT/"scripts/regions/SinnohF10C.rb").read_text("utf-8").replace(
+            "__F10C_ROWS__", '[["F10C_42_28",[469,1028,["Olá!","Boa viagem!"]]]]')
+        fixture=r'''
+module BlueSinnohExperimental
+  def self.private_copy?; $private; end
+end
+module BlueSinnohPilot
+  def self.regional_state; $state; end
+  def self.profile_error(*args); raise args.last; end
+end
+def _INTL(s);s;end
+def pbMessage(s);$messages << s;end
+$private=true;$state={"existing"=>[1,2]};$messages=[]
+$game_map=Struct.new(:map_id).new(469)
+load ARGV[0]
+before=Marshal.dump($state)
+raise "talk rejected" unless BlueSinnohF10C.talk("F10C_42_28")
+raise "messages" unless $messages==["Olá!","Boa viagem!"]
+raise "state mutated" unless Marshal.dump($state)==before
+raise "unknown key" if BlueSinnohF10C.talk("unknown")
+$game_map.map_id=474
+raise "wrong map" if BlueSinnohF10C.talk("F10C_42_28")
+$game_map.map_id=469;$private=false
+raise "outside QA" if BlueSinnohF10C.talk("F10C_42_28")
+raise "extra messages" unless $messages.length==2
+puts "F10C_DIALOGUE_SCOPE_OK"
+'''
+        with tempfile.TemporaryDirectory() as td:
+            path=Path(td)/"F10C.rb";path.write_text(source,encoding="utf-8")
+            result=subprocess.run(["ruby","-e",fixture,str(path)],capture_output=True,text=True,encoding="utf-8")
+            self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+            self.assertIn("F10C_DIALOGUE_SCOPE_OK",result.stdout)
 
     def test_f10b8_directional_passage_requires_both_bits(self):
         import sinnoh_f10b7_field_audit as g
