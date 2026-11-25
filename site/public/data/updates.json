@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c4dc7b07e5d1ade92f0edc68ee39c4d20d335dd4",
+      "date": "2026-11-25T13:24:39-03:00",
+      "title": "Merge PR #333: Sinnoh F12D3I canonical network audit",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "28a795cf10dc729717f9ab77d6d557311d3b149f",
+      "date": "2026-11-25T13:16:21-03:00",
+      "title": "Sinnoh F12D3: recover canonical corridors with verified native gates and dry original seams",
+      "category": "Melhorias"
+    },
+    {
       "sha": "c5c1e4fde3011b101b99786fd8d3f55057ecf01e",
       "date": "2026-11-25T13:13:26-03:00",
       "title": "Merge pull request #332 from GabrielChavesAlencar/sinnoh-full-expansion-f12d3-directional-network",
