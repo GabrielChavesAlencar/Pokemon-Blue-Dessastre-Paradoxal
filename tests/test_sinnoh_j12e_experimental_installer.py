@@ -3049,6 +3049,22 @@ puts "F12B5_AUTHORED_QUEST_CONFIRMED_WINS_KEY_SCOPE_OK"
         self.assertFalse(c.editable(directional,directional))
         self.assertFalse(c.editable(wall,ground))
 
+    def test_f12d_corridor_shared_budget_and_reused_boundary(self):
+        import sinnoh_f12d_corridor as c
+        ground=((0,),(0,))
+        wall=((0,15),(0,0))
+        water=((0,15),(0,7))
+        shapes={(x,y):water for x in range(23) for y in range(3)}
+        for x in range(21):shapes[x,1]=wall
+        shapes[21,1]=ground
+        self.assertIsNone(c.shortest((21,1),(0,1),shapes,dict(shapes),set(),(23,3)))
+        result=c.shortest((21,1),(0,1),shapes,dict(shapes),set(),(23,3),budget=32)
+        self.assertEqual(len(result[1]),21)
+        reused=c.shortest((0,1),(21,1),shapes,dict(shapes),set(),(23,3),result[1],budget=0)
+        self.assertEqual(reused[1],[])
+        self.assertIsNone(c.shortest((0,1),(21,1),shapes,dict(shapes),{(1,1)},(23,3),result[1],budget=0))
+        self.assertIsNone(c.shortest((0,1),(21,1),shapes,dict(shapes),{(0,1)},(23,3),result[1],budget=0))
+
     def test_f12d_exact_edge_axes_and_source_walkability(self):
         import sinnoh_f12d_seams as seams
         self.assertEqual(list(seams.aligned_axes("E",1,(64,67),"W",0,(102,70))),list(range(66)))
