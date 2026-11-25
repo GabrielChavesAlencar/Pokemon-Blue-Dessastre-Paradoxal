@@ -391,7 +391,7 @@
       "id": "F11",
       "title": "Oito ginásios e insígnias",
       "status": "implementation_pending_ci",
-      "followup": "F11D_PENDING_MAIN_CI",
+      "followup": "F11E_PENDING_CI",
       "gym_count": 8,
       "gym_rooms_confirmed": 4,
       "gym_leaders_confirmed": 4,
@@ -455,7 +455,16 @@
       "f11d_real_job": 138907082865,
       "f11d_fixture_maps": 135,
       "f11d_fixture_portals": 81,
-      "f11d_main_ci_pending": true
+      "f11d_main_ci_pending": true,
+      "f11e_candidate": "Crasher Wake",
+      "f11e_prerequisites": [
+        "COAL",
+        "FOREST",
+        "RELIC",
+        "COBBLE"
+      ],
+      "f11e_fixture_rooms": 0,
+      "f11e_native_verified": false
     },
     {
       "id": "F12",
@@ -771,7 +780,7 @@
   },
   "f11": {
     "status": "implementation_pending_ci",
-    "followup": "F11D_PENDING_MAIN_CI",
+    "followup": "F11E_PENDING_CI",
     "gym_count": 8,
     "gym_rooms_confirmed": 4,
     "gym_leaders_confirmed": 4,
@@ -835,6 +844,15 @@
     "f11d_real_job": 138907082865,
     "f11d_fixture_maps": 135,
     "f11d_fixture_portals": 81,
-    "f11d_main_ci_pending": true
+    "f11d_main_ci_pending": true,
+    "f11e_candidate": "Crasher Wake",
+    "f11e_prerequisites": [
+      "COAL",
+      "FOREST",
+      "RELIC",
+      "COBBLE"
+    ],
+    "f11e_fixture_rooms": 0,
+    "f11e_native_verified": false
   }
 }

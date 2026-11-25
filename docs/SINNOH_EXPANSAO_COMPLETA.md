@@ -269,3 +269,8 @@ F11B integrada em 31709a5c044142bccf6127db743f1d658721b14b (11 workflows/26 chec
 
 
 F11C integrada em 7a9692f2e987cf8f861e6c9399c4c4ecf67560c2 (11 workflows/26 checks). F11D job real 138907082865 HEAD f63da0ea25fa4b2bfa7e01707268ed0ecdef5365 confirmou Maylene Map576, evento1, guia evento2001 em Veilstone Map461 [36,33] retorno [35,33], 135 mapas, 81 portais, quatro salas autorais, sete conexões e baseline preservados. Sprite autoral SHA-256 adb572f9727e737ecb51fa6db516260540c91a9fc631c037c20a73a6f3c1773e. Catálogo fixture, sem compilação/vitória nativa. CI integral na main pendente.
+
+
+### F11E — Crasher Wake
+
+Quinto desafio em Pastoria, sala autoral com temática Água; obstáculos são decorativos, sem água navegável ou mudança de regras de campo. Referência CH15/S15 Gyarados/Quagsire/Floatzel (33/34/37 históricos). Exige COAL, FOREST, RELIC e COBBLE antes da batalha e antes da concessão FEN, vitória confirmada pelo motor, compilação verificada e balanceamento/proteção de chefes existentes. Não concede HM03 nem ativa Surf, pesca ou Radar. Geração somente após os quatro ginásios anteriores, com MapID livre, dois portais seguros, sprite exato ou autoral identificado sem ambiguidade. Testes reais exigem 136 mapas, preservação dos 135 anteriores, 83 portais esperados e saves por hashes. Nenhuma aprovação nativa ou instalação presumida. CI pendente.
