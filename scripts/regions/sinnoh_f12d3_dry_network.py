@@ -56,7 +56,31 @@ def endpoint(q,dist,parents,cost,neighbours):
     score,p,append=min(options)
     return score,trace(p,parents)+([q] if append else [])
 
-def inspect(blobs,mapping,components,cr,expanded,previous,source_path,root):
+def mask(shape):
+    value=0
+    for m in shape[0]:value|=m
+    return value
+
+def dry_partial(source,qa):
+    # Do not convert grass, ledges, water, full walls or mismatched stacks.
+    return source==qa and bool(qa[0]) and all(t==0 for t in qa[1]) and 0<mask(qa)<15
+
+def permitted_step(a,b,delta,partial_a,partial_b):
+    return gates.step_allowed(mask(a) if partial_a else 0,mask(b) if partial_b else 0,delta)
+
+def new_dry_edges_allowed(shapes,after,partial,edited,occupied):
+    """Reject any newly passable adjacency from a converted directional tile
+    that the original direction bits did not allow. Full dry wall edits are
+    the only separately authorised authorial changes.
+    """
+    for q in partial:
+        for p in tp.neighbours(*q):
+            if p in occupied or p not in after or not corridor.ordinary(after[p]):continue
+            delta=(p[0]-q[0],p[1]-q[1])
+            if not permitted_step(shapes[q],shapes[p],delta,True,p in partial):return False
+    return True
+
+def inspect(blobs,mapping,components,cr,expanded,previous,source_path,root,directional_repair=False):
     chase.validate(blobs,mapping);before=chase.digest(blobs)
     if (expanded.get("input_hashes")!=before or not cr.get("runtime_install_enabled") or
         previous.get("status")!="F12D3_DRY_RECOVERY_EVIDENCE_ONLY" or previous.get("activation_allowed") is not False):
@@ -76,7 +100,7 @@ def inspect(blobs,mapping,components,cr,expanded,previous,source_path,root):
     inv={v:k for k,v in bound.items() if k in ids}
     result={"status":"F12D3_DRY_NETWORK_EVIDENCE_ONLY","installed":False,"native_verified":False,
         "activation_allowed":False,"new_events":0,"new_portals":0,"new_maps":0,"changed_cells_installed":0,
-        "budget":BUDGET,"trials":[],"counts":{},"witness":None}
+        "budget":BUDGET,"trials":[],"counts":{},"witness":None,"directional_repair":directional_repair}
     def finish(reason):
         if before!=chase.digest(blobs):raise ValueError("F12D3_NETWORK_MUTATED")
         result["reason"]=reason;return result
@@ -132,15 +156,29 @@ def inspect(blobs,mapping,components,cr,expanded,previous,source_path,root):
         return finish("source_record_inventory_changed")
     if any(alt.interval(r,sdims) for r in alt.BROKEN):return finish("broken_record_not_empty")
     result["protected_counts"]={str(s):len(protected[s]) for s in sorted(ids)}
+    result["source_hashes"]={str(s):catalog[s]["sha256"] for s in sorted(ids)}
+    result["qa_hashes"]={str(s):hashlib.sha256(blobs["Data/Map%03d.rxdata"%bound[s]]).hexdigest() for s in sorted(ids)}
+    def partial(p):
+        s,x,y=p;q=(x,y)
+        if not directional_repair or s not in qa or q not in src[s] or q in protected[s] or q in occupied[s]:return False
+        w,h=sdims[s]
+        return 0<x<w-1 and 0<y<h-1 and dry_partial(src[s][q],qa[s][1][q])
+    result["partial_candidates"]={str(s):sum(partial((s,*q)) for q in src[s]) for s in sorted(ids)}
+    def edit_ok(s,q):
+        return corridor.editable(src[s][q],qa[s][1][q]) or partial((s,*q))
+    def local_allowed(p,q):
+        if p[0]!=q[0] or p[0] not in qa or p[1:] not in qa[p[0]][1] or q[1:] not in qa[q[0]][1]:return False
+        return permitted_step(qa[p[0]][1][p[1:]],qa[q[0]][1][q[1:]],(q[1]-p[1],q[2]-p[2]),partial(p),partial(q))
+
     def cell_cost(p,edge=False):
         s,x,y=p;q=(x,y)
         if s not in qa or q not in src[s] or q in occupied[s] or src[s][q]!=qa[s][1][q]:return None
         shape=qa[s][1][q];w,h=sdims[s]
         if corridor.ordinary(shape):return 0
-        if q in protected[s] or not corridor.editable(src[s][q],shape):return None
+        if q in protected[s] or not edit_ok(s,q):return None
         if edge or (0<x<w-1 and 0<y<h-1):return 1
         return None
-    def local(p):return [(p[0],*q) for q in tp.neighbours(*p[1:])]
+    def local(p):return [q for q in ((p[0],*xy) for xy in tp.neighbours(*p[1:])) if local_allowed(p,q)]
     cross={};extra_edges=set();extra_points=set()
     def add(a,b):cross.setdefault(a,set()).add(b);cross.setdefault(b,set()).add(a)
     # Existing fixed ordinary lanes only, source/QA matched.
@@ -168,6 +206,11 @@ def inspect(blobs,mapping,components,cr,expanded,previous,source_path,root):
     ld,lp=search(seeds,lambda p:(q for q in adjacent(p) if q[0] in left),cost)
     rd,rp=search(exits,lambda p:(q for q in adjacent(p) if q[0] in right),cost)
     result["approach_cells"]={"from_pastoria":len(ld),"from_celestic_exit":len(rd)}
+    result["original_extra_approaches"]=[{"cells":[list(p) for p in sorted(edge)],
+        "from_exit_costs":[rd[p][0] if p in rd else None for p in sorted(edge)]}
+        for edge in sorted(extra_edges,key=lambda e:sorted(e))]
+    result["reverse_partial_cells"]=sum(partial(p) for p in rd)
+    result["forward_partial_cells"]=sum(partial(p) for p in ld)
     result["reverse_components"]={str(s):sorted({idx[bound[s]][p[1:]] for p in rd if p[0]==s and p[1:] in idx[bound[s]]}) for s in sorted(right)}
     cache={}
     def end(p,side):
@@ -219,21 +262,24 @@ def inspect(blobs,mapping,components,cr,expanded,previous,source_path,root):
             m=bound[sid];rel="Data/Map%03d.rxdata"%m;world=conn.read_marshal(blobs[rel],"F12D3_NET_MAP")
             stacks,shapes=qa[sid];w,h=sdims[sid];data=world.attrs["@data"];raw=data.data;patch=bytearray(raw)
             floor=[q for q in shapes if corridor.ordinary(shapes[q]) and all(t==0 for t in shapes[q][1]) and q not in protected[sid] and shapes[q]==src[sid][q]]
-            if not floor:failed=True;break
+            if not floor:failed=True;row["reason"]="no_local_floor";break
             for x,y in sorted(changes):
                 q=(x,y)
-                if q in protected[sid] or not corridor.editable(src[sid][q],shapes[q]):raise ValueError("F12D3_NET_UNSAFE_EDIT")
+                if q in protected[sid] or not edit_ok(sid,q):raise ValueError("F12D3_NET_UNSAFE_EDIT")
                 f=min(floor,key=lambda t:(conn.distance(q,t),t[1],t[0]))
                 for z,t in enumerate(stacks[f]):struct.pack_into("<H",patch,20+2*(z*w*h+y*w+x),t)
-                donors.append({"map_id":m,"position":list(q),"floor_reference":list(f)})
+                donors.append({"map_id":m,"position":list(q),"floor_reference":list(f),"before_masks":list(shapes[q][0]),"before_tags":list(shapes[q][1]),"directional_conversion":partial((sid,*q))})
             data.data=bytes(patch);out=conn.serialize(world,EVENT_CLASSES)
             check=conn.read_marshal(out,"F12D3_NET_VERIFY");_,after=corridor.grid(check,tiles)
             if {q for q in shapes if shapes[q]!=after[q]}!=changes or not all(corridor.ordinary(after[q]) for q in changes):
                 raise ValueError("F12D3_NET_DELTA")
+            partial_edits={q for q in changes if partial((sid,*q))}
+            if not new_dry_edges_allowed(shapes,after,partial_edits,changes,occupied[sid]):
+                failed=True;row["reason"]="directional_conversion_opens_forbidden_neighbour";break
             data.data=raw;check.attrs["@data"].data=raw
             if conn.serialize(check,EVENT_CLASSES)!=conn.serialize(world,EVENT_CLASSES):raise ValueError("F12D3_NET_METADATA")
             trial[rel]=out;hashes[str(m)]={"before":hashlib.sha256(blobs[rel]).hexdigest(),"after":hashlib.sha256(out).hexdigest()}
-        if failed:row["reason"]="no_local_floor";continue
+        if failed:continue
         _,_,ix,_,reach,_=graph(trial);cells=trainers.reached_cells(ix,reach)
         totals={str(s):sum(p[0]==bound[s] for p in cells) for s in ids}
         row["reachable_cells"]=totals
