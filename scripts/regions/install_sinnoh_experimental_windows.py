@@ -465,6 +465,20 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile
     end
 """
     guarded=guarded.replace("__QA_PROTECTED__"," ".join(protected))
+    if f12d_integrated:
+        # The native compiler can change files and raise non-StandardError.
+        # Capture the exact request before plugin load, and keep it immutable
+        # through compilation rather than re-evaluating the filesystem scope.
+        hook=hook.replace("    if __QA_SCOPE__","    blue_sinnoh_compile_only = (__QA_SCOPE__)\n    if blue_sinnoh_compile_only",1)
+        hook=hook.replace("      $DEBUG = true","      blue_sinnoh_request = File.binread(\"Data/sinnoh-experimental-compile-request.txt\").strip\n      raise \"Sinnoh F12D: invalid compile token\" unless blue_sinnoh_request.match?(/\\A[a-f0-9]{64}\\z/)\n      $DEBUG = true\n      puts \"SINNOH_F12D_NATIVE_STAGE REQUEST_ACCEPTED\"",1)
+        guarded=guarded.replace("if __QA_SCOPE__","if blue_sinnoh_compile_only",1)
+        guarded=guarded.replace("      Compiler.main","      Compiler.main\n      puts \"SINNOH_F12D_NATIVE_STAGE COMPILER_RETURNED\" if blue_sinnoh_compile_only",1)
+        verify=verify.replace("    if __QA_SCOPE__","    if blue_sinnoh_compile_only",1)
+        verify=verify.replace("        GameData::Trainer.load","        raise \"Sinnoh F12D: compile request changed\" unless File.binread(\"Data/sinnoh-experimental-compile-request.txt\").strip==blue_sinnoh_request\n        puts \"SINNOH_F12D_NATIVE_STAGE VERIFY_ENTERED\"\n        GameData::Item.load\n        raise \"Sinnoh F12D: invalid compiled SecretPotion\" unless BlueSinnohF12D3Transaction.compiled_item_valid?\n        puts \"SINNOH_F12D_NATIVE_ITEM_COMPILED_OK\"\n        BlueSinnohF12DIntegrated.verify_native_movement!\n        puts \"SINNOH_F12D_NATIVE_MOVEMENT_PROBE_OK\"\n        BlueSinnohF12DIntegrated.verify_native_transaction!\n        puts \"SINNOH_F12D_NATIVE_TRANSACTION_PROBE_OK\"\n        GameData::Trainer.load",1)
+        # Keep all previous encounter/trainer/terrain/hook checks, not just
+        # the new native probes. Only their joint pass writes the final receipt.
+        verify=verify.replace("        File.write(\"Data/sinnoh-experimental-compiled.txt\",\n                   File.read(\"Data/sinnoh-experimental-compile-request.txt\").strip)","        File.binwrite(\"Data/sinnoh-experimental-compiled.txt\", blue_sinnoh_request)\n        raise \"Sinnoh F12D: compile receipt write failed\" unless File.binread(\"Data/sinnoh-experimental-compiled.txt\")==blue_sinnoh_request\n        puts \"SINNOH_F12D_NATIVE_STAGE ALL_VERIFIERS_PASSED\"")
+        verify=verify.replace("      rescue StandardError => error\n        File.write(\"Data/sinnoh-experimental-compile-error.txt\", error.full_message)","      rescue StandardError, ScriptError => error\n        message = [error.class.to_s, error.message, *Array(error.backtrace)].join(\"\\n\")\n        warn \"SINNOH_F12D_NATIVE_VERIFY_FAILED: #{message}\"\n        File.binwrite(\"Data/sinnoh-experimental-compile-error.txt\", message)\n        File.delete(\"Data/sinnoh-experimental-compiled.txt\") if File.file?(\"Data/sinnoh-experimental-compiled.txt\")")
     late = ""
     if story_profile:
         late = '\n    if File.basename(Dir.pwd) == "game-sinnoh-experimental-'+token+'" && File.file?("sinnoh-experimental-qa.json")\n      BlueSinnohExperimental.install_fresh_hooks!\n      BlueSinnohSafeMovement.install!\n      BlueSinnohQATeleport.install!\n      BlueSinnohForestEdge.install!\n      if defined?(EventHandlers)\n        EventHandlers.add(:on_enter_map, :blue_sinnoh_hide_starter_balls, proc { |*args| BlueSinnohPilot.hide_starter_balls; BlueSinnohPilot.sync_route_trainers })\n      end\n    end'

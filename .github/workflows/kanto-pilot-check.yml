@@ -297,11 +297,26 @@ jobs:
             Get-Content ".blue-work/sinnoh-f12d-compile-out.txt",".blue-work/sinnoh-f12d-compile-err.txt","$qa/Data/sinnoh-experimental-compile-error.txt" -ErrorAction SilentlyContinue | Select-Object -Last 80
             throw 'Sinnoh private compile-only process timed out'
           }
-          if((Test-Path "$qa/Data/sinnoh-experimental-compile-error.txt") -or
-             (-not (Test-Path "$qa/Data/sinnoh-experimental-compiled.txt")) -or
-             (Test-Path "$qa/Data/sinnoh-experimental-compile-request.txt")){
-            Get-Content ".blue-work/sinnoh-f12d-compile-out.txt",".blue-work/sinnoh-f12d-compile-err.txt","$qa/Data/sinnoh-experimental-compile-error.txt" -ErrorAction SilentlyContinue | Select-Object -Last 80
+          $nativeOut = Get-Content ".blue-work/sinnoh-f12d-compile-out.txt" -Raw -ErrorAction SilentlyContinue
+          $nativeErr = Get-Content ".blue-work/sinnoh-f12d-compile-err.txt" -Raw -ErrorAction SilentlyContinue
+          $nativeStages = @($nativeOut,$nativeErr) -join "`n"
+          $nativeStages -split "`n" | Where-Object { $_ -match 'SINNOH_F12D_NATIVE_' } | Write-Host
+          $compileError = Test-Path -LiteralPath "$qa/Data/sinnoh-experimental-compile-error.txt"
+          $compileReceipt = Test-Path -LiteralPath "$qa/Data/sinnoh-experimental-compiled.txt"
+          $compileRequest = Test-Path -LiteralPath "$qa/Data/sinnoh-experimental-compile-request.txt"
+          Write-Host "SINNOH_F12D_NATIVE_RECEIPT_STATE exit=$($process.ExitCode) error=$compileError receipt=$compileReceipt request=$compileRequest"
+          if($compileError){
+            Write-Host 'SINNOH_F12D_NATIVE_ERROR_FILE_BEGIN'
+            Get-Content -LiteralPath "$qa/Data/sinnoh-experimental-compile-error.txt" | Write-Host
+            Write-Host 'SINNOH_F12D_NATIVE_ERROR_FILE_END'
+          }
+          if($compileError -or (-not $compileReceipt) -or $compileRequest){
+            Get-Content ".blue-work/sinnoh-f12d-compile-out.txt" -ErrorAction SilentlyContinue | Select-Object -Last 30
+            Get-Content ".blue-work/sinnoh-f12d-compile-err.txt" -ErrorAction SilentlyContinue | Select-Object -Last 30
             throw 'Sinnoh native compilation/collision/transaction proof missing'
+          }
+          foreach($marker in @('SINNOH_F12D_NATIVE_ITEM_COMPILED_OK','SINNOH_F12D_NATIVE_MOVEMENT_PROBE_OK','SINNOH_F12D_NATIVE_TRANSACTION_PROBE_OK','SINNOH_F12D_NATIVE_STAGE ALL_VERIFIERS_PASSED')){
+            if($nativeStages -notmatch [regex]::Escape($marker)){throw "Missing native stage: $marker"}
           }
           if((Get-Content "$qa/Data/sinnoh-experimental-compiled.txt" -Raw).Trim() -ne $receipt.compile_token){throw 'Sinnoh compile token mismatch'}
           if(-not (Test-Path "$qa/Data/items.dat")){throw 'Sinnoh compiled item catalogue missing'}

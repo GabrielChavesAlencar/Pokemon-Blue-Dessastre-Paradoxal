@@ -28,9 +28,9 @@ LAKES={
     "VERITY":("SINNOH_LAKE_VERITY","Mars",mars.COMMANDERS,15002,(("GOLBAT",38),("BRONZOR",38),("PURUGLY",40))),
     "ACUITY":("SINNOH_LAKE_ACUITY","Jupiter",(),15003,()),
 }
-def graph(data,mapping,components,root,seed,rock=(),valor_rock=(),blocked_cells=(),blocked_lanes=()):
+def graph(data,mapping,components,root,seed,rock=(),valor_rock=(),blocked_cells=(),blocked_lanes=(),post_chase_story=False):
     old={k:v for k,v in mapping.items() if k in chase.prior.ALL}
-    w,t,i,_,r,_=gates.access_graph(data,old,components,root,seed_cells=[seed],directional=True,strict_movement=True,rock_cells=rock,valor_rock=valor_rock,blocked_cells=blocked_cells,blocked_lanes=blocked_lanes)
+    w,t,i,_,r,_=gates.access_graph(data,old,components,root,seed_cells=[seed],directional=True,strict_movement=True,rock_cells=rock,valor_rock=valor_rock,blocked_cells=blocked_cells,blocked_lanes=blocked_lanes,post_chase_story=post_chase_story)
     return w,t,trainers.reached_cells(i,r)
 
 def add_event(data,mid,xy,key,sprite,cleared=False):
@@ -63,8 +63,8 @@ def protected(data,mapping,components,root):
             if tr:result.add((tr[2],tr[3],tr[4]))
     return result
 
-def placement(data,mapping,components,root,mid,seed,rock=(),valor_rock=()):
-    worlds,tiles,reached=graph(data,mapping,components,root,seed,rock,valor_rock)
+def placement(data,mapping,components,root,mid,seed,rock=(),valor_rock=(),post_chase_story=False):
+    worlds,tiles,reached=graph(data,mapping,components,root,seed,rock,valor_rock,post_chase_story=post_chase_story)
     if mid not in worlds:return None
     world=worlds[mid];w,h=world.attrs["@width"],world.attrs["@height"]
     forbid=protected(data,mapping,components,root)|{seed}
@@ -74,7 +74,7 @@ def placement(data,mapping,components,root,mid,seed,rock=(),valor_rock=()):
         stands=[q for q in tp.neighbours(*xy) if (mid,*q) in reached and (mid,*q) not in forbid]
         if not stands:continue
         trial,loc=add_event(data,mid,xy,"PLACEMENT_PROBE","")
-        _,_,after=graph(trial,mapping,components,root,seed,rock,valor_rock)
+        _,_,after=graph(trial,mapping,components,root,seed,rock,valor_rock,post_chase_story=post_chase_story)
         if reached-{(mid,*xy)}<=after:
             for q in sorted(stands):
                 if (mid,*q) in after:return xy,q
@@ -112,6 +112,74 @@ def lake_contract(key,types,species,existing):
 
 def ruby_hash(mapping):
     return "{"+",".join(json.dumps(k)+"=>"+json.dumps(v) for k,v in sorted(mapping.items()))+"}"
+
+def recover_lake_seams(data,mapping,components,root,expanded,seed,previews,rock,valor_rock):
+    from sinnoh_f12d3_alternate_route212 import reserved
+    import sinnoh_f12d3_route210_recovery as recovery
+    old={k:v for k,v in mapping.items() if k in chase.prior.ALL}
+    edge_sink={}
+    worlds,_,index,_,_,_=gates.access_graph(data,old,components,root,seed_cells=[seed],
+        directional=True,strict_movement=True,rock_cells=rock,valor_rock=valor_rock,
+        post_chase_story=True,edge_sink=edge_sink)
+    dims={m:(w.attrs["@width"],w.attrs["@height"]) for m,w in worlds.items()}
+    current=pv.parse_connections(data["PBS/map_connections.txt"])
+    if conn.read_marshal(data["Data/map_connections.dat"],"F12D_LAKE_CONNECTIONS")!=[recovery.encode(r) for r in current]:
+        raise ValueError("F12D_LAKE_COMPILED_CONNECTIONS_MISMATCH")
+    edges={u:{(v,(),True) for v in vs} for u,vs in edge_sink.items()}
+    eligible=[]
+    for e in expanded["edge_candidates"]:
+        r=tuple(e["qa_record"])
+        if r[0] not in index or r[3] not in index or e["installed"] or e["source_side_conflict"] or reserved(r,current,dims):continue
+        if e["source_qa_mismatch_count"] or not e["matching_walkable_axes"]:continue
+        lanes=gated.all_lanes(r,index,dims)
+        if [n for n,_,_ in lanes]!=e["matching_walkable_axes"]:continue
+        eligible.append(r)
+        for _,a,b in lanes:
+            u=(r[0],index[r[0]][a]);v=(r[3],index[r[3]][b])
+            edges.setdefault(u,set()).add((v,r,False));edges.setdefault(v,set()).add((u,r,False))
+    report={"eligible_original_seams":len(eligible),"legs":{},"accepted_records":[],"new_portals":0,"terrain_changes":0}
+    def node(q):
+        label=index.get(q[0],{}).get(tuple(q[1:]))
+        return (q[0],label) if label is not None else None
+    added=[];predecessor=seed;complete=True
+    for key in ORDER:
+        loc=previews.get(key)
+        if not loc:
+            report["legs"][key]={"reason":"missing_local_position"};complete=False;predecessor=None;continue
+        goal=(loc["map_id"],*loc["stand"])
+        a=node(predecessor) if predecessor is not None else None;b=node(goal)
+        predecessor=goal
+        if a is None or b is None:
+            report["legs"][key]={"reason":"missing_component"};complete=False;continue
+        d,p=original_audit.component_paths(edges,[a])
+        if b not in d:
+            report["legs"][key]={"reason":"no_original_dry_seam_path"};complete=False;continue
+        candidate=[r for _,_,r,installed in original_audit.trace(b,p) if not installed]
+        report["legs"][key]={"minimum_new_original_seams":d[b][0],"records":[list(r) for r in candidate]}
+        for r in candidate:
+            if r in added:continue
+            if reserved(r,current+added,dims):
+                complete=False;report["legs"][key]["reason"]="candidate_interval_conflict";break
+            added.append(r)
+    if not complete or not added or len(added)>12:
+        report["reason"]="complete_original_sequence_not_proved" if not complete else "no_additive_recovery_needed_or_budget_exceeded"
+        return data,[],report
+    trial=dict(data)
+    trial["PBS/map_connections.txt"]=data["PBS/map_connections.txt"]+("\n# F12D verified original lake seams\n"+"\n".join(",".join(map(str,r)) for r in added)+"\n").encode("ascii")
+    trial["Data/map_connections.dat"]=conn.serialize([recovery.encode(r) for r in current+added])
+    if tp.build(trial,old,components,root)!=tp.build(data,old,components,root):
+        report["reason"]="qa_entries_changed";return data,[],report
+    predecessor=seed
+    for key in ORDER:
+        loc=previews[key];goal=(loc["map_id"],*loc["stand"])
+        _,_,prior=graph(data,mapping,components,root,predecessor,rock,valor_rock,post_chase_story=True)
+        _,_,after=graph(trial,mapping,components,root,predecessor,rock,valor_rock,post_chase_story=True)
+        if not prior<=after or goal not in after:
+            report["reason"]="serialized_original_sequence_not_proved";return data,[],report
+        predecessor=goal
+    report["accepted_records"]=[list(r) for r in added]
+    report["reason"]="complete_original_sequence_fixture_proved"
+    return trial,added,report
 
 def compile_story(blobs,mapping,components,cr,expanded,original,source,root,types,species,items,existing):
     chase.validate(blobs,mapping);before=chase.digest(blobs)
@@ -179,6 +247,13 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
     specs={};pbs=[];lake_seed=min(q for q in restored if q[0]==town);lake_ready=[]
     result["lake_sequence_seed"]=list(lake_seed)
     result["lake_sequence_checks"]={}
+    # All three legs must be proved before any original seam is staged.
+    recovered,lake_seams,lake_recovery=recover_lake_seams(reopened,mapping,components,root,expanded,lake_seed,result["lake_local_previews"],rock,valor_rock)
+    result["lake_original_seam_recovery"]=lake_recovery
+    if lake_seams:
+        for path in ("PBS/map_connections.txt","Data/map_connections.dat"):
+            out[path]=recovered[path]
+        reopened=recovered
     # Independent physical legs are useful for implementing all three at once.
     # They never grant a sequential payload without the actual predecessor.
     result["lake_independent_legs"]={}
@@ -189,7 +264,7 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
             result["lake_independent_legs"][key]={"reason":"local_position_missing"}
             predecessor=None;continue
         if predecessor is not None:
-            _,_,cells=graph(reopened,mapping,components,root,predecessor,rock,valor_rock)
+            _,_,cells=graph(reopened,mapping,components,root,predecessor,rock,valor_rock,post_chase_story=True)
             goal=(preview["map_id"],*preview["stand"])
             result["lake_independent_legs"][key]={"from":list(predecessor),"to":list(goal),
                 "reachable":goal in cells,"target_map_reachable_cells":sum(q[0]==goal[0] for q in cells)}
@@ -201,7 +276,7 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
         if not contract or contract["symbol"] not in mapping:
             result["lake_sequence_checks"][key]={"reason":"missing_contract_or_map"};break
         lm=mapping[contract["symbol"]]
-        pos=placement(reopened,mapping,components,root,lm,lake_seed,rock,valor_rock)
+        pos=placement(reopened,mapping,components,root,lm,lake_seed,rock,valor_rock,post_chase_story=True)
         if not pos:
             result["lake_sequence_checks"][key]={"from":list(lake_seed),"map_id":lm,"reason":"no_proven_reachable_noncut_position"};break
         xy,stand=pos;sprite="SNQA_F12D_"+key
@@ -214,6 +289,8 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
             specs[key]=spec
             pbs.append("[%s,%s,%d]\nLoseText = Voce venceu!\n%s\n"%(spec[0],spec[1],spec[2],"\n".join("Pokemon = %s,%d"%tuple(p) for p in spec[4])))
         result["lake_placements"][key]=loc
+    if lake_seams and lake_ready!=list(ORDER):
+        result["reason"]="original_lake_sequence_events_not_proved";return {},result,b""
     # Staging only until the private engine, sprites and pre-chase seam gate pass.
     template=(root/"scripts/regions/SinnohF12DIntegrated.rb").read_text("utf-8")
     literal={k:[v["map_id"],*v["position"],v["event_id"]] for k,v in locations.items()}
@@ -229,6 +306,16 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
         return sorted(keys)
     edits=sorted([row["map_id"],*row["position"]] for row in prepared["edits"])
     chase_lanes=lane_keys(prepared["connections"]);celestic_lanes=lane_keys([prepared["exit_record"]])
+    # Gate every physically aligned coordinate of a new original lake seam,
+    # not just dry model lanes, to prevent pre-SecretPotion bypass.
+    if lake_seams:
+        import sinnoh_f12d_seams as seams
+        for a,da,oa,b,db,ob in lake_seams:
+            for n in seams.aligned_axes(da,oa,dims[a],db,ob,dims[b]):
+                left=[a,*seams.point(n,da,oa,dims[a])]
+                right=[b,*seams.point(n,db,ob,dims[b])]
+                celestic_lanes.extend([left+right,right+left])
+        celestic_lanes=sorted(celestic_lanes)
     blocked={tuple(q) for q in edits};lanes={tuple(q) for q in chase_lanes+celestic_lanes}
     event_cells={(v["map_id"],*v["position"]) for v in locations.values()}
     checks=[]
@@ -263,7 +350,7 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
     out.update(sprites)
     delta={k:v for k,v in out.items() if blobs.get(k)!=v}
     result.update(status="F12D_INTEGRATED_GAMEPLAY_FIXTURE",mission_prepared=True,locations=locations,
-        lake_payloads=lake_ready,new_events=len(locations),new_seams=len(prepared["connections"])+1,geometry_delta_count=len(prepared["edits"]),
+        lake_payloads=lake_ready,new_events=len(locations),new_seams=len(prepared["connections"])+1+len(lake_seams),geometry_delta_count=len(prepared["edits"]),
         closed_cells=len(closed),reopened_cells=len(restored),requires_local_engine=True,
         requires_pre_chase_seam_gate=True,reason="local_engine_and_progression_activation_pending",
         payload_hashes={k:hashlib.sha256(v).hexdigest() for k,v in delta.items()})
@@ -450,6 +537,7 @@ def installer_preflight(blobs,mapping,components,cr,base,root,source,staged=None
             lake_local_previews=story.get("lake_local_previews",{}),lake_payloads=story.get("lake_payloads",[]),
             lake_sequence_checks=story.get("lake_sequence_checks",{}),
             lake_independent_legs=story.get("lake_independent_legs",{}),
+            lake_original_seam_recovery=story.get("lake_original_seam_recovery",{}),
             pre_chase_graph_checks=story.get("pre_chase_graph_checks",[]),
             geometry_delta_count=story.get("geometry_delta_count",0),
             progression_gate=story.get("progression_gate",{}),

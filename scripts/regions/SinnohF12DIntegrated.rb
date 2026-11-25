@@ -81,7 +81,7 @@ module BlueSinnohF12DIntegrated
       p.instance_variable_set(:@through,false); p.instance_variable_set(:@character_name,"Probe")
       check=lambda do |label,expected,x,y,d,strict|
         actual=p.passable?(x,y,d,strict)
-        raise "Sinnoh F12D: prova passable? #{label}" unless actual==expected
+        raise "Sinnoh F12D: prova passable? #{label} x=#{x} y=#{y} dir=#{d} strict=#{strict} expected=#{expected.inspect} actual=#{actual.inspect}" unless actual==expected
       end
       [2,4,6,8].each do |dir|
         dx=(dir==6 ? 1 : dir==4 ? -1 : 0)
@@ -139,6 +139,8 @@ module BlueSinnohF12DIntegrated
     raise "Sinnoh F12D: hooks ausentes" unless Game_Event.ancestors.include?(BarrierPages) && Game_Player.ancestors.include?(ProgressionMovement)
     raise "Sinnoh F12D: hooks sobrescritos" unless Game_Player.instance_method(:move_generic).owner==ProgressionMovement &&
       Game_Event.instance_method(:refresh).owner==BarrierPages
+    # Both native probes have already run at the beginning of the private
+    # compile verification. Repeat them here for the complete proof.
     verify_native_movement!
     verify_native_transaction!
     true

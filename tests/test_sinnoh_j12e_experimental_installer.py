@@ -3499,6 +3499,25 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertFalse(i.activation_allowed(story,{"Data/Map473.rxdata":b"tampered"},b"ruby",engine,item))
         self.assertFalse(i.activation_allowed(dict(story,pre_chase_graph_checks=[]),payload,b"ruby",engine,item))
 
+    def test_post_chase_verity_entry_recognizes_only_exact_existing_gate(self):
+        import sinnoh_f10b7_field_audit as gates
+        import sinnoh_private_visual as pv
+        from build_johto_events import ruby,event_page,command
+        mapping={"SINNOH_VERITY_LAKEFRONT":451,"SINNOH_LAKE_VERITY":447}
+        page=event_page(warp=(447,44,42),touch=True)
+        ops=page.attrs["@list"]
+        transfer=ops[0];transfer.attrs["@indent"]=1;transfer.attrs["@parameters"][4]=8
+        ending=command(0);ending.attrs["@indent"]=1
+        page.attrs["@list"]=[command(111,12,b"BlueSinnohPilot.lake_entry_allowed?"),transfer,ending,command(412),command(0)]
+        event=ruby("RPG::Event",id=99,name=b"SN_LAKEFRONT_TO_LAKE_1",x=10,y=2,pages=[page])
+        self.assertEqual(gates.verified_verity_entry(event,451,mapping),(10,2,447,44,42,8,transfer.attrs["@parameters"][5]))
+        self.assertIsNone(gates.verified_verity_entry(event,452,mapping))
+        transfer.attrs["@parameters"][2]=45
+        self.assertIsNone(gates.verified_verity_entry(event,451,mapping))
+        transfer.attrs["@parameters"][2]=44
+        page.attrs["@list"][0].attrs["@parameters"][1]=b"true"
+        self.assertIsNone(gates.verified_verity_entry(event,451,mapping))
+
     def test_private_regional_catalogue_missing_types_are_additive(self):
         import tempfile
         from pathlib import Path
