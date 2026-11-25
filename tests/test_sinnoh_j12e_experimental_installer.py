@@ -1438,6 +1438,23 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                     self.assertIn(b"TrainerBattle.start_core",jplugin)
                     self.assertIn(b"BlueSinnohF12C3",jplugin)
                     print("SINNOH_REAL_F12C3_AUTHORED_QUEST_FIXTURE_CANDIDATE_OK",flush=True)
+                    import sinnoh_f12c4_install as activation
+                    with patch.object(activation.quest,"local_preview",return_value=(qdelta,jr,jplugin)), patch.object(activation.trainers,"catalogue",return_value={"HM01"}):
+                        installed,expanded,expanded_comps,ir,ip=activation.append(wo,wi,wc,delta,pr,Path("fixture"),ROOT,{"candidate_runtime_handlers":5})
+                    self.assertEqual(ir["status"],"F12C4_INSTALL_PREPARED")
+                    self.assertEqual(len(expanded),144)
+                    self.assertEqual(len(set(expanded.values())),144)
+                    self.assertTrue(all(expanded[k]==v for k,v in wi.items()))
+                    self.assertEqual(installed["Data/map_connections.dat"],wo["Data/map_connections.dat"])
+                    city=pr["city_entry_candidate"]["map_id"]
+                    self.assertTrue(all(installed["Data/Map%03d.rxdata"%mid]==wo["Data/Map%03d.rxdata"%mid] for mid in wi.values() if mid!=city))
+                    self.assertEqual(activation.tp.build(installed,wi,expanded_comps,ROOT),activation.tp.build(wo,wi,wc,ROOT))
+                    self.assertEqual(ir["new_portals"],8)
+                    self.assertFalse(ir["native_verified"])
+                    self.assertIn(b"record_sinnoh_hm",ip)
+                    ir["catalog_provenance"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
+                    print("SINNOH_F12C4_INSTALL_FIXTURE_REPORT "+json.dumps(ir,sort_keys=True),flush=True)
+                    print("SINNOH_REAL_F12C4_144_MAP_INSTALL_FIXTURE_140_BASELINE_PRESERVED_OK",flush=True)
                 jr["catalog_provenance"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
                 print("SINNOH_F12C3_QUEST_CANDIDATE_REPORT "+json.dumps(jr,sort_keys=True),flush=True)
             qo,qr,qp=quest.build(wo,wi,wc,{"GALACTIC_GRUNT","GALACTIC_ADMIN"},{"GLAMEOW","STUNKY","ZUBAT","PURUGLY"},{"WORKSKEY"},set(),ROOT)
@@ -2965,6 +2982,16 @@ puts "F12B5_AUTHORED_QUEST_CONFIRMED_WINS_KEY_SCOPE_OK"
         self.assertFalse(plugin)
         self.assertEqual(report["reason"],"requires_valid_144_map_preview")
         self.assertFalse(report["runtime_install_enabled"])
+
+    def test_f12c4_install_blocked_without_baseline_and_mars(self):
+        import sinnoh_f12c4_install as install
+        self.assertEqual(len(install.ALL),144)
+        blobs={"unchanged":b"x"}
+        result,mapping,components,report,plugin=install.append(blobs,{}, {}, {}, {},Path("unused"),ROOT,{})
+        self.assertIs(result,blobs)
+        self.assertFalse(plugin)
+        self.assertFalse(report["runtime_install_enabled"])
+        self.assertEqual(report["reason"],"requires_140_baseline")
 
     def test_f11a_gym_contract_and_collision_guards(self):
         import sinnoh_f11a_gym as g

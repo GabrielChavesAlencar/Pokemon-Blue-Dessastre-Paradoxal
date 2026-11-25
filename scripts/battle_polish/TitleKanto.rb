@@ -336,10 +336,11 @@ module BlueKantoTitle
       extra_keys = %w[SINNOH_RESORT_AREA SINNOH_CYCLING_ROAD SINNOH_SURVIVAL_AREA SINNOH_FIGHT_AREA]
       gym_keys = %w[SINNOH_OREBURGH_GYM SINNOH_ETERNA_GYM SINNOH_HEARTHOME_GYM SINNOH_VEILSTONE_GYM SINNOH_PASTORIA_GYM SINNOH_CANALAVE_GYM SINNOH_SNOWPOINT_GYM SINNOH_SUNYSHORE_GYM]
       windworks_key = "SINNOH_VALLEY_WINDWORKS"
+      eterna_keys = (1..4).map { |n| "SINNOH_GALACTIC_ETERNA_#{n}F" }
       natural_report = data["natural_expansion"]
       if natural_report.is_a?(Hash) && !natural_report.empty?
         natural_keys = %w[SINNOH_OREBURGH_MINE SINNOH_OREBURGH_GATE SINNOH_MT_CORONET_WEST_APPROACH SINNOH_SOLACEON_RUINS SINNOH_ETERNA_FOREST SINNOH_ETERNA_FOREST_SOURCE_093 SINNOH_FLOAROMA_MEADOW SINNOH_MT_CORONET_SOURCE_117 SINNOH_MT_CORONET_INTERIOR_ROUTES SINNOH_RAVAGED_PATH SINNOH_STARK_MOUNTAIN SINNOH_STARK_MOUNTAIN_SOURCE_153 SINNOH_ACUITY_LAKEFRONT SINNOH_LAKE_ACUITY SINNOH_ACUITY_CAVERN SINNOH_SNOWPOINT_TEMPLE SINNOH_MT_CORONET_SOURCE_174 SINNOH_MT_CORONET_SOURCE_182 SINNOH_MT_CORONET_SOURCE_183 SINNOH_MT_CORONET_SOURCE_184 SINNOH_WAYWARD_CAVE SINNOH_WAYWARD_CAVE_SOURCE_190 SINNOH_VERITY_CAVERN SINNOH_MANIAC_TUNNEL SINNOH_SPRING_PATH SINNOH_SENDOFF_SPRING SINNOH_TURNBACK_CAVE SINNOH_TURNBACK_CAVE_SOURCE_211 SINNOH_TURNBACK_CAVE_SOURCE_212 SINNOH_TURNBACK_CAVE_SOURCE_213 SINNOH_VALOR_LAKEFRONT SINNOH_LAKE_VALOR SINNOH_LAKE_VALOR_SOURCE_216 SINNOH_VALOR_CAVERN SINNOH_GREAT_MARSH]
-        return sinnoh_qa_block("Manifesto F06 invalido.") unless expected_count == 56 && ids.is_a?(Hash) && natural_report.keys.sort == natural_keys.sort && natural_keys.all? { |k| ids.key?(k) && natural_report[k].is_a?(Hash) && natural_report[k]["target_id"] == ids[k] } && ids.all? { |k,n| natural_keys.include?(k) || (interior_report.is_a?(Hash) && !interior_report.empty? && interior_keys.include?(k)) || (extra_report.is_a?(Hash) && !extra_report.empty? && extra_keys.include?(k)) || gym_keys.include?(k) || k==windworks_key || (n.is_a?(Integer) && n.between?(442,517)) }
+        return sinnoh_qa_block("Manifesto F06 invalido.") unless expected_count == 56 && ids.is_a?(Hash) && natural_report.keys.sort == natural_keys.sort && natural_keys.all? { |k| ids.key?(k) && natural_report[k].is_a?(Hash) && natural_report[k]["target_id"] == ids[k] } && ids.all? { |k,n| natural_keys.include?(k) || (interior_report.is_a?(Hash) && !interior_report.empty? && interior_keys.include?(k)) || (extra_report.is_a?(Hash) && !extra_report.empty? && extra_keys.include?(k)) || gym_keys.include?(k) || k==windworks_key || eterna_keys.include?(k) || (n.is_a?(Integer) && n.between?(442,517)) }
         expected_count = 91
       end
       if interior_report.is_a?(Hash) && !interior_report.empty?
@@ -370,6 +371,20 @@ module BlueKantoTitle
           windworks["baseline_preserved"]==true
         expected_count+=1
         gym_art << "Graphics/Tilesets/SNQA_F12B_111.png"
+      end
+      eterna = data["f12c4_install"]
+      if eterna.is_a?(Hash) && eterna["runtime_install_enabled"] == true
+        rooms = eterna["rooms"]
+        return sinnoh_qa_block("Manifesto Galactic Eterna invalido.") unless expected_count==140 &&
+          ids.is_a?(Hash) && rooms.is_a?(Array) && rooms.length==4 &&
+          eterna["status"]=="F12C4_INSTALL_PREPARED" && eterna["maps_after"]==144 &&
+          eterna["baseline_preserved"]==true && eterna["new_portals"]==8 &&
+          eterna["qa_teleport_excluded"]==eterna_keys &&
+          rooms.each_with_index.all? { |r,i| r.is_a?(Hash) && r["symbol"]==eterna_keys[i] &&
+            ids[r["symbol"]]==r["map_id"] && files.is_a?(Hash) &&
+            files[sprintf("Data/Map%03d.rxdata",r["map_id"])]==r["sha256"] }
+        expected_count+=4
+        gym_art << "Graphics/Tilesets/SNQA_F12C2_GALACTIC.png"
       end
       return sinnoh_qa_block("MapIDs QA invalidos ou colisao entre mapas.") unless
         ids.is_a?(Hash) && ids.length == expected_count &&
