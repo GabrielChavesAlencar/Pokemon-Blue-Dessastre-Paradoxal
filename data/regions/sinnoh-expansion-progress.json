@@ -1805,7 +1805,22 @@
       "f12d_integrated_latest_validated_f12c4_marker": true,
       "f12d_integrated_native_stage_receipts_implemented": true,
       "f12d_integrated_original_lake_seam_recovery_implemented": true,
-      "f12d_integrated_original_lake_sequence_confirmed": false
+      "f12d_integrated_original_lake_sequence_confirmed": false,
+      "f12d_integrated_latest_observed_head": "d9295be538806e7ad54ee546551829d6f7f28cb0",
+      "f12d_integrated_latest_observed_native_job": 139416151438,
+      "f12d_integrated_latest_observed_source_job": 139416152125,
+      "f12d_integrated_latest_observed_workflows_approved": 10,
+      "f12d_integrated_latest_observed_jobs_approved": 25,
+      "f12d_integrated_native_request_accepted_confirmed": true,
+      "f12d_integrated_native_compiler_return_confirmed": false,
+      "f12d_integrated_native_item_probe_confirmed": false,
+      "f12d_integrated_native_movement_probe_confirmed": false,
+      "f12d_integrated_native_transaction_probe_confirmed": false,
+      "f12d_integrated_original_lake_seam_candidates_observed": 21,
+      "f12d_integrated_original_lake_seams_accepted_observed": 0,
+      "f12d_integrated_original_lake_legs_confirmed": 0,
+      "f12d_integrated_core_compiler_boundary_restore_implemented": true,
+      "f12d_integrated_existing_portal_arrival_model_implemented": true
     },
     {
       "id": "F13",

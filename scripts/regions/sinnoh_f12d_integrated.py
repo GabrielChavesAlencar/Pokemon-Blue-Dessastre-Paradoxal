@@ -137,7 +137,9 @@ def recover_lake_seams(data,mapping,components,root,expanded,seed,previews,rock,
         for _,a,b in lanes:
             u=(r[0],index[r[0]][a]);v=(r[3],index[r[3]][b])
             edges.setdefault(u,set()).add((v,r,False));edges.setdefault(v,set()).add((u,r,False))
-    report={"eligible_original_seams":len(eligible),"legs":{},"accepted_records":[],"new_portals":0,"terrain_changes":0}
+    report={"eligible_original_seams":len(eligible),"legs":{},"accepted_records":[],"new_portals":0,"terrain_changes":0,
+        "existing_directed_edges":sum(len(v) for v in edge_sink.values()),
+        "portal_arrival_model":"ACTION_THROUGH_AND_DIRECTED_TOUCH_LANDING"}
     def node(q):
         label=index.get(q[0],{}).get(tuple(q[1:]))
         return (q[0],label) if label is not None else None
@@ -153,7 +155,12 @@ def recover_lake_seams(data,mapping,components,root,expanded,seed,previews,rock,
             report["legs"][key]={"reason":"missing_component"};complete=False;continue
         d,p=original_audit.component_paths(edges,[a])
         if b not in d:
-            report["legs"][key]={"reason":"no_original_dry_seam_path"};complete=False;continue
+            frontier={u[0] for u in d}
+            report["legs"][key]={"reason":"no_original_dry_seam_path",
+                "reachable_maps":sorted(frontier),"reachable_components":len(d),
+                "destination_components_reached":sorted(label for m,label in d if m==goal[0]),
+                "unreached_adjacent_original_records":[list(r) for r in eligible if (r[0] in frontier)!=(r[3] in frontier)]}
+            complete=False;continue
         candidate=[r for _,_,r,installed in original_audit.trace(b,p) if not installed]
         report["legs"][key]={"minimum_new_original_seams":d[b][0],"records":[list(r) for r in candidate]}
         for r in candidate:

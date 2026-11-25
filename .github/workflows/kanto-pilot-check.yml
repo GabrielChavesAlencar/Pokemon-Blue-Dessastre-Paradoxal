@@ -266,6 +266,7 @@ jobs:
               "runtime_install_enabled":integrated["runtime_install_enabled"],
               "pre_chase_graph_checks":integrated.get("pre_chase_graph_checks",[]),
               "lake_payloads":integrated.get("lake_payloads",[]),
+              "lake_original_seam_recovery":integrated.get("lake_original_seam_recovery",{}),
               "lake_independent_legs":integrated.get("lake_independent_legs",{}),
               "item":integrated.get("item_catalogue",{})},sort_keys=True),flush=True)
           assert report["maps_prepared"]==144, "actual installed Blue did not prepare all 144 maps"
@@ -315,7 +316,7 @@ jobs:
             Get-Content ".blue-work/sinnoh-f12d-compile-err.txt" -ErrorAction SilentlyContinue | Select-Object -Last 30
             throw 'Sinnoh native compilation/collision/transaction proof missing'
           }
-          foreach($marker in @('SINNOH_F12D_NATIVE_ITEM_COMPILED_OK','SINNOH_F12D_NATIVE_MOVEMENT_PROBE_OK','SINNOH_F12D_NATIVE_TRANSACTION_PROBE_OK','SINNOH_F12D_NATIVE_STAGE ALL_VERIFIERS_PASSED')){
+          foreach($marker in @('SINNOH_F12D_NATIVE_STAGE CORE_COMPILED_AND_RESTORED','SINNOH_F12D_NATIVE_STAGE COMPILER_RETURNED','SINNOH_F12D_NATIVE_ITEM_COMPILED_OK','SINNOH_F12D_NATIVE_MOVEMENT_PROBE_OK','SINNOH_F12D_NATIVE_TRANSACTION_PROBE_OK','SINNOH_F12D_NATIVE_STAGE ALL_VERIFIERS_PASSED')){
             if($nativeStages -notmatch [regex]::Escape($marker)){throw "Missing native stage: $marker"}
           }
           if((Get-Content "$qa/Data/sinnoh-experimental-compiled.txt" -Raw).Trim() -ne $receipt.compile_token){throw 'Sinnoh compile token mismatch'}

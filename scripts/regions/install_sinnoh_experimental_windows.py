@@ -472,7 +472,63 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile
         hook=hook.replace("    if __QA_SCOPE__","    blue_sinnoh_compile_only = (__QA_SCOPE__)\n    if blue_sinnoh_compile_only",1)
         hook=hook.replace("      $DEBUG = true","      blue_sinnoh_request = File.binread(\"Data/sinnoh-experimental-compile-request.txt\").strip\n      raise \"Sinnoh F12D: invalid compile token\" unless blue_sinnoh_request.match?(/\\A[a-f0-9]{64}\\z/)\n      $DEBUG = true\n      puts \"SINNOH_F12D_NATIVE_STAGE REQUEST_ACCEPTED\"",1)
         guarded=guarded.replace("if __QA_SCOPE__","if blue_sinnoh_compile_only",1)
-        guarded=guarded.replace("      Compiler.main","      Compiler.main\n      puts \"SINNOH_F12D_NATIVE_STAGE COMPILER_RETURNED\" if blue_sinnoh_compile_only",1)
+        # The core compiler returns before the Blue/Decades alias chain has
+        # finished. Restore the pinned QA bytes at that boundary, not only
+        # after the outer method returns: native post-hooks may inspect them.
+        # Never prepend Compiler.main (the installed plugins alias that method).
+        guarded=guarded.replace("      Compiler.main", """      if blue_sinnoh_compile_only
+        blue_sinnoh_core_compiled = false
+        blue_sinnoh_restore = proc do
+          blue_sinnoh_native_sources.each do |path, original|
+            File.binwrite(path, original) if !File.file?(path) || File.binread(path) != original
+          end
+        end
+        blue_sinnoh_core = Compiler.method(:compile_all)
+        Compiler.define_singleton_method(:compile_all) do |must_compile|
+          begin
+            value = blue_sinnoh_core.call(must_compile)
+            if must_compile
+              blue_sinnoh_restore.call
+              blue_sinnoh_core_compiled = true
+              puts "SINNOH_F12D_NATIVE_STAGE CORE_COMPILED_AND_RESTORED"
+            end
+            value
+          ensure
+            blue_sinnoh_restore.call
+          end
+        end
+        begin
+          begin
+            Compiler.main
+          rescue SystemExit => error
+            # A successful exit after the real core compiled is not acceptance.
+            # Finish the actual alias chain once, without a second forced PBS
+            # rewrite. Any further exit or error is a hard failure.
+            raise unless error.success? && blue_sinnoh_core_compiled
+            puts "SINNOH_F12D_NATIVE_STAGE POST_COMPILE_EXIT_RETRY"
+            blue_sinnoh_previous_debug = $DEBUG
+            begin
+              $DEBUG = false
+              Compiler.main
+            ensure
+              $DEBUG = blue_sinnoh_previous_debug
+            end
+          end
+          raise "Sinnoh F12D: core did not compile fresh PBS" unless blue_sinnoh_core_compiled
+          puts "SINNOH_F12D_NATIVE_STAGE COMPILER_RETURNED"
+        rescue Exception => error
+          message = [error.class.to_s, error.message, *Array(error.backtrace)].join("\\n")
+          warn "SINNOH_F12D_NATIVE_VERIFY_FAILED: COMPILER #{message}"
+          File.binwrite("Data/sinnoh-experimental-compile-error.txt", message)
+          File.delete("Data/sinnoh-experimental-compiled.txt") if File.file?("Data/sinnoh-experimental-compiled.txt")
+          raise
+        ensure
+          Compiler.singleton_class.send(:define_method, :compile_all, blue_sinnoh_core)
+          blue_sinnoh_restore.call
+        end
+      else
+        Compiler.main
+      end""",1)
         verify=verify.replace("    if __QA_SCOPE__","    if blue_sinnoh_compile_only",1)
         verify=verify.replace("        GameData::Trainer.load","        raise \"Sinnoh F12D: compile request changed\" unless File.binread(\"Data/sinnoh-experimental-compile-request.txt\").strip==blue_sinnoh_request\n        puts \"SINNOH_F12D_NATIVE_STAGE VERIFY_ENTERED\"\n        GameData::Item.load\n        raise \"Sinnoh F12D: invalid compiled SecretPotion\" unless BlueSinnohF12D3Transaction.compiled_item_valid?\n        puts \"SINNOH_F12D_NATIVE_ITEM_COMPILED_OK\"\n        BlueSinnohF12DIntegrated.verify_native_movement!\n        puts \"SINNOH_F12D_NATIVE_MOVEMENT_PROBE_OK\"\n        BlueSinnohF12DIntegrated.verify_native_transaction!\n        puts \"SINNOH_F12D_NATIVE_TRANSACTION_PROBE_OK\"\n        GameData::Trainer.load",1)
         # Keep all previous encounter/trainer/terrain/hook checks, not just

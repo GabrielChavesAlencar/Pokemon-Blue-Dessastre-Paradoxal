@@ -145,7 +145,7 @@ def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=Fal
     reverse={mid:sym for sym,mid in mapping.items()}
     tiles=conn.read_marshal(blobs["Data/Tilesets.rxdata"],"F10B7_QA_TILES")
     worlds={mid:conn.read_marshal(blobs["Data/Map%03d.rxdata"%mid],"F10B7_QA") for mid in reverse}
-    index={};groups={};free={};passages={}
+    index={};groups={};free={};passages={};arrival_only={};portal_events={}
     rock_cells=set(rock_cells);valor_rock=dict(valor_rock);blocked_cells=set(blocked_cells);blocked_lanes=set(blocked_lanes)
     if (blocked_cells or blocked_lanes or post_chase_story) and (not directional or not strict_movement):raise ValueError("F12D_GATE_GRAPH_SCOPE")
     if valor_rock and (not directional or not strict_movement or any(reverse.get(m)!="SINNOH_VALOR_CAVERN" for m,x,y in valor_rock)):
@@ -155,6 +155,22 @@ def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=Fal
         raise ValueError("F12D3_ROCK_GRAPH_SCOPE")
     for mid,world in worlds.items():
         occupied={(e.attrs["@x"],e.attrs["@y"]) for e in world.attrs["@events"].values()}
+        if post_chase_story:
+            # Only existing statically recognised through transfers qualify.
+            # Ordinary NPCs, conditions and solid events remain occupied.
+            by_cell={}
+            for e in world.attrs["@events"].values():
+                by_cell.setdefault((e.attrs["@x"],e.attrs["@y"]),[]).append(e)
+            for xy,events in by_cell.items():
+                if len(events)!=1:continue
+                e=events[0]
+                transfer,_=conn.classify_transfer(e)
+                if not transfer:transfer=verified_verity_entry(e,mid,mapping)
+                if not transfer:continue
+                p=e.attrs["@pages"][0].attrs
+                if p.get("@through") is not True:continue
+                portal_events[mid,xy]=p.get("@trigger")
+                if p.get("@trigger")==0:occupied.discard(xy)
         if directional:
             passages[mid]=directional_masks(world,tiles)
             # The private movement guard rejects every stack with any passage bit.
@@ -189,6 +205,18 @@ def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=Fal
                 if m==mid:passages[mid].pop((x,y),None)
             free[mid]=set(passages[mid])-occupied
             index[mid],groups[mid]=index_components(free[mid],passages[mid])
+            if post_chase_story:
+                # An actual transfer can land on an automatic through portal.
+                # Such a cell can be left, but stepping onto it must trigger
+                # the transfer rather than silently connecting components.
+                for (m,xy),trigger in sorted(portal_events.items()):
+                    if m!=mid or trigger not in (1,2) or xy not in passages[mid]:continue
+                    adjacent=[q for q in teleport.neighbours(*xy) if q in free[mid] and
+                        step_allowed(passages[mid][xy],passages[mid][q],(q[0]-xy[0],q[1]-xy[1]))]
+                    if not adjacent:continue
+                    label=len(groups[mid])
+                    groups[mid].append({xy});index[mid][xy]=label
+                    arrival_only[mid,xy]=adjacent
         else:
             free[mid]=conn.safe_cells(world,tiles,reverse[mid],allowed={0,2})-occupied
             index[mid],groups[mid]=index_components(free[mid])
@@ -200,6 +228,8 @@ def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=Fal
     def node(mid,xy):
         if mid not in index or xy not in index[mid]:return None
         return mid,index[mid][xy]
+    for (mid,xy),neighbours in arrival_only.items():
+        for q in neighbours:add(node(mid,xy),node(mid,q),"existing_portal_arrival_exit")
     if seed_cells is None:
         for row in teleport.build(blobs,mapping,components,root):
             if row[3] and (seed_symbols is None or row[0] in seed_symbols):
@@ -235,6 +265,7 @@ def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=Fal
                 y=(j,0 if dd=="N" else dh-1) if dd in ("N","S") else (0 if dd=="W" else dw-1,j)
                 if directional and (x not in passages[src] or y not in passages[dst] or
                     passages[src][x]&EDGE_BITS[sd] or passages[dst][y]&EDGE_BITS[dd]):continue
+                if post_chase_story and ((src,x) in arrival_only or (dst,y) in arrival_only):continue
                 if (src,*x,dst,*y) not in blocked_lanes:add(node(src,x),node(dst,y),"existing_continuous_edge")
     reached=closure(edges,seeds)
     if edge_sink is not None:

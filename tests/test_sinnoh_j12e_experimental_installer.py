@@ -3572,6 +3572,22 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertFalse(i.private_compile_candidate_allowed(dict(story,pre_chase_graph_checks=[]),payload,b"ruby",engine,item))
         self.assertFalse(i.private_compile_candidate_allowed(story,payload,b"ruby",engine,{}))
 
+    def test_f12d_native_compiler_boundary_keeps_original_and_strict_gate(self):
+        import zlib
+        main_source=b"def boot\n    PluginManager.runPlugins\n    Compiler.main\nend\n"
+        raw=b"\x04\x08"+exp.dump([[1,b"Main",exp.RubyString(zlib.compress(main_source))]])
+        rows=exp.Marshal(exp.patch_bootstrap(raw,"abc123abc123",f12d_integrated=True)).read()
+        main=zlib.decompress(rows[0][2]).decode("utf-8")
+        self.assertIn("Compiler.method(:compile_all)",main)
+        self.assertIn("blue_sinnoh_restore.call",main)
+        self.assertIn("raise unless error.success? && blue_sinnoh_core_compiled",main)
+        self.assertIn("CORE_COMPILED_AND_RESTORED",main)
+        self.assertIn("raise \"Sinnoh F12D: core did not compile fresh PBS\"",main)
+        self.assertLess(main.index("CORE_COMPILED_AND_RESTORED"),main.index("COMPILER_RETURNED"))
+        self.assertLess(main.index("COMPILER_RETURNED"),main.index("VERIFY_ENTERED"))
+        self.assertLess(main.index("TRANSACTION_PROBE_OK"),main.index("ALL_VERIFIERS_PASSED"))
+        self.assertIn("Compiler.singleton_class.send(:define_method, :compile_all, blue_sinnoh_core)",main)
+
     def test_f12d_integrated_missing_item_and_player_methods(self):
         import tempfile
         import hashlib
