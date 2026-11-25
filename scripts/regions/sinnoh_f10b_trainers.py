@@ -2,6 +2,7 @@
 F10B3 evidence: Justin and Sean accepted in source job 138855505090.
 F10B5 evidence: five trainers preserved; Kath access witnessed in source job 138863348233.
 F10B6 evidence: six trainers accepted in source job 138868969472.
+F10B8 evidence: six preserved, zero new in source job 138878282025.
 Historical Platinum teams are independently referenced, not donor PBS.
 Candidates without exact identity, assets or safe placement remain pending.
 """

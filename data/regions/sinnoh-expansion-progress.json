@@ -202,7 +202,7 @@
       "id": "F10",
       "title": "Todos os treinadores e NPCs",
       "status": "partially_merged",
-      "followup": "F10B8_PENDING_CI",
+      "followup": "F10C_INDEPENDENT_NPC_IMPLEMENTATION",
       "maps_to_audit": 131,
       "source_event_maps_to_audit": 127,
       "new_trainers": 0,
@@ -286,7 +286,7 @@
       "f10b6_real_job": 138868969472,
       "f10b6_fixture_recovered": 6,
       "f10b6_new_fixture_trainers": 1,
-      "f10b6_main_ci_pending": true,
+      "f10b6_main_ci_pending": false,
       "f10b6_pr": 299,
       "f10b7_pending_candidates": 6,
       "f10b7_native_verified": false,
@@ -296,7 +296,72 @@
         "SINNOH_ETERNA_CITY"
       ],
       "f10b8_field_gates_enabled": false,
-      "f10b8_native_verified": false
+      "f10b8_native_verified": false,
+      "f10b6_merge_commit": "822a013dc94b7c234dc4394b01d801e668e53348",
+      "f10b6_ci_workflows": 11,
+      "f10b6_ci_checks": 26,
+      "f10b7_pr": 300,
+      "f10b7_merge_commit": "bfa9a4e8bb94bb18747451a73f394131ebcafe62",
+      "f10b7_ci_workflows": 11,
+      "f10b7_ci_checks": 26,
+      "f10b7_real_job": 138875575915,
+      "f10b7_additional_identities": 0,
+      "f10b8_pr": 301,
+      "f10b8_real_head": "e2b05546c26b10b56abf2e469295fdb40e46abe0",
+      "f10b8_real_job": 138878282025,
+      "f10b8_fixture_recovered": 6,
+      "f10b8_new_fixture_trainers": 0,
+      "f10b8_main_ci_pending": true,
+      "pending_trainers": [
+        {
+          "name": "Austin",
+          "source_id": 42,
+          "event_id": 32,
+          "reason": "NO_ROUTE206_ACCESS",
+          "installed": false,
+          "native_verified": false
+        },
+        {
+          "name": "Kevin",
+          "source_id": 42,
+          "event_id": 33,
+          "reason": "NO_ROUTE206_ACCESS",
+          "installed": false,
+          "native_verified": false
+        },
+        {
+          "name": "Helen",
+          "source_id": 42,
+          "event_id": 34,
+          "reason": "DIRECTIONAL_ACCESS_AND_SPRITE",
+          "installed": false,
+          "native_verified": false
+        },
+        {
+          "name": "Louis",
+          "source_id": 79,
+          "event_id": 32,
+          "reason": "NO_ETERNA_ACCESS",
+          "installed": false,
+          "native_verified": false
+        },
+        {
+          "name": "Alexander",
+          "source_id": 79,
+          "event_id": 33,
+          "reason": "IDENTITY_ROCK_SMASH_AND_ACCESS",
+          "installed": false,
+          "native_verified": false
+        },
+        {
+          "name": "Wyatt",
+          "source_id": 80,
+          "event_id": 1,
+          "reason": "IDENTITY_MOVEMENT_TIME_AND_ACCESS",
+          "installed": false,
+          "native_verified": false
+        }
+      ]
     },
     {
       "id": "F11",
@@ -432,7 +497,7 @@
   },
   "f10": {
     "status": "partially_merged",
-    "followup": "F10B8_PENDING_CI",
+    "followup": "F10C_INDEPENDENT_NPC_IMPLEMENTATION",
     "f10a_pr": 293,
     "f10a_merge_commit": "7302bcc3345dbb8e649b8d8a63498524f6cd9cc5",
     "maps_audited": 131,
@@ -514,7 +579,7 @@
     "f10b6_real_job": 138868969472,
     "f10b6_fixture_recovered": 6,
     "f10b6_new_fixture_trainers": 1,
-    "f10b6_main_ci_pending": true,
+    "f10b6_main_ci_pending": false,
     "f10b6_pr": 299,
     "f10b7_pending_candidates": 6,
     "f10b7_native_verified": false,
@@ -524,6 +589,71 @@
       "SINNOH_ETERNA_CITY"
     ],
     "f10b8_field_gates_enabled": false,
-    "f10b8_native_verified": false
+    "f10b8_native_verified": false,
+    "f10b6_merge_commit": "822a013dc94b7c234dc4394b01d801e668e53348",
+    "f10b6_ci_workflows": 11,
+    "f10b6_ci_checks": 26,
+    "f10b7_pr": 300,
+    "f10b7_merge_commit": "bfa9a4e8bb94bb18747451a73f394131ebcafe62",
+    "f10b7_ci_workflows": 11,
+    "f10b7_ci_checks": 26,
+    "f10b7_real_job": 138875575915,
+    "f10b7_additional_identities": 0,
+    "f10b8_pr": 301,
+    "f10b8_real_head": "e2b05546c26b10b56abf2e469295fdb40e46abe0",
+    "f10b8_real_job": 138878282025,
+    "f10b8_fixture_recovered": 6,
+    "f10b8_new_fixture_trainers": 0,
+    "f10b8_main_ci_pending": true,
+    "pending_trainers": [
+      {
+        "name": "Austin",
+        "source_id": 42,
+        "event_id": 32,
+        "reason": "NO_ROUTE206_ACCESS",
+        "installed": false,
+        "native_verified": false
+      },
+      {
+        "name": "Kevin",
+        "source_id": 42,
+        "event_id": 33,
+        "reason": "NO_ROUTE206_ACCESS",
+        "installed": false,
+        "native_verified": false
+      },
+      {
+        "name": "Helen",
+        "source_id": 42,
+        "event_id": 34,
+        "reason": "DIRECTIONAL_ACCESS_AND_SPRITE",
+        "installed": false,
+        "native_verified": false
+      },
+      {
+        "name": "Louis",
+        "source_id": 79,
+        "event_id": 32,
+        "reason": "NO_ETERNA_ACCESS",
+        "installed": false,
+        "native_verified": false
+      },
+      {
+        "name": "Alexander",
+        "source_id": 79,
+        "event_id": 33,
+        "reason": "IDENTITY_ROCK_SMASH_AND_ACCESS",
+        "installed": false,
+        "native_verified": false
+      },
+      {
+        "name": "Wyatt",
+        "source_id": 80,
+        "event_id": 1,
+        "reason": "IDENTITY_MOVEMENT_TIME_AND_ACCESS",
+        "installed": false,
+        "native_verified": false
+      }
+    ]
   }
 }
