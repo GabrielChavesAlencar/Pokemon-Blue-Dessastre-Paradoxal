@@ -2,9 +2,27 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7a9692f2e987cf8f861e6c9399c4c4ecf67560c2",
+      "date": "2026-11-24T22:29:46-03:00",
+      "title": "Merge pull request #305 from GabrielChavesAlencar/sinnoh-full-expansion-f11c-fantina",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "49a2e08d4c72903476a2b999a0ef451acf9ea56f",
+      "date": "2026-11-24T22:23:19-03:00",
+      "title": "Record verified Fantina fixture and trigger full main-target CI",
+      "category": "Melhorias"
+    },
+    {
       "sha": "31709a5c044142bccf6127db743f1d658721b14b",
       "date": "2026-11-24T22:23:00-03:00",
       "title": "Merge pull request #304 from GabrielChavesAlencar/sinnoh-full-expansion-f11b-gardenia",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "c3e0cc479be73b4971ce62b4a22ebce252679713",
+      "date": "2026-11-24T22:17:30-03:00",
+      "title": "Sinnoh F11C: sequential Fantina gym and append-only save compatibility",
       "category": "Melhorias"
     },
     {
