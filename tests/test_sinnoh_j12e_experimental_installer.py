@@ -1702,6 +1702,9 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                             self.assertEqual(len(story["pre_chase_graph_checks"]),3)
                             self.assertEqual(story["geometry_delta_count"],71)
                             self.assertEqual(story["lake_sequence_seed"][0],expanded["SINNOH_CELESTIC_TOWN"])
+                            self.assertEqual(set(story["lake_independent_legs"]),set(integrated.ORDER))
+                            self.assertEqual(set(story["lake_local_previews"]),set(integrated.ORDER))
+                            self.assertEqual(story["valor_rock_reference_cells"],204)
                             self.assertEqual(story["lake_payloads"],list(integrated.ORDER[:len(story["lake_payloads"])]))
                             self.assertTrue(all(story["lake_sequence_checks"][k]["walk_from_predecessor_proved"] for k in story["lake_payloads"]))
                             self.assertIn("CYNTHIA",story["locations"])
@@ -3495,6 +3498,35 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertFalse(i.activation_allowed(story,payload,b"ruby",engine,{}))
         self.assertFalse(i.activation_allowed(story,{"Data/Map473.rxdata":b"tampered"},b"ruby",engine,item))
         self.assertFalse(i.activation_allowed(dict(story,pre_chase_graph_checks=[]),payload,b"ruby",engine,item))
+
+    def test_f12d_integrated_pinned_decades_compile_only_profile(self):
+        import hashlib
+        import copy
+        import sinnoh_f12d_integrated as i
+        methods={n:("different" if n=="passable?" else "match") for n in i.PLAYER_METHOD_REFS}
+        engine={"game_player_script_count":2,"reference_match":False,
+            "matched_scripts":{"terrain_tag":1,"game_map":1,"game_character":1,"game_player":0},
+            "game_player_methods":methods,
+            "game_player_declarations":[{"script_index":n,"script_sha256":h,"methods":methods if n==46 else {}} for n,h in i.DECADES_PLAYER_DECLARATIONS],
+            "game_player_method_history":{n:[{"script_index":46,"status":s,
+                "method_sha1":i.DECADES_PASSABLE_SHA1 if n=="passable?" else i.PLAYER_METHOD_REFS[n]}] for n,s in methods.items()}}
+        self.assertTrue(i.known_decades_profile(engine))
+        payload={"Data/Map473.rxdata":b"fixture"}
+        story={"status":"F12D_INTEGRATED_GAMEPLAY_FIXTURE","mission_prepared":True,
+            "new_maps":0,"new_portals":0,"progression_gate":{"model_verified":True},
+            "pre_chase_graph_checks":[{"symbol":s} for s in ("SINNOH_TWINLEAF_TOWN","SINNOH_PASTORIA_CITY","SINNOH_VALOR_LAKEFRONT")],
+            "locations":{k:{} for k in ("CYNTHIA","PSYDUCK_1","PSYDUCK_2","PSYDUCK_3","PSYDUCK_4")},
+            "payload_hashes":{k:hashlib.sha256(v).hexdigest() for k,v in payload.items()}}
+        item={"authored_candidate":True}
+        self.assertFalse(i.activation_allowed(story,payload,b"ruby",engine,item))
+        self.assertTrue(i.private_compile_candidate_allowed(story,payload,b"ruby",engine,item))
+        for field in ("game_player_methods","game_player_method_history","game_player_declarations","matched_scripts"):
+            invalid=copy.deepcopy(engine);invalid[field]={}
+            self.assertFalse(i.private_compile_candidate_allowed(story,payload,b"ruby",invalid,item))
+        invalid=copy.deepcopy(engine);invalid["game_player_method_history"]["passable?"][0]["method_sha1"]="0"*40
+        self.assertFalse(i.private_compile_candidate_allowed(story,payload,b"ruby",invalid,item))
+        self.assertFalse(i.private_compile_candidate_allowed(dict(story,pre_chase_graph_checks=[]),payload,b"ruby",engine,item))
+        self.assertFalse(i.private_compile_candidate_allowed(story,payload,b"ruby",engine,{}))
 
     def test_f12d_integrated_missing_item_and_player_methods(self):
         import tempfile

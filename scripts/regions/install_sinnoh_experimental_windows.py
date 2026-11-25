@@ -467,7 +467,7 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile
     if story_profile:
         late = '\n    if File.basename(Dir.pwd) == "game-sinnoh-experimental-'+token+'" && File.file?("sinnoh-experimental-qa.json")\n      BlueSinnohExperimental.install_fresh_hooks!\n      BlueSinnohSafeMovement.install!\n      BlueSinnohQATeleport.install!\n      BlueSinnohForestEdge.install!\n      if defined?(EventHandlers)\n        EventHandlers.add(:on_enter_map, :blue_sinnoh_hide_starter_balls, proc { |*args| BlueSinnohPilot.hide_starter_balls; BlueSinnohPilot.sync_route_trainers })\n      end\n    end'
     if f12d_integrated:
-        late += '\n    if File.basename(Dir.pwd) == "game-sinnoh-experimental-'+token+'" && File.file?("sinnoh-experimental-qa.json")\n      raise "Sinnoh F12D: hooks indisponiveis" unless BlueSinnohF12DIntegrated.bind_pages!\n    end'
+        late += '\n    if File.basename(Dir.pwd) == "game-sinnoh-experimental-'+token+'" && File.file?("sinnoh-experimental-qa.json")\n      raise "Sinnoh F12D: hooks indisponiveis" unless BlueSinnohF12DIntegrated.bind_pages!\n      unless File.file?("Data/sinnoh-experimental-compile-request.txt")\n        raise "Sinnoh F12D: compilacao privada nao aprovada" unless defined?(BlueKantoTitle) && BlueKantoTitle.sinnoh_experimental_barry_compiled?\n      end\n    end'
     if save_token is not None:
         if not re.fullmatch(r"[a-f0-9]{12}",save_token):fail("INVALID_SAVE_PROFILE_TOKEN")
         # The original Auto Multi Save plugin falls back to "." if the

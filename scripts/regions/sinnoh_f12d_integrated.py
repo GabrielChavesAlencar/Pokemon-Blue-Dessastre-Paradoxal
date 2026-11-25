@@ -179,6 +179,23 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
     specs={};pbs=[];lake_seed=min(q for q in restored if q[0]==town);lake_ready=[]
     result["lake_sequence_seed"]=list(lake_seed)
     result["lake_sequence_checks"]={}
+    # Independent physical legs are useful for implementing all three at once.
+    # They never grant a sequential payload without the actual predecessor.
+    result["lake_independent_legs"]={}
+    predecessor=lake_seed
+    for key in ORDER:
+        preview=result["lake_local_previews"].get(key)
+        if preview is None:
+            result["lake_independent_legs"][key]={"reason":"local_position_missing"}
+            predecessor=None;continue
+        if predecessor is not None:
+            _,_,cells=graph(reopened,mapping,components,root,predecessor,rock,valor_rock)
+            goal=(preview["map_id"],*preview["stand"])
+            result["lake_independent_legs"][key]={"from":list(predecessor),"to":list(goal),
+                "reachable":goal in cells,"target_map_reachable_cells":sum(q[0]==goal[0] for q in cells)}
+        else:
+            result["lake_independent_legs"][key]={"reason":"predecessor_position_missing"}
+        predecessor=(preview["map_id"],*preview["stand"])
     for key in ORDER:
         contract=result["lake_contracts"][key]
         if not contract or contract["symbol"] not in mapping:
@@ -348,7 +365,34 @@ def local_engine(base):
             "local_engine_native_verified":False,"plugin_overrides_verified":False,
             "source_scripts_executed":False,"reason":type(exc).__name__}
 
-def activation_allowed(story,delta,plugin,engine,item):
+# Exact installed Decades profile observed in runner 139393190451.
+# This is NOT an upstream equivalence claim. Only a quarantined private
+# compiler candidate is permitted; the native boot guard must prove behavior.
+DECADES_PLAYER_DECLARATIONS=(
+    (46,"e2eb5cb6cd2665d2bf0339439122bbae7d5b7a5fca287257616b83378e6e57de"),
+    (343,"c5ebb0ca3aa3a2f0dc52e001c77358b1d7020b357ae849fb0675351e72a86832"),
+)
+DECADES_PASSABLE_SHA1="6cd26df1733a6e1c02077dc948c792b461cddf6e"
+
+def known_decades_profile(engine):
+    methods=engine.get("game_player_methods",{})
+    declarations=engine.get("game_player_declarations",[])
+    history=engine.get("game_player_method_history",{})
+    return bool(engine.get("game_player_script_count")==2
+        and engine.get("matched_scripts")=={"terrain_tag":1,"game_map":1,"game_character":1,"game_player":0}
+        and engine.get("reference_match") is False
+        and [(r.get("script_index"),r.get("script_sha256")) for r in declarations]==list(DECADES_PLAYER_DECLARATIONS)
+        and not any(r.get("unparsed_class") for r in declarations)
+        and declarations[1].get("methods")=={}
+        and set(methods)==set(PLAYER_METHOD_REFS)
+        and set(history)==set(PLAYER_METHOD_REFS)
+        and all(methods[n]==("different" if n=="passable?" else "match") for n in methods)
+        and all(len(history[n])==1 and history[n][0].get("script_index")==46
+            and history[n][0].get("status")==methods[n]
+            and history[n][0].get("method_sha1")== (DECADES_PASSABLE_SHA1 if n=="passable?" else PLAYER_METHOD_REFS[n])
+            for n in methods))
+
+def payload_verified(story,delta,plugin,item):
     expected={"CYNTHIA","PSYDUCK_1","PSYDUCK_2","PSYDUCK_3","PSYDUCK_4"}
     return bool(story.get("status")=="F12D_INTEGRATED_GAMEPLAY_FIXTURE" and story.get("mission_prepared") is True
         and story.get("progression_gate",{}).get("model_verified") is True
@@ -356,9 +400,19 @@ def activation_allowed(story,delta,plugin,engine,item):
             {"SINNOH_TWINLEAF_TOWN","SINNOH_PASTORIA_CITY","SINNOH_VALOR_LAKEFRONT"}
         and story.get("new_maps")==0 and story.get("new_portals")==0
         and expected<=set(story.get("locations",{}))
-        and engine.get("reference_match") is True
         and (item.get("local_catalog_valid") is True or item.get("authored_candidate") is True)
         and delta and plugin and story.get("payload_hashes")=={k:hashlib.sha256(v).hexdigest() for k,v in delta.items()})
+
+def activation_allowed(story,delta,plugin,engine,item):
+    # Historical strict static gate; never label Decades as reference-identical.
+    return bool(engine.get("reference_match") is True and payload_verified(story,delta,plugin,item))
+
+def private_compile_candidate_allowed(story,delta,plugin,engine,item):
+    # Alternate private compile-only path; all geometry/catalogue/hash gates
+    # remain mandatory. Native checks and a matching compile token are needed
+    # before ANY normal Game.exe session in the resulting copy.
+    return activation_allowed(story,delta,plugin,engine,item) or (
+        known_decades_profile(engine) and payload_verified(story,delta,plugin,item))
 
 def installer_preflight(blobs,mapping,components,cr,base,root,source,staged=None):
     """Generate a private copy candidate only after model and local preflight.
@@ -395,13 +449,17 @@ def installer_preflight(blobs,mapping,components,cr,base,root,source,staged=None
         result.update(story_status=story["status"],mission_prepared=story["mission_prepared"],
             lake_local_previews=story.get("lake_local_previews",{}),lake_payloads=story.get("lake_payloads",[]),
             lake_sequence_checks=story.get("lake_sequence_checks",{}),
+            lake_independent_legs=story.get("lake_independent_legs",{}),
             pre_chase_graph_checks=story.get("pre_chase_graph_checks",[]),
             geometry_delta_count=story.get("geometry_delta_count",0),
             progression_gate=story.get("progression_gate",{}),
             reason=story.get("reason"),candidate_ready=bool(delta and plugin),
             payload_hashes=story.get("payload_hashes",{}),authored_sprite_hashes=story["authored_sprite_hashes"])
         if delta and plugin:
-            eligible=activation_allowed(story,delta,plugin,result["engine"],item_report)
+            eligible=private_compile_candidate_allowed(story,delta,plugin,result["engine"],item_report)
+            result["engine_profile"]="EXACT_ESSENTIALS_REFERENCE" if result["engine"].get("reference_match") else (
+                "PINNED_DECADES_PRIVATE_COMPILE_ONLY" if known_decades_profile(result["engine"]) else "UNKNOWN_BLOCKED")
+            result["native_movement_and_item_proof_required"]=True
             delta.update(item_delta)
             result["payload_hashes"]={k:hashlib.sha256(v).hexdigest() for k,v in delta.items()}
             result["candidate_plugin_sha256"]=hashlib.sha256(plugin).hexdigest()
@@ -411,7 +469,8 @@ def installer_preflight(blobs,mapping,components,cr,base,root,source,staged=None
                 if set(delta)-allowed:raise ValueError("F12D_INTEGRATED_UNEXPECTED_DELTA")
                 out={**blobs,**delta};chase.validate(out,mapping)
                 staged.update(maps=out,plugin=plugin)
-                result.update(runtime_install_enabled=True,new_events=story["new_events"],new_seams=story["new_seams"],locations=story["locations"],status="F12D_INTEGRATED_PRIVATE_COPY_PREPARED",reason="native_compilation_and_qa_pending")
+                result.update(runtime_install_enabled=True,new_events=story["new_events"],new_seams=story["new_seams"],locations=story["locations"],status="F12D_INTEGRATED_PRIVATE_COPY_PREPARED",reason="native_compilation_movement_item_proof_and_qa_pending",
+                    native_compile_verified=False,normal_launch_allowed=False)
         return result
     except (OSError,ValueError,TypeError,KeyError,UnicodeError) as exc:
         return {**result,"reason":"preflight_failed:"+type(exc).__name__}

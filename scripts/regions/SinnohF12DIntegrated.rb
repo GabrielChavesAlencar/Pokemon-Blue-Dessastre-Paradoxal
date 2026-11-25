@@ -31,6 +31,107 @@ module BlueSinnohF12DIntegrated
       !tag.bridge && !tag.ignore_passability && !tag.must_walk && !tag.must_walk_or_run &&
       !tag.waterfall && !tag.waterfall_crest && !tag.can_dive && !tag.deep_bush
   end
+  # Native method behavior on controlled map doubles. This is a compiler
+  # acceptance gate, not gameplay QA. It exercises the loaded engine and
+  # rejects unknown overrides or unexpected collision outcomes.
+  class CompileProbeMap
+    attr_accessor :allow_exit, :allow_entry, :events
+    attr_reader :calls
+    def initialize
+      @allow_exit=true; @allow_entry=true; @events={}; @calls=[]
+    end
+    def map_id; 473; end
+    def valid?(x,y); x>=0 && x<3 && y>=0 && y<3; end
+    def validLax?(x,y); x>=-1 && x<=3 && y>=-1 && y<=3; end
+    def passage(x,y,d,strict)
+      @calls << [x,y,d,strict]
+      (x==1 && y==1) ? @allow_exit : @allow_entry
+    end
+    def passable?(x,y,d,entity); passage(x,y,d,false); end
+    def passableStrict?(x,y,d,entity); passage(x,y,d,true); end
+  end
+  class CompileProbeFactory
+    attr_accessor :allow
+    attr_reader :calls
+    def initialize(allow); @allow=allow; @calls=[]; end
+    def isPassableFromEdge?(x,y,*args)
+      @calls << [x,y]; @allow
+    end
+  end
+  class CompileProbeEvent
+    attr_accessor :through, :character_name
+    def initialize(x,y,through=false,character_name="Probe")
+      @x=x; @y=y; @through=through; @character_name=character_name
+    end
+    def at_coordinate?(x,y); @x==x && @y==y; end
+  end
+  def self.verify_native_movement!
+    raise "Sinnoh F12D: passable? owner inesperado" unless Game_Player.instance_method(:passable?).owner==Game_Player
+    raise "Sinnoh F12D: super de passable? inesperado" unless Game_Player.instance_method(:passable?).super_method &&
+      Game_Player.instance_method(:passable?).super_method.owner==Game_Character
+    previous=[$game_map,$map_factory,$game_player,$DEBUG]
+    begin
+      $DEBUG=false
+      $game_map=CompileProbeMap.new
+      $map_factory=nil
+      $game_player=Game_Player.allocate
+      p=$game_player
+      p.instance_variable_set(:@x,1); p.instance_variable_set(:@y,1)
+      p.instance_variable_set(:@width,1); p.instance_variable_set(:@height,1)
+      p.instance_variable_set(:@through,false); p.instance_variable_set(:@character_name,"Probe")
+      check=lambda do |label,expected,x,y,d,strict|
+        actual=p.passable?(x,y,d,strict)
+        raise "Sinnoh F12D: prova passable? #{label}" unless actual==expected
+      end
+      [2,4,6,8].each do |dir|
+        dx=(dir==6 ? 1 : dir==4 ? -1 : 0)
+        dy=(dir==2 ? 1 : dir==8 ? -1 : 0)
+        [false,true].each do |strict|
+          $game_map.allow_exit=true; $game_map.allow_entry=true
+          $game_map.calls.clear
+          check.call("dry",true,1,1,dir,strict)
+          raise "Sinnoh F12D: duas direcoes de passagem" unless $game_map.calls==[[1,1,dir,strict],[1+dx,1+dy,10-dir,strict]]
+          $game_map.allow_exit=false
+          check.call("blocked_origin",false,1,1,dir,strict)
+          $game_map.allow_exit=true; $game_map.allow_entry=false
+          check.call("blocked_destination",false,1,1,dir,strict)
+          $game_map.allow_entry=true
+          $game_map.events={1=>CompileProbeEvent.new(1+dx,1+dy)}
+          check.call("solid_event",false,1,1,dir,strict)
+          $game_map.events[1].through=true
+          check.call("through_event",true,1,1,dir,strict)
+          $game_map.events[1].through=false; $game_map.events[1].character_name=""
+          check.call("invisible_event",true,1,1,dir,strict)
+          $game_map.events={}
+        end
+      end
+      check.call("outside_lax",false,3,1,6,false)
+      check.call("no_factory",false,2,1,6,false)
+      $map_factory=CompileProbeFactory.new(false)
+      check.call("closed_edge",false,2,1,6,false)
+      $map_factory.allow=true
+      check.call("open_edge",true,2,1,6,false)
+      raise "Sinnoh F12D: coordenada de borda" unless $map_factory.calls==[[3,1],[3,1]]
+      true
+    ensure
+      $game_map,$map_factory,$game_player,$DEBUG=*previous
+    end
+  end
+  def self.verify_native_transaction!
+    raise "Sinnoh F12D: bolsa nativa ausente" unless defined?(PokemonBag)
+    initial={"current"=>"SINNOH","sinnoh_f12d_quest"=>T::CHASE.dup}
+    bag=PokemonBag.new
+    first=T.stage(initial,bag,T::ORDER[0],catalogue_verified:true,geometry_verified:true)
+    raise "Sinnoh F12D: entrega nativa falhou" unless first && bag.quantity(T::ITEM)==0 && first[:bag].quantity(T::ITEM)==1
+    s,b=Marshal.load(Marshal.dump([first[:state],first[:bag]]))
+    raise "Sinnoh F12D: entrega repetida" if T.stage(s,b,T::ORDER[0],catalogue_verified:true,geometry_verified:true)
+    last=T.stage(s,b,T::ORDER[1],catalogue_verified:true,geometry_verified:true)
+    raise "Sinnoh F12D: consumo nativo falhou" unless last && b.quantity(T::ITEM)==1 && last[:bag].quantity(T::ITEM)==0
+    final_s,final_b=Marshal.load(Marshal.dump([last[:state],last[:bag]]))
+    raise "Sinnoh F12D: persistencia nativa falhou" unless T.cleared?(final_s) && final_b.quantity(T::ITEM)==0
+    raise "Sinnoh F12D: consumo repetido" if T.stage(final_s,final_b,T::ORDER[1],catalogue_verified:true,geometry_verified:true)
+    true
+  end
   def self.verify_compiled!
     raise "Sinnoh F12D3: terreno Rock incompatível" unless rock_reference_valid?
     raise "Sinnoh F12D3: item regional invalido" unless T.compiled_item_valid?
@@ -38,6 +139,8 @@ module BlueSinnohF12DIntegrated
     raise "Sinnoh F12D: hooks ausentes" unless Game_Event.ancestors.include?(BarrierPages) && Game_Player.ancestors.include?(ProgressionMovement)
     raise "Sinnoh F12D: hooks sobrescritos" unless Game_Player.instance_method(:move_generic).owner==ProgressionMovement &&
       Game_Event.instance_method(:refresh).owner==BarrierPages
+    verify_native_movement!
+    verify_native_transaction!
     true
   end
   def self.near?(key)
