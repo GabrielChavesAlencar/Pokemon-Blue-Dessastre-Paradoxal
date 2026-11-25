@@ -542,7 +542,7 @@
       "id": "F12",
       "title": "História, Equipe Galactic e itens-chave",
       "status": "implementation_pending_ci",
-      "followup": "F12B5_QA_EXPLORATION_AND_AUTHORED_QUEST_REFERENCE_PENDING_CI",
+      "followup": "F12B5B_AUTHORED_CONDENSED_QUEST_PENDING_CI",
       "story_checkpoints_scope": 14,
       "hm_contracts_scope": 8,
       "native_bindings": 0,
@@ -567,7 +567,7 @@
         14
       ],
       "windworks_preview_connected_cells": 180,
-      "windworks_runtime_install_enabled": false,
+      "windworks_runtime_install_enabled": true,
       "windworks_event_scope": 5,
       "windworks_access_verified": false,
       "windworks_preview_target_maps": 140,
@@ -612,7 +612,16 @@
       "f12b4_merge_commit": "7f42a0e1379a29f7585c41aae624196c6c9396c0",
       "f12b4_ci_workflows": 11,
       "f12b4_ci_checks": 26,
-      "f12b4_blocker": "route_source_side_ambiguous"
+      "f12b4_blocker": "route_source_side_ambiguous",
+      "f12b5_real_head": "971015bc8ba1f30addd89bd44001de51b09e4f9b",
+      "f12b5_real_job": 139120526542,
+      "f12b5_merge_commit": "294d5931ab7769b75d57ad35d260cc122a40162e",
+      "f12b5_ci_workflows": 11,
+      "f12b5_ci_checks": 26,
+      "windworks_access_status": "WINDWORKS_QA_TELEPORT_ONLY",
+      "authored_quest_handlers_candidate": 5,
+      "authored_quest_runtime_confirmed": false,
+      "authored_quest_layout": "PROJECT_AUTHORED_CONDENSED_EXTERIOR_MARS"
     },
     {
       "id": "F13",

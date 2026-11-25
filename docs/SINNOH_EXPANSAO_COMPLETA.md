@@ -336,3 +336,10 @@ F12B4 integrada em 7f42a0e1379a29f7585c41aae624196c6c9396c0 (11 workflows / 26 j
 ### F12B5 — exploração QA e referência autoral da Galactic
 
 F12B4 job 138926944235 bloqueou a costura por route_source_side_ambiguous; 139 mapas preservados. Agora compara intervalos geométricos de cada conexão concorrente do Map94, registra células caminháveis e, se não houver costura segura, prepara Windworks pelo teleporte QA bidirecional existente, sem portais novos ou avanço narrativo. Corrige o verificador de título que esperava 131 mapas, adicionando validação dos relatórios F11 e Windworks e hashes dos tilesets. Referência autoral do roteiro Platinum em data/regions/sinnoh-f12b5-authored-quest.json (Bulbapedia Part 3/4, Mars). Quatro possíveis pickups sem identidade permanecem bloqueados. Não declara Mars/Works Key instalados, não modifica balanceamento ou saves, sem QA nativa. CI pendente.
+
+F12B5 integrada em 294d5931ab7769b75d57ad35d260cc122a40162e (11 workflows / 26 jobs; HEAD 971015bc8ba1f30addd89bd44001de51b09e4f9b, job 139120526542). 140 mapas preparados, Map581 [17,14], sem costura caminhável, zero portais e conexões novas, sem QA nativa.
+
+
+### F12B5B — missão Galactic autoral condensada para QA
+
+Implementa cinco NPCs de ação condicionados à presença de Windworks, tipos e espécies locais e Works Key no catálogo. Três eventos adicionais em Floaroma Meadow, dois em Windworks. Preserva conteúdo anterior ao remover os eventos adicionados; verifica teleporte e alcance dos componentes. A adaptação situa Mars no exterior até existir interior revisado, não é reconstrução fiel da planta original. A chave só é entregue após duas vitórias no Meadow e guarda derrotado; verifica item-chave e bolsa regional. Mars exige chave e resultado real 1. Mantém ledger QA isolado, sem declarar checkpoints CH14 concluídos; preserva escalonamento global e protege equipe autoral somente no confronto específico. O analisador dos quatro pickups aceita somente chamadas literais isoladas, publica identificadores candidatos e hashes, sem conceder itens originais. Testes e CI pendentes, sem QA nativa. Compatibilidade de saves por manifesto anterior, sem ler saves.
