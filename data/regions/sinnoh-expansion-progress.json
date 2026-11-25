@@ -390,8 +390,8 @@
     {
       "id": "F11",
       "title": "Oito ginásios e insígnias",
-      "status": "implementation_pending_ci",
-      "followup": "F11H_PENDING_MAIN_CI",
+      "status": "merged_automated_qa_only",
+      "followup": "F11_INTEGRATED_NATIVE_PENDING",
       "gym_count": 8,
       "gym_rooms_confirmed": 8,
       "gym_leaders_confirmed": 8,
@@ -530,15 +530,31 @@
       "f11h_fixture_rooms": 1,
       "f11h_fixture_maps": 139,
       "f11h_fixture_portals": 89,
-      "f11h_real_head": "3aa6644a393294faa173171789913c7911ba258f",
-      "f11h_real_job": 138916172371,
-      "f11h_main_ci_pending": true,
-      "f11h_native_verified": false
+      "f11h_real_head": "7b556b5518e960ece1eb3699a25569f578e0ee1b",
+      "f11h_real_job": 138922435524,
+      "f11h_main_ci_pending": false,
+      "f11h_native_verified": false,
+      "f11h_merge_commit": "267f9080daa99272d40805d99384d5589ab2bedb",
+      "f11h_ci_workflows": 11,
+      "f11h_ci_checks": 26
     },
     {
       "id": "F12",
       "title": "História, Equipe Galactic e itens-chave",
-      "status": "pending"
+      "status": "implementation_pending_ci",
+      "followup": "F12A_MAIN_CI_PENDING",
+      "story_checkpoints_scope": 14,
+      "hm_contracts_scope": 8,
+      "native_bindings": 0,
+      "items_granted": 0,
+      "native_verified": false,
+      "requires_f11h_baseline": true,
+      "f12a_real_head": "31e1f2f212da60c87bed2a0a79dec184e05151cd",
+      "f12a_real_job": 138918141829,
+      "source_maps_scanned": 238,
+      "source_events_scanned": 2867,
+      "candidate_events": 13,
+      "mapped_candidates": 10
     },
     {
       "id": "F13",
@@ -848,8 +864,8 @@
     "f10c2_remaining": 2
   },
   "f11": {
-    "status": "implementation_pending_ci",
-    "followup": "F11H_PENDING_MAIN_CI",
+    "status": "merged_automated_qa_only",
+    "followup": "F11_INTEGRATED_NATIVE_PENDING",
     "gym_count": 8,
     "gym_rooms_confirmed": 8,
     "gym_leaders_confirmed": 8,
@@ -988,9 +1004,12 @@
     "f11h_fixture_rooms": 1,
     "f11h_fixture_maps": 139,
     "f11h_fixture_portals": 89,
-    "f11h_real_head": "3aa6644a393294faa173171789913c7911ba258f",
-    "f11h_real_job": 138916172371,
-    "f11h_main_ci_pending": true,
-    "f11h_native_verified": false
+    "f11h_real_head": "7b556b5518e960ece1eb3699a25569f578e0ee1b",
+    "f11h_real_job": 138922435524,
+    "f11h_main_ci_pending": false,
+    "f11h_native_verified": false,
+    "f11h_merge_commit": "267f9080daa99272d40805d99384d5589ab2bedb",
+    "f11h_ci_workflows": 11,
+    "f11h_ci_checks": 26
   }
 }
