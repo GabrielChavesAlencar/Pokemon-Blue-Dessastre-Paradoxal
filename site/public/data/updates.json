@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c151a5da17139072210b07bdeb2a1cd0a7af75bf",
+      "date": "2026-11-24T21:58:00-03:00",
+      "title": "Merge pull request #301 from GabrielChavesAlencar/sinnoh-full-expansion-f10b8-origin-access",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "9b90e26ed656c9e3e8cd268a26dbcbb2890b2551",
+      "date": "2026-11-24T21:49:08-03:00",
+      "title": "Record six independent trainer blockers and trigger complete F10B8 main CI",
+      "category": "Melhorias"
+    },
+    {
       "sha": "bfa9a4e8bb94bb18747451a73f394131ebcafe62",
       "date": "2026-11-24T21:48:50-03:00",
       "title": "Merge pull request #300 from GabrielChavesAlencar/sinnoh-full-expansion-f10b7-field-gate-audit",
@@ -17,6 +29,18 @@
       "sha": "822a013dc94b7c234dc4394b01d801e668e53348",
       "date": "2026-11-24T21:40:46-03:00",
       "title": "Merge pull request #299 from GabrielChavesAlencar/sinnoh-full-expansion-f10b6-kath-authored-sprite",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "e2b05546c26b10b56abf2e469295fdb40e46abe0",
+      "date": "2026-11-24T21:14:13-03:00",
+      "title": "F10B8: use conservative directional passage bits after real F10B7 report",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "06c22cd80ac05d6508804beefb5c9973cb3faefa",
+      "date": "2026-11-24T21:13:12-03:00",
+      "title": "Sinnoh F10B8: conditional trainer recovery via named ordinary route origins",
       "category": "Melhorias"
     },
     {
