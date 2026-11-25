@@ -42,15 +42,21 @@ WAKE_CITY="SINNOH_PASTORIA_CITY"
 WAKE_TEAM=[["GYARADOS",33],["QUAGSIRE",34],["FLOATZEL",37]]
 WAKE_TYPES=("LEADER_CRASHER_WAKE","LEADER_CrasherWake","LEADERCRASHERWAKE","LEADER_WAKE","LEADER_Wake","BLUE_SINNOH_LEADER_WAKE","BLUE_SINNOH_LEADER_CRASHER_WAKE")
 WAKE_VERSION=11005
-GYM_SETS=(f08c.ALL|{SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL,FANTINA_SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL,FANTINA_SYMBOL,MAYLENE_SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL,FANTINA_SYMBOL,MAYLENE_SYMBOL,WAKE_SYMBOL})
+BYRON_SYMBOL="SINNOH_CANALAVE_GYM"
+BYRON_CITY="SINNOH_CANALAVE_CITY"
+BYRON_TEAM=[["MAGNETON",37],["STEELIX",38],["BASTIODON",41]]
+BYRON_TYPES=("LEADER_BYRON","LEADER_Byron","LEADERBYRON","BLUE_SINNOH_LEADER_BYRON")
+BYRON_VERSION=11006
+GYM_SETS=(f08c.ALL|{SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL,FANTINA_SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL,FANTINA_SYMBOL,MAYLENE_SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL,FANTINA_SYMBOL,MAYLENE_SYMBOL,WAKE_SYMBOL},f08c.ALL|{SYMBOL,GARDENIA_SYMBOL,FANTINA_SYMBOL,MAYLENE_SYMBOL,WAKE_SYMBOL,BYRON_SYMBOL})
 GYM_SPECS={
     "Roark":(SYMBOL,CITY,TEAM,TYPE_ALIASES,VERSION,"F11A","Oreburgh Gym - QA"),
     "Gardenia":(GARDENIA_SYMBOL,GARDENIA_CITY,GARDENIA_TEAM,GARDENIA_TYPES,GARDENIA_VERSION,"F11B","Eterna Gym - QA"),
     "Fantina":(FANTINA_SYMBOL,FANTINA_CITY,FANTINA_TEAM,FANTINA_TYPES,FANTINA_VERSION,"F11C","Hearthome Gym - QA"),
     "Maylene":(MAYLENE_SYMBOL,MAYLENE_CITY,MAYLENE_TEAM,MAYLENE_TYPES,MAYLENE_VERSION,"F11D","Veilstone Gym - QA"),
     "Crasher Wake":(WAKE_SYMBOL,WAKE_CITY,WAKE_TEAM,WAKE_TYPES,WAKE_VERSION,"F11E","Pastoria Gym - QA"),
+    "Byron":(BYRON_SYMBOL,BYRON_CITY,BYRON_TEAM,BYRON_TYPES,BYRON_VERSION,"F11F","Canalave Gym - QA"),
 }
-LEADER_ORDER=("Roark","Gardenia","Fantina","Maylene","Crasher Wake")
+LEADER_ORDER=("Roark","Gardenia","Fantina","Maylene","Crasher Wake","Byron")
 W,H=15,12
 LEADER=(7,3)
 EXIT=(7,10)
@@ -74,6 +80,9 @@ def roster(root):
     fifth=gyms[4];w=next(t for t in teams["trainers"] if t["id"]==fifth["id"])
     if fifth["id"]!="SINNOH_CRASHER_WAKE" or fifth["badge"]!="FEN" or fifth["prerequisite_badges"]!=["COAL","FOREST","RELIC","COBBLE"] or list(map(list,zip(w["first_battle"]["species"],w["first_battle"]["historical_levels"])))!=WAKE_TEAM:
         raise ValueError("F11E_GYM_CONTRACT_CHANGED")
+    sixth=gyms[5];b=next(t for t in teams["trainers"] if t["id"]==sixth["id"])
+    if sixth["id"]!="SINNOH_BYRON" or sixth["badge"]!="MINE" or sixth["prerequisite_badges"]!=["COAL","FOREST","RELIC","COBBLE","FEN"] or list(map(list,zip(b["first_battle"]["species"],b["first_battle"]["historical_levels"])))!=BYRON_TEAM:
+        raise ValueError("F11F_GYM_CONTRACT_CHANGED")
     return [{"id":g["id"],"badge":g["badge"],"order":g["order"],"installed":False} for g in gyms]
 
 def tileset_png(leader='Roark'):
@@ -83,7 +92,8 @@ def tileset_png(leader='Roark'):
             "Gardenia":[(125,158,106),(53,91,64),(222,196,106),(69,119,75)],
             "Fantina":[(100,83,142),(45,34,72),(179,153,215),(66,53,103)],
             "Maylene":[(156,111,91),(73,55,49),(227,190,144),(112,78,68)],
-            "Crasher Wake":[(98,151,173),(38,76,108),(182,224,229),(48,112,153)]}[leader]
+            "Crasher Wake":[(98,151,173),(38,76,108),(182,224,229),(48,112,153)],
+            "Byron":[(134,141,153),(49,57,70),(199,207,217),(92,101,116)]}[leader]
     for y in range(h):
         for x in range(w):
             tile=x//32;xx=x%32
@@ -175,7 +185,7 @@ def build(blobs,mapping,components,occupied,types,species,existing,root=f.ROOT,o
     template=conn.read_marshal(blobs["Data/Map%03d.rxdata"%mapping["SINNOH_PLAYER_HOUSE_1F"]],"F11A_TEMPLATE")
     tile=copy.deepcopy(tiles[template.attrs["@tileset_id"]]);tid=len(tiles)
     if tid>=5000:raise ValueError("F11A_TILESET_CAPACITY")
-    name="SNQA_"+tag+("_ROCK_GYM","_GRASS_GYM","_GHOST_GYM","_FIGHTING_GYM","_WATER_GYM")[order]
+    name="SNQA_"+tag+("_ROCK_GYM","_GRASS_GYM","_GHOST_GYM","_FIGHTING_GYM","_WATER_GYM","_STEEL_GYM")[order]
     tile.attrs.update({"@id":tid,"@name":name.encode(),"@tileset_name":name.encode(),
                        "@autotile_names":[b""]*7,"@passages":pv.table1([15]*384+[0,15,0,15,15,15,15,15]),
                        "@priorities":pv.table1([0]*392),"@terrain_tags":pv.table1([0]*392)})
@@ -188,7 +198,8 @@ def build(blobs,mapping,components,occupied,types,species,existing,root=f.ROOT,o
     pillars=(((3,4),(11,4),(3,6),(11,6)) if order<2 else
              ((3,3),(11,3),(5,6),(9,6),(3,8),(11,8)) if order==2 else
              ((4,3),(10,3),(4,5),(10,5),(4,7),(10,7),(2,8),(12,8)) if order==3 else
-             ((3,4),(4,4),(10,4),(11,4),(3,5),(4,5),(10,5),(11,5),(5,7),(9,7)))
+             ((3,4),(4,4),(10,4),(11,4),(3,5),(4,5),(10,5),(11,5),(5,7),(9,7)) if order==4 else
+             ((3,3),(11,3),(3,5),(11,5),(5,6),(9,6),(3,8),(11,8)))
     for xy in pillars:
         cells[xy[1]*W+xy[0]]=387;floor.remove(xy)
     room=copy.deepcopy(template)

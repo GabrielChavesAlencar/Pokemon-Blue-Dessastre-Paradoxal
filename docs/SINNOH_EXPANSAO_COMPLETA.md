@@ -274,3 +274,8 @@ F11C integrada em 7a9692f2e987cf8f861e6c9399c4c4ecf67560c2 (11 workflows/26 chec
 ### F11E — Crasher Wake
 
 Quinto desafio em Pastoria, sala autoral com temática Água; obstáculos são decorativos, sem água navegável ou mudança de regras de campo. Referência CH15/S15 Gyarados/Quagsire/Floatzel (33/34/37 históricos). Exige COAL, FOREST, RELIC e COBBLE antes da batalha e antes da concessão FEN, vitória confirmada pelo motor, compilação verificada e balanceamento/proteção de chefes existentes. Não concede HM03 nem ativa Surf, pesca ou Radar. Geração somente após os quatro ginásios anteriores, com MapID livre, dois portais seguros, sprite exato ou autoral identificado sem ambiguidade. Testes reais exigem 136 mapas, preservação dos 135 anteriores, 83 portais esperados e saves por hashes. Nenhuma aprovação nativa ou instalação presumida. CI pendente.
+
+
+### F11F — Byron
+
+Sexto desafio em Canalave, sala autoral temática Aço. Contrato CH15/S15: Magneton/Steelix/Bastiodon (37/38/41 históricos), não níveis fixos em runtime. Requer COAL, FOREST, RELIC, COBBLE e FEN; MINE somente após vitória confirmada. Não concede HM04 nem ativa Strength ou outras habilidades de campo. Geração sequencial, MapID livre, dois portais seguros, sprite exato ou autoral sem ambiguidade. Meta: 137 mapas, 85 portais, seis ginásios, preservação integral do baseline anterior. CI e catálogo local pendentes; QA nativa não executada.
