@@ -2,6 +2,30 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "687ca84bd5cee68d4e67324ab2acef4958e15ecb",
+      "date": "2026-11-25T08:57:39-03:00",
+      "title": "Merge pull request #320 from GabrielChavesAlencar/sinnoh-full-expansion-f12c2-eterna-authored-preview",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "a110ba0d55b07d9086db65d06c1cf7f46467b775",
+      "date": "2026-11-25T08:32:41-03:00",
+      "title": "F12C2: synchronize current main portal history before full CI",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "56e5be76c8ea0ee02f5fdfa3dd890a059435fabe",
+      "date": "2026-11-25T08:29:15-03:00",
+      "title": "F12C2: record merged Eterna source audit and preserve prior F12C4 fixture evidence",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "943263096126f5b1ff4ca4599cf283c5e28978bc",
+      "date": "2026-11-25T08:28:10-03:00",
+      "title": "Merge main into F12C2 preserving Eterna audit and preview tests",
+      "category": "Melhorias"
+    },
+    {
       "sha": "6df8cbe653bc8a79056d4d1ee5a3d9f5d99709d3",
       "date": "2026-11-25T08:27:34-03:00",
       "title": "Merge pull request #319 from GabrielChavesAlencar/sinnoh-full-expansion-f12c-eterna-source-audit",
@@ -83,6 +107,12 @@
       "sha": "bf88d490d9c125d6399d4abc24f7192d51dbde2b",
       "date": "2026-11-25T06:35:54-03:00",
       "title": "Merge pull request #314 from GabrielChavesAlencar/sinnoh-full-expansion-f12b3-windworks-preflight",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "eff668275b39685482c0f024cc29df72ece65a3a",
+      "date": "2026-11-25T06:35:28-03:00",
+      "title": "F12C2: build four authored interior map candidates and validate safe stairs",
       "category": "Melhorias"
     },
     {
