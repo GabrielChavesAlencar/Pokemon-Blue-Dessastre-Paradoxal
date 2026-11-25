@@ -178,6 +178,13 @@ def verified_original_lake_entry(event,src,mapping):
     if ORIGINAL_LAKE_EVENT_CONTRACTS.get((a,eid,b))!=(event.attrs["@x"],event.attrs["@y"],v[2],v[3]):return None
     return (event.attrs["@x"],event.attrs["@y"],dst,*v[2:])
 
+def valor_rock_mask_allowed(threshold, occupied, verified_portal, post_chase_story):
+    # A normal Rock cell may be occupied by an NPC. Its terrain mask is
+    # unchanged, and the common free-cell subtraction excludes that NPC.
+    # The decorative threshold is narrower: an occupied threshold is
+    # usable only for the verified original portal in the post-chase model.
+    return not (threshold and occupied) or (verified_portal and post_chase_story)
+
 def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=False,seed_cells=None,strict_movement=False,rock_cells=(),valor_rock=(),blocked_cells=(),blocked_lanes=(),post_chase_story=False,edge_sink=None):
     reverse={mid:sym for sym,mid in mapping.items()}
     tiles=conn.read_marshal(blobs["Data/Tilesets.rxdata"],"F10B7_QA_TILES")
@@ -238,12 +245,10 @@ def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=Fal
                 if stack!=expected or 4 not in tags or any(tag not in (0,4) for tag in tags) or any(
                     struct.unpack_from("<H",ts["@passages"].data,20+2*k)[0]&15 for k in stack if k) or (not threshold and any(priorities)):
                     raise ValueError("F12D_VALOR_ROCK_CHANGED")
-                if (x,y) in occupied:
-                    # Only the exact recovered door can occupy the threshold.
-                    valid=threshold and any(verified_original_lake_entry(e,mid,mapping) for e in world.attrs["@events"].values()
-                        if (e.attrs["@x"],e.attrs["@y"])==(x,y))
-                    if not valid:raise ValueError("F12D_VALOR_ROCK_OCCUPIED")
-                    if not post_chase_story:continue
+                valid=threshold and (x,y) in occupied and any(verified_original_lake_entry(e,mid,mapping)
+                    for e in world.attrs["@events"].values() if (e.attrs["@x"],e.attrs["@y"])==(x,y))
+                if not valor_rock_mask_allowed(threshold,(x,y) in occupied,valid,post_chase_story):
+                    continue
                 passages[mid][x,y]=0
             for m,x,y in blocked_cells:
                 if m==mid:passages[mid].pop((x,y),None)

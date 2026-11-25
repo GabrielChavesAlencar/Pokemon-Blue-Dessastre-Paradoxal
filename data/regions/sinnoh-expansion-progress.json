@@ -1770,7 +1770,17 @@
       "f12d_integrated_pre_chase_fixture_checks_confirmed": 3,
       "f12d_integrated_valor_rock_reference_cells": 204,
       "f12d_integrated_lake_local_preview_count_reconfirmed": 3,
-      "f12d_integrated_valor_local_preview": {"map_id": 531, "position": [16,20], "stand": [15,20]},
+      "f12d_integrated_valor_local_preview": {
+        "map_id": 531,
+        "position": [
+          16,
+          20
+        ],
+        "stand": [
+          15,
+          20
+        ]
+      },
       "f12d_integrated_lake_independent_legs_implemented": true,
       "f12d_integrated_last_full_ci_head": "ae62bbdfbc9212820993149c1a56c7a53c94704e",
       "f12d_integrated_last_full_ci_base": "0e6367068f47b4b7efb949d93f960efb7628926a",
@@ -1806,11 +1816,11 @@
       "f12d_integrated_native_stage_receipts_implemented": true,
       "f12d_integrated_original_lake_seam_recovery_implemented": true,
       "f12d_integrated_original_lake_sequence_confirmed": false,
-      "f12d_integrated_latest_observed_head": "01d46fd19df6a689046a7f0bb422c037df4d9032",
-      "f12d_integrated_latest_observed_native_job": 139432157903,
-      "f12d_integrated_latest_observed_source_job": 139432163516,
-      "f12d_integrated_latest_observed_workflows_approved": 10,
-      "f12d_integrated_latest_observed_jobs_approved": 25,
+      "f12d_integrated_latest_observed_head": "29f32d24c9783f40717b52f48a7533e833f3b009",
+      "f12d_integrated_latest_observed_native_job": 139438513867,
+      "f12d_integrated_latest_observed_source_job": 139438514235,
+      "f12d_integrated_latest_observed_workflows_approved": 9,
+      "f12d_integrated_latest_observed_jobs_approved": 24,
       "f12d_integrated_native_request_accepted_confirmed": true,
       "f12d_integrated_native_compiler_return_confirmed": true,
       "f12d_integrated_native_item_probe_confirmed": true,
@@ -1825,7 +1835,11 @@
       "f12d_integrated_native_exit_owner_confirmed": "Blue Official Rules Verify.rb:69",
       "f12d_integrated_native_foreign_request_isolation_implemented": true,
       "f12d_integrated_original_lake_candidate_recovery_implemented": true,
-      "f12d_integrated_original_lake_dependencies_observed": [9,25,26],
+      "f12d_integrated_original_lake_dependencies_observed": [
+        9,
+        25,
+        26
+      ],
       "f12d_integrated_lake_directed_edges_observed": 179,
       "f12d_integrated_native_foreign_requests_isolated_confirmed": true,
       "f12d_integrated_native_movement_failure_observed": "Section046:254 nil indexing before initialized game state",
@@ -1834,7 +1848,15 @@
       "f12d_integrated_original_lake_entries_accepted_observed": 0,
       "f12d_integrated_original_lake_stale_reference_repairs_implemented": 4,
       "f12d_integrated_original_lake_source_inventory_job": 138719583390,
-      "f12d_integrated_valor_exact_threshold_implemented": true
+      "f12d_integrated_valor_exact_threshold_implemented": true,
+      "f12d_integrated_current_preflight_failed": true,
+      "f12d_integrated_current_preflight_failure": "preflight_failed:ValueError; actual private candidate not staged",
+      "f12d_integrated_current_source_failure": "DOWNLOAD_FAILED:maps:URLError (WinError 10060)",
+      "f12d_integrated_current_source_retry_job": 139442635063,
+      "f12d_integrated_current_maps_prepared": 144,
+      "f12d_integrated_current_markers_reconfirmed": false,
+      "f12d_integrated_valor_rock_occupancy_regression_fix_pending_ci": true,
+      "f12d_integrated_original_lake_geometry_source_sha256": "79a7a4e4d176039daa9d3a2866540ced4daad4c9043a9a82378dae45a60e9e26"
     },
     {
       "id": "F13",

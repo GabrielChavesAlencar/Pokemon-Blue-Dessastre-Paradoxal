@@ -3592,6 +3592,21 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertLess(main.index("TRANSACTION_PROBE_OK"),main.index("ALL_VERIFIERS_PASSED"))
         self.assertIn("Compiler.singleton_class.send(:define_method, :compile_all, blue_sinnoh_core)",main)
 
+    def test_f12d_valor_rock_npc_occupancy_preserves_terrain_and_blocks_cell(self):
+        import sinnoh_f10b7_field_audit as g
+        # NPC placement must be evaluated by component continuity, not fail
+        # because the underlying ordinary Rock tile is occupied.
+        self.assertTrue(g.valor_rock_mask_allowed(False,True,False,False))
+        self.assertTrue(g.valor_rock_mask_allowed(False,True,False,True))
+        masks={(0,0):0,(1,0):0,(2,0):0}
+        ix,groups=g.index_components(set(masks)-{(1,0)},masks)
+        self.assertNotIn((1,0),ix)
+        self.assertNotEqual(ix[(0,0)],ix[(2,0)])
+        self.assertFalse(g.valor_rock_mask_allowed(True,True,False,True))
+        self.assertFalse(g.valor_rock_mask_allowed(True,True,True,False))
+        self.assertTrue(g.valor_rock_mask_allowed(True,True,True,True))
+        self.assertTrue(g.valor_rock_mask_allowed(True,False,False,False))
+
     def test_f12d_lake_reference_repairs_are_exact_and_reciprocal(self):
         import sinnoh_f12d_integrated as i
         import sinnoh_f10b7_field_audit as g

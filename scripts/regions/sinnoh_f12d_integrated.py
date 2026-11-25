@@ -68,6 +68,8 @@ def placement(data,mapping,components,root,mid,seed,rock=(),valor_rock=(),post_c
     if mid not in worlds:return None
     world=worlds[mid];w,h=world.attrs["@width"],world.attrs["@height"]
     forbid=protected(data,mapping,components,root)|{seed}
+    if mid==mapping.get("SINNOH_VALOR_CAVERN"):
+        forbid.add((mid,22,36))  # Preserve the exact original cave threshold.
     candidates={(x,y) for m,x,y in reached if m==mid and 1<x<w-2 and 1<y<h-2 and
         (m,x,y) not in forbid and (gates.cell_shape(world,tiles,(x,y))["ordinary_walkable"] or (m,x,y) in valor_rock)}
     for xy in sorted(candidates,key=lambda q:(abs(q[0]-w//2)+abs(q[1]-h//2),q)):
@@ -753,4 +755,8 @@ def installer_preflight(blobs,mapping,components,cr,base,root,source,staged=None
                     native_compile_verified=False,normal_launch_allowed=False)
         return result
     except (OSError,ValueError,TypeError,KeyError,UnicodeError) as exc:
-        return {**result,"reason":"preflight_failed:"+type(exc).__name__}
+        code=str(exc)
+        # Report only project-defined, non-sensitive invariant identifiers.
+        detail=code if isinstance(exc,ValueError) and re.fullmatch(r"(?:F12D|F10B7|F10B8)_[A-Z0-9_]{1,100}",code) else None
+        return {**result,"reason":"preflight_failed:"+type(exc).__name__,
+            "invariant":detail}
