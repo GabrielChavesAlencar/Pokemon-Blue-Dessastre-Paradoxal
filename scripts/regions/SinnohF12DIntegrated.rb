@@ -2,6 +2,9 @@
 module BlueSinnohF12DIntegrated
   LOCATIONS=__LOCATIONS__.freeze
   SPECS=__SPECS__.freeze
+  EDIT_CELLS=__EDIT_CELLS__.freeze
+  CHASE_LANES=__CHASE_LANES__.freeze
+  CELESTIC_LANES=__CELESTIC_LANES__.freeze
   LAKE_ORDER=%w[VALOR VERITY ACUITY].freeze
   LAKE_LEDGER="sinnoh_f12d_lakes".freeze
   T=BlueSinnohF12D3Transaction
@@ -111,9 +114,28 @@ module BlueSinnohF12DIntegrated
       super(*args)
     end
   end
+  def self.movement_allowed?(s,current,facing)
+    return false unless current.is_a?(Array) && facing.is_a?(Array)
+    lane=current+facing
+    return !!(s && T.cleared?(s)) if CELESTIC_LANES.include?(lane)
+    return !!(s && T.history(s)) if EDIT_CELLS.include?(facing) || CHASE_LANES.include?(lane)
+    true
+  end
+  module ProgressionMovement
+    def move_generic(dir,*args,&block)
+      if defined?(BlueSinnohExperimental) && BlueSinnohExperimental.private_copy? &&
+         $game_map && [2,4,6,8].include?(dir)
+        facing=$map_factory && $map_factory.getFacingTile(dir,self)
+        return unless facing && BlueSinnohF12DIntegrated.movement_allowed?(
+          BlueSinnohF12DIntegrated.state,[$game_map.map_id,x,y],facing)
+      end
+      super(dir,*args,&block)
+    end
+  end
   def self.bind_pages!
-    return false unless defined?(Game_Event)
+    return false unless defined?(Game_Event) && defined?(Game_Player)
     Game_Event.prepend(BarrierPages) unless Game_Event.ancestors.include?(BarrierPages)
+    Game_Player.prepend(ProgressionMovement) unless Game_Player.ancestors.include?(ProgressionMovement)
     true
   end
 end

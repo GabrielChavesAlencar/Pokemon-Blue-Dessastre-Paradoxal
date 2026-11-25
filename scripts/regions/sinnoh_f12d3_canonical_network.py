@@ -473,6 +473,14 @@ def inspect(blobs,mapping,components,cr,expanded,original,source,root,directiona
             check=conn.read_marshal(out,"F12D3_CANONICAL_VERIFY");_,after=corridor.grid(check,tiles)
             if {q for q in shapes if shapes[q]!=after[q]}!=changes or not all(corridor.ordinary(after[q]) for q in changes):
                 raise ValueError("F12D3_CANONICAL_DELTA")
+            if integrated:
+                # Reject new side edges to components absent from the witness.
+                represented={idx[m][p[1:]] for p in nodes if p[0]==s and p[1:] in idx[m]}
+                unintended=[(q,v) for q in changes for v in tp.neighbours(*q)
+                    if v in after and (corridor.ordinary(after[v]) or (m,*v) in rock_cells)
+                    and v not in occupied[s] and (s,*v) not in nodes and idx[m].get(v) not in represented]
+                if unintended:
+                    failed=True;row["reason"]="unplanned_local_side_component";row["unexpected_local_edges"]=len(unintended);break
             partial_edits={q for q in changes if partial((s,*q))}
             rock_conflict=any(not dry.permitted_step(shapes[q],shapes[v],(v[0]-q[0],v[1]-q[1]),True,False)
                 for q in partial_edits for v in tp.neighbours(*q) if (m,*v) in rock_cells)

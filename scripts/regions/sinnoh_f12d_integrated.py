@@ -8,6 +8,7 @@ import sinnoh_f10b_trainers as trainers
 import sinnoh_connection_expansion as conn
 import sinnoh_qa_teleport as tp
 import sinnoh_f12b5_authored_quest as mars
+import sinnoh_f12d3_gated_alignment as gated
 from build_johto_events import EVENT_CLASSES,ruby,event_page
 
 ORDER=("VALOR","VERITY","ACUITY")
@@ -86,13 +87,24 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
         directional_repair=True,rock_repair=True,rock_network=True,integrated_payload=prepared)
     result={"geometry":report,"status":"F12D_INTEGRATED_BLOCKED","mission_prepared":False,
         "lake_contracts":{k:lake_contract(k,types,species,existing) for k in ORDER},
-        "lake_placements":{},"runtime_install_enabled":False,"native_verified":False,"new_maps":0,"new_portals":0}
+        "lake_placements":{},"lake_local_previews":{},"runtime_install_enabled":False,"native_verified":False,"new_maps":0,"new_portals":0}
     origin=cr["placements"][-1];seed=(origin["map_id"],*origin["stand"])
-    # Independently probe lake placement, even if the Psyduck corridor fails.
+    # Compile local lake event previews independently. QA entry seeds
+    # are local placement evidence, not proof of progression travel.
+    old={k:v for k,v in mapping.items() if k in chase.prior.ALL}
+    entries=tp.build(blobs,old,components,root)
     for key in ORDER:
         contract=result["lake_contracts"][key]
         if not contract or contract["symbol"] not in mapping:continue
         mid=mapping[contract["symbol"]]
+        local_seed=next((tuple(r[3]) for r in entries if r[3] and r[3][0]==mid),None)
+        if local_seed:
+            local=placement(blobs,mapping,components,root,mid,local_seed)
+            if local:
+                preview,loc=add_event(blobs,mid,local[0],key,"SNQA_F12D_"+key)
+                loc.update(stand=list(local[1]),qa_seed=list(local_seed),walk_from_predecessor_proved=False,
+                    candidate_map_sha256=hashlib.sha256(preview["Data/Map%03d.rxdata"%mid]).hexdigest())
+                result["lake_local_previews"][key]=loc
         pos=placement(blobs,mapping,components,root,mid,seed)
         if pos:result["lake_placements"][key]={"map_id":mid,"position":list(pos[0]),"stand":list(pos[1]),"from_chase_only":True}
     if not prepared:
@@ -145,7 +157,24 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
     # Staging only until the private engine, sprites and pre-chase seam gate pass.
     template=(root/"scripts/regions/SinnohF12DIntegrated.rb").read_text("utf-8")
     literal={k:[v["map_id"],*v["position"],v["event_id"]] for k,v in locations.items()}
+    worlds,_,index,_,_,_=gates.access_graph(opened,old,components,root,seed_cells=[seed],
+        directional=True,strict_movement=True,rock_cells=rock)
+    dims={m:(w.attrs["@width"],w.attrs["@height"]) for m,w in worlds.items()}
+    def lane_keys(records):
+        keys=[]
+        for rec in records:
+            for _,a,b in gated.all_lanes(rec,index,dims):
+                left=[rec[0],*a];right=[rec[3],*b]
+                keys.extend([left+right,right+left])
+        return sorted(keys)
+    edits=sorted([row["map_id"],*row["position"]] for row in prepared["edits"])
+    chase_lanes=lane_keys(prepared["connections"]);celestic_lanes=lane_keys([prepared["exit_record"]])
     template=template.replace("__LOCATIONS__",ruby_hash(literal)).replace("__SPECS__",ruby_hash(specs))
+    for key,value in (("__EDIT_CELLS__",edits),("__CHASE_LANES__",chase_lanes),("__CELESTIC_LANES__",celestic_lanes)):
+        if template.count(key)!=1:raise ValueError("F12D_INTEGRATED_GATE_TEMPLATE")
+        template=template.replace(key,json.dumps(value))
+    result["progression_gate"]={"edited_cells":len(edits),"chase_directional_lanes":len(chase_lanes),
+        "celestic_directional_lanes":len(celestic_lanes),"runtime_verified":False}
     plugin=(root/"scripts/regions/SinnohF12D3Transaction.rb").read_bytes()+b"\n"+template.encode("utf-8")
     if pbs:
         name="PBS/trainers_sinnoh_f12d_integrated.txt"

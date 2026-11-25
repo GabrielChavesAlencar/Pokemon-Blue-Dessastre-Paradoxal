@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a1bd21f00825567bc24e3c9538f1df67ebd33b21",
+      "date": "2026-11-25T14:06:21-03:00",
+      "title": "Merge PR #337: Sinnoh Rock cost attribution",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "3fbaad27ed3e646eb5f933cf3726aea45d79ad5d",
+      "date": "2026-11-25T13:58:23-03:00",
+      "title": "Sinnoh F12D3I: attribute dry reconstruction cost and audit exact Rock tile network",
+      "category": "Melhorias"
+    },
+    {
       "sha": "bb9fae59462fa624ba9e4de6c911bd09853938ed",
       "date": "2026-11-25T13:57:09-03:00",
       "title": "Merge PR #336: Sinnoh F12D3I exact Rock frontier network audit",
