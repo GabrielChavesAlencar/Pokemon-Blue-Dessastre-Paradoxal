@@ -29,6 +29,13 @@ jobs:
         run: |
           python scripts/install_game.py --apply --skip-kanto
           if($LASTEXITCODE -ne 0){throw 'Blue installation failed'}
+          if($env:GITHUB_HEAD_REF -eq 'sinnoh-f12d-integrated-gameplay'){
+            # The actual Blue base has just been installed in this runner.
+            # Read only local script fingerprints and catalogue metadata,
+            # without executing or publishing Sinnoh's private source data.
+            python -c "import sys; sys.path.insert(0,'scripts/regions'); import install_sinnoh_experimental_windows; import sinnoh_f12d_integrated as i; from pathlib import Path; import json; base=Path('game'); print('SINNOH_F12D_LOCAL_ENGINE_REFERENCE_REPORT '+json.dumps(i.local_engine(base),sort_keys=True)); print('SINNOH_F12D_LOCAL_ITEM_CATALOGUE_REPORT '+json.dumps(i.item_catalogue.audit(base),sort_keys=True))"
+            if($LASTEXITCODE -ne 0){throw 'Sinnoh local reference preflight failed'}
+          }
           $ProgressPreference='SilentlyContinue'
           $source=New-Item -ItemType Directory -Force '.blue-work/frlg-source'
           $archive=Join-Path $source.FullName 'FRLG.rar'

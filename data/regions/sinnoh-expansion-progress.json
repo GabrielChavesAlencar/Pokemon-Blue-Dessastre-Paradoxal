@@ -1647,7 +1647,9 @@
       "f12d_integrated_sprite_sheets_authored": 5,
       "f12d_integrated_engine_reference_checks": 4,
       "f12d_integrated_installer_preflight": true,
-      "f12d_integrated_exact_four_vertex_cut": true
+      "f12d_integrated_exact_four_vertex_cut": true,
+      "f12d_integrated_local_base_ci_preflight": true,
+      "f12d_integrated_local_engine_verified": false
     },
     {
       "id": "F13",
