@@ -1479,22 +1479,27 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                         print("SINNOH_REAL_F12D2_CHASE_BLOCKED_BASELINE_PRESERVED_OK",flush=True)
                     print("SINNOH_F12D2_CHASE_PREVIEW_REPORT "+json.dumps(dp,sort_keys=True),flush=True)
                     import sinnoh_f12d_runtime as chase
-                    with patch.object(chase.preview,"preview",return_value=(pd,dp)):
-                        chased,cr,cp=chase.build(installed,expanded,expanded_comps,{"GALACTIC_GRUNT"},{"CROAGUNK"},set(),ROOT)
+                    chased,cr,cp=chase.prepare(installed,expanded,expanded_comps,{"GALACTIC_GRUNT"},{"CROAGUNK"},set(),ROOT,Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]))
                     self.assertFalse(cr["native_verified"])
-                    if pd:
+                    print("SINNOH_F12D_SOURCE_SEAM_REPORT "+json.dumps(cr["source_seams"],sort_keys=True),flush=True)
+                    if cr["runtime_install_enabled"]:
                         self.assertEqual(cr["status"],"F12D_RUNTIME_PREPARED")
                         self.assertEqual(cr["new_events"],3)
                         self.assertEqual(len(set(chased)-set(installed)),2)
-                        self.assertEqual(chased["Data/map_connections.dat"],installed["Data/map_connections.dat"])
                         self.assertEqual(chased["Data/MapInfos.rxdata"],installed["Data/MapInfos.rxdata"])
+                        before=chase.seams.pv.parse_connections(installed["PBS/map_connections.txt"])
+                        after=chase.seams.pv.parse_connections(chased["PBS/map_connections.txt"])
+                        self.assertEqual(after[:len(before)],before)
+                        self.assertEqual(len(after)-len(before),cr["new_seams"])
+                        self.assertEqual(cr["new_portals"],0)
                         self.assertIn(b"Pokemon = CROAGUNK,31",chased[chase.PBS])
                         self.assertIn(b"BlueSinnohF12D",cp)
                         print("SINNOH_REAL_F12D2_RUNTIME_FIXTURE_PREPARED_OK",flush=True)
                     else:
                         self.assertEqual(chased,installed)
                         self.assertEqual(cp,b"")
-                        self.assertFalse(cr["runtime_install_enabled"])
+                        self.assertEqual(cr["new_seams"],0)
+                        print("SINNOH_REAL_F12D2_RUNTIME_BLOCKED_BASELINE_PRESERVED_OK",flush=True)
                     print("SINNOH_F12D_RUNTIME_FIXTURE_REPORT "+json.dumps(cr,sort_keys=True),flush=True)
                 jr["catalog_provenance"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
                 print("SINNOH_F12C3_QUEST_CANDIDATE_REPORT "+json.dumps(jr,sort_keys=True),flush=True)

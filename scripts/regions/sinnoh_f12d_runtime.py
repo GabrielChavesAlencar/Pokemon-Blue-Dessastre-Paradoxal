@@ -2,6 +2,7 @@
 import json
 import re
 import sinnoh_f12d_pastoria_preview as preview
+import sinnoh_f12d_seams as seams
 import sinnoh_f12b5_authored_quest as mars
 import sinnoh_f10b_trainers as trainers
 import sinnoh_f10c_npcs as npc
@@ -43,7 +44,17 @@ def build(blobs,mapping,components,types,species,existing,root):
     return out,{**report,"status":"F12D_RUNTIME_PREPARED","runtime_install_enabled":True,
          "new_events":3,"compiled_catalog_verified":False,"native_verified":False},template.encode("utf-8")
 
-def append(blobs,mapping,components,base,root):
+def prepare(blobs,mapping,components,types,species,existing,root,source):
+    candidate,sr=seams.repair(blobs,mapping,components,source,root)
+    out,report,plugin=build(candidate,mapping,components,types,species,existing,root)
+    report["source_seams"]=sr
+    if not report.get("runtime_install_enabled"):
+        report["new_seams"]=0
+        return blobs,report,b""
+    report["new_seams"]=sr["candidate_seams"]
+    return out,report,plugin
+
+def append(blobs,mapping,components,base,root,source):
     if set(mapping)!=preview.baseline.ALL:
         return blobs,{"status":"F12D_RUNTIME_BLOCKED","reason":"requires_144_baseline",
             "runtime_install_enabled":False,"native_verified":False},b""
@@ -55,8 +66,8 @@ def append(blobs,mapping,components,base,root):
                 v=[x.strip() for x in header.split(",")]
                 if len(v) in (2,3) and (len(v)==2 or v[2].isdigit()):
                     existing.add((v[0],v[1],int(v[2]) if len(v)==3 else 0))
-        return build(blobs,mapping,components,trainers.catalogue(base,"trainer_types"),
-            trainers.catalogue(base,"pokemon"),existing,root)
+        return prepare(blobs,mapping,components,trainers.catalogue(base,"trainer_types"),
+            trainers.catalogue(base,"pokemon"),existing,root,source)
     except (OSError,ValueError,TypeError,KeyError,UnicodeError) as exc:
         return blobs,{"status":"F12D_RUNTIME_BLOCKED","reason":"preflight_failed:"+type(exc).__name__,
             "runtime_install_enabled":False,"native_verified":False},b""

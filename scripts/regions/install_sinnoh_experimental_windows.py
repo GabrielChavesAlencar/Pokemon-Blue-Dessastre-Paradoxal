@@ -933,7 +933,7 @@ def build_files(base:Path,project:Path=ROOT):
             print("SINNOH_F12C_INSTALLER_PREFLIGHT_REPORT "+json.dumps(f12c_report,sort_keys=True),flush=True)
         if f12c4_report.get("runtime_install_enabled"):
             f12d_previous_maps=maps
-            maps,f12d_report,f12d_plugin=f12d_runtime.append(maps,mapping,components,base,project)
+            maps,f12d_report,f12d_plugin=f12d_runtime.append(maps,mapping,components,base,project,sources["maps"])
             print("SINNOH_F12D_RUNTIME_REPORT "+json.dumps(f12d_report,sort_keys=True),flush=True)
         gym_symbols=set(mapping)-f08c_expansion.ALL
         if gym_symbols:
@@ -989,7 +989,7 @@ def build_files(base:Path,project:Path=ROOT):
     # These hashes do not claim human rights approval, or native gameplay acceptance.
     report={"schema":1,"region":"SINNOH","mode":MODE,
         "maps_prepared":len(mapping),"static_events_placed":len(events)+story.get("extra_event_count",0)+len(route_trainers)+len(connection_report.get("portals",[]))+len(f08c_report.get("portals",[]))+f10b_report.get("new_trainers",0)+f10c_report.get("new_npcs",0)+f11a_report.get("gym_leaders_added",0)+f11a_report.get("new_portals",0)+f11b_report.get("gym_leaders_added",0)+f11b_report.get("new_portals",0)+f11c_report.get("gym_leaders_added",0)+f11c_report.get("new_portals",0)+f11d_report.get("gym_leaders_added",0)+f11d_report.get("new_portals",0)+f11e_report.get("gym_leaders_added",0)+f11e_report.get("new_portals",0)+f11f_report.get("gym_leaders_added",0)+f11f_report.get("new_portals",0)+f11g_report.get("gym_leaders_added",0)+f11g_report.get("new_portals",0)+f11h_report.get("gym_leaders_added",0)+f11h_report.get("new_portals",0)+f12b5_report.get("new_events",0)+f12c4_report.get("new_events",0)+f12d_report.get("new_events",0),
-        "static_warps":16-len(continuity.get("retired_warp_keys",[]))+(3 if story else 0)+len(connection_report.get("portals",[]))+len(f08c_report.get("portals",[])),"native_seam_pairs":sum(not p.get("visual_only") for p in continuity.get("connections",[]))+len(connection_report.get("seams",[]))+f12b4_report.get("new_seams",0),"static_handlers":5,"static_starter_balls":3,
+        "static_warps":16-len(continuity.get("retired_warp_keys",[]))+(3 if story else 0)+len(connection_report.get("portals",[]))+len(f08c_report.get("portals",[])),"native_seam_pairs":sum(not p.get("visual_only") for p in continuity.get("connections",[]))+len(connection_report.get("seams",[]))+f12b4_report.get("new_seams",0)+f12d_report.get("new_seams",0),"static_handlers":5,"static_starter_balls":3,
         "local_reserved_qa_only":True,"independent_r07_approved":False,
         "independent_r08_approved":False,"r09_native_qa_executed":0,
         "game_exe_executed":False,"runtime_playable_verified":False,
