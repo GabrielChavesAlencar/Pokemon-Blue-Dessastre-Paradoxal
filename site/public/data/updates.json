@@ -2,9 +2,27 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b93c79734fa51867ce681a6eaf2b0e10d40c1556",
+      "date": "2026-11-24T22:16:18-03:00",
+      "title": "Merge pull request #303 from GabrielChavesAlencar/sinnoh-full-expansion-f11a-roark-gym",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "c92dfcc8e4aa7ce9ea1a018e908fb0b3b70936bd",
+      "date": "2026-11-24T22:05:48-03:00",
+      "title": "Record real F11A sprite blocker and F10C2 evidence; run full main-target CI",
+      "category": "Melhorias"
+    },
+    {
       "sha": "50c3a10d35232bb11d38ae3bd4b1820cbb97277f",
       "date": "2026-11-24T22:05:19-03:00",
       "title": "Merge pull request #302 from GabrielChavesAlencar/sinnoh-full-expansion-f10c-npc-dialogue",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "848fc824e838e2797047bf6614960ce981029502",
+      "date": "2026-11-24T22:00:30-03:00",
+      "title": "Sinnoh F10C2 and F11A: expand safe dialogue and first authored Roark gym challenge",
       "category": "Melhorias"
     },
     {
