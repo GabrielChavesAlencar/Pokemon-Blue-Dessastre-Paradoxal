@@ -1488,6 +1488,15 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                             self.assertTrue(set(pair["local_spawn_shared_lanes"])<=set(pair["shared_walkable_lanes"]))
                             self.assertTrue(set(pair["shared_walkable_lanes"])<=set(pair["source_walkable_lanes"]) & set(pair["qa_walkable_lanes"]))
                     print("SINNOH_F12D_SOURCE_SEAM_REPORT "+json.dumps(cr["source_seams"],sort_keys=True),flush=True)
+                    ar=cr["authored_corridor"]
+                    self.assertLessEqual(ar["changed_cells"],32)
+                    self.assertEqual(ar["changed_cells"],len(ar["edits"]))
+                    for edit in ar["edits"]:
+                        self.assertIn(edit["map_id"],(expanded["SINNOH_ROUTE_213"],expanded["SINNOH_VALOR_LAKEFRONT"]))
+                        self.assertIn(15,edit["before_masks"])
+                        self.assertTrue(all(t==0 for t in edit["before_tags"]+edit["after_tags"]))
+                        self.assertTrue(all(m==0 for m in edit["after_masks"]))
+                    print("SINNOH_F12D_AUTHORED_CORRIDOR_REPORT "+json.dumps(ar,sort_keys=True),flush=True)
                     if cr["runtime_install_enabled"]:
                         self.assertEqual(cr["status"],"F12D_RUNTIME_PREPARED")
                         self.assertEqual(cr["new_events"],3)
@@ -3021,6 +3030,24 @@ puts "F12B5_AUTHORED_QUEST_CONFIRMED_WINS_KEY_SCOPE_OK"
         delta,report=p.preview({}, {}, {}, set(), {}, ROOT)
         self.assertFalse(delta)
         self.assertFalse(report["runtime_install_enabled"])
+
+    def test_f12d_corridor_minimal_dry_cells_and_protection(self):
+        import sinnoh_f12d_corridor as c
+        ground=((0,),(0,))
+        wall=((0,15),(0,0))
+        water=((0,15),(0,7))
+        directional=((0,4),(0,0))
+        shapes={(x,y):water for x in range(5) for y in range(5)}
+        for x in (0,1):shapes[x,2]=wall
+        for x in (2,3,4):shapes[x,2]=ground
+        result=c.shortest((3,2),(0,2),shapes,dict(shapes),set(),(5,5))
+        self.assertEqual(result, ([(3,2),(2,2),(1,2),(0,2)],[(1,2),(0,2)]))
+        self.assertIsNone(c.shortest((3,2),(0,2),shapes,dict(shapes),{(1,2)},(5,5)))
+        source=dict(shapes);source[1,2]=water
+        self.assertIsNone(c.shortest((3,2),(0,2),shapes,source,set(),(5,5)))
+        self.assertFalse(c.editable(water,water))
+        self.assertFalse(c.editable(directional,directional))
+        self.assertFalse(c.editable(wall,ground))
 
     def test_f12d_exact_edge_axes_and_source_walkability(self):
         import sinnoh_f12d_seams as seams

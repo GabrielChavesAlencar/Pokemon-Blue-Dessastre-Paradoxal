@@ -3,6 +3,7 @@ import json
 import re
 import sinnoh_f12d_pastoria_preview as preview
 import sinnoh_f12d_seams as seams
+import sinnoh_f12d_corridor as corridor
 import sinnoh_f12b5_authored_quest as mars
 import sinnoh_f10b_trainers as trainers
 import sinnoh_f10c_npcs as npc
@@ -46,12 +47,15 @@ def build(blobs,mapping,components,types,species,existing,root):
 
 def prepare(blobs,mapping,components,types,species,existing,root,source):
     candidate,sr=seams.repair(blobs,mapping,components,source,root)
+    candidate,ar=corridor.repair(blobs,candidate,mapping,components,source,root,sr)
     out,report,plugin=build(candidate,mapping,components,types,species,existing,root)
     report["source_seams"]=sr
+    report["authored_corridor"]=ar
     if not report.get("runtime_install_enabled"):
         report["new_seams"]=0
         return blobs,report,b""
-    report["new_seams"]=sr["candidate_seams"]
+    report["new_seams"]=sr["candidate_seams"]+ar["new_seams"]
+    report["authored_changed_cells"]=ar["changed_cells"]
     return out,report,plugin
 
 def append(blobs,mapping,components,base,root,source):
