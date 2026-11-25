@@ -65,11 +65,51 @@ def cell_shape(world,tiles,xy):
             "passage_masks":[p[i]&15 for i in stack],
             "ordinary_walkable":bool(stack) and all(not p[i]&15 and t[i] in (0,2) for i in stack)}
 
-def index_components(points):
+# Essentials v21.1 Game_Character#passable? checks the outgoing
+# direction on the current cell AND the opposite bit on the destination.
+# This conservative model ORs every nonempty layer (never overrides a block
+# based on priority), and excludes all special terrain modes.
+DIR_BITS={(0,1):(1,8),(-1,0):(2,4),(1,0):(4,2),(0,-1):(8,1)}
+EDGE_BITS={"N":8,"S":1,"W":2,"E":4}
+
+def step_allowed(a,b,delta):
+    if delta not in DIR_BITS:return False
+    outgoing,incoming=DIR_BITS[delta]
+    return (a&outgoing)==0 and (b&incoming)==0 and a!=15 and b!=15
+
+def directional_masks(world,tiles):
+    a=world.attrs;w,h=a["@width"],a["@height"]
+    ts=tiles[a["@tileset_id"]].attrs
+    p=ts["@passages"].data[20:];t=ts["@terrain_tags"].data[20:]
+    p=struct.unpack("<%dH"%(len(p)//2),p);t=struct.unpack("<%dH"%(len(t)//2),t)
+    cells=struct.unpack_from("<%dH"%(w*h*3),a["@data"].data,20)
+    masks={}
+    for y in range(h):
+        for x in range(w):
+            stack=[cells[z*w*h+y*w+x] for z in range(3) if cells[z*w*h+y*w+x]]
+            if any(i>=len(p) or i>=len(t) for i in stack):raise ValueError("F10B8_TILE_RANGE")
+            if not stack or any(t[i] not in (0,2) for i in stack):continue
+            mask=0
+            for i in stack:mask|=p[i]&15
+            if mask!=15:masks[x,y]=mask
+    return masks
+
+def directional_component(points,seed,masks):
+    if seed not in points:return set()
+    seen={seed};todo=deque([seed])
+    while todo:
+        x,y=todo.popleft()
+        for q in teleport.neighbours(x,y):
+            if q not in points or q in seen:continue
+            if not step_allowed(masks[x,y],masks[q],(q[0]-x,q[1]-y)):continue
+            seen.add(q);todo.append(q)
+    return seen
+
+def index_components(points,masks=None):
     remaining=set(points);index={};groups=[]
     while remaining:
         seed=min(remaining,key=lambda p:(p[1],p[0]))
-        group=f.component(remaining,seed)
+        group=f.component(remaining,seed) if masks is None else directional_component(remaining,seed,masks)
         label=len(groups);groups.append(group)
         for xy in group:index[xy]=label
         remaining.difference_update(group)
@@ -82,15 +122,20 @@ def closure(edges,seeds):
             if node not in seen:seen.add(node);todo.append(node)
     return seen
 
-def access_graph(blobs,mapping,components,root,seed_symbols=None):
+def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=False):
     reverse={mid:sym for sym,mid in mapping.items()}
     tiles=conn.read_marshal(blobs["Data/Tilesets.rxdata"],"F10B7_QA_TILES")
     worlds={mid:conn.read_marshal(blobs["Data/Map%03d.rxdata"%mid],"F10B7_QA") for mid in reverse}
-    index={};groups={};free={}
+    index={};groups={};free={};passages={}
     for mid,world in worlds.items():
         occupied={(e.attrs["@x"],e.attrs["@y"]) for e in world.attrs["@events"].values()}
-        free[mid]=conn.safe_cells(world,tiles,reverse[mid],allowed={0,2})-occupied
-        index[mid],groups[mid]=index_components(free[mid])
+        if directional:
+            passages[mid]=directional_masks(world,tiles)
+            free[mid]=set(passages[mid])-occupied
+            index[mid],groups[mid]=index_components(free[mid],passages[mid])
+        else:
+            free[mid]=conn.safe_cells(world,tiles,reverse[mid],allowed={0,2})-occupied
+            index[mid],groups[mid]=index_components(free[mid])
     edges={};seeds=set();counts=Counter()
     def add(a,b,kind):
         if a is None or b is None:return
@@ -111,8 +156,11 @@ def access_graph(blobs,mapping,components,root,seed_symbols=None):
             # Native action portal can be activated from a safe adjacent cell.
             # Touch portals require the event cell itself to be ordinary ground.
             trigger=e.attrs["@pages"][0].attrs.get("@trigger")
-            if trigger!=0 and not cell_shape(world,tiles,(x,y))["ordinary_walkable"]:continue
+            if trigger!=0 and not directional and not cell_shape(world,tiles,(x,y))["ordinary_walkable"]:continue
             for xy in teleport.neighbours(x,y):
+                if trigger!=0 and directional:
+                    p=passages[mid]
+                    if xy not in p or (x,y) not in p or not step_allowed(p[xy],p[x,y],(x-xy[0],y-xy[1])):continue
                 add(node(mid,xy),node(dst,(dx,dy)),"simple_existing_portal")
     for a,da,oa,b,db,ob in pv.parse_connections(blobs["PBS/map_connections.txt"]):
         if a not in worlds or b not in worlds or conn.OPPOSITE.get(da)!=db:continue
@@ -123,9 +171,11 @@ def access_graph(blobs,mapping,components,root,seed_symbols=None):
                 i=axis+so;j=axis+do
                 x=(i,0 if sd=="N" else sh-1) if sd in ("N","S") else (0 if sd=="W" else sw-1,i)
                 y=(j,0 if dd=="N" else dh-1) if dd in ("N","S") else (0 if dd=="W" else dw-1,j)
+                if directional and (x not in passages[src] or y not in passages[dst] or
+                    passages[src][x]&EDGE_BITS[sd] or passages[dst][y]&EDGE_BITS[dd]):continue
                 add(node(src,x),node(dst,y),"existing_continuous_edge")
     reached=closure(edges,seeds)
-    return worlds,tiles,index,groups,reached,{"seed_components":len(seeds),"reachable_components":len(reached),"edge_counts":dict(counts)}
+    return worlds,tiles,index,groups,reached,{"seed_components":len(seeds),"reachable_components":len(reached),"edge_counts":dict(counts),**({"movement_model":"BOTH_DIRECTION_BITS_CONSERVATIVE"} if directional else {})}
 
 def audit(blobs,mapping,components,path,root=f.ROOT):
     if len(mapping)!=131 or len(set(mapping.values()))!=131:raise ValueError("F10B7_MAPIDS")

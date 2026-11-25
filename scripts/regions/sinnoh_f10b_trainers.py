@@ -341,7 +341,7 @@ def access_witnesses(blobs,worlds,mapping,components,entries):
 # The original north-side approach from Route 206 and west-side Eterna
 # approach are tested independently. No arbitrary teleport into the target.
 F10B8_ORIGINS={(42,32):"SINNOH_ROUTE_206",(42,33):"SINNOH_ROUTE_206",
-               (79,32):"SINNOH_ETERNA_CITY"}
+               (42,34):"SINNOH_ROUTE_206",(79,32):"SINNOH_ETERNA_CITY"}
 def reached_cells(index,reached):
     return {(mid,*xy) for mid,lookup in index.items() for xy,label in lookup.items()
             if (mid,label) in reached}
@@ -654,13 +654,21 @@ def build(blobs,mapping,masks,components,path,types,species,existing,base=None,r
                     record.update(accepted=True,reason="prior_revision");continue
                 trial=dict(out)
                 for n in changed:trial["Data/Map%03d.rxdata"%n]=serialize(worlds[n],EVENT_CLASSES)
-                _,tiles,index,groups,reached,graph=gates.access_graph(trial,mapping,components,root,{origin})
+                _,tiles,index,groups,reached,graph=gates.access_graph(trial,mapping,components,root,{origin},directional=True)
                 record["graph"]=graph
                 label=index[mid].get(xy)
+                record["directional_reachable"]=label is not None and (mid,label) in reached
+                if (sid,eid)==(42,34):
+                    record["reason"]="directional_diagnostic_only_terrain_and_sprite_pending";continue
                 if label is None or (mid,label) not in reached:
                     record["reason"]="no_ordinary_path_from_named_origin";continue
-                if xy not in conn.safe_cells(worlds[mid],tiles,q["symbol"],allowed={0}) or not non_cut(groups[mid][label],xy):
+                group=groups[mid][label];remaining=group-{xy}
+                pass_masks=gates.directional_masks(worlds[mid],tiles)
+                if (xy not in conn.safe_cells(worlds[mid],tiles,q["symbol"],allowed={0}) or not remaining or
+                    gates.directional_component(remaining,min(remaining),pass_masks)!=remaining):
                     record["reason"]="unsafe_original_cell";continue
+                if any(abs(e.attrs["@x"]-xy[0])+abs(e.attrs["@y"]-xy[1])<=1 for e in worlds[mid].attrs["@events"].values()):
+                    record["reason"]="existing_event_approach_reserved";continue
                 if any(a==mid and abs(x-xy[0])+abs(y-xy[1])<=1 for a,x,y in reserved):
                     record["reason"]="reserved_arrival";continue
                 raw=pv.member(z,pv.MAP_ROOT+"Data/Map%03d.rxdata"%sid)
@@ -688,7 +696,7 @@ def build(blobs,mapping,masks,components,path,types,species,existing,base=None,r
                 events[event_id]=ruby("RPG::Event",id=event_id,name=("SN_"+key).encode("ascii"),x=xy[0],y=xy[1],pages=[page])
                 trial["Data/Map%03d.rxdata"%mid]=serialize(worlds[mid],EVENT_CLASSES)
                 try:
-                    _,_,post_index,_,post_reached,_=gates.access_graph(trial,mapping,components,root,{origin})
+                    _,_,post_index,_,post_reached,_=gates.access_graph(trial,mapping,components,root,{origin},directional=True)
                     before=reached_cells(index,reached)-{(mid,*xy)}
                     after=reached_cells(post_index,post_reached)
                     safe=before<=after and teleport.build(trial,mapping,components,root)==entries
@@ -698,7 +706,7 @@ def build(blobs,mapping,masks,components,path,types,species,existing,base=None,r
                 out["Graphics/Characters/"+sn+".png"]=data
                 changed.add(mid);used.add((sid,name))
                 rows.append([key,[local,name,version,mid,team]])
-                witness={"kind":"NAMED_ORIGIN_ORDINARY_QA_PATH","origin":origin,"reachable_cells":len(before)}
+                witness={"kind":"NAMED_ORIGIN_DIRECTIONAL_QA_PATH","origin":origin,"reachable_cells":len(before)}
                 accepted.append({"key":key,"source_id":sid,"source_event_id":eid,"map_id":mid,"event_id":event_id,
                     "position":list(xy),"type":local,"name":name,"version":version,"team":team,
                     "sprite_sha256":hashlib.sha256(data).hexdigest(),"sprite_provenance":provenance,

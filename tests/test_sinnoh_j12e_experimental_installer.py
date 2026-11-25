@@ -1074,7 +1074,7 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
             by_key8={row["key"]:row for row in report8["accepted"]}
             self.assertTrue(set(by_key6)<=set(by_key8))
             self.assertTrue((set(by_key8)-set(by_key6))<={"F10B_42_32","F10B_42_33","F10B_79_32"})
-            self.assertEqual(len(report8["f10b8_origin_report"]),3)
+            self.assertEqual(len(report8["f10b8_origin_report"]),4)
             self.assertFalse(report8["f10b8_field_gates_enabled"])
             for key,row in by_key6.items():
                 for field in ("event_id","map_id","position","type","name","version","team","sprite_sha256"):
@@ -1793,6 +1793,21 @@ puts "F10B4_DOUBLE_ATOMIC_VICTORY_OK"
             result=subprocess.run(["ruby","-e",fixture,str(path)],capture_output=True,text=True,encoding="utf-8")
             self.assertEqual(result.returncode,0,result.stdout+result.stderr)
             self.assertIn("F10B4_DOUBLE_ATOMIC_VICTORY_OK",result.stdout)
+
+    def test_f10b8_directional_passage_requires_both_bits(self):
+        import sinnoh_f10b7_field_audit as g
+        self.assertTrue(g.step_allowed(8,0,(1,0)))
+        self.assertFalse(g.step_allowed(8,0,(0,-1)))
+        self.assertFalse(g.step_allowed(0,8,(0,1)))
+        self.assertFalse(g.step_allowed(4,0,(1,0)))
+        self.assertFalse(g.step_allowed(0,2,(1,0)))
+        self.assertFalse(g.step_allowed(15,0,(0,1)))
+        points={(0,0),(1,0),(2,0)}
+        index,groups=g.index_components(points,{(0,0):0,(1,0):4,(2,0):0})
+        self.assertEqual(len(groups),2)
+        self.assertEqual(index[(0,0)],index[(1,0)])
+        self.assertNotEqual(index[(1,0)],index[(2,0)])
+        self.assertEqual(g.directional_component(points,(2,0),{(0,0):0,(1,0):4,(2,0):0}),{(2,0)})
 
     def test_f10b8_reachable_cells_and_unknown_event_rejection(self):
         import sinnoh_f10b_trainers as f
