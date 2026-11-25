@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7f42a0e1379a29f7585c41aae624196c6c9396c0",
+      "date": "2026-11-25T06:46:46-03:00",
+      "title": "Merge pull request #315 from GabrielChavesAlencar/sinnoh-full-expansion-f12b4-windworks-access",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "d123e0fe42007e26db065d1363671c16cc61a949",
+      "date": "2026-11-25T06:41:38-03:00",
+      "title": "F12B4: synchronize current main portal history for strict acceptance",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "88c648957d7557cd784e653315e8b86c1f6d5d18",
+      "date": "2026-11-25T06:36:26-03:00",
+      "title": "F12B4: reconcile main preserving definitive preflight evidence",
+      "category": "Melhorias"
+    },
+    {
       "sha": "bf88d490d9c125d6399d4abc24f7192d51dbde2b",
       "date": "2026-11-25T06:35:54-03:00",
       "title": "Merge pull request #314 from GabrielChavesAlencar/sinnoh-full-expansion-f12b3-windworks-preflight",
@@ -41,6 +59,12 @@
       "sha": "1d1e001eb721162eeb0e3c5b7371855fe3c57ad1",
       "date": "2026-11-24T23:17:47-03:00",
       "title": "Merge pull request #311 from GabrielChavesAlencar/sinnoh-full-expansion-f12a-story-source-audit",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "88efb69a0a7b3ea69aff0cb73670ce00c53df62c",
+      "date": "2026-11-24T23:12:25-03:00",
+      "title": "Sinnoh F12B4: conditionally install Windworks exploration using exact source seam and immutable baseline",
       "category": "Melhorias"
     },
     {
