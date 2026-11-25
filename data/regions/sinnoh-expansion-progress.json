@@ -275,10 +275,18 @@
       "f10b5_fixture_recovered": 5,
       "f10b5_new_fixture_trainers": 0,
       "f10b5_kath_access_verified": true,
-      "f10b5_main_ci_pending": true,
+      "f10b5_main_ci_pending": false,
       "f10b5_pr": 298,
       "f10b6_candidate": "Kath",
-      "f10b6_sprite_policy": "PROJECT_AUTHORED_BIRDWATCHER_NOT_DONOR"
+      "f10b6_sprite_policy": "PROJECT_AUTHORED_BIRDWATCHER_NOT_DONOR",
+      "f10b5_merge_commit": "96ee503f3fc8b7d94044ccb8afb17c431db8f879",
+      "f10b5_ci_workflows": 11,
+      "f10b5_ci_checks": 26,
+      "f10b6_real_head": "8d576f14f5dfb9670929b26a86dbdc0dfa253a49",
+      "f10b6_real_job": 138868969472,
+      "f10b6_fixture_recovered": 6,
+      "f10b6_new_fixture_trainers": 1,
+      "f10b6_main_ci_pending": true
     },
     {
       "id": "F11",
@@ -485,9 +493,17 @@
     "f10b5_fixture_recovered": 5,
     "f10b5_new_fixture_trainers": 0,
     "f10b5_kath_access_verified": true,
-    "f10b5_main_ci_pending": true,
+    "f10b5_main_ci_pending": false,
     "f10b5_pr": 298,
     "f10b6_candidate": "Kath",
-    "f10b6_sprite_policy": "PROJECT_AUTHORED_BIRDWATCHER_NOT_DONOR"
+    "f10b6_sprite_policy": "PROJECT_AUTHORED_BIRDWATCHER_NOT_DONOR",
+    "f10b5_merge_commit": "96ee503f3fc8b7d94044ccb8afb17c431db8f879",
+    "f10b5_ci_workflows": 11,
+    "f10b5_ci_checks": 26,
+    "f10b6_real_head": "8d576f14f5dfb9670929b26a86dbdc0dfa253a49",
+    "f10b6_real_job": 138868969472,
+    "f10b6_fixture_recovered": 6,
+    "f10b6_new_fixture_trainers": 1,
+    "f10b6_main_ci_pending": true
   }
 }
