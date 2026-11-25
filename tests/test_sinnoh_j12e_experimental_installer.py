@@ -1478,6 +1478,49 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                         self.assertTrue(dp["reason"].startswith("no_safe_walkable_chase_witness:"))
                         print("SINNOH_REAL_F12D2_CHASE_BLOCKED_BASELINE_PRESERVED_OK",flush=True)
                     print("SINNOH_F12D2_CHASE_PREVIEW_REPORT "+json.dumps(dp,sort_keys=True),flush=True)
+                    import sinnoh_f12d_runtime as chase
+                    chased,cr,cp=chase.prepare(installed,expanded,expanded_comps,{"GALACTIC_GRUNT"},{"CROAGUNK"},set(),ROOT,Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]))
+                    self.assertFalse(cr["native_verified"])
+                    for pair in cr["source_seams"]["pairs"]:
+                        if "axis_evidence" in pair:
+                            self.assertEqual(pair["aligned_axis_count"],len(pair["axis_evidence"]))
+                            self.assertEqual(pair["shared_walkable_lanes"],[row["axis"] for row in pair["axis_evidence"] if row["eligible"]])
+                            self.assertTrue(set(pair["local_spawn_shared_lanes"])<=set(pair["shared_walkable_lanes"]))
+                            self.assertTrue(set(pair["shared_walkable_lanes"])<=set(pair["source_walkable_lanes"]) & set(pair["qa_walkable_lanes"]))
+                    print("SINNOH_F12D_SOURCE_SEAM_REPORT "+json.dumps(cr["source_seams"],sort_keys=True),flush=True)
+                    ar=cr["authored_corridor"]
+                    self.assertLessEqual(ar["changed_cells"],36 if ar.get("dry_border_link_used") else 32)
+                    if ar.get("dry_border_link_used"):
+                        self.assertEqual(ar["north_axis"],56)
+                        self.assertEqual(ar["applied_edit_budget"],36)
+                        self.assertTrue(ar["search_diagnostics"]["dry_border_link"]["source_verified"])
+                        self.assertTrue({tuple(e["position"]) for e in ar["edits"] if e["map_id"]==expanded["SINNOH_ROUTE_213"] and e["position"][1]==0}<={(85,0),(86,0),(87,0)})
+                    self.assertEqual(ar["changed_cells"],len(ar["edits"]))
+                    for edit in ar["edits"]:
+                        self.assertIn(edit["map_id"],(expanded["SINNOH_ROUTE_213"],expanded["SINNOH_VALOR_LAKEFRONT"]))
+                        self.assertIn(15,edit["before_masks"])
+                        self.assertTrue(all(t==0 for t in edit["before_tags"]+edit["after_tags"]))
+                        self.assertTrue(all(m==0 for m in edit["after_masks"]))
+                    print("SINNOH_F12D_AUTHORED_CORRIDOR_REPORT "+json.dumps(ar,sort_keys=True),flush=True)
+                    if cr["runtime_install_enabled"]:
+                        self.assertEqual(cr["status"],"F12D_RUNTIME_PREPARED")
+                        self.assertEqual(cr["new_events"],3)
+                        self.assertEqual(len(set(chased)-set(installed)),2)
+                        self.assertEqual(chased["Data/MapInfos.rxdata"],installed["Data/MapInfos.rxdata"])
+                        before=chase.seams.pv.parse_connections(installed["PBS/map_connections.txt"])
+                        after=chase.seams.pv.parse_connections(chased["PBS/map_connections.txt"])
+                        self.assertEqual(after[:len(before)],before)
+                        self.assertEqual(len(after)-len(before),cr["new_seams"])
+                        self.assertEqual(cr["new_portals"],0)
+                        self.assertIn(b"Pokemon = CROAGUNK,31",chased[chase.PBS])
+                        self.assertIn(b"BlueSinnohF12D",cp)
+                        print("SINNOH_REAL_F12D2_RUNTIME_FIXTURE_PREPARED_OK",flush=True)
+                    else:
+                        self.assertEqual(chased,installed)
+                        self.assertEqual(cp,b"")
+                        self.assertEqual(cr["new_seams"],0)
+                        print("SINNOH_REAL_F12D2_RUNTIME_BLOCKED_BASELINE_PRESERVED_OK",flush=True)
+                    print("SINNOH_F12D_RUNTIME_FIXTURE_REPORT "+json.dumps(cr,sort_keys=True),flush=True)
                 jr["catalog_provenance"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
                 print("SINNOH_F12C3_QUEST_CANDIDATE_REPORT "+json.dumps(jr,sort_keys=True),flush=True)
             qo,qr,qp=quest.build(wo,wi,wc,{"GALACTIC_GRUNT","GALACTIC_ADMIN"},{"GLAMEOW","STUNKY","ZUBAT","PURUGLY"},{"WORKSKEY"},set(),ROOT)
@@ -2993,6 +3036,134 @@ puts "F12B5_AUTHORED_QUEST_CONFIRMED_WINS_KEY_SCOPE_OK"
         self.assertFalse(delta)
         self.assertFalse(report["runtime_install_enabled"])
 
+    def test_f12d_corridor_minimal_dry_cells_and_protection(self):
+        import sinnoh_f12d_corridor as c
+        ground=((0,),(0,))
+        wall=((0,15),(0,0))
+        water=((0,15),(0,7))
+        directional=((0,4),(0,0))
+        shapes={(x,y):water for x in range(5) for y in range(5)}
+        for x in (0,1):shapes[x,2]=wall
+        for x in (2,3,4):shapes[x,2]=ground
+        result=c.shortest((3,2),(0,2),shapes,dict(shapes),set(),(5,5))
+        self.assertEqual(result, ([(3,2),(2,2),(1,2),(0,2)],[(1,2),(0,2)]))
+        self.assertIsNone(c.shortest((3,2),(0,2),shapes,dict(shapes),{(1,2)},(5,5)))
+        source=dict(shapes);source[1,2]=water
+        self.assertIsNone(c.shortest((3,2),(0,2),shapes,source,set(),(5,5)))
+        self.assertFalse(c.editable(water,water))
+        self.assertFalse(c.editable(directional,directional))
+        self.assertFalse(c.editable(wall,ground))
+
+    def test_f12d_corridor_shared_budget_and_reused_boundary(self):
+        import sinnoh_f12d_corridor as c
+        ground=((0,),(0,))
+        wall=((0,15),(0,0))
+        water=((0,15),(0,7))
+        shapes={(x,y):water for x in range(23) for y in range(3)}
+        for x in range(21):shapes[x,1]=wall
+        shapes[21,1]=ground
+        self.assertIsNone(c.shortest((21,1),(0,1),shapes,dict(shapes),set(),(23,3)))
+        result=c.shortest((21,1),(0,1),shapes,dict(shapes),set(),(23,3),budget=32)
+        self.assertEqual(len(result[1]),21)
+        reused=c.shortest((0,1),(21,1),shapes,dict(shapes),set(),(23,3),result[1],budget=0)
+        self.assertEqual(reused[1],[])
+        self.assertIsNone(c.shortest((0,1),(21,1),shapes,dict(shapes),{(1,1)},(23,3),result[1],budget=0))
+        self.assertIsNone(c.shortest((0,1),(21,1),shapes,dict(shapes),{(0,1)},(23,3),result[1],budget=0))
+
+    def test_f12d_protected_landing_walkable_but_never_editable(self):
+        import sinnoh_f12d_corridor as c
+        ground=((0,),(0,))
+        wall=((0,15),(0,0))
+        water=((0,15),(0,7))
+        shapes={(x,y):water for x in range(5) for y in range(3)}
+        for x in (1,2,3):shapes[x,1]=ground
+        protected={(1,1),(2,1)}
+        self.assertIsNone(c.shortest((1,1),(3,1),shapes,dict(shapes),protected,(5,3)))
+        result=c.shortest((1,1),(3,1),shapes,dict(shapes),protected,(5,3),walkable_protected=protected)
+        self.assertEqual(result, ([(1,1),(2,1),(3,1)],[]))
+        self.assertIsNone(c.shortest((1,1),(3,1),shapes,dict(shapes),protected,(5,3),walkable_protected={(1,1)}))
+        shapes[2,1]=wall
+        self.assertIsNone(c.shortest((1,1),(3,1),shapes,dict(shapes),protected,(5,3),walkable_protected=protected))
+        self.assertIsNone(c.shortest((1,1),(3,1),shapes,dict(shapes),protected,(5,3),existing_edits={(2,1)},walkable_protected=protected))
+
+    def test_f12d_unbounded_frontier_keeps_special_and_occupied_cells(self):
+        import sinnoh_f12d_corridor as c
+        dry=((0,),(0,))
+        special=((0,15),(0,7))
+        directional=((4,),(0,))
+        shapes={(x,y):special for x in range(7) for y in range(5)}
+        for x in (1,2,4,5):shapes[x,2]=dry
+        shapes[3,2]=directional
+        protected={(2,2)}
+        report=c.blocked_frontier((1,2),(5,2),shapes,dict(shapes),protected,(7,5))
+        self.assertFalse(report["reachable"])
+        self.assertEqual(report["frontier_counts"]["protected"],1)
+        report=c.blocked_frontier((1,2),(5,2),shapes,dict(shapes),protected,(7,5),walkable_protected=protected)
+        self.assertFalse(report["reachable"])
+        self.assertEqual(report["reachable_cells"],2)
+        self.assertEqual(report["frontier_counts"]["directional_mask"],1)
+        self.assertGreater(report["frontier_counts"]["special_terrain"],0)
+        self.assertIsNone(c.shortest((1,2),(5,2),shapes,dict(shapes),protected,(7,5),budget=35,walkable_protected=protected))
+        shapes[3,2]=dry
+        self.assertTrue(c.blocked_frontier((1,2),(5,2),shapes,dict(shapes),protected,(7,5),walkable_protected=protected)["reachable"])
+
+    def test_f12d_evidenced_north_dry_pair_only(self):
+        import sinnoh_f12d_corridor as c
+        a,b=(84,0),(52,55)
+        dry_wall=((15,),(0,))
+        shape={"in_bounds":True,"ordinary_walkable":False,"passage_masks":[15],"terrain_tags":[0]}
+        row={"axis":52,"a":list(a),"b":list(b),"eligible":False,"occupied_a":False,"occupied_b":False,
+             "source_a":shape,"qa_a":shape,"source_b":shape,"qa_b":shape}
+        src={218:{a:dry_wall},214:{b:dry_wall}}
+        qa={218:({},dict(src[218])),214:({},dict(src[214]))}
+        protected={218:set(),214:set()}
+        self.assertTrue(c.north_lane_candidate(row,qa,src,protected))
+        self.assertFalse(c.north_lane_candidate(dict(row,axis=54),qa,src,protected))
+        self.assertFalse(c.north_lane_candidate(dict(row,occupied_a=True),qa,src,protected))
+        self.assertFalse(c.north_lane_candidate(row,qa,src,{218:{a},214:set()}))
+        qa[214][1][b]=((15,),(7,))
+        self.assertFalse(c.north_lane_candidate(row,qa,src,protected))
+
+    def test_f12d_explicit_dry_border_link_keeps_other_perimeter_blocked(self):
+        import sinnoh_f12d_corridor as c
+        ground=((0,),(0,))
+        wall=((15,),(0,))
+        special=((15,),(7,))
+        shapes={(x,y):special for x in range(6) for y in range(3)}
+        shapes[1,1]=ground
+        for x in (1,2,3):shapes[x,0]=wall
+        shapes[4,0]=ground
+        source=dict(shapes)
+        self.assertIsNone(c.shortest((1,1),(4,0),shapes,source,set(),(6,3),budget=3))
+        link={(1,0),(2,0),(3,0)}
+        path,edits=c.shortest((1,1),(4,0),shapes,source,set(),(6,3),budget=3,perimeter_edits=link)
+        self.assertEqual(set(edits),link)
+        self.assertEqual(len(path),5)
+        self.assertIsNone(c.shortest((1,1),(4,0),shapes,source,{(2,0)},(6,3),budget=3,perimeter_edits=link))
+        self.assertIsNone(c.shortest((1,1),(4,0),shapes,source,set(),(6,3),budget=2,perimeter_edits=link))
+        shapes[2,0]=special
+        self.assertIsNone(c.shortest((1,1),(4,0),shapes,dict(shapes),set(),(6,3),budget=3,perimeter_edits=link))
+
+    def test_f12d_exact_edge_axes_and_source_walkability(self):
+        import sinnoh_f12d_seams as seams
+        self.assertEqual(list(seams.aligned_axes("E",1,(64,67),"W",0,(102,70))),list(range(66)))
+        self.assertEqual(list(seams.aligned_axes("N",32,(102,70),"S",0,(64,56))),list(range(64)))
+        self.assertEqual(seams.point(0,"E",1,(64,67)),(63,1))
+        self.assertEqual(seams.point(0,"W",0,(102,70)),(0,0))
+        self.assertEqual(seams.point(63,"N",32,(102,70)),(95,0))
+        self.assertEqual(seams.point(63,"S",0,(64,56)),(63,55))
+        self.assertEqual(list(seams.aligned_axes("E",100,(3,3),"W",0,(3,3))),[])
+        plain={"in_bounds":True,"terrain_tags":[0],"passage_masks":[0],"ordinary_walkable":True}
+        grass={"in_bounds":True,"terrain_tags":[0,2],"passage_masks":[0,0],"ordinary_walkable":True}
+        wall={"in_bounds":True,"terrain_tags":[0],"passage_masks":[4],"ordinary_walkable":False}
+        water={"in_bounds":True,"terrain_tags":[7],"passage_masks":[0],"ordinary_walkable":False}
+        self.assertTrue(seams.lane_allowed(plain,grass,plain,grass,False,False))
+        self.assertFalse(seams.lane_allowed(plain,grass,plain,grass,True,False))
+        self.assertFalse(seams.lane_allowed(plain,grass,plain,grass,False,True))
+        self.assertFalse(seams.lane_allowed(wall,plain,plain,plain,False,False))
+        self.assertFalse(seams.lane_allowed(water,plain,water,plain,False,False))
+        self.assertFalse(seams.lane_allowed(plain,plain,grass,plain,False,False))
+
     def test_f12d_pastoria_requires_exact_144_map_baseline(self):
         import sinnoh_f12d_pastoria_preview as d
         self.assertEqual(d.ORDER,("PASTORIA","ROUTE_213","VALOR_BATTLE"))
@@ -3002,6 +3173,93 @@ puts "F12B5_AUTHORED_QUEST_CONFIRMED_WINS_KEY_SCOPE_OK"
         with self.assertRaisesRegex(ValueError,"F12D_REQUIRES_144_BASELINE"):
             d.audit({}, {}, Path("missing"))
         
+    @unittest.skipUnless(shutil.which("ruby"),"Requires Ruby runtime")
+    def test_f12d_ruby_order_gates_and_victory(self):
+        source=(ROOT/"scripts/regions/SinnohF12D.rb").read_text("utf-8").replace(
+            "__F12D_LOCATIONS__", '{"PASTORIA"=>[462,3,3],"ROUTE_213"=>[490,3,3],"VALOR_BATTLE"=>[528,3,3]}').replace(
+            "__F12D_SPEC__", '["GALACTIC_GRUNT","Grunt",14001,528,[["CROAGUNK",31]]]')
+        fixture=r'''
+module BlueSinnohF12C3
+  ORDER=%w[GRUNT_1 GRUNT_2 GRUNT_3 JUPITER RESCUE BICYCLE]
+  def self.state; $private ? $state : nil; end
+  def self.history(s); s["jupiter"]; end
+  def self.mars_complete?(s); true; end
+end
+module BlueRegions
+  def self.local_achievements(s,region); $badges; end
+end
+module BlueKantoTitle
+  def self.sinnoh_experimental_barry_compiled?; $compiled; end
+end
+module BlueSinnohF10B
+  def self.valid_team?(spec); $valid && spec[4]==[["CROAGUNK",31]]; end
+end
+module BlueSinnohPilot
+  def self.profile_error(*args); raise args.last; end
+end
+module BlueCampaign
+  module Teams; end
+  def self.active?; $scaled; end
+end
+class Battle
+  prepend BlueCampaign::Teams
+end
+module TrainerBattle
+  def self.start_core(*args)
+    raise "wrong identity" unless args==[[:GALACTIC_GRUNT,"Grunt",14001]]
+    $calls+=1
+    $result
+  end
+end
+def _INTL(s); s; end
+def pbMessage(s); end
+Mon=Struct.new(:hp) { def egg?; false; end }
+$player=Struct.new(:party).new([Mon.new(10)])
+$game_player=Struct.new(:x,:y).new(3,4)
+$game_map=Struct.new(:map_id).new(462)
+$game_temp=Struct.new(:waiting_trainer,:battle_rules).new(nil,{})
+$private=true;$compiled=true;$valid=true;$scaled=true;$calls=0;$result=2
+$state={"jupiter"=>[]};$badges=[]
+load ARGV[0]
+m=BlueSinnohF12D
+raise "unearned" if m.interact("PASTORIA")
+$state["jupiter"]=BlueSinnohF12C3::ORDER
+raise "badge missing" if m.interact("PASTORIA")
+$badges=["FEN"]
+$compiled=false
+raise "compile missing" if m.interact("PASTORIA")
+$compiled=true
+$game_map.map_id=528
+raise "out of order" if m.interact("VALOR_BATTLE")
+$game_map.map_id=462
+raise "pastoria" unless m.interact("PASTORIA")
+$game_map.map_id=490
+raise "route" unless m.interact("ROUTE_213")
+$game_map.map_id=528
+$scaled=false
+raise "unscaled battle" if m.interact("VALOR_BATTLE")
+$scaled=true
+$valid=false
+raise "invalid team" if m.interact("VALOR_BATTLE")
+$valid=true
+raise "defeat accepted" if m.interact("VALOR_BATTLE")
+raise "defeat persisted" unless $state[m::LEDGER]==m::ORDER.first(2)
+$result=1
+raise "win rejected" unless m.interact("VALOR_BATTLE")
+raise "not saved" unless $state[m::LEDGER]==m::ORDER
+$state=Marshal.load(Marshal.dump($state))
+raise "repeat rejected" unless m.interact("VALOR_BATTLE")
+raise "duplicate battle" unless $calls==2
+$private=false
+raise "outside QA" if m.interact("VALOR_BATTLE")
+puts "F12D_ORDER_GATES_VICTORY_FIXTURE_OK"
+'''
+        with tempfile.TemporaryDirectory() as td:
+            path=Path(td)/"F12D.rb";path.write_text(source,encoding="utf-8")
+            result=subprocess.run(["ruby","-e",fixture,str(path)],capture_output=True,text=True,encoding="utf-8")
+            self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+            self.assertIn("F12D_ORDER_GATES_VICTORY_FIXTURE_OK",result.stdout)
+
     def test_f12c3_requires_geometry_and_preserves_candidate_scope(self):
         import sinnoh_f12c3_jupiter_candidate as j
         self.assertEqual([r[0] for r in j.ROWS],["GRUNT_1","GRUNT_2","GRUNT_3","JUPITER","RESCUE","BICYCLE"])

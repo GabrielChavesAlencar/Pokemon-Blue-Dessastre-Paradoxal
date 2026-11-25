@@ -542,7 +542,7 @@
       "id": "F12",
       "title": "História, Equipe Galactic e itens-chave",
       "status": "implementation_pending_ci",
-      "followup": "F12D1_D2_SOURCE_AND_PREVIEW_PENDING_CI",
+      "followup": "F12D2_DRY_BORDER_LINK_AXIS56_PENDING_CI",
       "story_checkpoints_scope": 14,
       "hm_contracts_scope": 8,
       "native_bindings": 0,
@@ -696,9 +696,256 @@
       "f12c4_new_events": 7,
       "f12c4_new_seams": 0,
       "f12c4_runtime_install_enabled": true,
-      "f12d1_source_audit_pending_ci": true,
-      "f12d2_preview_pending_ci": true,
-      "f12d_native_verified": false
+      "f12d1_source_audit_pending_ci": false,
+      "f12d2_preview_pending_ci": false,
+      "f12d_native_verified": false,
+      "f12d2_runtime_candidate_prepared": true,
+      "f12d2_runtime_full_ci_approved": false,
+      "f12d2_runtime_native_verified": false,
+      "f12d2_geometry_proof_required": true,
+      "f12d2_ledger": "sinnoh_f12d_quest",
+      "f12d2_fen_required": true,
+      "f12d2_jupiter_required": true,
+      "f12d1_full_ci_approved": true,
+      "f12d1_merge_commit": "b9e23dc336577d92b9feb7895dbc87033f294ff9",
+      "f12d1_validated_head": "bb05136cb86d8dc1921e7f9b8e321d9d65332aba",
+      "f12d1_real_job": 139201836302,
+      "f12d1_source_marker": "SINNOH_REAL_F12D1_144_BASELINE_SOURCE_AUDITED_OK",
+      "f12d1_ci_workflows": 11,
+      "f12d1_ci_checks": 26,
+      "f12d1_source_maps": 3,
+      "f12d1_source_events": 61,
+      "f12d1_galactic_marker_events": 0,
+      "f12d2_preview_blocker": "no_safe_walkable_chase_witness:ROUTE_213",
+      "f12d2_preview_marker": "SINNOH_REAL_F12D2_CHASE_BLOCKED_BASELINE_PRESERVED_OK",
+      "f12d2_runtime_pr": 324,
+      "f12d2_source_seam_repair_pending_ci": true,
+      "f12d2_prior_ci_head": "38c1cd9dc1d2defa381f9827acd331be66faf205",
+      "f12d2_prior_ci_base": "abceaee75463b38f90248066a1acea3c3612a378",
+      "f12d2_prior_ci_workflows": 10,
+      "f12d2_prior_ci_jobs": 25,
+      "f12d2_prior_real_job": 139241195138,
+      "f12d2_prior_runtime_marker": "SINNOH_REAL_F12D2_RUNTIME_BLOCKED_BASELINE_PRESERVED_OK",
+      "f12d2_prior_runtime_blocker": "geometry_unproved",
+      "f12d2_prior_shared_lanes": [
+        0,
+        16
+      ],
+      "f12d2_original_seams": [
+        [
+          219,
+          "E",
+          1,
+          218,
+          "W",
+          0
+        ],
+        [
+          218,
+          "N",
+          32,
+          214,
+          "S",
+          0
+        ]
+      ],
+      "f12d2_prior_reachable_cells": {
+        "pastoria": 880,
+        "route_213": 0,
+        "valor_lakefront": 0
+      },
+      "f12d2_ruby_gates_fixture_passed": true,
+      "f12d2_ruby_fixture_job": 139206467604,
+      "f12d2_compiled_catalog_verified": false,
+      "f12d2_source_edge_diagnostics_pending_ci": false,
+      "f12d2_runtime_installed": false,
+      "f12d2_source_aligned_axes": [
+        66,
+        64
+      ],
+      "f12d2_source_qa_mismatch_counts": [
+        0,
+        0
+      ],
+      "f12d2_north_candidate_axes": [
+        13,
+        14,
+        15,
+        16,
+        21,
+        22,
+        23,
+        24,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63
+      ],
+      "f12d2_authored_corridor_pending_ci": true,
+      "f12d2_prior_corridor_blocker": "no_bounded_dry_north_corridor",
+      "f12d2_prior_corridor_changed_cells": 0,
+      "f12d2_shared_budget_pending_ci": false,
+      "f12d2_protected_landing_pending_ci": false,
+      "f12d2_west_candidate_axes": [
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "f12d2_west_candidate_edits": 6,
+      "f12d2_north_attempt_count": 80,
+      "f12d2_north_route_only_axes": [
+        13,
+        14,
+        15,
+        16,
+        21,
+        22,
+        23,
+        24
+      ],
+      "f12d2_north_valor_only_axes": [
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63
+      ],
+      "f12d2_north_route_only_additional_edits": 8,
+      "f12d2_north_valor_only_edits": 2,
+      "f12d2_source_only_walkable_pending_ci": false,
+      "f12d2_frontier_diagnostics_pending_ci": false,
+      "f12d2_prior_unbounded_route_213_blocked_axes": [
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63
+      ],
+      "f12d2_prior_partial_paths_count": 53,
+      "f12d2_prior_partial_paths_cardinal": true,
+      "f12d2_prior_input_map_hashes": {
+        "462": "48a8a893cccade8d917802fd189755ca8aeccd71f14de3a4a42c1986eac1a6a6",
+        "477": "1d5ed605950c6be0623f18862f6a2de66b8ab71b9836bade2571ad0af2b45273",
+        "528": "f7af600be915a4aae1cebc9c7d78bb1ab77e46259292840081e7eba8f26281aa"
+      },
+      "f12d2_prior_protected_landings": {
+        "462": [
+          [
+            31,
+            31
+          ],
+          [
+            32,
+            33
+          ],
+          [
+            34,
+            11
+          ]
+        ],
+        "477": [
+          [
+            51,
+            32
+          ]
+        ],
+        "528": [
+          [
+            48,
+            28
+          ]
+        ]
+      },
+      "f12d2_evidenced_north_pair_pending_ci": false,
+      "f12d2_prior_frontier_counts": {
+        "477": {
+          "directional_mask": 29,
+          "perimeter": 89,
+          "protected": 34,
+          "special_terrain": 313,
+          "reachable_cells": 2475
+        },
+        "528": {
+          "directional_mask": 66,
+          "perimeter": 165,
+          "protected": 19,
+          "special_terrain": 97,
+          "reachable_cells": 2585
+        }
+      },
+      "f12d2_prior_source_only_walkable_counts": {
+        "462": 2,
+        "477": 19,
+        "528": 3
+      },
+      "f12d2_prior_qa_occupied_counts": {
+        "462": 3,
+        "477": 0,
+        "528": 0
+      },
+      "f12d2_evidenced_dry_north_axes": [
+        52,
+        53
+      ],
+      "f12d2_evidenced_dry_north_cells": [
+        {
+          "axis": 52,
+          "route213": [
+            84,
+            0
+          ],
+          "valor": [
+            52,
+            55
+          ]
+        },
+        {
+          "axis": 53,
+          "route213": [
+            85,
+            0
+          ],
+          "valor": [
+            53,
+            55
+          ]
+        }
+      ],
+      "f12d2_prior_failed_job": 139241195637,
+      "f12d2_prior_failed_job_reason": "node --check timeout 15s",
+      "f12d2_dry_border_link_pending_ci": true,
+      "f12d2_prior_north_attempt_count": 90,
+      "f12d2_prior_axis52_route_minimum_edits": 27,
+      "f12d2_prior_axis53_route_minimum_edits": 26,
+      "f12d2_prior_axis53_path_length": 67,
+      "f12d2_dry_border_link_axis": 56,
+      "f12d2_dry_border_link_cells": [
+        [
+          85,
+          0
+        ],
+        [
+          86,
+          0
+        ],
+        [
+          87,
+          0
+        ]
+      ],
+      "f12d2_dry_border_link_max_edits": 36
     },
     {
       "id": "F13",
