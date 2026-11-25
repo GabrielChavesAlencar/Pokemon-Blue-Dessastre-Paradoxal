@@ -3171,6 +3171,82 @@ puts "F12B5_AUTHORED_QUEST_CONFIRMED_WINS_KEY_SCOPE_OK"
         self.assertFalse(p.chase_prepared(dict(report,placements=report["placements"][:2])))
         self.assertFalse(p.chase_prepared(dict(report,new_portals=1)))
 
+    def test_f12d3_secretpotion_local_catalogue(self):
+        import sinnoh_f12d3_secretpotion_catalogue as c
+        with tempfile.TemporaryDirectory() as td:
+            base=Path(td);pbs=base/"PBS";pbs.mkdir()
+            self.assertFalse(c.audit(base)["local_catalog_valid"])
+            path=pbs/"items.txt"
+            path.write_text("[SECRETPOTION]\nName = SecretPotion\nPocket = 8\nFlags = KeyItem\n",encoding="utf-8")
+            self.assertTrue(c.audit(base)["local_catalog_valid"])
+            self.assertFalse(c.audit(base)["compiled_catalog_verified"])
+            (pbs/"items_extra.txt").write_text(path.read_text("utf-8"),encoding="utf-8")
+            self.assertFalse(c.audit(base)["local_catalog_valid"])
+            (pbs/"items_extra.txt").unlink()
+            path.write_text("[SECRETPOTION]\nName = SecretPotion\nPocket = 8\nFlags = Other\n",encoding="utf-8")
+            self.assertFalse(c.audit(base)["local_catalog_valid"])
+
+    @unittest.skipUnless(shutil.which("ruby"),"Requires Ruby runtime")
+    def test_f12d3_staged_transaction_and_reload(self):
+        fixture=r'''
+module GameData
+  class Item
+    def self.try_get(id); $valid ? Struct.new(:id).new(id).tap { |v| def v.is_key_item?; true; end } : nil; end
+  end
+end
+# Avoid singleton object serialization; only Bag is staged.
+module BlueRegionTravel
+  def self.regional_item?(id); id==:SECRETPOTION; end
+end
+class Bag
+  attr_accessor :qty,:fail
+  def initialize; @qty=0; @fail=false; end
+  def quantity(id); @qty; end
+  def add(id,n); @qty+=n; !@fail; end
+  def remove(id,n); @qty-=n; !@fail; end
+end
+load ARGV[0]
+m=BlueSinnohF12D3Transaction
+$valid=true
+s={"current"=>"SINNOH","sinnoh_f12d_quest"=>m::CHASE}
+b=Bag.new
+opts={catalogue_verified:true,geometry_verified:true}
+give,clear=m::ORDER
+raise "missing geometry accepted" if m.stage(s,b,give)
+raise "premature clear" if m.stage(s,b,clear,**opts)
+raise "other region accepted" if m.stage(s.merge("current"=>"KANTO"),b,give,**opts)
+raise "incomplete chase accepted" if m.stage(s.merge("sinnoh_f12d_quest"=>[]),b,give,**opts)
+$valid=false
+raise "invalid catalogue accepted" if m.stage(s,b,give,**opts)
+$valid=true
+b.qty=1
+raise "foreign item accepted" if m.stage(s,b,give,**opts)
+b.qty=0;b.fail=true
+raise "failed grant accepted" if m.stage(s,b,give,**opts)
+raise "original bag changed" unless b.qty==0 && !s.key?(m::LEDGER)
+b.fail=false
+x=m.stage(s,b,give,**opts)
+raise "grant failed" unless x && x[:bag].qty==1 && x[:history]==[give] && b.qty==0 && !s.key?(m::LEDGER)
+s,b=Marshal.load(Marshal.dump([x[:state],x[:bag]]))
+raise "duplicate grant" if m.stage(s,b,give,**opts)
+raise "premature unlock" if m.cleared?(s)
+b.fail=true
+raise "failed consume accepted" if m.stage(s,b,clear,**opts)
+raise "failed consume mutated" unless b.qty==1 && !m.cleared?(s)
+b.fail=false
+x=m.stage(s,b,clear,**opts)
+raise "consume failed" unless x && x[:bag].qty==0 && b.qty==1
+s,b=Marshal.load(Marshal.dump([x[:state],x[:bag]]))
+raise "reload lost clearance" unless m.cleared?(s) && b.qty==0
+raise "duplicate consume" if m.stage(s,b,clear,**opts)
+raise "malformed ledger unlocked" if m.cleared?(s.merge(m::LEDGER=>[clear]))
+puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
+'''
+        result=subprocess.run(["ruby","-e",fixture,str(ROOT/"scripts/regions/SinnohF12D3Transaction.rb")],
+            capture_output=True,text=True,encoding="utf-8")
+        self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+        self.assertIn("F12D3_STAGED_TRANSACTION_FIXTURE_OK",result.stdout)
+
     def test_f12d_exact_edge_axes_and_source_walkability(self):
         import sinnoh_f12d_seams as seams
         self.assertEqual(list(seams.aligned_axes("E",1,(64,67),"W",0,(102,70))),list(range(66)))
