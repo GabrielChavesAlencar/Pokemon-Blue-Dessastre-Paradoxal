@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5b47f250ad61edf6507ed1bb4f62f9353ea8db89",
+      "date": "2026-11-25T11:48:55-03:00",
+      "title": "Sinnoh F12D3C: integrar evidencias de alinhamento Route 210",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "c8ea4528c09e6c6dd427390126b709a09880d3c7",
+      "date": "2026-11-25T11:43:09-03:00",
+      "title": "Sinnoh F12D3: diagnose original topology gap and authored border alignments",
+      "category": "Melhorias"
+    },
+    {
       "sha": "0a6c4c627599f0d72d4dc146d7285639b80cca8f",
       "date": "2026-11-25T11:41:40-03:00",
       "title": "Sinnoh F12D3B: integrar auditoria ampliada e transação candidata",
