@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "294d5931ab7769b75d57ad35d260cc122a40162e",
+      "date": "2026-11-25T07:00:18-03:00",
+      "title": "Merge pull request #316 from GabrielChavesAlencar/sinnoh-full-expansion-f12b5-windworks-playable",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "971015bc8ba1f30addd89bd44001de51b09e4f9b",
+      "date": "2026-11-25T06:53:45-03:00",
+      "title": "F12B5: synchronize current main portal history for strict acceptance",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "3297f1708bae623fcf434fa4151c217395fe25a0",
+      "date": "2026-11-25T06:47:08-03:00",
+      "title": "F12B5: reconcile main preserving F12B4 definitive access evidence",
+      "category": "Melhorias"
+    },
+    {
       "sha": "7f42a0e1379a29f7585c41aae624196c6c9396c0",
       "date": "2026-11-25T06:46:46-03:00",
       "title": "Merge pull request #315 from GabrielChavesAlencar/sinnoh-full-expansion-f12b4-windworks-access",
@@ -47,6 +65,12 @@
       "sha": "375ab415184881fe130300ae08cf30dc06b64405",
       "date": "2026-11-25T06:22:00-03:00",
       "title": "Merge pull request #312 from GabrielChavesAlencar/sinnoh-full-expansion-f12b-windworks",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "e94f5ea2db810eb7f5c56ed30e7d3cb794ef2a36",
+      "date": "2026-11-24T23:18:48-03:00",
+      "title": "Sinnoh F12B5: recover QA exploration, validate title manifest and pin authored Galactic quest reference",
       "category": "Melhorias"
     },
     {
