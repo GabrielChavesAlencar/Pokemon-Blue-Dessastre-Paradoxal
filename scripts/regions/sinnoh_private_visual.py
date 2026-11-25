@@ -857,7 +857,12 @@ def movement_plugin(masks,route202=None):
             origin=BlueSinnohF12DIntegrated.surf_route_mode(current)
             target=BlueSinnohF12DIntegrated.surf_route_mode(facing)
             if origin=="surf" || target=="surf"
-              return unless BlueSinnohF12DIntegrated.runtime_surf_step_allowed?(current,facing)
+              unless BlueSinnohF12DIntegrated.runtime_surf_step_allowed?(current,facing)
+                # A walker must be able to turn toward the verified shore
+                # and interact to board; turning never advances onto water.
+                turn_generic(dir,true) if origin=="walk" && target=="surf"
+                return
+              end
               # Only the verified water edge may bypass the conservative
               # dry mask. Never override native passable?, jump or walls.
               return if cell=="#" && target!="surf"

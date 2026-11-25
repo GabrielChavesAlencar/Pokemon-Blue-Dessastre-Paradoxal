@@ -3602,6 +3602,33 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         guard=exp.private_visual.movement_plugin({529:[".#."]}).decode("utf-8")
         self.assertIn('return if cell=="#" && target!="surf"',guard)
         self.assertIn("runtime_surf_step_allowed?(current,facing)",guard)
+        self.assertIn('turn_generic(dir,true) if origin=="walk" && target=="surf"',guard)
+        if shutil.which("ruby"):
+            template=source.replace("__LOCATIONS__","{}").replace("__SPECS__","{}")
+            for key in ("__EDIT_CELLS__","__CHASE_LANES__","__CELESTIC_LANES__"):
+                template=template.replace(key,"[]")
+            template=template.replace("__SURF_ROUTES__",'{529=>[[0,0,"walk"],[1,0,"surf"],[2,0,"surf"],[3,0,"walk"]]}')
+            code=(ROOT/"scripts/regions/SinnohF12D3Transaction.rb").read_text("utf-8")+"\n"+template
+            fixture=code+'''
+m=BlueSinnohF12DIntegrated
+def m.surf_permission(s,bag,party,selected=nil); s; end
+a,b,c,d=[529,0,0],[529,1,0],[529,2,0],[529,3,0]
+raise "board" unless m.surf_step_allowed?(:allowed,nil,[],false,a,b,true)
+raise "walk water" if m.surf_step_allowed?(:allowed,nil,[],false,a,b)
+raise "already surfing" if m.surf_step_allowed?(:allowed,nil,[],true,a,b,true)
+raise "travel" unless m.surf_step_allowed?(:allowed,nil,[],true,b,c)
+raise "landing" unless m.surf_step_allowed?(:allowed,nil,[],true,c,d)
+raise "return" unless m.surf_step_allowed?(:allowed,nil,[],false,d,c,true)
+[:hm,:badge,:pokemon,:unavailable].each do |reason|
+  raise "denied #{reason}" if m.surf_step_allowed?(reason,nil,[],false,a,b,true)
+  raise "denied step #{reason}" if m.surf_step_allowed?(reason,nil,[],true,b,c)
+end
+raise "wall" if m.surf_step_allowed?(:allowed,nil,[],true,c,[529,2,1])
+raise "diagonal" if m.surf_step_allowed?(:allowed,nil,[],true,b,d)
+raise "foreign map" if m.surf_step_allowed?(:allowed,nil,[],true,b,[511,2,0])
+'''
+            run=subprocess.run([shutil.which("ruby"),"-e",fixture],capture_output=True,text=True,timeout=30)
+            self.assertEqual(run.returncode,0,run.stderr)
 
     def test_f12d_surf_pickup_candidate_uses_native_regional_receipt(self):
         source=(ROOT/"scripts/regions/SinnohF12DIntegrated.rb").read_text("utf-8")
