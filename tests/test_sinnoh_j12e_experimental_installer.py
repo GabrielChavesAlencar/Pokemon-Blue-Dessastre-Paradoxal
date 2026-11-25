@@ -1662,6 +1662,17 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                         self.assertEqual(chased,snapshot)
                         print("SINNOH_F12D3_SPECIAL_TERRAIN_FRONTIER_REPORT "+json.dumps(sf,sort_keys=True),flush=True)
                         print("SINNOH_REAL_F12D3_SPECIAL_TERRAIN_FRONTIER_AUDITED_OK",flush=True)
+                        rock=canonical_network.inspect(chased,expanded,expanded_comps,cr,ext,onr,Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]),ROOT,directional_repair=True,rock_repair=True)
+                        self.assertEqual(chased,snapshot)
+                        self.assertEqual(rock["rock_model"]["accepted"],[[473,57,y] for y in (25,26,27)])
+                        self.assertFalse(rock["rock_model"]["local_engine_verified"])
+                        self.assertFalse(rock["activation_allowed"])
+                        self.assertFalse(rock["native_verified"])
+                        self.assertEqual(rock["changed_cells_installed"],0)
+                        self.assertEqual(rock["new_portals"],0)
+                        self.assertEqual(len(rock["exit_costs"]),5)
+                        print("SINNOH_F12D3_ROCK_FRONTIER_NETWORK_REPORT "+json.dumps(rock,sort_keys=True),flush=True)
+                        print("SINNOH_REAL_F12D3_ROCK_FRONTIER_NETWORK_AUDITED_OK",flush=True)
                         print("SINNOH_REAL_F12D3_GATED_ALIGNMENT_EVIDENCE_PRESERVED_OK",flush=True)
                         print("SINNOH_REAL_F12D3_ROUTE210_RECOVERY_EVIDENCE_PRESERVED_OK",flush=True)
                     else:
@@ -3430,6 +3441,14 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertNotIn(c,d)
         self.assertEqual(n.SYMBOLS[123],"SINNOH_HEARTHOME_CITY")
         self.assertNotIn(22,n.SYMBOLS)
+
+    def test_f12d3_rock_frontier_is_exact_and_never_converts_terrain(self):
+        import sinnoh_f12d3_canonical_network as n
+        args=[(57,25),(3225,0,0),(462,0,0),((0,),(4,)),((0,),(4,)),0,0,".",False,False]
+        self.assertTrue(n.rock_frontier_match(*args))
+        for index,value in ((0,(57,28)),(1,(3226,0,0)),(2,(462,1,0)),(3,((0,),(7,))),(4,((4,),(4,))),(5,1),(6,1),(7,"#"),(8,True),(9,True)):
+            other=list(args);other[index]=value
+            self.assertFalse(n.rock_frontier_match(*other))
 
     def test_f12d3_special_terrain_mask_only_diagnostic_never_opens_blocked_cells(self):
         import sinnoh_f12d3_canonical_network as n

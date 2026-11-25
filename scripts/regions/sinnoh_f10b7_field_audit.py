@@ -122,11 +122,14 @@ def closure(edges,seeds):
             if node not in seen:seen.add(node);todo.append(node)
     return seen
 
-def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=False,seed_cells=None,strict_movement=False):
+def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=False,seed_cells=None,strict_movement=False,rock_cells=()):
     reverse={mid:sym for sym,mid in mapping.items()}
     tiles=conn.read_marshal(blobs["Data/Tilesets.rxdata"],"F10B7_QA_TILES")
     worlds={mid:conn.read_marshal(blobs["Data/Map%03d.rxdata"%mid],"F10B7_QA") for mid in reverse}
     index={};groups={};free={};passages={}
+    rock_cells=set(rock_cells)
+    if rock_cells and (not directional or not strict_movement or reverse.get(473)!="SINNOH_ROUTE_210_SEGMENT_2" or not rock_cells<={(473,57,y) for y in (25,26,27)}):
+        raise ValueError("F12D3_ROCK_GRAPH_SCOPE")
     for mid,world in worlds.items():
         occupied={(e.attrs["@x"],e.attrs["@y"]) for e in world.attrs["@events"].values()}
         if directional:
@@ -135,6 +138,15 @@ def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=Fal
             # Chase witnesses must not use cells that the runtime will reject.
             if strict_movement:
                 passages[mid]={xy:mask for xy,mask in passages[mid].items() if mask==0}
+            for _,x,y in sorted(p for p in rock_cells if p[0]==mid):
+                a=world.attrs;w,h=a["@width"],a["@height"]
+                shape=cell_shape(world,tiles,(x,y))
+                raw=a["@data"].data
+                stack=tuple(struct.unpack_from("<H",raw,20+2*(z*w*h+y*w+x))[0] for z in range(3))
+                priority=struct.unpack_from("<H",tiles[a["@tileset_id"]].attrs["@priorities"].data,20+2*462)[0]
+                if stack!=(462,0,0) or shape.get("passage_masks")!=[0] or shape.get("terrain_tags")!=[4] or priority!=0 or (x,y) in occupied:
+                    raise ValueError("F12D3_ROCK_GRAPH_CELL_CHANGED")
+                passages[mid][x,y]=0
             free[mid]=set(passages[mid])-occupied
             index[mid],groups[mid]=index_components(free[mid],passages[mid])
         else:

@@ -113,7 +113,15 @@ def guard_local_paths(seeds,goals,adjacent,kind):
         rows.append(row)
     return rows
 
-def inspect(blobs,mapping,components,cr,expanded,original,source,root,directional_repair=False):
+ROCK_FRONTIER=frozenset(((57,25),(57,26),(57,27)))
+
+def rock_frontier_match(q,source_stack,qa_stack,source_shape,qa_shape,source_priority,qa_priority,guard,occupied,protected):
+    """Only the exact three evidenced cells; no generic terrain relaxation."""
+    return (q in ROCK_FRONTIER and source_stack==(3225,0,0) and qa_stack==(462,0,0)
+        and source_shape==qa_shape==((0,),(4,)) and source_priority==qa_priority==0
+        and guard=="." and not occupied and not protected)
+
+def inspect(blobs,mapping,components,cr,expanded,original,source,root,directional_repair=False,rock_repair=False):
     chase.validate(blobs,mapping);before=chase.digest(blobs)
     if expanded.get("input_hashes")!=before or not cr.get("runtime_install_enabled") or original.get("status")!="F12D3_ORIGINAL_NETWORK_EVIDENCE_ONLY":
         raise ValueError("F12D3_CANONICAL_STALE")
@@ -121,8 +129,9 @@ def inspect(blobs,mapping,components,cr,expanded,original,source,root,directiona
     if catalog[22]["symbol"]!="SINNOH_OREBURGH_CITY" or any(catalog[s]["symbol"]!=k for s,k in SYMBOLS.items()):
         raise ValueError("F12D3_CANONICAL_SYMBOLS")
     old={k:v for k,v in mapping.items() if k in chase.prior.ALL};origin=cr["placements"][-1]
+    rock_cells=frozenset()
     def graph(data):
-        return gates.access_graph(data,old,components,root,seed_cells=[(origin["map_id"],*origin["stand"])],directional=True,strict_movement=True)
+        return gates.access_graph(data,old,components,root,seed_cells=[(origin["map_id"],*origin["stand"])],directional=True,strict_movement=True,rock_cells=rock_cells)
     worlds,tiles,idx,_,rr,_=graph(blobs);prior=trainers.reached_cells(idx,rr)
     dims={m:(w.attrs["@width"],w.attrs["@height"]) for m,w in worlds.items()}
     current=pv.parse_connections(blobs["PBS/map_connections.txt"])
@@ -173,6 +182,30 @@ def inspect(blobs,mapping,components,cr,expanded,original,source,root,directiona
     result["source_hashes"]={str(s):catalog[s]["sha256"] for s in sorted(bound)}
     result["qa_hashes"]={str(s):hashlib.sha256(blobs["Data/Map%03d.rxdata"%m]).hexdigest() for s,m in sorted(bound.items())}
     result["protected_counts"]={str(s):len(protected[s]) for s in sorted(bound)}
+    if rock_repair:
+        if not directional_repair or bound[116]!=473:raise ValueError("F12D3_ROCK_SCOPE")
+        guard=pv.movement_masks(blobs,mapping,extra_symbols={SYMBOLS[116]})[bound[116]]
+        raw=tiles[worlds[bound[116]].attrs["@tileset_id"]].attrs["@priorities"].data[20:]
+        qp=struct.unpack("<%dH"%(len(raw)//2),raw)
+        accepted=set()
+        for q in sorted(ROCK_FRONTIER):
+            a,b=source_mid_stacks[q],qa[116][0][q]
+            if rock_frontier_match(q,a,b,src[116][q],qa[116][1][q],
+                source_mid_priorities[a[0]],qp[b[0]],guard[q[1]][q[0]],q in occupied[116],q in protected[116]):
+                accepted.add((473,*q))
+        result["rock_model"]={"scope":"EXACT_THREE_ROCK_CELLS_REFERENCE_ENGINE_ONLY",
+            "accepted":[list(p) for p in sorted(accepted)],"engine_reference":"Essentials v21.1 Rock tag 4",
+            "local_engine_verified":False,"runtime_changed":False}
+        if len(accepted)!=3:return finish("rock_frontier_identity_mismatch")
+        rock_cells=frozenset(accepted)
+        _,_,idx,_,rr,_=graph(blobs)
+        augmented=trainers.reached_cells(idx,rr)
+        if not prior<=augmented:raise ValueError("F12D3_ROCK_PRIOR_LOSS")
+        result["rock_model"]["baseline_reach_delta"]=len(augmented-prior)
+        prior=augmented
+        protected[116].update(ROCK_FRONTIER)
+    def ordinary_at(s,q):
+        return corridor.ordinary(qa[s][1][q]) or (bound[s],*q) in rock_cells
     def partial(p):
         s,x,y=p;q=(x,y)
         if not directional_repair or s not in src or q not in src[s] or q in protected[s] or q in occupied[s]:return False
@@ -180,7 +213,7 @@ def inspect(blobs,mapping,components,cr,expanded,original,source,root,directiona
         if not (0<x<w-1 and 0<y<h-1 and dry.dry_partial(src[s][q],shape)):return False
         # Reject conversion that would open even one prohibited existing dry neighbour.
         return all(dry.permitted_step(shape,qa[s][1][v],(v[0]-x,v[1]-y),True,False)
-            for v in tp.neighbours(x,y) if v in qa[s][1] and v not in occupied[s] and corridor.ordinary(qa[s][1][v]))
+            for v in tp.neighbours(x,y) if v in qa[s][1] and v not in occupied[s] and ordinary_at(s,v))
     def edit_ok(s,q):return corridor.editable(src[s][q],qa[s][1][q]) or partial((s,*q))
     def local_allowed(p,q):
         s=p[0]
@@ -190,7 +223,7 @@ def inspect(blobs,mapping,components,cr,expanded,original,source,root,directiona
         s,x,y=p;q=(x,y)
         if s not in src or q not in src[s] or q in occupied[s] or src[s][q]!=qa[s][1][q]:return None
         shape=qa[s][1][q];w,h=sdims[s]
-        if corridor.ordinary(shape):return 0
+        if ordinary_at(s,q):return 0
         if q in protected[s] or not edit_ok(s,q):return None
         if edge or (0<x<w-1 and 0<y<h-1):return 1
         return None
@@ -378,7 +411,9 @@ def inspect(blobs,mapping,components,cr,expanded,original,source,root,directiona
             if {q for q in shapes if shapes[q]!=after[q]}!=changes or not all(corridor.ordinary(after[q]) for q in changes):
                 raise ValueError("F12D3_CANONICAL_DELTA")
             partial_edits={q for q in changes if partial((s,*q))}
-            if not dry.new_dry_edges_allowed(shapes,after,partial_edits,changes,occupied[s]):
+            rock_conflict=any(not dry.permitted_step(shapes[q],shapes[v],(v[0]-q[0],v[1]-q[1]),True,False)
+                for q in partial_edits for v in tp.neighbours(*q) if (m,*v) in rock_cells)
+            if rock_conflict or not dry.new_dry_edges_allowed(shapes,after,partial_edits,changes,occupied[s]):
                 failed=True;row["reason"]="directional_conversion_opens_forbidden_neighbour";break
             data.data=raw;check.attrs["@data"].data=raw
             if conn.serialize(check,EVENT_CLASSES)!=conn.serialize(world,EVENT_CLASSES):raise ValueError("F12D3_CANONICAL_METADATA")
@@ -392,7 +427,7 @@ def inspect(blobs,mapping,components,cr,expanded,original,source,root,directiona
         row.update(fixture_passed=True,edits=donors,path=[{"from":list(u),"to":list(v),"record":list(r),"kind":k} for u,v,r,k in path],
             requires_progression_gate=True,reason=None)
         row["cut"]=cut.inspect(blobs,blobs,mapping,components,cr,expanded,{},root,recovered_alternative=trial,
-            source_protected={(bound[116],*q) for q in protected[116]})
+            source_protected={(bound[116],*q) for q in protected[116]},rock_cells=rock_cells)
         result["witness"]=row
         if any(c["status"]=="AUTHORIAL_EXIT_CUT_FIXTURE_ONLY" for c in row["cut"]["cases"]):break
     return finish("canonical_fixture_only" if result["witness"] else "no_verified_canonical_network")
