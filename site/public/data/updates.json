@@ -2,9 +2,27 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "822a013dc94b7c234dc4394b01d801e668e53348",
+      "date": "2026-11-24T21:40:46-03:00",
+      "title": "Merge pull request #299 from GabrielChavesAlencar/sinnoh-full-expansion-f10b6-kath-authored-sprite",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "16abceab6a41027c5e3470d5ead45a1132f142ee",
+      "date": "2026-11-24T21:08:18-03:00",
+      "title": "Record F10B6 real evidence and run complete main-target regression suite",
+      "category": "Melhorias"
+    },
+    {
       "sha": "96ee503f3fc8b7d94044ccb8afb17c431db8f879",
       "date": "2026-11-24T21:07:48-03:00",
       "title": "Merge pull request #298 from GabrielChavesAlencar/sinnoh-full-expansion-f10b5-access-witnesses",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "8d576f14f5dfb9670929b26a86dbdc0dfa253a49",
+      "date": "2026-11-24T20:54:54-03:00",
+      "title": "Sinnoh F10B6: authored Kath sprite with original access and save baselines",
       "category": "Melhorias"
     },
     {
