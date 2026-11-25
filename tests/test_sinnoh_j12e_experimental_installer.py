@@ -3610,7 +3610,7 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
             template=source.replace("__LOCATIONS__","{}").replace("__SPECS__","{}")
             for key in ("__EDIT_CELLS__","__CHASE_LANES__","__CELESTIC_LANES__"):
                 template=template.replace(key,"[]")
-            template=template.replace("__SURF_ROUTES__",'{529=>[[0,0,"walk"],[1,0,"surf"],[2,0,"surf"],[3,0,"walk"]]}')
+            template=template.replace("__SURF_ROUTES__",'{529=>[[0,0,"walk"],[1,0,"surf"],[2,0,"surf"],[3,0,"walk"]]}').replace("__NORTH_ROCK_EDGES__","[]")
             code=(ROOT/"scripts/regions/SinnohF12D3Transaction.rb").read_text("utf-8")+"\n"+template
             fixture=code+'''
 m=BlueSinnohF12DIntegrated
@@ -3638,7 +3638,7 @@ raise "foreign map" if m.surf_step_allowed?(:allowed,nil,[],true,b,[511,2,0])
     def test_f12d_surf_compile_context_restores_native_globals_on_failure(self):
         if not shutil.which("ruby"):self.skipTest("Ruby unavailable")
         template=(ROOT/"scripts/regions/SinnohF12DIntegrated.rb").read_text("utf-8")
-        for key in ("__LOCATIONS__","__SPECS__","__SURF_ROUTES__"):
+        for key in ("__LOCATIONS__","__SPECS__","__SURF_ROUTES__","__NORTH_ROCK_EDGES__"):
             template=template.replace(key,"{}")
         for key in ("__EDIT_CELLS__","__CHASE_LANES__","__CELESTIC_LANES__"):
             template=template.replace(key,"[]")
@@ -3795,6 +3795,15 @@ raise "restore error" unless original==[$game_variables,$game_switches,$game_sel
         page.attrs["@through"]=False
         self.assertIsNone(i.preserved_lake_transfer([event],447,{},expected))
 
+    def test_f12d_northern_original_rock_never_opens_mask_or_special_terrain(self):
+        import sinnoh_f12d_integrated as i
+        rock=((0,),(4,))
+        self.assertTrue(i.original_rock_shape(rock,rock,(0,),(0,)))
+        self.assertFalse(i.original_rock_shape(rock,((1,),(4,)),(0,),(0,)))
+        self.assertFalse(i.original_rock_shape(rock,rock,(1,),(0,)))
+        self.assertFalse(i.original_rock_shape(((0,),(5,)),((0,),(5,)),(0,),(0,)))
+        self.assertFalse(i.original_rock_shape(((0,),(4,)),((0,),(0,)),(0,),(0,)))
+
     def test_f12d_northern_original_transfer_requires_pinned_donor_contract(self):
         import sinnoh_f10b7_field_audit as g
         import sinnoh_f12d_integrated as i
@@ -3934,7 +3943,7 @@ raise "restore error" unless original==[$game_variables,$game_switches,$game_sel
         self.assertIsNone(i.lake_contract("VALOR",types,species,{("GALACTIC_ADMIN","Saturn",15001)}))
         self.assertIsNone(i.lake_contract("VERITY",types,{"GOLBAT"},set()))
         if shutil.which("ruby"):
-            code=(ROOT/"scripts/regions/SinnohF12D3Transaction.rb").read_text("utf-8")+"\n"+(ROOT/"scripts/regions/SinnohF12DIntegrated.rb").read_text("utf-8").replace("__LOCATIONS__","{}").replace("__SPECS__","{}").replace("__EDIT_CELLS__","[[473,1,1]]").replace("__CHASE_LANES__","[[472,1,0,473,1,31]]").replace("__CELESTIC_LANES__","[[473,0,14,458,3,4]]").replace("__SURF_ROUTES__","{}")
+            code=(ROOT/"scripts/regions/SinnohF12D3Transaction.rb").read_text("utf-8")+"\n"+(ROOT/"scripts/regions/SinnohF12DIntegrated.rb").read_text("utf-8").replace("__LOCATIONS__","{}").replace("__SPECS__","{}").replace("__EDIT_CELLS__","[[473,1,1]]").replace("__CHASE_LANES__","[[472,1,0,473,1,31]]").replace("__CELESTIC_LANES__","[[473,0,14,458,3,4]]").replace("__SURF_ROUTES__","{}").replace("__NORTH_ROCK_EDGES__","[]")
             fixture=code+'''\ns={"current"=>"SINNOH","sinnoh_f12d_quest"=>%w[PASTORIA ROUTE_213 VALOR_BATTLE],"sinnoh_f12d3_quest"=>%w[SECRETPOTION_RECEIVED PSYDUCK_CLEARED]}\nm=BlueSinnohF12DIntegrated\nraise unless m.lake_allowed?(s,"VALOR",["MINE"])\nraise if m.lake_allowed?(s,"VERITY",["MINE"])\nraise if m.lake_allowed?(s,"VALOR",[])\ns[m::LAKE_LEDGER]=%w[VALOR VERITY]\nraise if m.lake_allowed?(s,"ACUITY",["MINE"])\nraise unless m.lake_allowed?(s,"ACUITY",["MINE","ICICLE"])\ns=Marshal.load(Marshal.dump(s))\nraise unless m.lake_allowed?(s,"ACUITY",["MINE","ICICLE"])\nraise if m.movement_allowed?(nil,[473,2,1],[473,1,1])\nraise if m.movement_allowed?(nil,[472,1,0],[473,1,31])\nraise if m.movement_allowed?(nil,[473,0,14],[458,3,4])\nraise unless m.movement_allowed?(s,[473,0,14],[458,3,4])\nraise unless m.movement_allowed?(nil,[473,2,1],[473,2,2])\n'''
             # Pass the full fixture via stdin; Windows process command-line
             # length is not a supported transport for a growing Ruby module.

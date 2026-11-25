@@ -6,6 +6,7 @@ module BlueSinnohF12DIntegrated
   CHASE_LANES=__CHASE_LANES__.freeze
   CELESTIC_LANES=__CELESTIC_LANES__.freeze
   SURF_ROUTES=__SURF_ROUTES__.freeze
+  NORTH_ROCK_EDGES=__NORTH_ROCK_EDGES__.freeze
   LAKE_ORDER=%w[VALOR VERITY ACUITY].freeze
   LAKE_LEDGER="sinnoh_f12d_lakes".freeze
   T=BlueSinnohF12D3Transaction
@@ -431,6 +432,28 @@ module BlueSinnohF12DIntegrated
         puts "SINNOH_F12D_NATIVE_SURF_SHORE_JUMP_MAP #{mid} #{boardings} #{landings}"
         raise "Sinnoh Surf incomplete route #{mid}" unless count+dry_count==2*(route.length-1)
         puts "SINNOH_F12D_NATIVE_SURF_FULL_ROUTE_MAP #{mid} #{count+dry_count} #{dry_count}"
+      end
+      unless NORTH_ROCK_EDGES.empty?
+        raise "Sinnoh North terrain" unless rock_reference_valid?
+        raw=load_data("Data/Map500.rxdata")
+        ts=tiles[raw.tileset_id]
+        $game_map=Game_Map.new
+        {map_id:500,map:raw,passages:ts.passages,priorities:ts.priorities,terrain_tags:ts.terrain_tags,events:{}}.each do |k,v|
+          $game_map.instance_variable_set(:"@#{k}",v)
+        end
+        occupied=raw.events.values.map { |event| [event.x,event.y] }
+        $PokemonGlobal.surfing=false
+        NORTH_ROCK_EDGES.each do |mid,ax,ay,bx,by|
+          raise "Sinnoh North scope" unless mid==500 && [ax,ay]==[61,73] && (ax-bx).abs+(ay-by).abs==1
+          raise "Sinnoh North occupied" if occupied.include?([ax,ay]) || occupied.include?([bx,by])
+          raise "Sinnoh North Rock" unless [[ax,ay],[bx,by]].any? { |x,y| $game_map.terrain_tag(x,y).id==:Rock }
+          [[ax,ay,bx,by],[bx,by,ax,ay]].each do |x,y,nx,ny|
+            dir=nx>x ? 6 : nx<x ? 4 : ny>y ? 2 : 8
+            p.instance_variable_set(:@x,x);p.instance_variable_set(:@y,y)
+            raise "Sinnoh North native collision #{x},#{y}" unless p.passable?(x,y,dir)
+          end
+        end
+        puts "SINNOH_F12D_NATIVE_NORTH_ROCK_APPROACH_STEPS #{2*NORTH_ROCK_EDGES.length}"
       end
       true
     ensure

@@ -116,6 +116,49 @@ def valor_rock_reference(blobs,mapping,source):
         cells[mid,*door]=qs[door]
     return cells
 
+def original_rock_shape(source_shape,local_shape,source_priorities,local_priorities):
+    return (source_shape==local_shape and 4 in local_shape[1] and
+        all(tag in (0,4) for tag in local_shape[1]) and not any(local_shape[0])
+        and not any(source_priorities) and not any(local_priorities))
+
+def north_rock_reference(blobs,mapping,source):
+    """Model only unchanged ordinary Rock on pinned Mt. Coronet."""
+    mid=mapping["SINNOH_MT_CORONET_WEST_APPROACH"]
+    world=conn.read_marshal(blobs["Data/Map%03d.rxdata"%mid],"F12D_NORTH_QA")
+    tiles=conn.read_marshal(blobs["Data/Tilesets.rxdata"],"F12D_NORTH_TILES")
+    with pv.verified_archive(source,"maps") as z:
+        raw=pv.member(z,pv.MAP_ROOT+"Data/Map082.rxdata")
+        if hashlib.sha256(raw).hexdigest()!="03ac5ef6ac130859ae1e6908994a38dccd564126a15a74f826122bc63138df8d":
+            raise ValueError("F12D_NORTH_SOURCE_HASH")
+        donor=conn.read_marshal(raw,"F12D_NORTH_SOURCE")
+        st=conn.read_marshal(pv.member(z,pv.MAP_ROOT+"Data/Tilesets.rxdata"),"F12D_NORTH_SOURCE_TILES")
+    ss,sh=corridor.grid(donor,st);qs,qh=corridor.grid(world,tiles)
+    if set(ss)!=set(qs):raise ValueError("F12D_NORTH_DIMENSIONS")
+    w,h=world.attrs["@width"],world.attrs["@height"]
+    guard=pv.movement_masks(blobs,mapping,extra_symbols={"SINNOH_MT_CORONET_WEST_APPROACH"})[mid]
+    def priorities(m,ts,stack):
+        raw=ts[m.attrs["@tileset_id"]].attrs["@priorities"].data
+        return tuple(struct.unpack_from("<H",raw,20+2*k)[0] for k in stack if k)
+    cells={}
+    for x,y in sorted(qs):
+        if not (0<x<w-1 and 0<y<h-1):continue
+        if guard[y][x]!="." or not original_rock_shape(sh[x,y],qh[x,y],
+                priorities(donor,st,ss[x,y]),priorities(world,tiles,qs[x,y])):continue
+        cells[mid,x,y]=qs[x,y]
+    return cells
+
+def north_native_edges(blobs,mapping,components,root,reference,seed):
+    """Exact event-free cardinal approach to the original 82/82 threshold."""
+    mid=mapping["SINNOH_MT_CORONET_WEST_APPROACH"]
+    old={k:v for k,v in mapping.items() if k in chase.prior.ALL}
+    worlds,tiles,index,_,_,_=gates.access_graph(blobs,old,components,root,seed_cells=[seed],
+        directional=True,strict_movement=True,valor_rock=reference,post_chase_story=True)
+    door=(61,73)
+    occupied={(e.attrs["@x"],e.attrs["@y"]) for e in worlds[mid].attrs["@events"].values()}
+    if door not in index[mid] or door in occupied:return []
+    return [[mid,*door,*q] for q in sorted(tp.neighbours(*door)) if q in index[mid] and q not in occupied
+        and ((mid,*q) in reference or (mid,*door) in reference)]
+
 # Candidate aquatic paths never enter the dry progression graph. RMXP
 # source water has mask 15; only native Surf may override that water mask.
 # Match the original and remapped tile attributes, not numeric tile IDs.
@@ -325,6 +368,12 @@ def original_lake_candidates(data,mapping,components,root,source,rock,valor_rock
                         row["north_ground_evidence"]={"source":gates.cell_shape(w,st,xy),"local_source":gates.cell_shape(wa,tiles,xy),
                             "destination":gates.cell_shape(donor[dst],st,landing),"local_destination":gates.cell_shape(wb,tiles,landing)}
                     row["reason"]="source_or_destination_ground_unproved";continue
+                if north:
+                    row["north_component_evidence"]={"source_component":ix[a].get(xy),
+                        "landing_component":ix[b].get(landing),
+                        "source_neighbours":[{"position":list(n),"component":ix[a].get(n),
+                            "source_shape":gates.cell_shape(w,st,n),"local_shape":gates.cell_shape(wa,tiles,n),
+                            "verified_rock":(a,*n) in valor_rock} for n in sorted(tp.neighbours(*xy))]}
                 if landing not in ix[b] or not any(n in ix[a] for n in tp.neighbours(*xy)):
                     row["reason"]="local_component_unproved";continue
                 present=[v for v in wa.attrs["@events"].values() if (v.attrs["@x"],v.attrs["@y"])==xy]
@@ -690,6 +739,9 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
     threshold=(mapping["SINNOH_VALOR_CAVERN"],22,36)
     result["valor_rock_threshold_cells"]=int(threshold in valor_rock)
     result["valor_rock_reference_cells"]=len(valor_rock)-result["valor_rock_threshold_cells"]
+    north_reference=north_rock_reference(blobs,mapping,source)
+    result["north_rock_reference_cells"]=len(north_reference)
+    valor_rock.update(north_reference)
     for key in ORDER:
         contract=result["lake_contracts"][key]
         if not contract or contract["symbol"] not in mapping:continue
@@ -886,6 +938,10 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
     # only when the local pickup event was actually prepared.
     if template.count("__SURF_ROUTES__")!=1:raise ValueError("F12D_SURF_ROUTE_TEMPLATE")
     template=template.replace("__SURF_ROUTES__",ruby_hash(surf_routes if "SURF_HM03" in literal else {}))
+    north_edges=north_native_edges(blobs,mapping,components,root,valor_rock,seed)
+    result["north_native_approach_edges"]=north_edges
+    if template.count("__NORTH_ROCK_EDGES__")!=1:raise ValueError("F12D_NORTH_TEMPLATE")
+    template=template.replace("__NORTH_ROCK_EDGES__",json.dumps(north_edges))
     result["surf_pickup"]["runtime_route_count"]=len(surf_routes) if "SURF_HM03" in literal else 0
     for key,value in (("__EDIT_CELLS__",edits),("__CHASE_LANES__",chase_lanes),("__CELESTIC_LANES__",celestic_lanes)):
         if template.count(key)!=1:raise ValueError("F12D_INTEGRATED_GATE_TEMPLATE")
@@ -1095,6 +1151,8 @@ def installer_preflight(blobs,mapping,components,cr,base,root,source,staged=None
             lake_original_seam_recovery=story.get("lake_original_seam_recovery",{}),
             lake_original_entries=story.get("lake_original_entries",{}),
             lake_surf_geometry=story.get("lake_surf_geometry",{}),
+            north_rock_reference_cells=story.get("north_rock_reference_cells",0),
+            north_native_approach_edges=story.get("north_native_approach_edges",[]),
             surf_pickup=story.get("surf_pickup",{}),
             restored_original_portals=story.get("restored_original_portals",0),
             pre_chase_graph_checks=story.get("pre_chase_graph_checks",[]),
