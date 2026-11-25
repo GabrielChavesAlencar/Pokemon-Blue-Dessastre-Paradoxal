@@ -1690,7 +1690,60 @@
       "f12d_integrated_player_method_receipts": 14,
       "f12d_integrated_valor_rock_reference_implemented": true,
       "f12d_integrated_gate_model_proof_implemented": true,
-      "f12d_integrated_conditional_private_installer_binding": true
+      "f12d_integrated_conditional_private_installer_binding": true,
+      "f12d_integrated_validated_geometry_head": "7d7cb244ba4f68a110784e124b20cf5eb2fdb947",
+      "f12d_integrated_validated_geometry_job": 139385409319,
+      "f12d_integrated_validated_ci_workflows": 11,
+      "f12d_integrated_validated_ci_checks": 26,
+      "f12d_integrated_validated_markers": 18,
+      "f12d_integrated_geometry_fixture_proven": true,
+      "f12d_integrated_geometry_edits": 71,
+      "f12d_integrated_geometry_interior_edits": 68,
+      "f12d_integrated_geometry_seam_edits": 3,
+      "f12d_integrated_verified_exits": 5,
+      "f12d_integrated_cut_proven": true,
+      "f12d_integrated_cut_positions": [
+        [
+          3,
+          17
+        ],
+        [
+          3,
+          18
+        ],
+        [
+          3,
+          19
+        ],
+        [
+          3,
+          20
+        ]
+      ],
+      "f12d_integrated_cut_map_id": 473,
+      "f12d_integrated_cut_open_cells": 7537,
+      "f12d_integrated_cut_closed_cells": 6583,
+      "f12d_integrated_cut_restored_cells": 7537,
+      "f12d_integrated_cynthia_location": {
+        "map_id": 528,
+        "event_id": 3002,
+        "position": [
+          44,
+          23
+        ],
+        "stand": [
+          44,
+          22
+        ]
+      },
+      "f12d_integrated_serialized_events": 5,
+      "f12d_integrated_sprite_sheets_validated": 5,
+      "f12d_integrated_payload_hashes_count": 12,
+      "f12d_integrated_candidate_connections": 5,
+      "f12d_integrated_lake_sequential_payloads": 0,
+      "f12d_integrated_gate_lanes_chase": 36,
+      "f12d_integrated_gate_lanes_celestic": 10,
+      "f12d_integrated_fixture_status": "F12D_INTEGRATED_GAMEPLAY_FIXTURE"
     },
     {
       "id": "F13",

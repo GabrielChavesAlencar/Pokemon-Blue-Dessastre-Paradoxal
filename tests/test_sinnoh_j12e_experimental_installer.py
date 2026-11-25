@@ -1695,8 +1695,11 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                         self.assertEqual(story["new_portals"],0)
                         self.assertEqual(set(story["lake_contracts"]),{"VALOR","VERITY","ACUITY"})
                         self.assertIsNone(story["geometry"]["budget"])
+                        self.assertTrue(story["mission_prepared"],"F12D3 integrated fixture regression: "+str(story.get("reason")))
                         if story["mission_prepared"]:
                             self.assertEqual(len([k for k in story["locations"] if k.startswith("PSYDUCK_")]),4)
+                            self.assertEqual(story["geometry"]["witness"]["fixture_passed"],True)
+                            self.assertEqual(len(story["pre_chase_graph_checks"]),3)
                             self.assertIn("CYNTHIA",story["locations"])
                             self.assertTrue(payload and plugin)
                         else:
