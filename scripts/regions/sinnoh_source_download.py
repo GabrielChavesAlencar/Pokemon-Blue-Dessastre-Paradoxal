@@ -30,6 +30,8 @@ SIZES = {"maps": 89235961, "overworlds": 2158072}
 MEGA_ID = "PMZxiYhI"
 MEDIAFIRE_ID = "vmrjeckhz5dclzr"
 CHUNK = 1024 * 1024
+TRANSIENT_HTTP = (408,429,500,502,503,504)
+RETRY_DELAYS = (1,8,24,45)
 
 
 def host(url):
@@ -70,6 +72,8 @@ def source_redirect(kind):
             fail("DOWNLOAD_SOURCE_DID_NOT_REDIRECT:"+kind)
     except HTTPError as exc:
         try:
+            if exc.code in TRANSIENT_HTTP:
+                raise
             if exc.code not in (301,302,303,307,308):
                 fail("DOWNLOAD_SOURCE_HTTP_%d:%s"%(exc.code,kind))
             location = exc.headers.get("Location","")
@@ -242,7 +246,10 @@ def stream_to_file(response,output,kind,transform=None):
 
 
 def download(kind,output):
+    # Record only the stage and resource name, never the URL/key.
+    print("SINNOH QA: consultando redirecionamento original "+kind,flush=True)
     location=source_redirect(kind)
+    print("SINNOH QA: redirecionamento original confirmado "+kind,flush=True)
     if kind=="maps":
         key,nonce=mega_key(location)
         url=mega_url()
@@ -256,16 +263,18 @@ def download(kind,output):
 
 def retry_download(kind,output,fetch=download,pause=time.sleep):
     """Retry transient provider failures only; never retry integrity errors."""
-    for attempt in range(3):
+    attempts=len(RETRY_DELAYS)+1
+    for attempt in range(attempts):
         try:
             return fetch(kind,output)
         except (URLError,TimeoutError,ConnectionError) as exc:
-            if isinstance(exc,HTTPError) and exc.code not in (408,429,500,502,503,504):
+            if isinstance(exc,HTTPError) and exc.code not in TRANSIENT_HTTP:
                 raise
-            if attempt==2:raise
+            if attempt==attempts-1:raise
             output.seek(0);output.truncate(0)
-            print("SINNOH QA: falha transitoria na fonte %s; tentativa %d/3"%(kind,attempt+2),flush=True)
-            pause(2**attempt)
+            delay=RETRY_DELAYS[attempt]
+            print("SINNOH QA: falha transitoria na fonte %s; tentativa %d/%d apos %ds"%(kind,attempt+2,attempts,delay),flush=True)
+            pause(delay)
 
 def ensure_sources(project,fetch=retry_download):
     # Explicit Sinnoh click only. Existing valid local archives take precedence.

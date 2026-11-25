@@ -1816,10 +1816,10 @@
       "f12d_integrated_native_stage_receipts_implemented": true,
       "f12d_integrated_original_lake_seam_recovery_implemented": true,
       "f12d_integrated_original_lake_sequence_confirmed": false,
-      "f12d_integrated_latest_observed_head": "d4fe6d4082e56cd0eeb6163731fd8e76db474f38",
-      "f12d_integrated_latest_observed_native_job": 139459070525,
+      "f12d_integrated_latest_observed_head": "da88bafdb3c55f945343f0a2f8000fd2334188c5",
+      "f12d_integrated_latest_observed_native_job": 139462916141,
       "f12d_integrated_latest_observed_source_job": 139449853803,
-      "f12d_integrated_latest_observed_workflows_approved": 7,
+      "f12d_integrated_latest_observed_workflows_approved": 8,
       "f12d_integrated_latest_observed_jobs_approved": 19,
       "f12d_integrated_native_request_accepted_confirmed": true,
       "f12d_integrated_native_compiler_return_confirmed": true,
@@ -1851,7 +1851,7 @@
       "f12d_integrated_valor_exact_threshold_implemented": true,
       "f12d_integrated_current_preflight_failed": false,
       "f12d_integrated_current_preflight_failure": null,
-      "f12d_integrated_current_source_failure": "DOWNLOAD_FAILED:maps:URLError (WinError 10060)",
+      "f12d_integrated_current_source_failure": "DOWNLOAD_FAILED:maps:URLError (WinError 10060 at author redirect)",
       "f12d_integrated_current_source_retry_job": 139442635063,
       "f12d_integrated_current_maps_prepared": 144,
       "f12d_integrated_current_markers_reconfirmed": true,
@@ -1923,7 +1923,8 @@
       "f12d_integrated_windows_fixture_timeout_fix_pending_ci": true,
       "f12d_integrated_surf_native_shore_jump_probe_implemented_pending_ci": true,
       "f12d_integrated_native_surf_markers_required_pending_ci": true,
-      "f12d_integrated_native_surf_compatible_party_negative_gates_implemented_pending_ci": true
+      "f12d_integrated_native_surf_compatible_party_negative_gates_implemented_pending_ci": true,
+      "f12d_integrated_source_redirect_retry_backoff_implemented_pending_ci": true
     },
     {
       "id": "F13",

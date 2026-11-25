@@ -3783,6 +3783,25 @@ raise "foreign map" if m.surf_step_allowed?(:allowed,nil,[],true,b,[511,2,0])
         self.assertEqual(out.getvalue(),b"verified")
         self.assertEqual(attempts,["maps","maps"])
         self.assertEqual(pauses,[1])
+        # A runner may lose connectivity to the author redirect for a full
+        # minute. Spread bounded retries without retaining partial bytes.
+        out=io.BytesIO();attempts=[];pauses=[]
+        def unavailable(kind,stream):
+            attempts.append(kind);stream.write(b"partial")
+            raise URLError("transient")
+        with self.assertRaises(URLError):
+            dl.retry_download("maps",out,fetch=unavailable,pause=pauses.append)
+        self.assertEqual(attempts,["maps"]*5)
+        self.assertEqual(pauses,[1,8,24,45])
+        self.assertEqual(out.getvalue(),b"partial")
+        attempts=[];pauses=[]
+        def invalid(kind,stream):
+            attempts.append(kind)
+            raise ValueError("DOWNLOAD_SHA256_MISMATCH")
+        with self.assertRaises(ValueError):
+            dl.retry_download("maps",io.BytesIO(),fetch=invalid,pause=pauses.append)
+        self.assertEqual(attempts,["maps"])
+        self.assertEqual(pauses,[])
 
     def test_f12d_integrated_authorial_paths_and_lake_contracts(self):
         import sinnoh_f12d3_canonical_network as n
