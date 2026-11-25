@@ -52,6 +52,8 @@ def authored_sheet(role):
               "gym_volkner":((48,69,111),(236,201,77),(205,169,74)),
               "galactic_grunt":((166,169,178),(66,85,124),(63,154,158)),
               "galactic_mars":((159,168,180),(85,83,121),(190,54,64)),
+              "galactic_jupiter":((159,168,180),(116,67,146),(146,66,171)),
+              "galactic_rescue":((117,133,91),(210,164,70),(97,75,55)),
               "galactic_honey_man":((118,112,72),(208,178,65),(172,166,150))}
     shirt,accent,hair=palettes[role]
     w=h=128;raw=bytearray(w*h*4);ink=(42,44,52);skin=(222,178,138)

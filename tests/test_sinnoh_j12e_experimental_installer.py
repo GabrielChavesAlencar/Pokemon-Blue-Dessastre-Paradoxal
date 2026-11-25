@@ -2957,6 +2957,9 @@ puts "F12B5_AUTHORED_QUEST_CONFIRMED_WINS_KEY_SCOPE_OK"
         import sinnoh_f12c3_jupiter_candidate as j
         self.assertEqual([r[0] for r in j.ROWS],["GRUNT_1","GRUNT_2","GRUNT_3","JUPITER","RESCUE","BICYCLE"])
         self.assertEqual(j.ROWS[3][3],[["ZUBAT",21],["SKUNTANK",23]])
+        for role in ("galactic_jupiter","galactic_rescue","galactic_grunt"):
+            self.assertEqual(j.pv.dims(j.npc.authored_sheet(role)),(128,128))
+        self.assertNotEqual(j.npc.authored_sheet("galactic_jupiter"),j.npc.authored_sheet("galactic_rescue"))
         delta,report,plugin=j.build({}, {}, {}, {}, set(),set(),set(),set(),ROOT)
         self.assertFalse(delta)
         self.assertFalse(plugin)
