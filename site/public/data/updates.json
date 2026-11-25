@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a3913a9fa3c2b85349016a29cd50fd31e315d5e0",
+      "date": "2026-11-25T06:29:07-03:00",
+      "title": "Merge pull request #313 from GabrielChavesAlencar/sinnoh-full-expansion-f12b2-windworks-evidence",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "459c3ddd28380d3dc2900d72d15be2ec178e4f34",
+      "date": "2026-11-25T06:22:52-03:00",
+      "title": "F12B2: reconcile main preserving definitive F12A/F12B1 evidence",
+      "category": "Melhorias"
+    },
+    {
       "sha": "375ab415184881fe130300ae08cf30dc06b64405",
       "date": "2026-11-25T06:22:00-03:00",
       "title": "Merge pull request #312 from GabrielChavesAlencar/sinnoh-full-expansion-f12b-windworks",
@@ -41,6 +53,12 @@
       "sha": "d2cb043773838d22fe0986e3952f21ca093b4e19",
       "date": "2026-11-24T23:00:52-03:00",
       "title": "Merge pull request #309 from GabrielChavesAlencar/sinnoh-full-expansion-f11g-candice",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "121c13a3f307fc86540e421c76152d29e862b6f4",
+      "date": "2026-11-24T22:58:25-03:00",
+      "title": "Sinnoh F12B2: inspect five Windworks events, incoming access and source PBS without native claims",
       "category": "Melhorias"
     },
     {
