@@ -51,6 +51,7 @@ def prepare(blobs,mapping,components,types,species,existing,root,source):
     out,report,plugin=build(candidate,mapping,components,types,species,existing,root)
     report["source_seams"]=sr
     report["authored_corridor"]=ar
+    report["final_map_hashes"]={str(mapping[sym]):preview.digest({"map":(out if report.get("runtime_install_enabled") else blobs)["Data/Map%03d.rxdata"%mapping[sym]]})["map"] for sym in preview.AREAS}
     if not report.get("runtime_install_enabled"):
         report["new_seams"]=0
         return blobs,report,b""

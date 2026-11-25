@@ -19,6 +19,12 @@ MAX_EDITS_PER_LEG=16
 MAX_EDITS_TOTAL=32
 # Live frontier 139236325903: dry mask-15 cells on both aligned sides.
 NORTH_DRY_FRONTIER_AXES=frozenset((52,53))
+# Live 139241195138: west 6 + north axis 53 approach 26 + two
+# dry border cells + existing axis 56 Valor approach 2 = 36 maximum.
+# Only this exact fallback is eligible for the four extra edits.
+NORTH_LINK_AXIS=56
+NORTH_LINK_CELLS=frozenset(((85,0),(86,0),(87,0)))
+NORTH_LINK_MAX_EDITS=36
 
 def grid(world,tiles):
     a=world.attrs;w,h=a["@width"],a["@height"]
@@ -60,12 +66,12 @@ def north_lane_candidate(row,qa,src,forbidden):
     return (qa[218][1][a]==src[218][a]==((15,),(0,)) and
             qa[214][1][b]==src[214][b]==((15,),(0,)))
 
-def cell_cost(q,target,shapes,source,protected,size,already,walkable_protected):
+def cell_cost(q,target,shapes,source,protected,size,already,walkable_protected,perimeter_edits=()):
     if q in protected:
         return 0 if q in walkable_protected and ordinary(shapes[q]) else None
     if ordinary(shapes[q]) or q in already:return 0
     w,h=size
-    if q!=target and (q[0] in (0,w-1) or q[1] in (0,h-1)):return None
+    if q!=target and q not in perimeter_edits and (q[0] in (0,w-1) or q[1] in (0,h-1)):return None
     return 1 if editable(source[q],shapes[q]) else None
 
 def blocked_frontier(seed,target,shapes,source,protected,size,existing_edits=(),walkable_protected=()):
@@ -99,16 +105,16 @@ def blocked_frontier(seed,target,shapes,source,protected,size,existing_edits=(),
         "nearest_frontier":[{"position":list(q),"reason":frontier[q],"masks":list(shapes[q][0]),
             "tags":list(shapes[q][1]),"source_matches":source[q]==shapes[q]} for q in nearest]}
 
-def shortest(seed,target,shapes,source,protected,size,existing_edits=(),budget=MAX_EDITS_PER_LEG,walkable_protected=()):
+def shortest(seed,target,shapes,source,protected,size,existing_edits=(),budget=MAX_EDITS_PER_LEG,walkable_protected=(),perimeter_edits=()):
     """Lexicographically minimize changed cells, then walking distance.
-    Only the requested boundary point may be changed on the map perimeter.
+    Only the requested boundary point or an explicitly audited dry link may be changed on the perimeter.
     """
     w,h=size;already=set(existing_edits);walkable_protected=set(walkable_protected)
     if seed not in shapes or (seed in protected and seed not in walkable_protected):return None
     if not ordinary(shapes[seed]) and (seed not in already or seed in protected):return None
     if target not in shapes:return None
     def cost(q):
-        return cell_cost(q,target,shapes,source,protected,size,already,walkable_protected)
+        return cell_cost(q,target,shapes,source,protected,size,already,walkable_protected,perimeter_edits)
     dist={seed:(0,0)};prev={};todo=[(0,0,seed)]
     while todo:
         edits,length,xy=heapq.heappop(todo)
@@ -193,8 +199,8 @@ def repair(original,candidate,mapping,components,source_path,root,report):
     forbidden={sid:set(cells) for sid,cells in protected.items()}
     for sid,cells in protected.items():
         forbidden[sid].update(q for xy in cells for q in tp.neighbours(*xy) if q in qa[sid][1] and not ordinary(qa[sid][1][q]))
-    def route(sid,target,edits=(),seed=None,budget=MAX_EDITS_TOTAL):
-        return shortest(seeds[sid] if seed is None else seed,target,qa[sid][1],src[sid],forbidden[sid],sizes[sid],edits,budget=budget,walkable_protected=walkable_protected[sid])
+    def route(sid,target,edits=(),seed=None,budget=MAX_EDITS_TOTAL,perimeter_edits=()):
+        return shortest(seeds[sid] if seed is None else seed,target,qa[sid][1],src[sid],forbidden[sid],sizes[sid],edits,budget=budget,walkable_protected=walkable_protected[sid],perimeter_edits=perimeter_edits)
     info['search_diagnostics']={'total_edit_budget':MAX_EDITS_TOTAL,'west_candidates':[], 'north_candidates':[],
         'input_map_hashes':{str(mid):hashlib.sha256(original['Data/Map%03d.rxdata'%mid]).hexdigest() for mid in ids.values()},
         'protected_landings':{str(ids[sid]):[list(q) for q in sorted(landings[sid]-qa_events[sid])] for sid in ids},
@@ -261,6 +267,39 @@ def repair(original,candidate,mapping,components,source_path,root,report):
             count=len(edits218)+len(edits214)
             if count>MAX_EDITS_TOTAL:continue
             options.append((count,len(wr[0])+len(rr[0])+len(vr[0]),wa,row["axis"],wr,rr,vr))
+    # Only if the normal 32-cell search fails, try the exact dry link from
+    # the proved axis-53 partial approach to the existing axis-56 lane.
+    # Source/QA shapes and opposing cells must match the live evidence.
+    fallback=False
+    link_diag={"axis":NORTH_LINK_AXIS,"max_edits":NORTH_LINK_MAX_EDITS,
+        "allowed_perimeter_edits":[list(q) for q in sorted(NORTH_LINK_CELLS)],"attempts":[]}
+    info["search_diagnostics"]["dry_border_link"]=link_diag
+    edge_rows={row["axis"]:row for row in north["axis_evidence"]}
+    expected={53:((15,),(0,)),54:((15,),(0,)),55:((0,15),(0,0))}
+    link_ok=all(n in edge_rows and tuple(edge_rows[n]["a"]) in NORTH_LINK_CELLS and
+        edge_rows[n]["source_a"]==edge_rows[n]["qa_a"] and
+        edge_rows[n]["source_b"]==edge_rows[n]["qa_b"] and
+        not edge_rows[n]["occupied_a"] and not edge_rows[n]["occupied_b"] and
+        not edge_rows[n]["source_b"]["ordinary_walkable"] and
+        tuple(edge_rows[n]["a"]) not in forbidden[218] and
+        qa[218][1][tuple(edge_rows[n]["a"])]==src[218][tuple(edge_rows[n]["a"])]==shape
+        for n,shape in expected.items())
+    link_diag["source_verified"]=link_ok
+    if not options and link_ok and NORTH_LINK_AXIS in valor and valor[NORTH_LINK_AXIS]:
+        vr=valor[NORTH_LINK_AXIS];target=tuple(edge_rows[NORTH_LINK_AXIS]["a"])
+        for _,_,wa,wr in sorted(west_options):
+            remaining=NORTH_LINK_MAX_EDITS-len(wr[1])-len(vr[1])
+            choices=[q for seed in (seeds[218],wr[0][-1])
+                if (q:=route(218,target,wr[1],seed=seed,budget=remaining,perimeter_edits=NORTH_LINK_CELLS))]
+            rr=min(choices,key=lambda q:(len(q[1]),len(q[0]))) if choices else None
+            link_diag["attempts"].append({"west_axis":wa,"remaining_budget":remaining,
+                "additional_edits":len(rr[1]) if rr else None,
+                "candidate_path":[list(q) for q in rr[0]] if rr else None})
+            if not rr:continue
+            count=len(set(wr[1])|set(rr[1]))+len(vr[1])
+            if count<=NORTH_LINK_MAX_EDITS:
+                options.append((count,len(wr[0])+len(rr[0])+len(vr[0]),wa,NORTH_LINK_AXIS,wr,rr,vr))
+        fallback=bool(options)
     if not options:return blocked("no_bounded_dry_north_corridor")
     _,_,wa,na,wr,rr,vr=min(options,key=lambda x:x[:4])
     edits={218:set(wr[1])|set(rr[1]),214:set(vr[1])}
@@ -268,12 +307,14 @@ def repair(original,candidate,mapping,components,source_path,root,report):
     # Both new dry endpoints must be part of the chosen edit set. No other
     # perimeter edits are permitted beyond the selected west/north endpoints.
     endpoints={218:{tuple(wr[0][-1]),tuple(selected_north["a"])},214:{tuple(selected_north["b"])}}
+    if fallback:endpoints[218].update(NORTH_LINK_CELLS)
     if not selected_north["eligible"] and any(tuple(selected_north[k]) not in edits[sid] for sid,k in ((218,"a"),(214,"b"))):
         raise ValueError("F12D_NORTH_PAIRED_EDIT_MISSING")
     for sid,positions in edits.items():
         w,h=sizes[sid]
         if any((x in (0,w-1) or y in (0,h-1)) and (x,y) not in endpoints[sid] for x,y in positions):
             raise ValueError("F12D_UNRELATED_PERIMETER_EDIT")
+    if sum(map(len,edits.values()))>(NORTH_LINK_MAX_EDITS if fallback else MAX_EDITS_TOTAL):raise ValueError("F12D_CORRIDOR_BUDGET")
     out=dict(candidate);records=[]
     for sid,positions in edits.items():
         if not positions:continue
@@ -317,7 +358,8 @@ def repair(original,candidate,mapping,components,source_path,root,report):
     if any(out[k]!=v for k,v in candidate.items() if k not in allowed):raise ValueError("F12D_CORRIDOR_UNRELATED_CHANGE")
     info.update(status="F12D_AUTHORED_CORRIDOR_CANDIDATE",reason=None,changed_cells=len(records),
                 new_seams=1,edits=records,west_axis=wa,north_axis=na,
-                authored_north_boundary_pair=not selected_north["eligible"],
+                authored_north_boundary_pair=not selected_north["eligible"],dry_border_link_used=fallback,
+                applied_edit_budget=NORTH_LINK_MAX_EDITS if fallback else MAX_EDITS_TOTAL,
                 path_lengths=[len(wr[0]),len(rr[0]),len(vr[0])],
                 path_witnesses=[{'source_id':218,'cells':[list(q) for q in wr[0]]},
                     {'source_id':218,'cells':[list(q) for q in rr[0]]},

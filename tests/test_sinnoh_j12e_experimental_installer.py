@@ -1489,7 +1489,12 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                             self.assertTrue(set(pair["shared_walkable_lanes"])<=set(pair["source_walkable_lanes"]) & set(pair["qa_walkable_lanes"]))
                     print("SINNOH_F12D_SOURCE_SEAM_REPORT "+json.dumps(cr["source_seams"],sort_keys=True),flush=True)
                     ar=cr["authored_corridor"]
-                    self.assertLessEqual(ar["changed_cells"],32)
+                    self.assertLessEqual(ar["changed_cells"],36 if ar.get("dry_border_link_used") else 32)
+                    if ar.get("dry_border_link_used"):
+                        self.assertEqual(ar["north_axis"],56)
+                        self.assertEqual(ar["applied_edit_budget"],36)
+                        self.assertTrue(ar["search_diagnostics"]["dry_border_link"]["source_verified"])
+                        self.assertTrue({tuple(e["position"]) for e in ar["edits"] if e["map_id"]==expanded["SINNOH_ROUTE_213"] and e["position"][1]==0}<={(85,0),(86,0),(87,0)})
                     self.assertEqual(ar["changed_cells"],len(ar["edits"]))
                     for edit in ar["edits"]:
                         self.assertIn(edit["map_id"],(expanded["SINNOH_ROUTE_213"],expanded["SINNOH_VALOR_LAKEFRONT"]))
@@ -3118,6 +3123,26 @@ puts "F12B5_AUTHORED_QUEST_CONFIRMED_WINS_KEY_SCOPE_OK"
         self.assertFalse(c.north_lane_candidate(row,qa,src,{218:{a},214:set()}))
         qa[214][1][b]=((15,),(7,))
         self.assertFalse(c.north_lane_candidate(row,qa,src,protected))
+
+    def test_f12d_explicit_dry_border_link_keeps_other_perimeter_blocked(self):
+        import sinnoh_f12d_corridor as c
+        ground=((0,),(0,))
+        wall=((15,),(0,))
+        special=((15,),(7,))
+        shapes={(x,y):special for x in range(6) for y in range(3)}
+        shapes[1,1]=ground
+        for x in (1,2,3):shapes[x,0]=wall
+        shapes[4,0]=ground
+        source=dict(shapes)
+        self.assertIsNone(c.shortest((1,1),(4,0),shapes,source,set(),(6,3),budget=3))
+        link={(1,0),(2,0),(3,0)}
+        path,edits=c.shortest((1,1),(4,0),shapes,source,set(),(6,3),budget=3,perimeter_edits=link)
+        self.assertEqual(set(edits),link)
+        self.assertEqual(len(path),5)
+        self.assertIsNone(c.shortest((1,1),(4,0),shapes,source,{(2,0)},(6,3),budget=3,perimeter_edits=link))
+        self.assertIsNone(c.shortest((1,1),(4,0),shapes,source,set(),(6,3),budget=2,perimeter_edits=link))
+        shapes[2,0]=special
+        self.assertIsNone(c.shortest((1,1),(4,0),shapes,dict(shapes),set(),(6,3),budget=3,perimeter_edits=link))
 
     def test_f12d_exact_edge_axes_and_source_walkability(self):
         import sinnoh_f12d_seams as seams
