@@ -28,9 +28,9 @@ LAKES={
     "VERITY":("SINNOH_LAKE_VERITY","Mars",mars.COMMANDERS,15002,(("GOLBAT",38),("BRONZOR",38),("PURUGLY",40))),
     "ACUITY":("SINNOH_LAKE_ACUITY","Jupiter",(),15003,()),
 }
-def graph(data,mapping,components,root,seed,rock=(),valor_rock=()):
+def graph(data,mapping,components,root,seed,rock=(),valor_rock=(),blocked_cells=(),blocked_lanes=()):
     old={k:v for k,v in mapping.items() if k in chase.prior.ALL}
-    w,t,i,_,r,_=gates.access_graph(data,old,components,root,seed_cells=[seed],directional=True,strict_movement=True,rock_cells=rock,valor_rock=valor_rock)
+    w,t,i,_,r,_=gates.access_graph(data,old,components,root,seed_cells=[seed],directional=True,strict_movement=True,rock_cells=rock,valor_rock=valor_rock,blocked_cells=blocked_cells,blocked_lanes=blocked_lanes)
     return w,t,trainers.reached_cells(i,r)
 
 def add_event(data,mid,xy,key,sprite,cleared=False):
@@ -206,12 +206,30 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
         return sorted(keys)
     edits=sorted([row["map_id"],*row["position"]] for row in prepared["edits"])
     chase_lanes=lane_keys(prepared["connections"]);celestic_lanes=lane_keys([prepared["exit_record"]])
+    blocked={tuple(q) for q in edits};lanes={tuple(q) for q in chase_lanes+celestic_lanes}
+    event_cells={(v["map_id"],*v["position"]) for v in locations.values()}
+    checks=[]
+    for sym in ("SINNOH_TWINLEAF_TOWN","SINNOH_PASTORIA_CITY","SINNOH_VALOR_LAKEFRONT"):
+        start=next((tuple(row[3]) for row in entries if row[0]==sym and row[3]),None)
+        if not start:result["reason"]="missing_progression_seed";return {},result,b""
+        _,_,prior=graph(blobs,mapping,components,root,start,rock,valor_rock)
+        _,_,locked=graph(out,mapping,components,root,start,rock,valor_rock,blocked,lanes)
+        if not prior or not prior-event_cells<=locked or not locked<=prior:
+            result["reason"]="pre_chase_gate_graph_failed";return {},result,b""
+        checks.append({"symbol":sym,"prior":len(prior),"locked":len(locked)})
+    if tp.build(out,old,components,root)!=entries:
+        result["reason"]="final_lake_qa_entries_changed";return {},result,b""
+    _,_,final_closed=graph(out,mapping,components,root,seed,rock,valor_rock)
+    _,_,final_open=graph(reopened,mapping,components,root,seed,rock,valor_rock)
+    if not targets<=final_open or targets&final_closed or any(q[0]==town for q in final_closed) or not any(q[0]==town for q in final_open):
+        result["reason"]="final_lake_gate_graph_failed";return {},result,b""
+    result["pre_chase_graph_checks"]=checks
     template=template.replace("__LOCATIONS__",ruby_hash(literal)).replace("__SPECS__",ruby_hash(specs))
     for key,value in (("__EDIT_CELLS__",edits),("__CHASE_LANES__",chase_lanes),("__CELESTIC_LANES__",celestic_lanes)):
         if template.count(key)!=1:raise ValueError("F12D_INTEGRATED_GATE_TEMPLATE")
         template=template.replace(key,json.dumps(value))
     result["progression_gate"]={"edited_cells":len(edits),"chase_directional_lanes":len(chase_lanes),
-        "celestic_directional_lanes":len(celestic_lanes),"runtime_verified":False}
+        "celestic_directional_lanes":len(celestic_lanes),"model_verified":True,"runtime_verified":False}
     plugin=(root/"scripts/regions/SinnohF12D3Transaction.rb").read_bytes()+b"\n"+template.encode("utf-8")
     if pbs:
         name="PBS/trainers_sinnoh_f12d_integrated.txt"
@@ -222,7 +240,7 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
     out.update(sprites)
     delta={k:v for k,v in out.items() if blobs.get(k)!=v}
     result.update(status="F12D_INTEGRATED_GAMEPLAY_FIXTURE",mission_prepared=True,locations=locations,
-        lake_payloads=lake_ready,new_events=len(locations),geometry_delta_count=len(prepared["edits"]),
+        lake_payloads=lake_ready,new_events=len(locations),new_seams=len(prepared["connections"])+1,geometry_delta_count=len(prepared["edits"]),
         closed_cells=len(closed),reopened_cells=len(restored),requires_local_engine=True,
         requires_pre_chase_seam_gate=True,reason="local_engine_and_progression_activation_pending",
         payload_hashes={k:hashlib.sha256(v).hexdigest() for k,v in delta.items()})
@@ -277,10 +295,22 @@ def local_engine(base):
             "local_engine_native_verified":False,"plugin_overrides_verified":False,
             "source_scripts_executed":False,"reason":type(exc).__name__}
 
-def installer_preflight(blobs,mapping,components,cr,base,root,source):
-    """Called by the isolated installer after F12D2. Only stage bytes, never
-    publish an unproved corridor or mutate an existing save. The next native
-    binding must use the exact proof and validate the runtime movement hooks."""
+def activation_allowed(story,delta,plugin,engine,item):
+    expected={"CYNTHIA","PSYDUCK_1","PSYDUCK_2","PSYDUCK_3","PSYDUCK_4"}
+    return bool(story.get("status")=="F12D_INTEGRATED_GAMEPLAY_FIXTURE" and story.get("mission_prepared") is True
+        and story.get("progression_gate",{}).get("model_verified") is True
+        and {row.get("symbol") for row in story.get("pre_chase_graph_checks",[])}==
+            {"SINNOH_TWINLEAF_TOWN","SINNOH_PASTORIA_CITY","SINNOH_VALOR_LAKEFRONT"}
+        and story.get("new_maps")==0 and story.get("new_portals")==0
+        and expected<=set(story.get("locations",{}))
+        and engine.get("reference_match") is True
+        and (item.get("local_catalog_valid") is True or item.get("authored_candidate") is True)
+        and delta and plugin and story.get("payload_hashes")=={k:hashlib.sha256(v).hexdigest() for k,v in delta.items()})
+
+def installer_preflight(blobs,mapping,components,cr,base,root,source,staged=None):
+    """Generate a private copy candidate only after model and local preflight.
+    Native compilation must still verify the actual item, terrain and teams."""
+    if staged is not None:staged.clear()
     result={"status":"F12D_INTEGRATED_INSTALLER_PREFLIGHT","runtime_install_enabled":False,
         "native_verified":False,"candidate_ready":False,"new_maps":0,"new_portals":0,
         "engine":local_engine(base),"item_catalogue":item_catalogue.audit(base)}
@@ -314,10 +344,17 @@ def installer_preflight(blobs,mapping,components,cr,base,root,source):
             reason=story.get("reason"),candidate_ready=bool(delta and plugin),
             payload_hashes=story.get("payload_hashes",{}),authored_sprite_hashes=story["authored_sprite_hashes"])
         if delta and plugin:
+            eligible=activation_allowed(story,delta,plugin,result["engine"],item_report)
             delta.update(item_delta)
             result["payload_hashes"]={k:hashlib.sha256(v).hexdigest() for k,v in delta.items()}
             result["candidate_plugin_sha256"]=hashlib.sha256(plugin).hexdigest()
             result["reason"]="runtime_movement_binding_and_native_compatibility_pending"
+            if staged is not None and eligible:
+                allowed={"PBS/map_connections.txt","Data/map_connections.dat","PBS/trainers_sinnoh_f12d_integrated.txt",item_catalogue.FRAGMENT}|set(assets.build())|{"Data/Map%03d.rxdata"%m for m in mapping.values()}
+                if set(delta)-allowed:raise ValueError("F12D_INTEGRATED_UNEXPECTED_DELTA")
+                out={**blobs,**delta};chase.validate(out,mapping)
+                staged.update(maps=out,plugin=plugin)
+                result.update(runtime_install_enabled=True,new_events=story["new_events"],new_seams=story["new_seams"],locations=story["locations"],status="F12D_INTEGRATED_PRIVATE_COPY_PREPARED",reason="native_compilation_and_qa_pending")
         return result
     except (OSError,ValueError,TypeError,KeyError,UnicodeError) as exc:
         return {**result,"reason":"preflight_failed:"+type(exc).__name__}

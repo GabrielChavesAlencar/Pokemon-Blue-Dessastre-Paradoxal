@@ -122,12 +122,13 @@ def closure(edges,seeds):
             if node not in seen:seen.add(node);todo.append(node)
     return seen
 
-def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=False,seed_cells=None,strict_movement=False,rock_cells=(),valor_rock=()):
+def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=False,seed_cells=None,strict_movement=False,rock_cells=(),valor_rock=(),blocked_cells=(),blocked_lanes=()):
     reverse={mid:sym for sym,mid in mapping.items()}
     tiles=conn.read_marshal(blobs["Data/Tilesets.rxdata"],"F10B7_QA_TILES")
     worlds={mid:conn.read_marshal(blobs["Data/Map%03d.rxdata"%mid],"F10B7_QA") for mid in reverse}
     index={};groups={};free={};passages={}
-    rock_cells=set(rock_cells);valor_rock=dict(valor_rock)
+    rock_cells=set(rock_cells);valor_rock=dict(valor_rock);blocked_cells=set(blocked_cells);blocked_lanes=set(blocked_lanes)
+    if (blocked_cells or blocked_lanes) and (not directional or not strict_movement):raise ValueError("F12D_GATE_GRAPH_SCOPE")
     if valor_rock and (not directional or not strict_movement or any(reverse.get(m)!="SINNOH_VALOR_CAVERN" for m,x,y in valor_rock)):
         raise ValueError("F12D_VALOR_ROCK_SCOPE")
     rock_symbols={"SINNOH_ROUTE_210","SINNOH_SOLACEON_TOWN","SINNOH_ROUTE_209","SINNOH_ROUTE_210_SEGMENT_2","SINNOH_HEARTHOME_CITY","SINNOH_F07_INTERIOR_125","SINNOH_ROUTE_215","SINNOH_VEILSTONE_CITY","SINNOH_ROUTE_214","SINNOH_VALOR_LAKEFRONT","SINNOH_ROUTE_213","SINNOH_PASTORIA_CITY","SINNOH_ROUTE_212","SINNOH_ROUTE_212_SEGMENT_2"}
@@ -165,6 +166,8 @@ def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=Fal
                     struct.unpack_from("<H",ts["@priorities"].data,20+2*k)[0]!=0 for k in stack if k):
                     raise ValueError("F12D_VALOR_ROCK_CHANGED")
                 passages[mid][x,y]=0
+            for m,x,y in blocked_cells:
+                if m==mid:passages[mid].pop((x,y),None)
             free[mid]=set(passages[mid])-occupied
             index[mid],groups[mid]=index_components(free[mid],passages[mid])
         else:
@@ -212,7 +215,7 @@ def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=Fal
                 y=(j,0 if dd=="N" else dh-1) if dd in ("N","S") else (0 if dd=="W" else dw-1,j)
                 if directional and (x not in passages[src] or y not in passages[dst] or
                     passages[src][x]&EDGE_BITS[sd] or passages[dst][y]&EDGE_BITS[dd]):continue
-                add(node(src,x),node(dst,y),"existing_continuous_edge")
+                if (src,*x,dst,*y) not in blocked_lanes:add(node(src,x),node(dst,y),"existing_continuous_edge")
     reached=closure(edges,seeds)
     return worlds,tiles,index,groups,reached,{"seed_components":len(seeds),"reachable_components":len(reached),"edge_counts":dict(counts),**({"movement_model":"BOTH_DIRECTION_BITS_CONSERVATIVE"} if directional else {})}
 

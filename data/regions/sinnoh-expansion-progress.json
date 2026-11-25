@@ -1688,7 +1688,9 @@
       "f12d_integrated_local_item_missing": true,
       "f12d_integrated_authorial_item_preparation": true,
       "f12d_integrated_player_method_receipts": 14,
-      "f12d_integrated_valor_rock_reference_implemented": true
+      "f12d_integrated_valor_rock_reference_implemented": true,
+      "f12d_integrated_gate_model_proof_implemented": true,
+      "f12d_integrated_conditional_private_installer_binding": true
     },
     {
       "id": "F13",

@@ -35,6 +35,7 @@ module BlueSinnohF12DIntegrated
     raise "Sinnoh F12D3: terreno Rock incompatível" unless rock_reference_valid?
     raise "Sinnoh F12D3: item regional invalido" unless T.compiled_item_valid?
     raise "Sinnoh F12D lagos: equipes invalidas" unless SPECS.values.all? { |spec| BlueSinnohF10B.valid_team?(spec) }
+    raise "Sinnoh F12D: hooks ausentes" unless Game_Event.ancestors.include?(BarrierPages) && Game_Player.ancestors.include?(ProgressionMovement)
     true
   end
   def self.near?(key)

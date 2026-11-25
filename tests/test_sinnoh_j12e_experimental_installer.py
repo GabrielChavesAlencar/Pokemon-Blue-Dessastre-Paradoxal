@@ -3472,6 +3472,23 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertEqual(n.SYMBOLS[123],"SINNOH_HEARTHOME_CITY")
         self.assertNotIn(22,n.SYMBOLS)
 
+    def test_f12d_integrated_activation_requires_all_proofs(self):
+        import hashlib
+        import sinnoh_f12d_integrated as i
+        payload={"Data/Map473.rxdata":b"fixture"}
+        story={"status":"F12D_INTEGRATED_GAMEPLAY_FIXTURE","mission_prepared":True,
+            "new_maps":0,"new_portals":0,"progression_gate":{"model_verified":True},
+            "pre_chase_graph_checks":[{"symbol":s} for s in ("SINNOH_TWINLEAF_TOWN","SINNOH_PASTORIA_CITY","SINNOH_VALOR_LAKEFRONT")],
+            "locations":{k:{} for k in ("CYNTHIA","PSYDUCK_1","PSYDUCK_2","PSYDUCK_3","PSYDUCK_4")},
+            "payload_hashes":{k:hashlib.sha256(v).hexdigest() for k,v in payload.items()}}
+        engine={"reference_match":True};item={"local_catalog_valid":True}
+        self.assertTrue(i.activation_allowed(story,payload,b"ruby",engine,item))
+        self.assertTrue(i.activation_allowed(story,payload,b"ruby",engine,{"authored_candidate":True}))
+        self.assertFalse(i.activation_allowed(story,payload,b"ruby",{},item))
+        self.assertFalse(i.activation_allowed(story,payload,b"ruby",engine,{}))
+        self.assertFalse(i.activation_allowed(story,{"Data/Map473.rxdata":b"tampered"},b"ruby",engine,item))
+        self.assertFalse(i.activation_allowed(dict(story,pre_chase_graph_checks=[]),payload,b"ruby",engine,item))
+
     def test_f12d_integrated_missing_item_and_player_methods(self):
         import tempfile
         import hashlib
