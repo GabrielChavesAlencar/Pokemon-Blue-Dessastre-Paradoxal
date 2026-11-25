@@ -1,0 +1,3 @@
+# F12D3 authorial Psyduck barrier candidate
+
+Separate candidate from #327; no merge or installer activation. Tests source 116 group coordinates only as an authorial hypothesis, with a connection-only candidate and strict world graph. Four inert occupancy witnesses in a temporary copy must cut genuinely traversable ground, preserve previously reachable cells and all other maps, avoid protected portal landings and leave an interaction stand. Rejects alternate access/bypass. No original identity claimed, no sprites or events installed. Unit regression added, not run yet. Requires real linked Route210 before a positive cut can be reported. Does not alter save files or balance.

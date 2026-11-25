@@ -1554,6 +1554,12 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                             self.assertEqual(set(candidate),set(chased))
                             self.assertTrue(all(candidate[k]==v for k,v in chased.items() if k not in ("PBS/map_connections.txt","Data/map_connections.dat")))
                         print("SINNOH_F12D3_ROUTE210_RECOVERY_REPORT "+json.dumps(rr,sort_keys=True),flush=True)
+                        import sinnoh_f12d3_psyduck_barrier as barrier
+                        br=barrier.inspect(chased,candidate,expanded,expanded_comps,cr,ROOT)
+                        self.assertEqual(br["new_events"],0)
+                        self.assertFalse(br["native_verified"])
+                        self.assertEqual(chased,snapshot)
+                        print("SINNOH_F12D3_PSYDUCK_BARRIER_REPORT "+json.dumps(br,sort_keys=True),flush=True)
                         import sinnoh_f12d3_authored_offset as offset
                         off=offset.inspect(chased,expanded,expanded_comps,cr,ext,Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]),ROOT)
                         self.assertEqual(off["new_seams"],0)
@@ -3303,6 +3309,17 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertTrue(rows[1]["reaches_segment2"])
         self.assertEqual(rows[1]["offset_east"],5)
         self.assertEqual(a.offset_rows({}, {2:0},{}),[])
+
+    def test_f12d3_barrier_cut_rejects_bypass_and_prior_loss(self):
+        import sinnoh_f12d3_psyduck_barrier as b
+        barrier={(473,1,0),(473,2,0),(473,3,0),(473,4,0)}
+        prior={(528,0,0),(473,0,0)}
+        far={(473,5,0)}
+        opened=prior|barrier|far
+        self.assertTrue(b.cut_witness(opened,prior,prior,barrier,473))
+        self.assertFalse(b.cut_witness(opened,prior|far,prior,barrier,473))
+        self.assertFalse(b.cut_witness(opened,{(528,0,0)},prior,barrier,473))
+        self.assertFalse(b.cut_witness(opened|{(472,1,1)},prior,prior,barrier,473))
 
     def test_f12d3_topology_is_not_walk_witness(self):
         import sinnoh_f12d3_expanded_evidence as f
