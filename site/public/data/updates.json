@@ -2,9 +2,27 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bfa9a4e8bb94bb18747451a73f394131ebcafe62",
+      "date": "2026-11-24T21:48:50-03:00",
+      "title": "Merge pull request #300 from GabrielChavesAlencar/sinnoh-full-expansion-f10b7-field-gate-audit",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "bd04f82c7747c649d85e50b42cd71350f9066bef",
+      "date": "2026-11-24T21:41:18-03:00",
+      "title": "Revalidate unchanged F10B7 tree against main after #299 merge; real source job 138875575915 passed",
+      "category": "Melhorias"
+    },
+    {
       "sha": "822a013dc94b7c234dc4394b01d801e668e53348",
       "date": "2026-11-24T21:40:46-03:00",
       "title": "Merge pull request #299 from GabrielChavesAlencar/sinnoh-full-expansion-f10b6-kath-authored-sprite",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "5742046845613b54ee421eb240da8dbc9fb29831",
+      "date": "2026-11-24T21:09:14-03:00",
+      "title": "Sinnoh F10B7: audit six remaining field gates and multi-hop ordinary access",
       "category": "Melhorias"
     },
     {
