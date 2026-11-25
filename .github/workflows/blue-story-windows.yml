@@ -59,7 +59,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: blue-story-windows
+  group: blue-story-windows-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: false
 
 jobs:
