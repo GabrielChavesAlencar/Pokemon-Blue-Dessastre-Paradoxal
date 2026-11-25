@@ -282,3 +282,8 @@ F11D integrada em a8c3ede9193a89034ff8f7d343198e411b1360ac (11 workflows/26 chec
 Sexto desafio em Canalave, sala autoral temática Aço. Contrato CH15/S15: Magneton/Steelix/Bastiodon (37/38/41 históricos), não níveis fixos em runtime. Requer COAL, FOREST, RELIC, COBBLE e FEN; MINE somente após vitória confirmada. Não concede HM04 nem ativa Strength ou outras habilidades de campo. Geração sequencial, MapID livre, dois portais seguros, sprite exato ou autoral sem ambiguidade. Meta: 137 mapas, 85 portais, seis ginásios, preservação integral do baseline anterior. CI e catálogo local pendentes; QA nativa não executada.
 
 F11F job real 138912475363 HEAD 3af0c5a9bdfbc359b2b35a6f82ceb3aa4cef7a08 confirmou 137 mapas, 85 portais, seis salas, Map578, guia evento 2001 em Canalave Map458 [27,29] retorno [27,28]. Sprite autoral SHA-256 279e2fc9f03b3de652aa6b0f982d6ef2f17ab116c37879ba37fa4c87c344f6af. Catálogo fixture, sem compilação ou QA nativa. CI na main pendente.
+
+
+### F11G — Candice
+
+Sétimo desafio em Snowpoint, sala autoral temática Gelo, sem simular o puzzle original nem alterar terreno ou regras de campo. Contrato CH15/S15: Sneasel/Piloswine/Abomasnow/Froslass (40/40/42/44 históricos, não níveis fixos em runtime). Requer COAL, FOREST, RELIC, COBBLE, FEN e MINE; ICICLE somente após vitória confirmada. Não concede HM08 nem ativa Rock Climb. Geração sequencial, MapID livre, dois portais seguros, sprite exato ou autoral sem ambiguidade. Meta: 138 mapas, 87 portais, sete ginásios e preservação integral do baseline anterior. CI e catálogo local pendentes; QA nativa não executada.

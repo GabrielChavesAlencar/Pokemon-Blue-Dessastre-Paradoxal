@@ -391,7 +391,7 @@
       "id": "F11",
       "title": "Oito ginásios e insígnias",
       "status": "implementation_pending_ci",
-      "followup": "F11F_PENDING_MAIN_CI",
+      "followup": "F11G_PENDING_CI",
       "gym_count": 8,
       "gym_rooms_confirmed": 6,
       "gym_leaders_confirmed": 6,
@@ -423,8 +423,8 @@
         "SINNOH_ETERNA_GYM": 574,
         "SINNOH_HEARTHOME_GYM": 575,
         "SINNOH_VEILSTONE_GYM": 576,
-        "Crasher Wake": 577,
-        "Byron": 578
+        "SINNOH_PASTORIA_GYM": 577,
+        "SINNOH_CANALAVE_GYM": 578
       },
       "species_and_types_validation": "REFERENCE_FIXTURE_NOT_LOCAL_DATABASE",
       "f11c_candidate": "Fantina",
@@ -488,7 +488,18 @@
       "f11f_fixture_maps": 137,
       "f11f_fixture_portals": 85,
       "f11f_real_head": "3af0c5a9bdfbc359b2b35a6f82ceb3aa4cef7a08",
-      "f11f_real_job": 138912475363
+      "f11f_real_job": 138912475363,
+      "f11g_candidate": "Candice",
+      "f11g_prerequisites": [
+        "COAL",
+        "FOREST",
+        "RELIC",
+        "COBBLE",
+        "FEN",
+        "MINE"
+      ],
+      "f11g_fixture_rooms": 0,
+      "f11g_native_verified": false
     },
     {
       "id": "F12",
@@ -804,7 +815,7 @@
   },
   "f11": {
     "status": "implementation_pending_ci",
-    "followup": "F11F_PENDING_MAIN_CI",
+    "followup": "F11G_PENDING_CI",
     "gym_count": 8,
     "gym_rooms_confirmed": 6,
     "gym_leaders_confirmed": 6,
@@ -836,8 +847,8 @@
       "SINNOH_ETERNA_GYM": 574,
       "SINNOH_HEARTHOME_GYM": 575,
       "SINNOH_VEILSTONE_GYM": 576,
-      "Crasher Wake": 577,
-      "Byron": 578
+      "SINNOH_PASTORIA_GYM": 577,
+      "SINNOH_CANALAVE_GYM": 578
     },
     "species_and_types_validation": "REFERENCE_FIXTURE_NOT_LOCAL_DATABASE",
     "f11c_candidate": "Fantina",
@@ -901,6 +912,17 @@
     "f11f_fixture_maps": 137,
     "f11f_fixture_portals": 85,
     "f11f_real_head": "3af0c5a9bdfbc359b2b35a6f82ceb3aa4cef7a08",
-    "f11f_real_job": 138912475363
+    "f11f_real_job": 138912475363,
+    "f11g_candidate": "Candice",
+    "f11g_prerequisites": [
+      "COAL",
+      "FOREST",
+      "RELIC",
+      "COBBLE",
+      "FEN",
+      "MINE"
+    ],
+    "f11g_fixture_rooms": 0,
+    "f11g_native_verified": false
   }
 }
