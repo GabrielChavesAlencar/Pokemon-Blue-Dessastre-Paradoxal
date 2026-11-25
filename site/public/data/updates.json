@@ -2,9 +2,27 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "31709a5c044142bccf6127db743f1d658721b14b",
+      "date": "2026-11-24T22:23:00-03:00",
+      "title": "Merge pull request #304 from GabrielChavesAlencar/sinnoh-full-expansion-f11b-gardenia",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "fc4e71d5e3817398c23deabafd573637cb2754a9",
+      "date": "2026-11-24T22:16:41-03:00",
+      "title": "Record two verified gym fixture rooms and trigger full main-target CI",
+      "category": "Melhorias"
+    },
+    {
       "sha": "b93c79734fa51867ce681a6eaf2b0e10d40c1556",
       "date": "2026-11-24T22:16:18-03:00",
       "title": "Merge pull request #303 from GabrielChavesAlencar/sinnoh-full-expansion-f11a-roark-gym",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "467d51a6c3e0f484d420418e249bcea9ec1ad106",
+      "date": "2026-11-24T22:07:02-03:00",
+      "title": "Sinnoh F11A2 and F11B: authored leader fallback and sequential Gardenia gym",
       "category": "Melhorias"
     },
     {
