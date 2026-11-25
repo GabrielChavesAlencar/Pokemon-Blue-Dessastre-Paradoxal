@@ -48,6 +48,7 @@ import sinnoh_f09c_refinement as f09c_refinement
 import sinnoh_f09d_relative as f09d_relative
 import sinnoh_f10b_trainers as f10b_trainers
 import sinnoh_f10b7_field_audit as f10b7_field_audit
+import sinnoh_f10c_npcs as f10c_npcs
 from audit_sinnoh_rxdata import read_marshal
 from audit_sinnoh_twinleaf_events import MAPS,HANDLERS as CH06_HANDLERS,BALLS as CH06_BALLS
 from build_sinnoh_twinleaf_events import HANDLERS as SCRIPT_HANDLERS
@@ -641,7 +642,7 @@ end
     code=code.replace("__PLATINUM_PLAYER__",player_code)
     return code.encode("utf-8")
 
-def compatible_save_token(project,mapping,base_hash,generated_maps=None,previous_maps=None,intermediate_maps=None,refined_maps=None,pre_f10b_maps=None,f10b2_maps=None,f10b3_maps=None,f10b4_maps=None,f10b5_maps=None,f10b6_maps=None):
+def compatible_save_token(project,mapping,base_hash,generated_maps=None,previous_maps=None,intermediate_maps=None,refined_maps=None,pre_f10b_maps=None,f10b2_maps=None,f10b3_maps=None,f10b4_maps=None,f10b5_maps=None,f10b6_maps=None,f10b8_maps=None):
     # Read manifests/config only; never enumerate or open save files.
     work=safe_path(project/REPO_OUTPUT)
     candidates=[]
@@ -672,10 +673,10 @@ def compatible_save_token(project,mapping,base_hash,generated_maps=None,previous
                         all(mapping.get(k)==v for k,v in prior.items())):continue
                 hashes=data.get("file_sha256",{})
                 if not isinstance(hashes,dict):continue
-                if not any(all(hashes.get(f"Data/Map{mid:03d}.rxdata")==sha(candidate.get(f"Data/Map{mid:03d}.rxdata",b"")) for mid in prior.values()) for candidate in (generated_maps,previous_maps,intermediate_maps,refined_maps,pre_f10b_maps,f10b2_maps,f10b3_maps,f10b4_maps,f10b5_maps,f10b6_maps) if candidate):continue
+                if not any(all(hashes.get(f"Data/Map{mid:03d}.rxdata")==sha(candidate.get(f"Data/Map{mid:03d}.rxdata",b"")) for mid in prior.values()) for candidate in (generated_maps,previous_maps,intermediate_maps,refined_maps,pre_f10b_maps,f10b2_maps,f10b3_maps,f10b4_maps,f10b5_maps,f10b6_maps,f10b8_maps) if candidate):continue
             elif set(mapping) in (interior_expansion.ALL,f08c_expansion.ALL):
                 hashes=data.get("file_sha256",{})
-                if not isinstance(hashes,dict) or not any(all(hashes.get(f"Data/Map{mid:03d}.rxdata")==sha(candidate.get(f"Data/Map{mid:03d}.rxdata",b"")) for mid in mapping.values()) for candidate in (generated_maps,previous_maps,intermediate_maps,refined_maps,pre_f10b_maps,f10b2_maps,f10b3_maps,f10b4_maps,f10b5_maps,f10b6_maps) if candidate):continue
+                if not isinstance(hashes,dict) or not any(all(hashes.get(f"Data/Map{mid:03d}.rxdata")==sha(candidate.get(f"Data/Map{mid:03d}.rxdata",b"")) for mid in mapping.values()) for candidate in (generated_maps,previous_maps,intermediate_maps,refined_maps,pre_f10b_maps,f10b2_maps,f10b3_maps,f10b4_maps,f10b5_maps,f10b6_maps,f10b8_maps) if candidate):continue
             config_path=folder/"mkxp.json";regular(config_path)
             conf=jsonc(config_path.read_text("utf-8-sig"))
             profile=namespace(token)
@@ -741,6 +742,9 @@ def build_files(base:Path,project:Path=ROOT):
     f10b4_maps=None
     f10b5_maps=None
     f10b6_maps=None
+    f10b8_maps=None
+    f10c_report={}
+    f10c_plugin=b""
     encounter_expected={}
     encounter_coverage={}
     route_trainers=[]
@@ -793,6 +797,9 @@ def build_files(base:Path,project:Path=ROOT):
         movement=private_visual.movement_plugin(masks,mapping["SINNOH_ROUTE_202"])
         teleport_entries=qa_teleport.build(maps,mapping,components,project)
         teleport=qa_teleport.plugin(teleport_entries,project)
+        f10b8_maps=maps
+        maps,f10c_report,f10c_plugin=f10c_npcs.build(maps,mapping,masks,components,sources["maps"],base,project)
+        print("SINNOH_F10C_NPC_REPORT "+json.dumps(f10c_report,sort_keys=True),flush=True)
         forest_png,forest_code,forest_report=forest_edge.build(maps,mapping,project,extra_symbols=city_expansion.CITIES|route_expansion.ROUTES|natural_expansion.OUTDOORS|f08c_expansion.EXTERIORS)
         maps[forest_edge.TEXTURE]=forest_png
         story["grass_guard"]=True
@@ -805,7 +812,7 @@ def build_files(base:Path,project:Path=ROOT):
     platinum_dawn=private_visual.has_platinum_player(base,10)
     token=secrets.token_hex(6)
     base_hash=sha((base/"Data/MapInfos.rxdata").read_bytes())
-    save_token=compatible_save_token(project,mapping,base_hash,maps,previous_maps,intermediate_maps,refined_maps,pre_f10b_maps,f10b2_maps,f10b3_maps,f10b4_maps,f10b5_maps,f10b6_maps) or token
+    save_token=compatible_save_token(project,mapping,base_hash,maps,previous_maps,intermediate_maps,refined_maps,pre_f10b_maps,f10b2_maps,f10b3_maps,f10b4_maps,f10b5_maps,f10b6_maps,f10b8_maps) or token
     config,game_ini,profile=runtime_config(base,save_token)
     # This is an isolated copy, never the installed game:
     final=dict(maps)
@@ -824,7 +831,7 @@ def build_files(base:Path,project:Path=ROOT):
         f"{INTRO_PLUGIN}/SinnohPilot.rb":(project/"scripts/regions/SinnohPilot.rb").read_bytes(),
         f"{INTRO_PLUGIN}/meta.txt":b"Name = Blue Sinnoh Intro\nVersion = 0.1\nEssentials = 21.1\nScripts = SinnohPilot.rb\n",
         f"{EXPERIMENT_PLUGIN}/SinnohExperimentalStart.rb":experiment_plugin(
-                  [mapping["SINNOH_PLAYER_BEDROOM"],*start],token,platinum_player,platinum_dawn,story_profile=bool(story))+b"\n"+movement+b"\n"+teleport+b"\n"+forest_code+b"\n"+f10b_plugin,
+                  [mapping["SINNOH_PLAYER_BEDROOM"],*start],token,platinum_player,platinum_dawn,story_profile=bool(story))+b"\n"+movement+b"\n"+teleport+b"\n"+forest_code+b"\n"+f10b_plugin+b"\n"+f10c_plugin,
         f"{EXPERIMENT_PLUGIN}/meta.txt":b"Name = Blue Sinnoh Experimental\nVersion = 0.1\nEssentials = 21.1\nRequires = Blue Sinnoh Intro\nScripts = SinnohExperimentalStart.rb\n",
     })
     sysdata=read_marshal((base/"Data/System.rxdata").read_bytes(),"BASE_SYSTEM")
@@ -841,7 +848,7 @@ def build_files(base:Path,project:Path=ROOT):
     final["Data/sinnoh-experimental-compile-request.txt"]=proof.encode("ascii")
     # These hashes do not claim human rights approval, or native gameplay acceptance.
     report={"schema":1,"region":"SINNOH","mode":MODE,
-        "maps_prepared":len(mapping),"static_events_placed":len(events)+story.get("extra_event_count",0)+len(route_trainers)+len(connection_report.get("portals",[]))+len(f08c_report.get("portals",[]))+f10b_report.get("new_trainers",0),
+        "maps_prepared":len(mapping),"static_events_placed":len(events)+story.get("extra_event_count",0)+len(route_trainers)+len(connection_report.get("portals",[]))+len(f08c_report.get("portals",[]))+f10b_report.get("new_trainers",0)+f10c_report.get("new_npcs",0),
         "static_warps":16-len(continuity.get("retired_warp_keys",[]))+(3 if story else 0)+len(connection_report.get("portals",[]))+len(f08c_report.get("portals",[])),"native_seam_pairs":sum(not p.get("visual_only") for p in continuity.get("connections",[]))+len(connection_report.get("seams",[])),"static_handlers":5,"static_starter_balls":3,
         "local_reserved_qa_only":True,"independent_r07_approved":False,
         "independent_r08_approved":False,"r09_native_qa_executed":0,
@@ -869,7 +876,7 @@ def build_files(base:Path,project:Path=ROOT):
         "f09b_original_encounters":f09b_report,
         "f09c_refinement":f09c_report,
         "f09d_relative":f09d_report,
-        "f10b_trainers":f10b_report,"f10b7_field_gate_audit":f10b7_report,
+        "f10b_trainers":f10b_report,"f10b7_field_gate_audit":f10b7_report,"f10c_npcs":f10c_report,
         "qa_teleport":{"catalog_count":len(teleport_entries),"available_count":sum(row[3] is not None for row in teleport_entries),"destinations":teleport_entries,"native_verified":False},
         "encounter_coverage":encounter_coverage,"route202_trainers":route_trainers,
         "visual_native_reviewed":False,

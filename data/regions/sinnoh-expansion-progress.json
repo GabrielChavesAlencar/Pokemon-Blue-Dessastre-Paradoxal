@@ -202,7 +202,7 @@
       "id": "F10",
       "title": "Todos os treinadores e NPCs",
       "status": "partially_merged",
-      "followup": "F10C_INDEPENDENT_NPC_IMPLEMENTATION",
+      "followup": "F10C_PENDING_CI",
       "maps_to_audit": 131,
       "source_event_maps_to_audit": 127,
       "new_trainers": 0,
@@ -361,7 +361,12 @@
           "installed": false,
           "native_verified": false
         }
-      ]
+      ],
+      "f10c_dialogue_candidates": 4,
+      "f10c_geometry_candidates": 2,
+      "f10c_new_npcs": 0,
+      "f10c_native_verified": false,
+      "f10c_dialogue_language": "pt-BR"
     },
     {
       "id": "F11",
@@ -497,7 +502,7 @@
   },
   "f10": {
     "status": "partially_merged",
-    "followup": "F10C_INDEPENDENT_NPC_IMPLEMENTATION",
+    "followup": "F10C_PENDING_CI",
     "f10a_pr": 293,
     "f10a_merge_commit": "7302bcc3345dbb8e649b8d8a63498524f6cd9cc5",
     "maps_audited": 131,
@@ -654,6 +659,11 @@
         "installed": false,
         "native_verified": false
       }
-    ]
+    ],
+    "f10c_dialogue_candidates": 4,
+    "f10c_geometry_candidates": 2,
+    "f10c_new_npcs": 0,
+    "f10c_native_verified": false,
+    "f10c_dialogue_language": "pt-BR"
   }
 }

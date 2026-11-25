@@ -228,3 +228,8 @@ Refinamento F10B8: o relatório real F10B7 (job 138875575915) confirmou 12 ident
 
 
 F10B6 integrada em 822a013dc94b7c234dc4394b01d801e668e53348; F10B7 integrada em bfa9a4e8bb94bb18747451a73f394131ebcafe62; ambas 11 workflows/26 checks. F10B8 job 138878282025 confirmou seis preservados e zero novos; Austin, Kevin, Helen, Louis, Alexander e Wyatt permanecem pendências independentes de acesso, sprites, identidade e requisitos de campo, sem liberação artificial. F10C poderá progredir independentemente, sem declarar F10 completa ou QA nativa aprovada. Revalidação integral do #301 na main pendente.
+
+
+### F10C — NPCs e diálogos PT-BR
+
+Implementação independente dos seis treinadores pendentes. F10A encontrou quatro candidatos simples; Rota 207 (fonte 42 evento 28, [24,17]) e interior 081 (fonte 81 evento 2, [5,5]) são candidatos de geometria inicial. F10C reconstrói somente esses dois, condicionados a terreno, acesso existente, não-articulação, reserva de eventos e preservação de todos os spawns/componentes alcançáveis. Diálogos PT-BR autorais, não traduções literais do doador; sprite exato se disponível, caso contrário arte autoral distinta de residente. Não copia scripts ou texto do doador. IDs estáveis >=1000 reservados aos NPCs, sem renumerar treinadores; handler de diálogo isolado sem alterar save, itens ou progresso. Outros dois candidatos (148/4,149/2) continuam pendentes de acesso. Testes Ruby e auditoria real obrigatórios. Preserva hashes de mapas F10B8 para perfil de saves, PBS, mapas e eventos anteriores. Sem aprovação nativa ou contagem de novos NPCs antes da CI.

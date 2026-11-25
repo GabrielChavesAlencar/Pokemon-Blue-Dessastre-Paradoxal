@@ -1,0 +1,147 @@
+"""F10C: append-only, stationary dialogue NPCs in private Sinnoh QA.
+
+Source event shapes and coordinates are verified, but dialogue and fallback
+art are authored for this project. Never execute/copy donor scripts or text.
+"""
+import hashlib
+import json
+import struct
+import zlib
+import sinnoh_connection_expansion as conn
+import sinnoh_f08c_expansion as f08c
+import sinnoh_f10a_inventory as inv
+import sinnoh_f10b_trainers as trainers
+import sinnoh_f10b7_field_audit as gates
+import sinnoh_private_visual as pv
+import sinnoh_qa_teleport as teleport
+from build_johto_events import EVENT_CLASSES,ruby,event_page
+from stage import serialize
+
+# Source keys, exact original cells, project-authored contextual messages.
+SPECS={
+    (42,28):("SINNOH_ROUTE_207",(24,17),"route_resident",
+             ["Esta é a Rota 207. As montanhas de Sinnoh têm caminhos bem diferentes.",
+              "Observe o terreno antes de seguir. Nem toda passagem pode ser atravessada a pé."]),
+    (81,2):("SINNOH_F07_INTERIOR_081",(5,5),"interior_resident",
+            ["Olá, viajante! Já conheceu os arredores de Sinnoh?",
+             "Cuide dos seus Pokémon e explore com calma. Cada lugar tem algo novo para descobrir."]),
+}
+PENDING={(148,4):(13,7),(149,2):(12,7)}
+
+def authored_sheet(role):
+    # Two distinct, neutral resident designs, no donor image or likeness.
+    palettes={"route_resident":((71,103,142),(200,146,71),(77,60,47)),
+              "interior_resident":((139,87,118),(105,151,119),(84,51,35))}
+    shirt,accent,hair=palettes[role]
+    w=h=128;raw=bytearray(w*h*4);ink=(42,44,52);skin=(222,178,138)
+    for direction in range(4):
+        for frame in range(4):
+            sx,sy=frame*32,direction*32;bob=frame%2
+            def rect(x0,y0,x1,y1,color):
+                for y in range(y0,y1):
+                    for x in range(x0,x1):
+                        i=((sy+y)*w+sx+x)*4
+                        raw[i:i+4]=bytes((*color,255))
+            rect(9,4+bob,23,16+bob,ink);rect(10,5+bob,22,15+bob,hair)
+            if direction!=3:
+                rect(11,9+bob,21,15+bob,skin)
+                if direction in (0,1):rect(12,11+bob,14,13+bob,ink)
+                if direction in (0,2):rect(18,11+bob,20,13+bob,ink)
+            rect(9,16+bob,23,26+bob,ink);rect(10,17+bob,22,25+bob,shirt)
+            x=(10,10,19,13)[direction];rect(x,17+bob,x+3,24+bob,accent)
+            stride=(0,1,0,-1)[frame]
+            for x,dy in ((11,stride),(17,-stride)):
+                rect(x,25,x+4,29+dy,(69,73,88));rect(x-1,28+dy,x+5,30+dy,ink)
+    def chunk(tag,data):
+        return struct.pack(">I",len(data))+tag+data+struct.pack(">I",zlib.crc32(tag+data)&0xffffffff)
+    scan=b"".join(b"\x00"+raw[y*w*4:(y+1)*w*4] for y in range(h))
+    return b"\x89PNG\r\n\x1a\n"+chunk(b"IHDR",struct.pack(">IIBBBBB",w,h,8,6,0,0,0))+chunk(b"IDAT",zlib.compress(scan,9))+chunk(b"IEND",b"")
+
+def dialogue_shape(event):
+    shape=inv.classify(event)
+    if shape["kind"]!="simple_dialogue_candidate":return False
+    page=event.attrs["@pages"][0].attrs
+    codes=[c.attrs.get("@code") for c in page["@list"]]
+    return bool(codes and codes[-1]==0 and codes.count(0)==1 and 101 in codes and
+                all(c in (0,101,401,108,408) for c in codes) and
+                len(trainers.sprite_names(event))==1)
+
+def safe_cell(points,xy,reserved,occupied):
+    if xy in occupied or any(abs(x-xy[0])+abs(y-xy[1])<=1 for x,y in reserved):return False
+    if any(abs(x-xy[0])+abs(y-xy[1])<=1 for x,y in occupied):return False
+    return trainers.non_cut(points-occupied,xy)
+
+def build(blobs,mapping,masks,components,path,base=None,root=trainers.ROOT):
+    if len(mapping)!=131 or len(set(mapping.values()))!=131:raise ValueError("F10C_MAPIDS")
+    source,_,_=conn.graph(root);source={**source,**{r["source_id"]:r for r in f08c.rows(root)}}
+    report=inv.audit(blobs,mapping,masks,components,path,root)
+    queue={(q["source_id"],q["source_event_id"]):q for q in report["queue"] if q["kind"]=="simple_dialogue_candidate"}
+    if set(queue)!=set(SPECS)|set(PENDING):raise ValueError("F10C_DIALOGUE_INVENTORY_CHANGED")
+    entries=teleport.build(blobs,mapping,components,root)
+    reserved={tuple(row[3]) for row in entries if row[3]}
+    worlds={mid:conn.read_marshal(blobs["Data/Map%03d.rxdata"%mid],"F10C_QA") for mid in mapping.values()}
+    for world in worlds.values():
+        for e in world.attrs["@events"].values():
+            for p in e.attrs["@pages"]:
+                for c in p.attrs["@list"]:
+                    args=c.attrs.get("@parameters",[])
+                    if c.attrs.get("@code")==201 and len(args)==6 and args[0]==0 and all(type(v) is int for v in args):
+                        reserved.add(tuple(args[1:4]))
+    out=dict(blobs);rows=[];accepted=[];rejected=[]
+    with pv.verified_archive(path,"maps") as z:
+        for key,q in sorted(queue.items()):
+            sid,eid=key;mid=q["qa_map_id"];xy=tuple(q["position"])
+            row={"source_id":sid,"source_event_id":eid,"map_id":mid,"position":list(xy)}
+            if key not in SPECS:
+                if xy!=PENDING[key]:raise ValueError("F10C_PENDING_POSITION")
+                rejected.append({**row,"reason":"outside_original_approved_component"});continue
+            sym,expected,role,messages=SPECS[key]
+            if q["symbol"]!=sym or xy!=expected:raise ValueError("F10C_PIN_CHANGED")
+            raw=pv.member(z,pv.MAP_ROOT+"Data/Map%03d.rxdata"%sid)
+            if hashlib.sha256(raw).hexdigest()!=source[sid]["sha256"]:raise ValueError("F10C_SOURCE_HASH")
+            donor=conn.read_marshal(raw,"F10C_DONOR").attrs["@events"][eid]
+            if not dialogue_shape(donor):
+                rejected.append({**row,"reason":"source_not_simple_dialogue"});continue
+            if q["geometry_blockers"]:
+                rejected.append({**row,"reason":"source_geometry_blocked","blockers":q["geometry_blockers"]});continue
+            world=worlds[mid];events=world.attrs["@events"]
+            occupied={(e.attrs["@x"],e.attrs["@y"]) for e in events.values()}
+            tiles=conn.read_marshal(out["Data/Tilesets.rxdata"],"F10C_TILES")
+            plain=conn.safe_cells(world,tiles,sym,allowed={0})
+            points=conn.safe_cells(world,tiles,sym,allowed={0,2})&components[sym]
+            if xy not in plain or not safe_cell(points,xy,{(x,y) for m,x,y in reserved if m==mid},occupied):
+                rejected.append({**row,"reason":"unsafe_or_reserved_cell"});continue
+            _,_,index,_,reached,_=gates.access_graph(out,mapping,components,root,directional=True)
+            label=index[mid].get(xy)
+            if label is None or (mid,label) not in reached:
+                rejected.append({**row,"reason":"no_existing_safe_access"});continue
+            before=trainers.reached_cells(index,reached)-{(mid,*xy)}
+            data=trainers.sprite(z,donor,base)
+            provenance="EXACT_DONOR_OR_LOCAL_SHEET" if data else "PROJECT_AUTHORED_RESIDENT_NOT_DONOR"
+            if not data:data=authored_sheet(role)
+            event_id=max(events,default=0)+1
+            # Reserve slots 1..6 for future F10B additions, independently of
+            # current trainer count. Existing IDs are never reassigned.
+            event_id=max(event_id,1000+eid)
+            if event_id in events:raise ValueError("F10C_EVENT_ID_COLLISION")
+            k="F10C_%d_%d"%key;sn="SNQA_"+k
+            page=event_page(script='BlueSinnohF10C.talk("%s")'%k,sprite=sn)
+            events[event_id]=ruby("RPG::Event",id=event_id,name=("SN_"+k).encode("ascii"),x=xy[0],y=xy[1],pages=[page])
+            rel="Data/Map%03d.rxdata"%mid;trial=dict(out);trial[rel]=serialize(world,EVENT_CLASSES)
+            try:
+                _,_,after_index,_,after_reached,_=gates.access_graph(trial,mapping,components,root,directional=True)
+                safe=before<=trainers.reached_cells(after_index,after_reached) and teleport.build(trial,mapping,components,root)==entries
+            except ValueError:safe=False
+            if not safe:
+                del events[event_id];rejected.append({**row,"reason":"existing_access_or_spawn_changed"});continue
+            out=trial;out["Graphics/Characters/"+sn+".png"]=data
+            rows.append([k,[mid,event_id,messages]])
+            accepted.append({**row,"key":k,"event_id":event_id,"role":role,"sprite_provenance":provenance,
+                             "sprite_sha256":hashlib.sha256(data).hexdigest(),"dialogue_language":"pt-BR",
+                             "dialogue_provenance":"PROJECT_AUTHORED_NOT_TRANSLATED_DONOR","message_count":len(messages)})
+    template=(root/"scripts/regions/SinnohF10C.rb").read_text("utf-8")
+    if template.count("__F10C_ROWS__")!=1:raise ValueError("F10C_TEMPLATE")
+    plugin=template.replace("__F10C_ROWS__",json.dumps(rows,ensure_ascii=False)).encode("utf-8")
+    return out,{"maps_audited":131,"source_candidates":len(queue),"accepted":accepted,"rejected":rejected,
+                "new_npcs":len(accepted),"native_verified":False,"source_scripts_executed":False,
+                "source_dialogue_copied":False,"saves_accessed":False,"water_enabled":False},plugin
