@@ -40,7 +40,7 @@ def cuts(cells,ingress,exit_cells,eligible):
             result.append((len(cells-reached-line),tuple(sorted(line))))
     return sorted(result,key=lambda p:(p[0],p[1]))
 
-def inspect(baseline,direct,mapping,components,chase_report,expanded,alternative,root,recovered_alternative=None,source_protected=(),rock_cells=()):
+def inspect(baseline,direct,mapping,components,chase_report,expanded,alternative,root,recovered_alternative=None,source_protected=(),rock_cells=(),prepared=None):
     chase.validate(baseline,mapping);before=chase.digest(baseline)
     direct_hash=chase.digest(direct)
     if expanded.get("input_hashes")!=before or not chase_report.get("runtime_install_enabled"):
@@ -125,7 +125,7 @@ def inspect(baseline,direct,mapping,components,chase_report,expanded,alternative
         ranked=cuts(cells,ingress,exit_xy,eligible)
         case["local_candidate_count"]=len(ranked);case["ingress_cells"]=[list(x) for x in sorted(ingress)]
         rel="Data/Map%03d.rxdata"%mid
-        for _,line in ranked[:LIMIT]:
+        for _,line in (ranked if prepared is not None else ranked[:LIMIT]):
             case["tested"]+=1;copy=conn.read_marshal(with_exit[rel],"F12D3_CUT_TRIAL")
             events=copy.attrs["@events"];start=max(max(events,default=0)+1,3001)
             for i,(x,y) in enumerate(line):
@@ -148,6 +148,7 @@ def inspect(baseline,direct,mapping,components,chase_report,expanded,alternative
             case.update(status="AUTHORIAL_EXIT_CUT_FIXTURE_ONLY",positions=[list(x) for x in line],
                 interaction_stands=[list(p[1:]) for p in sorted(stands)],open_cells=len(opened),
                 closed_cells=len(closed),restored_cells=len(opened),source_identity_proven=False)
+            if prepared is not None:prepared.update(open_maps=with_exit,cut_positions=tuple(line),cut_map_id=mid,exit_record=exit_record,exit_cells=tuple(sorted(exit_xy)),interaction_stands=tuple(sorted(p[1:] for p in stands)))
             break
         if case["status"]=="BLOCKED":case["reason"]="no_verified_four_cell_cut"
     if chase.digest(baseline)!=before or chase.digest(direct)!=direct_hash:

@@ -1686,6 +1686,23 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                             self.assertEqual(sum(x["count"] for x in trial["edit_attribution"]),trial["unique_edits"])
                         print("SINNOH_F12D3_ROCK_COST_NETWORK_REPORT "+json.dumps(network,sort_keys=True),flush=True)
                         print("SINNOH_REAL_F12D3_ROCK_COST_NETWORK_AUDITED_OK",flush=True)
+                        import sinnoh_f12d_integrated as integrated
+                        payload,story,plugin=integrated.compile_story(chased,expanded,expanded_comps,cr,ext,onr,Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]),ROOT,{"GALACTIC_ADMIN"},{"GOLBAT","BRONZOR","TOXICROAK","PURUGLY"},{"SECRETPOTION"},set())
+                        self.assertEqual(chased,snapshot)
+                        self.assertFalse(story["runtime_install_enabled"])
+                        self.assertFalse(story["native_verified"])
+                        self.assertEqual(story["new_maps"],0)
+                        self.assertEqual(story["new_portals"],0)
+                        self.assertEqual(set(story["lake_contracts"]),{"VALOR","VERITY","ACUITY"})
+                        self.assertIsNone(story["geometry"]["budget"])
+                        if story["mission_prepared"]:
+                            self.assertEqual(len([k for k in story["locations"] if k.startswith("PSYDUCK_")]),4)
+                            self.assertIn("CYNTHIA",story["locations"])
+                            self.assertTrue(payload and plugin)
+                        else:
+                            self.assertFalse(payload or plugin)
+                        print("SINNOH_F12D_INTEGRATED_GAMEPLAY_REPORT "+json.dumps(story,sort_keys=True),flush=True)
+                        print("SINNOH_REAL_F12D_INTEGRATED_GAMEPLAY_CHECKED_OK",flush=True)
                         print("SINNOH_REAL_F12D3_GATED_ALIGNMENT_EVIDENCE_PRESERVED_OK",flush=True)
                         print("SINNOH_REAL_F12D3_ROUTE210_RECOVERY_EVIDENCE_PRESERVED_OK",flush=True)
                     else:
@@ -3454,6 +3471,26 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertNotIn(c,d)
         self.assertEqual(n.SYMBOLS[123],"SINNOH_HEARTHOME_CITY")
         self.assertNotIn(22,n.SYMBOLS)
+
+    def test_f12d_integrated_authorial_paths_and_lake_contracts(self):
+        import sinnoh_f12d3_canonical_network as n
+        import sinnoh_f12d_integrated as i
+        a=(80,1,1);b=(80,2,1);c=(80,3,1);d=(80,2,2)
+        parents={b:(a,(),"local"),c:(b,(),"local"),d:(b,(),"local")}
+        plan=n.authorial_path_plan({c,d},parents,lambda p:int(p==b),lambda p:True)
+        self.assertEqual(plan[2],{b})
+        self.assertIsNone(n.authorial_path_plan({c,d},parents,lambda p:int(p==b),lambda p:False))
+        types={"GALACTIC_ADMIN"};species={"GOLBAT","BRONZOR","TOXICROAK","PURUGLY"}
+        self.assertEqual(i.lake_contract("VALOR",types,species,set())["name"],"Saturn")
+        self.assertEqual(i.lake_contract("VERITY",types,species,set())["name"],"Mars")
+        self.assertEqual(i.lake_contract("ACUITY",set(),set(),set())["kind"],"scene")
+        self.assertIsNone(i.lake_contract("VALOR",types,species,{("GALACTIC_ADMIN","Saturn",15001)}))
+        self.assertIsNone(i.lake_contract("VERITY",types,{"GOLBAT"},set()))
+        if shutil.which("ruby"):
+            code=(ROOT/"scripts/regions/SinnohF12D3Transaction.rb").read_text("utf-8")+"\n"+(ROOT/"scripts/regions/SinnohF12DIntegrated.rb").read_text("utf-8").replace("__LOCATIONS__","{}").replace("__SPECS__","{}")
+            fixture=code+'''\ns={"current"=>"SINNOH","sinnoh_f12d_quest"=>%w[PASTORIA ROUTE_213 VALOR_BATTLE],"sinnoh_f12d3_quest"=>%w[SECRETPOTION_RECEIVED PSYDUCK_CLEARED]}\nm=BlueSinnohF12DIntegrated\nraise unless m.lake_allowed?(s,"VALOR",["MINE"])\nraise if m.lake_allowed?(s,"VERITY",["MINE"])\nraise if m.lake_allowed?(s,"VALOR",[])\ns[m::LAKE_LEDGER]=%w[VALOR VERITY]\nraise if m.lake_allowed?(s,"ACUITY",["MINE"])\nraise unless m.lake_allowed?(s,"ACUITY",["MINE","ICICLE"])\ns=Marshal.load(Marshal.dump(s))\nraise unless m.lake_allowed?(s,"ACUITY",["MINE","ICICLE"])\n'''
+            run=subprocess.run([shutil.which("ruby"),"-e",fixture],capture_output=True,text=True,timeout=30)
+            self.assertEqual(run.returncode,0,run.stderr)
 
     def test_f12d3_rock_network_rejects_perimeter_and_attributes_edits(self):
         import sinnoh_f12d3_canonical_network as n

@@ -542,7 +542,7 @@
       "id": "F12",
       "title": "História, Equipe Galactic e itens-chave",
       "status": "implementation_pending_ci",
-      "followup": "F12D3_ROCK_COST_NETWORK_PENDING_CI",
+      "followup": "F12D3J_D4_D5_D6_INTEGRATED_GAMEPLAY_PENDING_CI",
       "story_checkpoints_scope": 14,
       "hm_contracts_scope": 8,
       "native_bindings": 0,
@@ -1617,7 +1617,15 @@
       "f12d3_rock_frontier_network_witness": false,
       "f12d3_rock_cost_network_pending_ci": true,
       "f12d3_rock_cost_network_installed": false,
-      "f12d3_rock_cost_network_native_verified": false
+      "f12d3_rock_cost_network_native_verified": false,
+      "f12d_integrated_policy": "AUTHORIAL_GEOMETRIC_PROOF_NO_FIXED_CELL_COUNT",
+      "f12d_integrated_geometry_compiler": true,
+      "f12d_integrated_mission_compiler": true,
+      "f12d_integrated_lake_contracts": 3,
+      "f12d_integrated_pending_ci": true,
+      "f12d_integrated_runtime_install_enabled": false,
+      "f12d_integrated_native_verified": false,
+      "f12d_integrated_requires_local_engine_and_pre_chase_gate": true
     },
     {
       "id": "F13",
