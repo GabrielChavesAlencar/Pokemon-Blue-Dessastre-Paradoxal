@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "89153f900c10dff1b41e85cbc4c7466a976a1f37",
+      "date": "2026-11-25T13:02:47-03:00",
+      "title": "Merge pull request #331 from GabrielChavesAlencar/sinnoh-full-expansion-f12d3-dry-network",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "01eff869977c0cb31ceceb48e15af8729fa540f9",
+      "date": "2026-11-25T12:44:14-03:00",
+      "title": "Sinnoh F12D3: keep source-only protected cells distinct from actual entrances",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "b20e50dcaacb00206317e961a2050a46455cba77",
+      "date": "2026-11-25T12:43:33-03:00",
+      "title": "Sinnoh F12D3: search complete dry approaches via Route212 and Route215",
+      "category": "Melhorias"
+    },
+    {
       "sha": "614a9a7c2d95fa4a3ad5cb045e591cb20da567e2",
       "date": "2026-11-25T12:41:51-03:00",
       "title": "Sinnoh F12D3F: integrar auditoria da reconstrução seca",
