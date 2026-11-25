@@ -2,9 +2,69 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "77cf7bf0aed78310cc6bdb59b0dc77e76c00e393",
+      "date": "2026-11-25T10:52:15-03:00",
+      "title": "Sinnoh F12D2: integrar perseguição Galactic com geometria validada",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "6e431a59bd7c39a7fcfdd30289bedd64d3760715",
+      "date": "2026-11-25T10:42:48-03:00",
+      "title": "Sinnoh F12D2: bounded dry border link to original axis 56",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "38c1cd9dc1d2defa381f9827acd331be66faf205",
+      "date": "2026-11-25T10:31:51-03:00",
+      "title": "Sinnoh F12D2: evaluate two evidenced dry north boundary pairs",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "ed6687ae53aa17e9f6389f3eebb5ef323d42c7a7",
+      "date": "2026-11-25T10:23:44-03:00",
+      "title": "Sinnoh F12D2: align dry traversal with QA occupancy and audit blocked frontier",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "3f5d1bee1dcdea8eee0175d086ff62fb9f6750f4",
+      "date": "2026-11-25T10:13:57-03:00",
+      "title": "Sinnoh F12D2: preserve portal landings without blocking dry walking",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "3af67e63271aab7a2e4be4e7e2b058f78deb58ea",
+      "date": "2026-11-25T10:05:46-03:00",
+      "title": "Sinnoh F12D2: shared dry corridor budget and north leg diagnostics",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "0dcdedf117f988ffbaddaffff34839df05a58db4",
+      "date": "2026-11-25T09:57:36-03:00",
+      "title": "F12D2: bounded authored dry corridors for verified original geometry gap",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "58ba88df28c78207bfc59afc4d5899f94d692ef8",
+      "date": "2026-11-25T09:43:07-03:00",
+      "title": "F12D2: audit pinned source border cells and prove actual ordered walk without local spawn constraint",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "443d37e059e0ce1a4ad79040baacddf5f15c53a7",
+      "date": "2026-11-25T09:31:10-03:00",
+      "title": "F12D2: reconcile main, record source audit and conditionally repair original walkable seams",
+      "category": "Melhorias"
+    },
+    {
       "sha": "b9e23dc336577d92b9feb7895dbc87033f294ff9",
       "date": "2026-11-25T09:29:36-03:00",
       "title": "Merge pull request #323 from GabrielChavesAlencar/sinnoh-full-expansion-f12d1-d2-pastoria-pursuit",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "ead699b065201ec342716c9cb400670d6e104c4e",
+      "date": "2026-11-25T09:28:38-03:00",
+      "title": "F12D2: conditional chase runtime, ordered walking witnesses, battle and regional ledger",
       "category": "Melhorias"
     },
     {
