@@ -1478,6 +1478,24 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                         self.assertTrue(dp["reason"].startswith("no_safe_walkable_chase_witness:"))
                         print("SINNOH_REAL_F12D2_CHASE_BLOCKED_BASELINE_PRESERVED_OK",flush=True)
                     print("SINNOH_F12D2_CHASE_PREVIEW_REPORT "+json.dumps(dp,sort_keys=True),flush=True)
+                    import sinnoh_f12d_runtime as chase
+                    with patch.object(chase.preview,"preview",return_value=(pd,dp)):
+                        chased,cr,cp=chase.build(installed,expanded,expanded_comps,{"GALACTIC_GRUNT"},{"CROAGUNK"},set(),ROOT)
+                    self.assertFalse(cr["native_verified"])
+                    if pd:
+                        self.assertEqual(cr["status"],"F12D_RUNTIME_PREPARED")
+                        self.assertEqual(cr["new_events"],3)
+                        self.assertEqual(len(set(chased)-set(installed)),2)
+                        self.assertEqual(chased["Data/map_connections.dat"],installed["Data/map_connections.dat"])
+                        self.assertEqual(chased["Data/MapInfos.rxdata"],installed["Data/MapInfos.rxdata"])
+                        self.assertIn(b"Pokemon = CROAGUNK,31",chased[chase.PBS])
+                        self.assertIn(b"BlueSinnohF12D",cp)
+                        print("SINNOH_REAL_F12D2_RUNTIME_FIXTURE_PREPARED_OK",flush=True)
+                    else:
+                        self.assertEqual(chased,installed)
+                        self.assertEqual(cp,b"")
+                        self.assertFalse(cr["runtime_install_enabled"])
+                    print("SINNOH_F12D_RUNTIME_FIXTURE_REPORT "+json.dumps(cr,sort_keys=True),flush=True)
                 jr["catalog_provenance"]="REFERENCE_FIXTURE_NOT_LOCAL_DATABASE"
                 print("SINNOH_F12C3_QUEST_CANDIDATE_REPORT "+json.dumps(jr,sort_keys=True),flush=True)
             qo,qr,qp=quest.build(wo,wi,wc,{"GALACTIC_GRUNT","GALACTIC_ADMIN"},{"GLAMEOW","STUNKY","ZUBAT","PURUGLY"},{"WORKSKEY"},set(),ROOT)
@@ -3002,6 +3020,93 @@ puts "F12B5_AUTHORED_QUEST_CONFIRMED_WINS_KEY_SCOPE_OK"
         with self.assertRaisesRegex(ValueError,"F12D_REQUIRES_144_BASELINE"):
             d.audit({}, {}, Path("missing"))
         
+    @unittest.skipUnless(shutil.which("ruby"),"Requires Ruby runtime")
+    def test_f12d_ruby_order_gates_and_victory(self):
+        source=(ROOT/"scripts/regions/SinnohF12D.rb").read_text("utf-8").replace(
+            "__F12D_LOCATIONS__", '{"PASTORIA"=>[462,3,3],"ROUTE_213"=>[490,3,3],"VALOR_BATTLE"=>[528,3,3]}').replace(
+            "__F12D_SPEC__", '["GALACTIC_GRUNT","Grunt",14001,528,[["CROAGUNK",31]]]')
+        fixture=r'''
+module BlueSinnohF12C3
+  ORDER=%w[GRUNT_1 GRUNT_2 GRUNT_3 JUPITER RESCUE BICYCLE]
+  def self.state; $private ? $state : nil; end
+  def self.history(s); s["jupiter"]; end
+  def self.mars_complete?(s); true; end
+end
+module BlueRegions
+  def self.local_achievements(s,region); $badges; end
+end
+module BlueKantoTitle
+  def self.sinnoh_experimental_barry_compiled?; $compiled; end
+end
+module BlueSinnohF10B
+  def self.valid_team?(spec); $valid && spec[4]==[["CROAGUNK",31]]; end
+end
+module BlueSinnohPilot
+  def self.profile_error(*args); raise args.last; end
+end
+module BlueCampaign
+  module Teams; end
+  def self.active?; $scaled; end
+end
+class Battle
+  prepend BlueCampaign::Teams
+end
+module TrainerBattle
+  def self.start_core(*args)
+    raise "wrong identity" unless args==[[:GALACTIC_GRUNT,"Grunt",14001]]
+    $calls+=1
+    $result
+  end
+end
+def _INTL(s); s; end
+def pbMessage(s); end
+Mon=Struct.new(:hp) { def egg?; false; end }
+$player=Struct.new(:party).new([Mon.new(10)])
+$game_player=Struct.new(:x,:y).new(3,4)
+$game_map=Struct.new(:map_id).new(462)
+$game_temp=Struct.new(:waiting_trainer,:battle_rules).new(nil,{})
+$private=true;$compiled=true;$valid=true;$scaled=true;$calls=0;$result=2
+$state={"jupiter"=>[]};$badges=[]
+load ARGV[0]
+m=BlueSinnohF12D
+raise "unearned" if m.interact("PASTORIA")
+$state["jupiter"]=BlueSinnohF12C3::ORDER
+raise "badge missing" if m.interact("PASTORIA")
+$badges=["FEN"]
+$compiled=false
+raise "compile missing" if m.interact("PASTORIA")
+$compiled=true
+$game_map.map_id=528
+raise "out of order" if m.interact("VALOR_BATTLE")
+$game_map.map_id=462
+raise "pastoria" unless m.interact("PASTORIA")
+$game_map.map_id=490
+raise "route" unless m.interact("ROUTE_213")
+$game_map.map_id=528
+$scaled=false
+raise "unscaled battle" if m.interact("VALOR_BATTLE")
+$scaled=true
+$valid=false
+raise "invalid team" if m.interact("VALOR_BATTLE")
+$valid=true
+raise "defeat accepted" if m.interact("VALOR_BATTLE")
+raise "defeat persisted" unless $state[m::LEDGER]==m::ORDER.first(2)
+$result=1
+raise "win rejected" unless m.interact("VALOR_BATTLE")
+raise "not saved" unless $state[m::LEDGER]==m::ORDER
+$state=Marshal.load(Marshal.dump($state))
+raise "repeat rejected" unless m.interact("VALOR_BATTLE")
+raise "duplicate battle" unless $calls==2
+$private=false
+raise "outside QA" if m.interact("VALOR_BATTLE")
+puts "F12D_ORDER_GATES_VICTORY_FIXTURE_OK"
+'''
+        with tempfile.TemporaryDirectory() as td:
+            path=Path(td)/"F12D.rb";path.write_text(source,encoding="utf-8")
+            result=subprocess.run(["ruby","-e",fixture,str(path)],capture_output=True,text=True,encoding="utf-8")
+            self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+            self.assertIn("F12D_ORDER_GATES_VICTORY_FIXTURE_OK",result.stdout)
+
     def test_f12c3_requires_geometry_and_preserves_candidate_scope(self):
         import sinnoh_f12c3_jupiter_candidate as j
         self.assertEqual([r[0] for r in j.ROWS],["GRUNT_1","GRUNT_2","GRUNT_3","JUPITER","RESCUE","BICYCLE"])

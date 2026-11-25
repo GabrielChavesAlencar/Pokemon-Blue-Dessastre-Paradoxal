@@ -698,7 +698,14 @@
       "f12c4_runtime_install_enabled": true,
       "f12d1_source_audit_pending_ci": true,
       "f12d2_preview_pending_ci": true,
-      "f12d_native_verified": false
+      "f12d_native_verified": false,
+      "f12d2_runtime_candidate_prepared": true,
+      "f12d2_runtime_full_ci_approved": false,
+      "f12d2_runtime_native_verified": false,
+      "f12d2_geometry_proof_required": true,
+      "f12d2_ledger": "sinnoh_f12d_quest",
+      "f12d2_fen_required": true,
+      "f12d2_jupiter_required": true
     },
     {
       "id": "F13",

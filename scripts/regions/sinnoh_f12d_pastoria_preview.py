@@ -60,13 +60,15 @@ def preview(blobs,mapping,components,root):
     old_cells=trainers.reached_cells(idx,reach)
     _,_,start_idx,_,start_reach,_=gates.access_graph(blobs,old,components,root,
         seed_symbols={AREAS[0]},directional=True)
+    reachable_counts={sym:sum((old[sym],label) in start_reach for label in start_idx[old[sym]].values()) for sym in AREAS}
     def report(status,reason=None,placements=()):
         return {"status":status,"reason":reason,"placements":list(placements),
             "baseline_maps":144,"baseline_preserved":before==digest(blobs),
             "new_maps":0,"new_portals":0,"new_seams":0,"items_granted":0,
             "runtime_install_enabled":False,"native_verified":False,
             "source_layout":"PROJECT_AUTHORED_CONDENSED_CHASE",
-            "historical_team":[list(row) for row in TEAM]}
+            "historical_team":[list(row) for row in TEAM],
+            "reachable_cells_from_pastoria":reachable_counts}
     out=dict(blobs); locations=[]; positions=set()
     for key,sym in zip(ORDER,AREAS):
         mid=old[sym]; rel="Data/Map%03d.rxdata"%mid
@@ -90,7 +92,13 @@ def preview(blobs,mapping,components,root):
             out=trial; positions.add((mid,*xy));locations.append({"id":key,"map_id":mid,
                 "event_id":eid,"position":list(xy),"stand":list(land)})
             accepted=True;break
-        if not accepted:return {},report("F12D2_BLOCKED","no_safe_walkable_chase_witness:"+key)
+        if not accepted:return {},report("F12D2_BLOCKED","no_safe_walkable_chase_witness:"+key,locations)
+    # Prove ordered travel from the actual interaction cells, without reseeding QA teleports.
+    for a,b in zip(locations,locations[1:]):
+        _,_,index,_,reached,_=gates.access_graph(out,old,components,root,directional=True,
+            seed_cells=[(a["map_id"],*a["stand"])])
+        if (b["map_id"],index[b["map_id"]].get(tuple(b["stand"]))) not in reached:
+            return {},report("F12D2_BLOCKED","no_safe_walkable_chase_witness:"+b["id"],locations)
     # No map allocation or change to existing event, terrain or connection.
     changed={loc["map_id"] for loc in locations}
     for mid in mapping.values():

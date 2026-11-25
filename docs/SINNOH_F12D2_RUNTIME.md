@@ -1,0 +1,7 @@
+# F12D2 runtime candidate
+
+Depends on #323 and its source/geometry reports. The private installer may append three action events, one authored sprite and one trainer PBS record only if the 144-map baseline and ordered walking witnesses succeed. Geometry uses exact preceding interaction cells as graph seeds; no additional QA teleport or connection. If any leg is blocked, return the unchanged baseline. The report includes reachable cell counts per area and the blocked checkpoint. No donor script execution.
+
+Fen Badge, complete Jupiter/rescue/bicycle and Mars ledgers, correct map, adjacency, compiled catalogue and active campaign scaling required. Two condensed dialogue encounters, then one Croagunk level 31 battle using existing campaign scaling. The regional ledger advances only in order and only on a real victory for the final battle. No item grant, SecretPotion, official story flag, or direct save access. Three static action NPC candidates (not a reconstructed moving original NPC). Compiler proof includes this trainer only when the runtime is prepared. Prior 144-map namespace reuse requires the existing exact manifest/hash compatibility checks against the pre-append maps.
+
+CI and native execution remain separate. No claim that geometry is connected until live report; no claim of native QA. Do not integrate before #323 and 11 workflows/26 jobs against main. F12D3 remains gated by completed pursuit.
