@@ -391,10 +391,10 @@
       "id": "F11",
       "title": "Oito ginásios e insígnias",
       "status": "implementation_pending_ci",
-      "followup": "F11C_PENDING_CI",
+      "followup": "F11D_PENDING_MAIN_CI",
       "gym_count": 8,
-      "gym_rooms_confirmed": 3,
-      "gym_leaders_confirmed": 3,
+      "gym_rooms_confirmed": 4,
+      "gym_leaders_confirmed": 4,
       "native_verified": false,
       "hm_award_enabled": false,
       "f11a_pr": 303,
@@ -421,7 +421,8 @@
       "fixture_gym_mapids": {
         "SINNOH_OREBURGH_GYM": 573,
         "SINNOH_ETERNA_GYM": 574,
-        "SINNOH_HEARTHOME_GYM": 575
+        "SINNOH_HEARTHOME_GYM": 575,
+        "SINNOH_VEILSTONE_GYM": 576
       },
       "species_and_types_validation": "REFERENCE_FIXTURE_NOT_LOCAL_DATABASE",
       "f11c_candidate": "Fantina",
@@ -431,6 +432,14 @@
       ],
       "f11c_fixture_rooms": 1,
       "f11c_native_verified": false,
+      "f11d_candidate": "Maylene",
+      "f11d_prerequisites": [
+        "COAL",
+        "FOREST",
+        "RELIC"
+      ],
+      "f11d_fixture_rooms": 1,
+      "f11d_native_verified": false,
       "f11b_merge_commit": "31709a5c044142bccf6127db743f1d658721b14b",
       "f11b_ci_workflows": 11,
       "f11b_ci_checks": 26,
@@ -438,7 +447,15 @@
       "f11c_real_job": 138906092615,
       "f11c_fixture_maps": 134,
       "f11c_fixture_portals": 79,
-      "f11c_main_ci_pending": true
+      "f11c_main_ci_pending": false,
+      "f11c_merge_commit": "7a9692f2e987cf8f861e6c9399c4c4ecf67560c2",
+      "f11c_ci_workflows": 11,
+      "f11c_ci_checks": 26,
+      "f11d_real_head": "f63da0ea25fa4b2bfa7e01707268ed0ecdef5365",
+      "f11d_real_job": 138907082865,
+      "f11d_fixture_maps": 135,
+      "f11d_fixture_portals": 81,
+      "f11d_main_ci_pending": true
     },
     {
       "id": "F12",
@@ -754,10 +771,10 @@
   },
   "f11": {
     "status": "implementation_pending_ci",
-    "followup": "F11C_PENDING_CI",
+    "followup": "F11D_PENDING_MAIN_CI",
     "gym_count": 8,
-    "gym_rooms_confirmed": 3,
-    "gym_leaders_confirmed": 3,
+    "gym_rooms_confirmed": 4,
+    "gym_leaders_confirmed": 4,
     "native_verified": false,
     "hm_award_enabled": false,
     "f11a_pr": 303,
@@ -784,7 +801,8 @@
     "fixture_gym_mapids": {
       "SINNOH_OREBURGH_GYM": 573,
       "SINNOH_ETERNA_GYM": 574,
-      "SINNOH_HEARTHOME_GYM": 575
+      "SINNOH_HEARTHOME_GYM": 575,
+      "SINNOH_VEILSTONE_GYM": 576
     },
     "species_and_types_validation": "REFERENCE_FIXTURE_NOT_LOCAL_DATABASE",
     "f11c_candidate": "Fantina",
@@ -801,6 +819,22 @@
     "f11c_real_job": 138906092615,
     "f11c_fixture_maps": 134,
     "f11c_fixture_portals": 79,
-    "f11c_main_ci_pending": true
+    "f11c_main_ci_pending": false,
+    "f11d_candidate": "Maylene",
+    "f11d_prerequisites": [
+      "COAL",
+      "FOREST",
+      "RELIC"
+    ],
+    "f11d_fixture_rooms": 1,
+    "f11d_native_verified": false,
+    "f11c_merge_commit": "7a9692f2e987cf8f861e6c9399c4c4ecf67560c2",
+    "f11c_ci_workflows": 11,
+    "f11c_ci_checks": 26,
+    "f11d_real_head": "f63da0ea25fa4b2bfa7e01707268ed0ecdef5365",
+    "f11d_real_job": 138907082865,
+    "f11d_fixture_maps": 135,
+    "f11d_fixture_portals": 81,
+    "f11d_main_ci_pending": true
   }
 }
