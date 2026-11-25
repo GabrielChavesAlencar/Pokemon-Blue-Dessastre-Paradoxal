@@ -2,9 +2,33 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8c714b2dee76ed4da4df24468a98e26a57acba71",
+      "date": "2026-11-25T13:36:08-03:00",
+      "title": "Merge PR #334: Sinnoh F12D3I canonical directional audit",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "920b3f14be1482b83c21fc0c9d1ac27d8cbb8198",
+      "date": "2026-11-25T13:25:28-03:00",
+      "title": "Sync main automatic portal history after #333 merge",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "44734709fb745a7b247891213d3d45a585647351",
+      "date": "2026-11-25T13:25:06-03:00",
+      "title": "Record #333 approved CI and merge; retain pending directional frontier and native gates",
+      "category": "Melhorias"
+    },
+    {
       "sha": "c4dc7b07e5d1ade92f0edc68ee39c4d20d335dd4",
       "date": "2026-11-25T13:24:39-03:00",
       "title": "Merge PR #333: Sinnoh F12D3I canonical network audit",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "d6d1e57857778c0ed31efa47dee4ac5ea62a9400",
+      "date": "2026-11-25T13:24:17-03:00",
+      "title": "Sinnoh F12D3I: audit canonical directional frontier without opening forbidden edges",
       "category": "Melhorias"
     },
     {
