@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "267f9080daa99272d40805d99384d5589ab2bedb",
+      "date": "2026-11-24T23:10:49-03:00",
+      "title": "Merge pull request #310 from GabrielChavesAlencar/sinnoh-full-expansion-f11h-volkner",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "7b556b5518e960ece1eb3699a25569f578e0ee1b",
+      "date": "2026-11-24T23:01:11-03:00",
+      "title": "F11H: reconcile main and preserve definitive Candice and Volkner audit evidence",
+      "category": "Melhorias"
+    },
+    {
       "sha": "d2cb043773838d22fe0986e3952f21ca093b4e19",
       "date": "2026-11-24T23:00:52-03:00",
       "title": "Merge pull request #309 from GabrielChavesAlencar/sinnoh-full-expansion-f11g-candice",
@@ -29,6 +41,12 @@
       "sha": "8cd5d6d3c66745ded74c4237f6ecdb4319a1d5e1",
       "date": "2026-11-24T22:47:47-03:00",
       "title": "Merge pull request #307 from GabrielChavesAlencar/sinnoh-full-expansion-f11e-crasher-wake",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "3aa6644a393294faa173171789913c7911ba258f",
+      "date": "2026-11-24T22:45:07-03:00",
+      "title": "Sinnoh F11H: Volkner electric challenge and sequential BEACON badge with preserved baseline",
       "category": "Melhorias"
     },
     {
