@@ -36,6 +36,8 @@ module BlueSinnohF12DIntegrated
     raise "Sinnoh F12D3: item regional invalido" unless T.compiled_item_valid?
     raise "Sinnoh F12D lagos: equipes invalidas" unless SPECS.values.all? { |spec| BlueSinnohF10B.valid_team?(spec) }
     raise "Sinnoh F12D: hooks ausentes" unless Game_Event.ancestors.include?(BarrierPages) && Game_Player.ancestors.include?(ProgressionMovement)
+    raise "Sinnoh F12D: hooks sobrescritos" unless Game_Player.instance_method(:move_generic).owner==ProgressionMovement &&
+      Game_Event.instance_method(:refresh).owner==BarrierPages
     true
   end
   def self.near?(key)

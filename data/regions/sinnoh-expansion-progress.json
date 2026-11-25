@@ -1743,7 +1743,18 @@
       "f12d_integrated_lake_sequential_payloads": 0,
       "f12d_integrated_gate_lanes_chase": 36,
       "f12d_integrated_gate_lanes_celestic": 10,
-      "f12d_integrated_fixture_status": "F12D_INTEGRATED_GAMEPLAY_FIXTURE"
+      "f12d_integrated_fixture_status": "F12D_INTEGRATED_GAMEPLAY_FIXTURE",
+      "f12d_integrated_engine_receipt_head": "2973d7ed8fe52b509007b925bbbb37de9107bfdb",
+      "f12d_integrated_engine_receipt_job": 139389197383,
+      "f12d_integrated_engine_player_declarations": 2,
+      "f12d_integrated_engine_player_methods_confirmed": 0,
+      "f12d_integrated_ordered_player_receipt_implemented": true,
+      "f12d_integrated_effective_runtime_hook_guard_implemented": true,
+      "f12d_integrated_lake_celestic_seed_implemented": true,
+      "f12d_integrated_latest_observed_ci_workflows": 9,
+      "f12d_integrated_latest_observed_ci_jobs": 22,
+      "f12d_integrated_latest_observed_markers": 0,
+      "f12d_integrated_latest_observed_ci_complete": false
     },
     {
       "id": "F13",

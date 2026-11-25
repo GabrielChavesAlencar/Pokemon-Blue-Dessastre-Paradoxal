@@ -176,13 +176,19 @@ def compile_story(blobs,mapping,components,cr,expanded,original,source,root,type
     old={k:v for k,v in mapping.items() if k in chase.prior.ALL}
     if tp.build(out,old,components,root)!=tp.build(blobs,old,components,root):
         result["reason"]="qa_entries_changed";return {},result,b""
-    specs={};pbs=[];lake_seed=(mid,*prepared["exit_cells"][0]);lake_ready=[]
+    specs={};pbs=[];lake_seed=min(q for q in restored if q[0]==town);lake_ready=[]
+    result["lake_sequence_seed"]=list(lake_seed)
+    result["lake_sequence_checks"]={}
     for key in ORDER:
         contract=result["lake_contracts"][key]
-        if not contract or contract["symbol"] not in mapping:break
-        lm=mapping[contract["symbol"]];pos=placement(reopened,mapping,components,root,lm,lake_seed,rock,valor_rock)
-        if not pos:break
+        if not contract or contract["symbol"] not in mapping:
+            result["lake_sequence_checks"][key]={"reason":"missing_contract_or_map"};break
+        lm=mapping[contract["symbol"]]
+        pos=placement(reopened,mapping,components,root,lm,lake_seed,rock,valor_rock)
+        if not pos:
+            result["lake_sequence_checks"][key]={"from":list(lake_seed),"map_id":lm,"reason":"no_proven_reachable_noncut_position"};break
         xy,stand=pos;sprite="SNQA_F12D_"+key
+        result["lake_sequence_checks"][key]={"from":list(lake_seed),"map_id":lm,"stand":list(stand),"walk_from_predecessor_proved":True}
         out,loc=add_event(out,lm,xy,key,sprite)
         reopened,_=add_event(reopened,lm,xy,key,sprite)
         loc["stand"]=list(stand);locations[key]=loc;lake_seed=(lm,*stand);lake_ready.append(key)
@@ -263,25 +269,72 @@ def player_method_receipt(raw,expected=PLAYER_METHOD_REFS):
     result={}
     for name,digest in expected.items():
         prefix=b"  def "+name.encode("ascii")
-        starts=[i for i,line in enumerate(lines) if line==prefix or line.startswith(prefix+b"(")]
+        starts=[i for i,line in enumerate(lines) if line==prefix or line.startswith(prefix+b"(") or line.startswith(prefix+b" ")]
         if len(starts)!=1:result[name]="missing_or_duplicate";continue
         start=starts[0]
         end=next((i for i in range(start+1,len(lines)) if lines[i]==b"  end"),None)
         result[name]="match" if end is not None and hashlib.sha1(b"\n".join(lines[start:end+1])).hexdigest()==digest else "different"
     return result
 
+def player_declarations(raw):
+    """Conservative static extraction of conventional top-level Ruby class blocks.
+
+    No scripts are evaluated. Dynamic definitions and plugin overrides are not
+    certified by this receipt; do not substitute it for the exact engine gate.
+    """
+    lines=raw.replace(b"\r\n",b"\n").split(b"\n")
+    for start,line in enumerate(lines):
+        if not re.match(rb"^class Game_Player(?:\s|$)",line):continue
+        end=next((i for i in range(start+1,len(lines)) if lines[i]==b"end"),None)
+        if end is None:
+            yield start+1,None
+        else:
+            yield start+1,b"\n".join(lines[start+1:end])
+
+def effective_player_receipt(player_rows,expected=PLAYER_METHOD_REFS):
+    # Scripts.rxdata array order is load order for ordinary class declarations.
+    # Later direct definitions replace earlier ones; absent methods do not.
+    history={name:[] for name in expected};declarations=[]
+    for row_index,raw in player_rows:
+        for line,body in player_declarations(raw):
+            entry={"script_index":row_index,"class_line":line,
+                "script_sha256":hashlib.sha256(raw).hexdigest(),"methods":{}}
+            if body is None:
+                entry["unparsed_class"]=True
+                for name in expected:history[name].append({"script_index":row_index,"status":"unresolved"})
+            else:
+                lines=body.split(b"\n")
+                receipt=player_method_receipt(body,expected)
+                for name,status in receipt.items():
+                    prefix=b"  def "+name.encode("ascii")
+                    starts=[i for i,q in enumerate(lines) if q==prefix or q.startswith(prefix+b"(") or q.startswith(prefix+b" ")]
+                    if not starts:continue
+                    row={"script_index":row_index,"class_line":line,"status":status}
+                    if len(starts)==1:
+                        stop=next((i for i in range(starts[0]+1,len(lines)) if lines[i]==b"  end"),None)
+                        if stop is not None:
+                            row["method_sha1"]=hashlib.sha1(b"\n".join(lines[starts[0]:stop+1])).hexdigest()
+                        else:row["status"]="unresolved"
+                    entry["methods"][name]=row["status"];history[name].append(row)
+            declarations.append(entry)
+    effective={name:(rows[-1]["status"] if rows else "missing_or_inherited") for name,rows in history.items()}
+    return effective,history,declarations
+
 def engine_reference_rows(rows,expected=ENGINE_REFS):
     found={k:0 for k in expected};player_rows=[]
-    for row in rows:
+    for row_index,row in enumerate(rows):
         if not isinstance(row,list) or len(row)<3 or not isinstance(row[2],bytes):
             raise ValueError("F12D_ENGINE_SCRIPT_SHAPE")
         raw=zlib.decompress(row[2])
-        if re.search(rb"(?m)^class Game_Player\b",raw):player_rows.append(raw)
+        if re.search(rb"(?m)^class Game_Player(?:\s|$)",raw):player_rows.append((row_index,raw))
         digests={git_blob_id(raw),git_blob_id(raw.replace(b"\r\n",b"\n"))}
         for k,v in expected.items():
             if v in digests:found[k]+=1
+    methods,history,declarations=effective_player_receipt(player_rows)
     return {"reference":"Essentials v21.1","matched_scripts":found,
-        "game_player_script_count":len(player_rows),"game_player_methods":player_method_receipt(player_rows[0]) if len(player_rows)==1 else {},
+        "game_player_script_count":len(player_rows),"game_player_methods":methods,
+        "game_player_method_history":history,"game_player_declarations":declarations,
+        "game_player_receipt_scope":"STATIC_DIRECT_DEFINITIONS_NOT_RUNTIME_DISPATCH",
         "reference_match":all(n==1 for n in found.values()),"local_engine_native_verified":False,
         "plugin_overrides_verified":False,"source_scripts_executed":False}
 
@@ -341,6 +394,10 @@ def installer_preflight(blobs,mapping,components,cr,base,root,source,staged=None
         # Do not embed private map bytes or huge path reports in the manifest.
         result.update(story_status=story["status"],mission_prepared=story["mission_prepared"],
             lake_local_previews=story.get("lake_local_previews",{}),lake_payloads=story.get("lake_payloads",[]),
+            lake_sequence_checks=story.get("lake_sequence_checks",{}),
+            pre_chase_graph_checks=story.get("pre_chase_graph_checks",[]),
+            geometry_delta_count=story.get("geometry_delta_count",0),
+            progression_gate=story.get("progression_gate",{}),
             reason=story.get("reason"),candidate_ready=bool(delta and plugin),
             payload_hashes=story.get("payload_hashes",{}),authored_sprite_hashes=story["authored_sprite_hashes"])
         if delta and plugin:

@@ -1700,6 +1700,10 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                             self.assertEqual(len([k for k in story["locations"] if k.startswith("PSYDUCK_")]),4)
                             self.assertEqual(story["geometry"]["witness"]["fixture_passed"],True)
                             self.assertEqual(len(story["pre_chase_graph_checks"]),3)
+                            self.assertEqual(story["geometry_delta_count"],71)
+                            self.assertEqual(story["lake_sequence_seed"][0],expanded["SINNOH_CELESTIC_TOWN"])
+                            self.assertEqual(story["lake_payloads"],list(integrated.ORDER[:len(story["lake_payloads"])]))
+                            self.assertTrue(all(story["lake_sequence_checks"][k]["walk_from_predecessor_proved"] for k in story["lake_payloads"]))
                             self.assertIn("CYNTHIA",story["locations"])
                             self.assertTrue(payload and plugin)
                         else:
@@ -3513,6 +3517,28 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         expected={"move_generic":hashlib.sha1(raw).hexdigest()}
         self.assertEqual(i.player_method_receipt(raw,expected),{"move_generic":"match"})
         self.assertEqual(i.player_method_receipt(raw.replace(b"nil",b"true"),expected),{"move_generic":"different"})
+
+    def test_f12d_integrated_two_player_declarations_in_load_order(self):
+        import hashlib
+        import zlib
+        import sinnoh_f12d_integrated as i
+        move=b"  def move_generic(dir)\n    nil\n  end"
+        turn=b"  def turn_generic(dir)\n    nil\n  end"
+        expected={"move_generic":hashlib.sha1(move).hexdigest(),"turn_generic":hashlib.sha1(turn).hexdigest()}
+        first=b"class Game_Player < Game_Character\n"+move+b"\n"+turn+b"\nend"
+        second=b"class Game_Player\n"+move.replace(b"nil",b"true")+b"\nend\nclass Other\n"+turn.replace(b"nil",b"true")+b"\nend"
+        effective,history,decls=i.effective_player_receipt([(4,first),(19,second)],expected)
+        self.assertEqual(effective,{"move_generic":"different","turn_generic":"match"})
+        self.assertEqual([q["script_index"] for q in history["move_generic"]],[4,19])
+        self.assertEqual([q["script_index"] for q in history["turn_generic"]],[4])
+        self.assertEqual(len(decls),2)
+        rows=[[4,b"base",zlib.compress(first)],[19,b"extension",zlib.compress(second)]]
+        receipt=i.engine_reference_rows(rows,{"game_player":"0"*40})
+        self.assertEqual(receipt["game_player_script_count"],2)
+        self.assertEqual(len(receipt["game_player_methods"]),14)
+        self.assertFalse(receipt["reference_match"])
+        self.assertFalse(receipt["plugin_overrides_verified"])
+        self.assertFalse(receipt["local_engine_native_verified"])
 
     def test_f12d_integrated_noncollinear_four_vertex_cut(self):
         import sinnoh_f12d3_celestic_cut as c
