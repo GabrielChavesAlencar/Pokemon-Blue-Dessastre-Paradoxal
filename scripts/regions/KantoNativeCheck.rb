@@ -166,9 +166,16 @@ module KantoNativeCheck
       require!(north_event_reachable?(comp,$game_map.events[id]),"K02-C rear door unreachable #{id}")
     end
     $map_factory.setup(mapping[43])
+    item_report = [:BIKEVOUCHER,:BICYCLE,:TM28].to_h do |id|
+      item = GameData::Item.try_get(id)
+      [id.to_s, item ? {"key_item"=>item.is_key_item?, "consumable"=>item.consumable,
+                       "move"=>item.move.to_s} : nil]
+    end
+    puts "KANTO_K02C_NATIVE_ITEM_CATALOGUE:#{item_report.inspect}"
     require!(GameData::Item.exists?(:BIKEVOUCHER) && GameData::Item.exists?(:BICYCLE),
-             "K02-C compiled native bike/voucher missing")
-    require!(GameData::Item.get(:BIKEVOUCHER).is_key_item? && GameData::Item.get(:BICYCLE).is_key_item?,
+             "K02-C compiled native bike/voucher missing: #{item_report.inspect}")
+    require!(GameData::Item.get(:BIKEVOUCHER).is_key_item? && GameData::Item.get(:BICYCLE).is_key_item? &&
+             !GameData::Item.get(:BIKEVOUCHER).consumable && !GameData::Item.get(:BICYCLE).consumable,
              "K02-C bike/voucher must remain regional key items")
     require!(!$bag.has?(:BIKEVOUCHER) && !$bag.has?(:BICYCLE),"K02-C fresh bag unexpectedly has bicycle")
     require!(!BlueKantoPilot.cerulean_bike_exchange && !$bag.has?(:BICYCLE),"K02-C free bike")
