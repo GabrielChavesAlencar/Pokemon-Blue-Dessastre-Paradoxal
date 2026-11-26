@@ -158,6 +158,7 @@ end
 def check(condition, message)
   raise message unless condition
 end
+def _INTL(text, *_args); text; end
 Dir.mkdir("Data")
 File.write("Data/blue-kanto-install.json",'{"maps":{"39":321,"43":445}}')
 load ARGV.fetch(0)
@@ -210,6 +211,7 @@ class KantoOverworldPlayerScaleTests(unittest.TestCase):
                                     timeout=20, check=False)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("KANTO_K02C_EVENT_INDICATORS_ALIAS_SAFE_OK", result.stdout)
+        print(result.stdout.strip())
 
     def test_builder_tracks_runtime_as_a_rebuild_input(self):
         builder = PILOT_BUILDER.read_text(encoding="utf-8")
