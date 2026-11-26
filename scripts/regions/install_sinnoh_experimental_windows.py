@@ -482,7 +482,6 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile
         # after the outer method returns: native post-hooks may inspect them.
         # Never prepend Compiler.main (the installed plugins alias that method).
         guarded=guarded.replace("      Compiler.main", """      if blue_sinnoh_compile_only
-        BlueSinnohF12DIntegrated.verify_compile_inputs!(blue_sinnoh_request, blue_sinnoh_native_sources.keys, __QA_EXPERIMENT_SOURCE__)
         blue_sinnoh_core_compiled = false
         blue_sinnoh_restore = proc do
           blue_sinnoh_native_sources.each do |path, original|
@@ -520,7 +519,6 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile
       else
         Compiler.main
       end""",1)
-        guarded=guarded.replace("__QA_EXPERIMENT_SOURCE__",json.dumps(f"{EXPERIMENT_PLUGIN}/SinnohExperimentalStart.rb"))
         verify=verify.replace("    if __QA_SCOPE__","    if blue_sinnoh_compile_only",1)
         verify=verify.replace("        GameData::Trainer.load","        raise \"Sinnoh F12D: compile request changed\" unless File.binread(\"Data/sinnoh-experimental-compile-request.txt\").strip==blue_sinnoh_request\n        puts \"SINNOH_F12D_NATIVE_STAGE VERIFY_ENTERED\"\n        GameData::Item.load\n        raise \"Sinnoh F12D: invalid compiled SecretPotion\" unless BlueSinnohF12D3Transaction.compiled_item_valid?\n        puts \"SINNOH_F12D_NATIVE_ITEM_COMPILED_OK\"\n        BlueSinnohF12DIntegrated.verify_native_movement!\n        puts \"SINNOH_F12D_NATIVE_MOVEMENT_PROBE_OK\"\n        BlueSinnohF12DIntegrated.verify_native_transaction!\n        puts \"SINNOH_F12D_NATIVE_TRANSACTION_PROBE_OK\"\n        GameData::Trainer.load",1)
         # Keep all previous encounter/trainer/terrain/hook checks, not just

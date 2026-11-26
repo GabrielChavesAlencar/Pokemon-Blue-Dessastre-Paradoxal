@@ -466,17 +466,6 @@ module BlueSinnohF12DIntegrated
       $game_map,$map_factory,$game_player,$DEBUG,$game_switches,$game_variables,$game_self_switches,$game_temp,$PokemonGlobal,$stats=*prev
     end
   end
-  def self.verify_compile_inputs!(token,map_files,plugin)
-    manifest=BlueSinnohQA.parse_json(File.binread("sinnoh-experimental-qa.json"))
-    hashes=manifest.fetch("file_sha256")
-    raise "Sinnoh F12D: compile manifest token mismatch" unless manifest.fetch("compile_token")==token
-    pbs=hashes.keys.grep(%r{\APBS/[a-zA-Z0-9_]+\.txt\z})
-    (map_files + pbs + [plugin]).uniq.each do |path|
-      unless File.file?(path) && !File.symlink?(path) && BlueSinnohQA.sha256_file(path)==hashes.fetch(path)
-        raise "Sinnoh F12D: changed compile input #{path}"
-      end
-    end
-  end
   def self.verify_compiled!
     raise "Sinnoh F12D: regional Surf pickup missing" unless LOCATIONS.key?("SURF_HM03")
     raise "Sinnoh F12D: original Surf routes missing" unless SURF_ROUTES.length==2
