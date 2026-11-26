@@ -1057,7 +1057,8 @@
       "status": "experimental",
       "methods": [],
       "trainers": [
-        "kanto-blue-cerulean"
+        "kanto-blue-cerulean",
+        "kanto-rocket-cerulean-house"
       ]
     },
     {
@@ -1084,6 +1085,48 @@
         "kanto-luis",
         "kanto-diana"
       ]
+    },
+    {
+      "id": "kanto-cerulean-bike-shop",
+      "name": "Loja de bicicletas de Cerulean",
+      "status": "experimental",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-cerulean-house-a",
+      "name": "Casa de Cerulean (A)",
+      "status": "experimental",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-cerulean-house-b",
+      "name": "Casa de Cerulean (B)",
+      "status": "experimental",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-cerulean-house-c",
+      "name": "Casa de Cerulean (C)",
+      "status": "experimental",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-cerulean-house-d",
+      "name": "Casa de Cerulean (D)",
+      "status": "experimental",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-cerulean-ransacked-house",
+      "name": "Casa roubada de Cerulean",
+      "status": "experimental",
+      "methods": [],
+      "trainers": []
     },
     {
       "id": "kanto-route-24",
@@ -7097,6 +7140,28 @@
             {
               "species": "ZUBAT",
               "level": 15
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-rocket-cerulean-house",
+      "name": "Grunt (Cerulean)",
+      "role": "Equipe Rocket",
+      "location": "kanto-cerulean-city",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "MACHOP",
+              "level": 17
+            },
+            {
+              "species": "DROWZEE",
+              "level": 17
             }
           ]
         }
