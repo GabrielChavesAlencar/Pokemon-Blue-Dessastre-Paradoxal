@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4decb88dc70b393c164bc501ca029bec113b4e3c",
+      "date": "2026-11-26T16:42:30-03:00",
+      "title": "Kanto K02-C: repair Android release collision and recover incremental updates (#357)",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "4eeefd1469decc8ba647fe064ab64c9b4fa740f6",
+      "date": "2026-11-26T16:35:22-03:00",
+      "title": "Fix Android publication collision and retain recovery deltas; build portal before tests",
+      "category": "Melhorias"
+    },
+    {
       "sha": "e7200ef8003c2d84eb1c6931b403c9faaa0d15b6",
       "date": "2026-11-26T16:27:08-03:00",
       "title": "Kanto K02-C: Cerulean interiors, native transactions and authored atlas (#356)",
