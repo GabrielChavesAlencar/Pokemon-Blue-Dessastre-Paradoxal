@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "fce8e938cc58d4b645c6970914b2caacf7c21a11",
+      "date": "2026-11-26T16:56:19-03:00",
+      "title": "QA K02-C: verify published Android 128 recovery paths (#358)",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "1e73e67543144e9c97ab3d515b3a32a062060229",
+      "date": "2026-11-26T16:49:44-03:00",
+      "title": "QA K02-C: verify both published Android recovery deltas against exact real ZIPs",
+      "category": "Melhorias"
+    },
+    {
       "sha": "4decb88dc70b393c164bc501ca029bec113b4e3c",
       "date": "2026-11-26T16:42:30-03:00",
       "title": "Kanto K02-C: repair Android release collision and recover incremental updates (#357)",
