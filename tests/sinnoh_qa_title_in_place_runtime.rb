@@ -21,6 +21,7 @@ def _INTL(str, *args)
 end
 def pbMessage(message, *args)
   $messages << message
+  return $new_game_choices.shift if $new_game_choices && message.include?("Em qual região deseja começar")
   0
 end
 def pbConfirmMessage(*_args)
@@ -95,6 +96,39 @@ Dir.mktmpdir("blue-sinnoh-qa-title-") do |home|
            "main game cannot qualify as private QA")
     assert(!BlueKantoTitle.sinnoh_experimental_ready?,
            "main game cannot pass QA ready gate")
+
+    # A normal New Game may never spawn the isolated Sinnoh QA process.
+    # The separate Testar Sinnoh command is covered below.
+    Object.const_set(:BlueRegionStart, Module.new)
+    BlueRegionStart.define_singleton_method(:sinnoh_spawn) { @ready ? [442,10,8] : nil }
+    BlueRegionStart.define_singleton_method(:request_initial) do |region|
+      @requested = region
+      region == "SINNOH" && !!sinnoh_spawn
+    end
+    BlueKantoTitle.singleton_class.alias_method(:original_launch_sinnoh, :launch_sinnoh)
+    BlueKantoTitle.define_singleton_method(:launch_sinnoh) { raise "NORMAL_NEW_GAME_LAUNCHED_QA" }
+    begin
+      assert(BlueKantoTitle.start_region_names[4] == "Sinnoh (instalação necessária)",
+             "missing shared region must be labeled as not installed")
+      $new_game_choices = [4, BlueKantoTitle::START_REGIONS.length - 1]
+      assert(BlueKantoTitle.choose_start_region == :cancel,
+             "missing shared Sinnoh must return to the region menu")
+      assert($messages.any? { |m| m.include?("ainda não foi integrada ao jogo principal") },
+             "missing shared Sinnoh must explain installation")
+      BlueRegionStart.instance_variable_set(:@ready, true)
+      assert(BlueKantoTitle.start_region_names[4] == "Sinnoh",
+             "integrated Sinnoh must use the same plain name as other regions")
+      $new_game_choices = [4]
+      assert(BlueKantoTitle.choose_start_region == :integrated &&
+             BlueRegionStart.instance_variable_get(:@requested) == "SINNOH",
+             "Sinnoh must request shared New Game in the existing process")
+    ensure
+      $new_game_choices = nil
+      $messages.clear
+      BlueKantoTitle.singleton_class.alias_method(:launch_sinnoh, :original_launch_sinnoh)
+      BlueKantoTitle.singleton_class.remove_method(:original_launch_sinnoh)
+      Object.send(:remove_const,:BlueRegionStart)
+    end
   end
 
   qa = File.join(home, "game-sinnoh-experimental-#{TOKEN}")
