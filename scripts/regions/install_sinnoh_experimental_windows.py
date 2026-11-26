@@ -59,6 +59,8 @@ import sinnoh_f12c2_eterna_preview as f12c_preview
 import sinnoh_f12c3_jupiter_candidate as f12c_quest
 import sinnoh_f12c4_install as f12c_install
 import sinnoh_f12d_runtime as f12d_runtime
+import sinnoh_f12d_integrated as f12d_integrated
+import sinnoh_regional_catalogue as regional_catalogue
 from audit_sinnoh_rxdata import read_marshal
 from audit_sinnoh_twinleaf_events import MAPS,HANDLERS as CH06_HANDLERS,BALLS as CH06_BALLS
 from build_sinnoh_twinleaf_events import HANDLERS as SCRIPT_HANDLERS
@@ -85,6 +87,11 @@ ROOT_COPY={"Game.exe","Game.ini","mkxp.json","preload.rb","soundfont.sf2","Credi
 ROOT_DIRS={"Data","Audio","Graphics","Fonts","PBS","Plugins","Scripts"}
 SKIP_PARTS={"saves","save","savedata","backups","backup","logs","tmp","cache"}
 SKIP_FILES=re.compile(r"(File\s*[A-H]|Auto\s*[1-9]|Save\d*|Game)\.rxdata(?:\.bak)?\Z",re.I)
+PRIVATE_EXCLUDED_REQUESTS=frozenset({
+    "data/blue-verify-request.txt",
+    "data/blue-battle-lab-request.txt",
+    "data/blue-reference-export-request.txt",
+})
 MAX_FILES=45000
 MAX_BYTES=8*1024*1024*1024
 ANCHORS={
@@ -335,7 +342,7 @@ def runtime_config(base:Path,token:str):
     if count!=1:fail("GAME_INI_TITLE_NOT_UNIQUE")
     return (json.dumps(config,ensure_ascii=False,indent=2)+"\n").encode(),result.encode(),profile
 
-def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile=False,save_token=None,route201=None,encounter_coverage=None,route_trainers=False,encounter_expected=None,f10b=False,f11a=False,f11b=False,f11c=False,f11d=False,f11e=False,f11f=False,f11g=False,f11h=False,f12b5=False,f12c4=False,f12d=False):
+def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile=False,save_token=None,route201=None,encounter_coverage=None,route_trainers=False,encounter_expected=None,f10b=False,f11a=False,f11b=False,f11c=False,f11d=False,f11e=False,f11f=False,f11g=False,f11h=False,f12b5=False,f12c4=False,f12d=False,f12d_integrated=False):
     """Require real Essentials Compiler and all three Barry PBS data; no fake success."""
     rows=Marshal(raw).read()
     matches=[row for row in rows if isinstance(row,list) and len(row)>=3 and row[1]==b"Main"]
@@ -428,11 +435,15 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile
     if f11h:
         verify=verify.replace("        File.write(", "        BlueSinnohF11H.verify_compiled!\n        File.write(",1)
     if f12b5:
-        verify=verify.replace("        File.write(", "        BlueSinnohF12B5.verify_compiled!\n        File.write(",1)
+        hook=hook.replace("trainers.dat","trainers.dat items.dat")
+        verify=verify.replace("        File.write(", "        GameData::Item.load\n        BlueSinnohF12B5.verify_compiled!\n        File.write(",1)
     if f12c4:
         verify=verify.replace("        File.write(", "        BlueSinnohF12C3.verify_compiled!\n        File.write(",1)
     if f12d:
         verify=verify.replace("        File.write(", "        BlueSinnohF12D.verify_compiled!\n        File.write(",1)
+    if f12d_integrated:
+        if "items.dat" not in hook:hook=hook.replace("trainers.dat","trainers.dat items.dat")
+        verify=verify.replace("        File.write(", "        GameData::Item.load\n        BlueSinnohF12DIntegrated.verify_compiled!\n        File.write(",1)
     # Essentials normalizes transfer events (door SFX/fades) during PBS
     # compilation and rewrites their maps. These authored QA files are pinned
     # byte-for-byte by the title/supervisor. Preserve their verified input bytes
@@ -459,9 +470,66 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile
     end
 """
     guarded=guarded.replace("__QA_PROTECTED__"," ".join(protected))
+    if f12d_integrated:
+        # The native compiler can change files and raise non-StandardError.
+        # Capture the exact request before plugin load, and keep it immutable
+        # through compilation rather than re-evaluating the filesystem scope.
+        hook=hook.replace("    if __QA_SCOPE__","    blue_sinnoh_compile_only = (__QA_SCOPE__)\n    if blue_sinnoh_compile_only",1)
+        hook=hook.replace("      $DEBUG = true","      blue_sinnoh_request = File.binread(\"Data/sinnoh-experimental-compile-request.txt\").strip\n      raise \"Sinnoh F12D: invalid compile token\" unless blue_sinnoh_request.match?(/\\A[a-f0-9]{64}\\z/)\n      raise \"Sinnoh F12D: foreign diagnostic request in private copy\" if File.exist?(\"Data/blue-verify-request.txt\") || File.exist?(\"Data/blue-battle-lab-request.txt\") || File.exist?(\"Data/blue-reference-export-request.txt\")\n      puts \"SINNOH_F12D_NATIVE_STAGE FOREIGN_REQUESTS_ISOLATED\"\n      $DEBUG = true\n      puts \"SINNOH_F12D_NATIVE_STAGE REQUEST_ACCEPTED\"",1)
+        guarded=guarded.replace("if __QA_SCOPE__","if blue_sinnoh_compile_only",1)
+        # The core compiler returns before the Blue/Decades alias chain has
+        # finished. Restore the pinned QA bytes at that boundary, not only
+        # after the outer method returns: native post-hooks may inspect them.
+        # Never prepend Compiler.main (the installed plugins alias that method).
+        guarded=guarded.replace("      Compiler.main", """      if blue_sinnoh_compile_only
+        blue_sinnoh_core_compiled = false
+        blue_sinnoh_restore = proc do
+          blue_sinnoh_native_sources.each do |path, original|
+            File.binwrite(path, original) if !File.file?(path) || File.binread(path) != original
+          end
+        end
+        blue_sinnoh_core = Compiler.method(:compile_all)
+        Compiler.define_singleton_method(:compile_all) do |must_compile|
+          begin
+            value = blue_sinnoh_core.call(must_compile)
+            if must_compile
+              blue_sinnoh_restore.call
+              blue_sinnoh_core_compiled = true
+              puts "SINNOH_F12D_NATIVE_STAGE CORE_COMPILED_AND_RESTORED"
+            end
+            value
+          ensure
+            blue_sinnoh_restore.call
+          end
+        end
+        begin
+          Compiler.main
+          raise "Sinnoh F12D: core did not compile fresh PBS" unless blue_sinnoh_core_compiled
+          puts "SINNOH_F12D_NATIVE_STAGE COMPILER_RETURNED"
+        rescue Exception => error
+          message = [error.class.to_s, error.message, *Array(error.backtrace)].join("\\n")
+          warn "SINNOH_F12D_NATIVE_VERIFY_FAILED: COMPILER #{message}"
+          File.binwrite("Data/sinnoh-experimental-compile-error.txt", message)
+          File.delete("Data/sinnoh-experimental-compiled.txt") if File.file?("Data/sinnoh-experimental-compiled.txt")
+          raise
+        ensure
+          Compiler.singleton_class.send(:define_method, :compile_all, blue_sinnoh_core)
+          blue_sinnoh_restore.call
+        end
+      else
+        Compiler.main
+      end""",1)
+        verify=verify.replace("    if __QA_SCOPE__","    if blue_sinnoh_compile_only",1)
+        verify=verify.replace("        GameData::Trainer.load","        raise \"Sinnoh F12D: compile request changed\" unless File.binread(\"Data/sinnoh-experimental-compile-request.txt\").strip==blue_sinnoh_request\n        puts \"SINNOH_F12D_NATIVE_STAGE VERIFY_ENTERED\"\n        GameData::Item.load\n        raise \"Sinnoh F12D: invalid compiled SecretPotion\" unless BlueSinnohF12D3Transaction.compiled_item_valid?\n        puts \"SINNOH_F12D_NATIVE_ITEM_COMPILED_OK\"\n        BlueSinnohF12DIntegrated.verify_native_movement!\n        puts \"SINNOH_F12D_NATIVE_MOVEMENT_PROBE_OK\"\n        BlueSinnohF12DIntegrated.verify_native_transaction!\n        puts \"SINNOH_F12D_NATIVE_TRANSACTION_PROBE_OK\"\n        GameData::Trainer.load",1)
+        # Keep all previous encounter/trainer/terrain/hook checks, not just
+        # the new native probes. Only their joint pass writes the final receipt.
+        verify=verify.replace("        File.write(\"Data/sinnoh-experimental-compiled.txt\",\n                   File.read(\"Data/sinnoh-experimental-compile-request.txt\").strip)","        File.binwrite(\"Data/sinnoh-experimental-compiled.txt\", blue_sinnoh_request)\n        raise \"Sinnoh F12D: compile receipt write failed\" unless File.binread(\"Data/sinnoh-experimental-compiled.txt\")==blue_sinnoh_request\n        puts \"SINNOH_F12D_NATIVE_STAGE ALL_VERIFIERS_PASSED\"")
+        verify=verify.replace("      rescue StandardError => error\n        File.write(\"Data/sinnoh-experimental-compile-error.txt\", error.full_message)","      rescue StandardError, ScriptError => error\n        message = [error.class.to_s, error.message, *Array(error.backtrace)].join(\"\\n\")\n        warn \"SINNOH_F12D_NATIVE_VERIFY_FAILED: #{message}\"\n        File.binwrite(\"Data/sinnoh-experimental-compile-error.txt\", message)\n        File.delete(\"Data/sinnoh-experimental-compiled.txt\") if File.file?(\"Data/sinnoh-experimental-compiled.txt\")")
     late = ""
     if story_profile:
         late = '\n    if File.basename(Dir.pwd) == "game-sinnoh-experimental-'+token+'" && File.file?("sinnoh-experimental-qa.json")\n      BlueSinnohExperimental.install_fresh_hooks!\n      BlueSinnohSafeMovement.install!\n      BlueSinnohQATeleport.install!\n      BlueSinnohForestEdge.install!\n      if defined?(EventHandlers)\n        EventHandlers.add(:on_enter_map, :blue_sinnoh_hide_starter_balls, proc { |*args| BlueSinnohPilot.hide_starter_balls; BlueSinnohPilot.sync_route_trainers })\n      end\n    end'
+    if f12d_integrated:
+        late += '\n    if File.basename(Dir.pwd) == "game-sinnoh-experimental-'+token+'" && File.file?("sinnoh-experimental-qa.json")\n      raise "Sinnoh F12D: hooks indisponiveis" unless BlueSinnohF12DIntegrated.bind_pages!\n      unless File.file?("Data/sinnoh-experimental-compile-request.txt")\n        raise "Sinnoh F12D: compilacao privada nao aprovada" unless defined?(BlueKantoTitle) && BlueKantoTitle.sinnoh_experimental_barry_compiled?\n      end\n    end'
     if save_token is not None:
         if not re.fullmatch(r"[a-f0-9]{12}",save_token):fail("INVALID_SAVE_PROFILE_TOKEN")
         # The original Auto Multi Save plugin falls back to "." if the
@@ -674,7 +742,7 @@ end
     code=code.replace("__PLATINUM_PLAYER__",player_code)
     return code.encode("utf-8")
 
-def compatible_save_token(project,mapping,base_hash,generated_maps=None,previous_maps=None,intermediate_maps=None,refined_maps=None,pre_f10b_maps=None,f10b2_maps=None,f10b3_maps=None,f10b4_maps=None,f10b5_maps=None,f10b6_maps=None,f10b8_maps=None,f10c1_maps=None,f10c2_maps=None,f11a_maps=None,f11b_maps=None,f11c_maps=None,f11d_maps=None,f11e_maps=None,f11f_maps=None,f11g_maps=None,f12b4_maps=None,f12c_previous_maps=None,f12d_previous_maps=None):
+def compatible_save_token(project,mapping,base_hash,generated_maps=None,previous_maps=None,intermediate_maps=None,refined_maps=None,pre_f10b_maps=None,f10b2_maps=None,f10b3_maps=None,f10b4_maps=None,f10b5_maps=None,f10b6_maps=None,f10b8_maps=None,f10c1_maps=None,f10c2_maps=None,f11a_maps=None,f11b_maps=None,f11c_maps=None,f11d_maps=None,f11e_maps=None,f11f_maps=None,f11g_maps=None,f12b4_maps=None,f12c_previous_maps=None,f12d_previous_maps=None,f12d_integrated_previous_maps=None):
     # Read manifests/config only; never enumerate or open save files.
     work=safe_path(project/REPO_OUTPUT)
     candidates=[]
@@ -714,10 +782,10 @@ def compatible_save_token(project,mapping,base_hash,generated_maps=None,previous
                         all(mapping.get(k)==v for k,v in prior.items())):continue
                 hashes=data.get("file_sha256",{})
                 if not isinstance(hashes,dict):continue
-                if not any(all(hashes.get(f"Data/Map{mid:03d}.rxdata")==sha(candidate.get(f"Data/Map{mid:03d}.rxdata",b"")) for mid in prior.values()) for candidate in (generated_maps,previous_maps,intermediate_maps,refined_maps,pre_f10b_maps,f10b2_maps,f10b3_maps,f10b4_maps,f10b5_maps,f10b6_maps,f10b8_maps,f10c1_maps,f10c2_maps,f11a_maps,f11b_maps,f11c_maps,f11d_maps,f11e_maps,f11f_maps,f11g_maps,f12b4_maps,f12c_previous_maps,f12d_previous_maps) if candidate):continue
+                if not any(all(hashes.get(f"Data/Map{mid:03d}.rxdata")==sha(candidate.get(f"Data/Map{mid:03d}.rxdata",b"")) for mid in prior.values()) for candidate in (generated_maps,previous_maps,intermediate_maps,refined_maps,pre_f10b_maps,f10b2_maps,f10b3_maps,f10b4_maps,f10b5_maps,f10b6_maps,f10b8_maps,f10c1_maps,f10c2_maps,f11a_maps,f11b_maps,f11c_maps,f11d_maps,f11e_maps,f11f_maps,f11g_maps,f12b4_maps,f12c_previous_maps,f12d_previous_maps,f12d_integrated_previous_maps) if candidate):continue
             elif set(mapping) in (interior_expansion.ALL,f08c_expansion.ALL,*f11a_gym.GYM_SETS,f12b4_windworks.ALL,f12c_install.ALL):
                 hashes=data.get("file_sha256",{})
-                if not isinstance(hashes,dict) or not any(all(hashes.get(f"Data/Map{mid:03d}.rxdata")==sha(candidate.get(f"Data/Map{mid:03d}.rxdata",b"")) for mid in mapping.values()) for candidate in (generated_maps,previous_maps,intermediate_maps,refined_maps,pre_f10b_maps,f10b2_maps,f10b3_maps,f10b4_maps,f10b5_maps,f10b6_maps,f10b8_maps,f10c1_maps,f10c2_maps,f11a_maps,f11b_maps,f11c_maps,f11d_maps,f11e_maps,f11f_maps,f11g_maps,f12b4_maps,f12c_previous_maps,f12d_previous_maps) if candidate):continue
+                if not isinstance(hashes,dict) or not any(all(hashes.get(f"Data/Map{mid:03d}.rxdata")==sha(candidate.get(f"Data/Map{mid:03d}.rxdata",b"")) for mid in mapping.values()) for candidate in (generated_maps,previous_maps,intermediate_maps,refined_maps,pre_f10b_maps,f10b2_maps,f10b3_maps,f10b4_maps,f10b5_maps,f10b6_maps,f10b8_maps,f10c1_maps,f10c2_maps,f11a_maps,f11b_maps,f11c_maps,f11d_maps,f11e_maps,f11f_maps,f11g_maps,f12b4_maps,f12c_previous_maps,f12d_previous_maps,f12d_integrated_previous_maps) if candidate):continue
             config_path=folder/"mkxp.json";regular(config_path)
             conf=jsonc(config_path.read_text("utf-8-sig"))
             profile=namespace(token)
@@ -821,6 +889,10 @@ def build_files(base:Path,project:Path=ROOT):
     f12d_plugin=b""
     f12d_previous_maps=None
     f12d_report={"status":"NOT_EVALUATED","runtime_install_enabled":False,"native_verified":False}
+    f12d_integrated_report={"status":"NOT_EVALUATED","runtime_install_enabled":False,"native_verified":False}
+    f12d_integrated_previous_maps=None
+    f12d_integrated_plugin=b""
+    regional_catalogue_report={"status":"NOT_EVALUATED"}
     f12b5_plugin=b""
     f11h_plugin=b""
     f10c_plugin=b""
@@ -883,6 +955,9 @@ def build_files(base:Path,project:Path=ROOT):
         print("SINNOH_F10C_NPC_REPORT "+json.dumps(f10c_report,sort_keys=True),flush=True)
         forest_png,forest_code,forest_report=forest_edge.build(maps,mapping,project,extra_symbols=city_expansion.CITIES|route_expansion.ROUTES|natural_expansion.OUTDOORS|f08c_expansion.EXTERIORS)
         maps[forest_edge.TEXTURE]=forest_png
+        catalogue_delta,regional_catalogue_report=regional_catalogue.prepare(base,maps)
+        maps={**maps,**catalogue_delta}
+        print("SINNOH_PRIVATE_REGIONAL_CATALOGUE_REPORT "+json.dumps(regional_catalogue_report,sort_keys=True),flush=True)
         maps,mapping,components,f11a_report,f11a_plugin=f11a_gym.append(maps,mapping,components,occupied,base,project,sources.get("overworlds"),allow_authored=True)
         print("SINNOH_F11A2_GYM_REPORT "+json.dumps(f11a_report,sort_keys=True),flush=True)
         f11a_maps=maps
@@ -935,6 +1010,13 @@ def build_files(base:Path,project:Path=ROOT):
             f12d_previous_maps=maps
             maps,f12d_report,f12d_plugin=f12d_runtime.append(maps,mapping,components,base,project,sources["maps"])
             print("SINNOH_F12D_RUNTIME_REPORT "+json.dumps(f12d_report,sort_keys=True),flush=True)
+            if f12d_report.get("runtime_install_enabled"):
+                candidate={}
+                f12d_integrated_report=f12d_integrated.installer_preflight(maps,mapping,components,f12d_report,base,project,sources["maps"],staged=candidate)
+                if f12d_integrated_report.get("runtime_install_enabled"):
+                    f12d_integrated_previous_maps=maps
+                    maps=candidate["maps"];f12d_integrated_plugin=candidate["plugin"]
+                print("SINNOH_F12D_INTEGRATED_INSTALLER_PREFLIGHT_REPORT "+json.dumps(f12d_integrated_report,sort_keys=True),flush=True)
         gym_symbols=set(mapping)-f08c_expansion.ALL
         if gym_symbols:
             masks=private_visual.movement_masks(maps,mapping,extra_symbols=city_expansion.CITIES|route_expansion.ROUTES|natural_expansion.NATURAL|interior_expansion.INTERIORS|f08c_expansion.EXTERIORS|gym_symbols)
@@ -952,7 +1034,7 @@ def build_files(base:Path,project:Path=ROOT):
     platinum_dawn=private_visual.has_platinum_player(base,10)
     token=secrets.token_hex(6)
     base_hash=sha((base/"Data/MapInfos.rxdata").read_bytes())
-    save_token=compatible_save_token(project,mapping,base_hash,maps,previous_maps,intermediate_maps,refined_maps,pre_f10b_maps,f10b2_maps,f10b3_maps,f10b4_maps,f10b5_maps,f10b6_maps,f10b8_maps,f10c1_maps,f10c2_maps,f11a_maps,f11b_maps,f11c_maps,f11d_maps,f11e_maps,f11f_maps,f11g_maps,f12b4_maps,f12c_previous_maps,f12d_previous_maps) or token
+    save_token=compatible_save_token(project,mapping,base_hash,maps,previous_maps,intermediate_maps,refined_maps,pre_f10b_maps,f10b2_maps,f10b3_maps,f10b4_maps,f10b5_maps,f10b6_maps,f10b8_maps,f10c1_maps,f10c2_maps,f11a_maps,f11b_maps,f11c_maps,f11d_maps,f11e_maps,f11f_maps,f11g_maps,f12b4_maps,f12c_previous_maps,f12d_previous_maps,f12d_integrated_previous_maps) or token
     config,game_ini,profile=runtime_config(base,save_token)
     # This is an isolated copy, never the installed game:
     final=dict(maps)
@@ -961,7 +1043,7 @@ def build_files(base:Path,project:Path=ROOT):
         "Graphics/Characters/SNQA_NPC.png":sprite_png("NPC"),
         "Graphics/Characters/SNQA_BALL.png":sprite_png("BALL"),
         "Data/System.rxdata":None,
-        "Data/Scripts.rxdata":patch_bootstrap((base/"Data/Scripts.rxdata").read_bytes(),token,ids,connected=bool(continuity),story_profile=bool(story),save_token=save_token,route201=mapping["SINNOH_ROUTE_201"] if story else None,encounter_coverage={mapping[sym]:v["methods"] for sym,v in encounter_coverage.items() if v["methods"]},route_trainers=bool(route_trainers),encounter_expected=encounter_expected,f10b=bool(f10b_report.get("new_trainers")),f11a=bool(f11a_report.get("gym_leaders_added")),f11b=bool(f11b_report.get("gym_leaders_added")),f11c=bool(f11c_report.get("gym_leaders_added")),f11d=bool(f11d_report.get("gym_leaders_added")),f11e=bool(f11e_report.get("gym_leaders_added")),f11f=bool(f11f_report.get("gym_leaders_added")),f11g=bool(f11g_report.get("gym_leaders_added")),f11h=bool(f11h_report.get("gym_leaders_added")),f12b5=bool(f12b5_report.get("candidate_runtime_handlers")),f12c4=bool(f12c4_report.get("runtime_install_enabled")),f12d=bool(f12d_report.get("runtime_install_enabled"))),
+        "Data/Scripts.rxdata":patch_bootstrap((base/"Data/Scripts.rxdata").read_bytes(),token,ids,connected=bool(continuity),story_profile=bool(story),save_token=save_token,route201=mapping["SINNOH_ROUTE_201"] if story else None,encounter_coverage={mapping[sym]:v["methods"] for sym,v in encounter_coverage.items() if v["methods"]},route_trainers=bool(route_trainers),encounter_expected=encounter_expected,f10b=bool(f10b_report.get("new_trainers")),f11a=bool(f11a_report.get("gym_leaders_added")),f11b=bool(f11b_report.get("gym_leaders_added")),f11c=bool(f11c_report.get("gym_leaders_added")),f11d=bool(f11d_report.get("gym_leaders_added")),f11e=bool(f11e_report.get("gym_leaders_added")),f11f=bool(f11f_report.get("gym_leaders_added")),f11g=bool(f11g_report.get("gym_leaders_added")),f11h=bool(f11h_report.get("gym_leaders_added")),f12b5=bool(f12b5_report.get("candidate_runtime_handlers")),f12c4=bool(f12c4_report.get("runtime_install_enabled")),f12d=bool(f12d_report.get("runtime_install_enabled")),f12d_integrated=bool(f12d_integrated_report.get("runtime_install_enabled"))),
         "mkxp.json":config,"Game.ini":game_ini,
         # Only inside the NEW private QA copy. Blue-Story source-only sync
         # cannot update the installed main-game title when Kanto is 142/145.
@@ -971,7 +1053,7 @@ def build_files(base:Path,project:Path=ROOT):
         f"{INTRO_PLUGIN}/SinnohPilot.rb":(project/"scripts/regions/SinnohPilot.rb").read_bytes(),
         f"{INTRO_PLUGIN}/meta.txt":b"Name = Blue Sinnoh Intro\nVersion = 0.1\nEssentials = 21.1\nScripts = SinnohPilot.rb\n",
         f"{EXPERIMENT_PLUGIN}/SinnohExperimentalStart.rb":experiment_plugin(
-                  [mapping["SINNOH_PLAYER_BEDROOM"],*start],token,platinum_player,platinum_dawn,story_profile=bool(story))+b"\n"+movement+b"\n"+teleport+b"\n"+forest_code+b"\n"+f10b_plugin+b"\n"+f10c_plugin+b"\n"+f11a_plugin+b"\n"+f11b_plugin+b"\n"+f11c_plugin+b"\n"+f11d_plugin+b"\n"+f11e_plugin+b"\n"+f11f_plugin+b"\n"+f11g_plugin+b"\n"+f11h_plugin+b"\n"+f12b5_plugin+b"\n"+f12c4_plugin+b"\n"+f12d_plugin,
+                  [mapping["SINNOH_PLAYER_BEDROOM"],*start],token,platinum_player,platinum_dawn,story_profile=bool(story))+b"\n"+movement+b"\n"+teleport+b"\n"+forest_code+b"\n"+f10b_plugin+b"\n"+f10c_plugin+b"\n"+f11a_plugin+b"\n"+f11b_plugin+b"\n"+f11c_plugin+b"\n"+f11d_plugin+b"\n"+f11e_plugin+b"\n"+f11f_plugin+b"\n"+f11g_plugin+b"\n"+f11h_plugin+b"\n"+f12b5_plugin+b"\n"+f12c4_plugin+b"\n"+f12d_plugin+b"\n"+f12d_integrated_plugin,
         f"{EXPERIMENT_PLUGIN}/meta.txt":b"Name = Blue Sinnoh Experimental\nVersion = 0.1\nEssentials = 21.1\nRequires = Blue Sinnoh Intro\nScripts = SinnohExperimentalStart.rb\n",
     })
     sysdata=read_marshal((base/"Data/System.rxdata").read_bytes(),"BASE_SYSTEM")
@@ -984,12 +1066,19 @@ def build_files(base:Path,project:Path=ROOT):
     # may restore only these exact preverified bytes, never accept a new hash.
     # This is inside the isolated QA copy, never the user's main installation.
     final["Data/sinnoh-experimental-tilesets-pristine.bin"]=final["Data/Tilesets.rxdata"]
-    proof=sha(("SinnohExperimental:"+token+sha(final["Data/MapInfos.rxdata"])).encode())
+    file_hashes={path:sha(content) for path,content in final.items()}
+    if f12d_integrated_report.get("runtime_install_enabled"):
+        # Bind the private compile receipt to its maps, connections, PBS,
+        # generated plugin and base instead of just the map index.
+        identity={"profile":token,"base_mapinfos_sha256":base_hash,"files":file_hashes}
+        proof=sha(json.dumps(identity,sort_keys=True,separators=(",",":")).encode("ascii"))
+    else:
+        proof=sha(("SinnohExperimental:"+token+file_hashes["Data/MapInfos.rxdata"]).encode())
     final["Data/sinnoh-experimental-compile-request.txt"]=proof.encode("ascii")
     # These hashes do not claim human rights approval, or native gameplay acceptance.
     report={"schema":1,"region":"SINNOH","mode":MODE,
-        "maps_prepared":len(mapping),"static_events_placed":len(events)+story.get("extra_event_count",0)+len(route_trainers)+len(connection_report.get("portals",[]))+len(f08c_report.get("portals",[]))+f10b_report.get("new_trainers",0)+f10c_report.get("new_npcs",0)+f11a_report.get("gym_leaders_added",0)+f11a_report.get("new_portals",0)+f11b_report.get("gym_leaders_added",0)+f11b_report.get("new_portals",0)+f11c_report.get("gym_leaders_added",0)+f11c_report.get("new_portals",0)+f11d_report.get("gym_leaders_added",0)+f11d_report.get("new_portals",0)+f11e_report.get("gym_leaders_added",0)+f11e_report.get("new_portals",0)+f11f_report.get("gym_leaders_added",0)+f11f_report.get("new_portals",0)+f11g_report.get("gym_leaders_added",0)+f11g_report.get("new_portals",0)+f11h_report.get("gym_leaders_added",0)+f11h_report.get("new_portals",0)+f12b5_report.get("new_events",0)+f12c4_report.get("new_events",0)+f12d_report.get("new_events",0),
-        "static_warps":16-len(continuity.get("retired_warp_keys",[]))+(3 if story else 0)+len(connection_report.get("portals",[]))+len(f08c_report.get("portals",[])),"native_seam_pairs":sum(not p.get("visual_only") for p in continuity.get("connections",[]))+len(connection_report.get("seams",[]))+f12b4_report.get("new_seams",0)+f12d_report.get("new_seams",0),"static_handlers":5,"static_starter_balls":3,
+        "maps_prepared":len(mapping),"static_events_placed":len(events)+story.get("extra_event_count",0)+len(route_trainers)+len(connection_report.get("portals",[]))+len(f08c_report.get("portals",[]))+f10b_report.get("new_trainers",0)+f10c_report.get("new_npcs",0)+f11a_report.get("gym_leaders_added",0)+f11a_report.get("new_portals",0)+f11b_report.get("gym_leaders_added",0)+f11b_report.get("new_portals",0)+f11c_report.get("gym_leaders_added",0)+f11c_report.get("new_portals",0)+f11d_report.get("gym_leaders_added",0)+f11d_report.get("new_portals",0)+f11e_report.get("gym_leaders_added",0)+f11e_report.get("new_portals",0)+f11f_report.get("gym_leaders_added",0)+f11f_report.get("new_portals",0)+f11g_report.get("gym_leaders_added",0)+f11g_report.get("new_portals",0)+f11h_report.get("gym_leaders_added",0)+f11h_report.get("new_portals",0)+f12b5_report.get("new_events",0)+f12c4_report.get("new_events",0)+f12d_report.get("new_events",0)+f12d_integrated_report.get("new_events",0),
+        "static_warps":16-len(continuity.get("retired_warp_keys",[]))+(3 if story else 0)+len(connection_report.get("portals",[]))+len(f08c_report.get("portals",[])),"native_seam_pairs":sum(not p.get("visual_only") for p in continuity.get("connections",[]))+len(connection_report.get("seams",[]))+f12b4_report.get("new_seams",0)+f12d_report.get("new_seams",0)+f12d_integrated_report.get("new_seams",0),"static_handlers":5,"static_starter_balls":3,
         "local_reserved_qa_only":True,"independent_r07_approved":False,
         "independent_r08_approved":False,"r09_native_qa_executed":0,
         "game_exe_executed":False,"runtime_playable_verified":False,
@@ -1024,13 +1113,15 @@ def build_files(base:Path,project:Path=ROOT):
         "f12c_eterna_preflight":f12c_report,
         "f12c4_install":f12c4_report,
         "f12d_runtime":f12d_report,
+        "f12d_integrated":f12d_integrated_report,
+        "private_regional_catalogue":regional_catalogue_report,
         "qa_teleport":{"catalog_count":len(teleport_entries),"available_count":sum(row[3] is not None for row in teleport_entries),"destinations":teleport_entries,"native_verified":False},
         "encounter_coverage":encounter_coverage,"route202_trainers":route_trainers,
         "visual_native_reviewed":False,
         "human_positions_reviewed":False,"native_collision_verified":False,
         "compile_token":proof,
-        "file_sha256":{path:sha(content) for path,content in final.items()},
-        "base_mapinfos_sha256":sha((base/"Data/MapInfos.rxdata").read_bytes())}
+        "file_sha256":{**file_hashes,"Data/sinnoh-experimental-compile-request.txt":sha(proof.encode("ascii"))},
+        "base_mapinfos_sha256":base_hash}
     final["sinnoh-experimental-qa.json"]=(json.dumps(report,indent=2,sort_keys=True,ensure_ascii=False)+"\n").encode()
     return final,report
 
@@ -1054,6 +1145,9 @@ def scan_source(base:Path):
             if not path.is_file():fail("NONFILE_SOURCE_ENTRY")
             relpath=path.relative_to(base).as_posix()
             key=relpath.casefold()
+            if key in PRIVATE_EXCLUDED_REQUESTS:
+                # The live official verification request stays untouched.
+                continue
             if key in seen:fail("WINDOWS_CASE_COLLISION")
             seen.add(key);files[relpath]=path
             total+=path.stat().st_size
@@ -1081,6 +1175,8 @@ def install_copy(base:Path,outputs:dict,report:dict,project:Path=ROOT):
         fail("OUTPUT_EXISTS_OR_UNSAFE")
     original=scan_source(base)
     for rel in outputs:
+        if isinstance(rel,str) and rel.casefold() in PRIVATE_EXCLUDED_REQUESTS:
+            fail("QA_FOREIGN_REQUEST_NOT_ALLOWED")
         if not isinstance(rel,str) or "\\" in rel or ".." in PurePosixPath(rel).parts:
             fail("UNSAFE_OUTPUT_PATH")
         if rel.startswith("Data/Map") and re.fullmatch(r"Data/Map\d{3}\.rxdata",rel):

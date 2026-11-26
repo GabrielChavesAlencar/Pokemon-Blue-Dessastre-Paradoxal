@@ -122,17 +122,113 @@ def closure(edges,seeds):
             if node not in seen:seen.add(node);todo.append(node)
     return seen
 
-def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=False,seed_cells=None,strict_movement=False,rock_cells=()):
+def verified_verity_entry(event,src,mapping):
+    if src!=mapping.get("SINNOH_VERITY_LAKEFRONT"):return None
+    name=event.attrs.get("@name")
+    if name not in (b"SN_LAKEFRONT_TO_LAKE_1",b"SN_LAKEFRONT_TO_LAKE_2"):return None
+    lane=0 if name.endswith(b"1") else 1
+    if (event.attrs.get("@x"),event.attrs.get("@y"))!=(10+lane,2):return None
+    pages=event.attrs.get("@pages",[])
+    if len(pages)!=1:return None
+    p=pages[0].attrs;condition=p.get("@condition")
+    if p.get("@trigger")!=1 or p.get("@move_type")!=0 or condition is None or any(
+        condition.attrs.get("@"+k) is not False for k in ("switch1_valid","switch2_valid","variable_valid","self_switch_valid")):return None
+    ops=[c.attrs for c in p.get("@list",[])]
+    if [c.get("@code") for c in ops]!=[111,201,0,412,0] or [c.get("@indent") for c in ops]!=[0,1,1,0,0]:return None
+    if ops[0].get("@parameters")!=[12,b"BlueSinnohPilot.lake_entry_allowed?"]:return None
+    a=ops[1].get("@parameters",[])
+    dst=mapping.get("SINNOH_LAKE_VERITY")
+    if dst is None or len(a)!=6 or a[:5]!=[0,dst,44+lane,42,8] or a[5] not in (0,1):return None
+    return (10+lane,2,dst,44+lane,42,8,a[5])
+
+ORIGINAL_LAKE_SYMBOLS={82:"SINNOH_MT_CORONET_WEST_APPROACH",156:"SINNOH_ROUTE_216",159:"SINNOH_ACUITY_LAKEFRONT",161:"SINNOH_LAKE_ACUITY",
+    162:"SINNOH_ACUITY_CAVERN",195:"SINNOH_VERITY_LAKEFRONT",196:"SINNOH_LAKE_VERITY",214:"SINNOH_VALOR_LAKEFRONT",215:"SINNOH_LAKE_VALOR",217:"SINNOH_VALOR_CAVERN"}
+ORIGINAL_LAKE_EVENT_CONTRACTS={
+    (159,3,161):(20,32,8,49),(161,2,159):(8,49,20,33),
+    (161,3,162):(26,26,20,34),(162,1,161):(20,34,26,26),
+    # The Verity pair is accepted only when the pinned donor transfer matches
+    # the existing lakefront lanes and a safe adjacent return landing.
+    (195,2,196):(10,2,44,42),(195,3,196):(11,2,45,42),
+    (196,1,195):(44,43,10,3),(196,2,195):(45,43,11,3),
+    (214,6,215):(45,22,45,6),(214,7,215):(45,23,45,7),
+    (215,2,214):(46,6,46,22),(215,3,214):(46,7,46,23),
+    (215,4,217):(26,24,22,36),(217,1,215):(22,36,26,24),
+}
+# Only these two donor events can supply an additional northern route
+# contract. Their coordinates must be recovered from the pinned archive,
+# not assumed or inferred from a nearby walkable tile.
+NORTH_LAKE_DONOR_EVENTS={(82,82,156),(156,1,82)}
+ORIGINAL_LAKE_PAIRS={(a,b) for a,_,b in ORIGINAL_LAKE_EVENT_CONTRACTS}|{(a,b) for a,_,b in NORTH_LAKE_DONOR_EVENTS}
+
+def original_lake_contract(key,source_portal_contracts=None):
+    if key in NORTH_LAKE_DONOR_EVENTS:
+        return (source_portal_contracts or {}).get(key)
+    return ORIGINAL_LAKE_EVENT_CONTRACTS.get(key)
+ORIGINAL_CAVE_CALLS={b"pbCaveEntrance",b"pbCaveExit"}
+
+def verified_original_lake_entry(event,src,mapping,source_portal_contracts=None):
+    name=event.attrs.get("@name",b"")
+    if not isinstance(name,bytes):return None
+    match=re.fullmatch(rb"SN_F12D_ORIGINAL_LAKE_(\d+)_(\d+)_(\d+)",name)
+    if not match:return None
+    a,eid,b=map(int,match.groups())
+    if (a,b) not in ORIGINAL_LAKE_PAIRS or src!=mapping.get(ORIGINAL_LAKE_SYMBOLS[a]):return None
+    dst=mapping.get(ORIGINAL_LAKE_SYMBOLS[b])
+    pages=event.attrs.get("@pages",[])
+    if dst is None or len(pages)!=1:return None
+    p=pages[0].attrs;condition=p.get("@condition")
+    if p.get("@trigger") not in (0,1,2) or p.get("@move_type")!=0 or p.get("@through") is not True or condition is None or any(
+        condition.attrs.get("@"+k) is not False for k in ("switch1_valid","switch2_valid","variable_valid","self_switch_valid")):return None
+    ops=[c.attrs for c in p.get("@list",[])]
+    if len(ops)<5 or ops[0].get("@code")!=111 or ops[0].get("@indent")!=0 or ops[0].get("@parameters")!=[12,("BlueSinnohF12DIntegrated.original_lake_entry_allowed?(%d,%d)"%(a,b)).encode("ascii")]:return None
+    if [c.get("@code") for c in ops[-3:]]!=[0,412,0] or [c.get("@indent") for c in ops[-3:]]!=[1,0,0]:return None
+    body=ops[1:-3]
+    if not body or body[-1].get("@code")!=201 or any(c.get("@indent")!=1 for c in body):return None
+    if len(body)>2:return None
+    if len(body)==2 and (body[0].get("@code")!=355 or len(body[0].get("@parameters",[]))!=1 or body[0]["@parameters"][0] not in ORIGINAL_CAVE_CALLS):return None
+    v=body[-1].get("@parameters",[])
+    if len(v)!=6 or any(type(x) is not int for x in v) or v[:2]!=[0,dst] or v[4] not in (0,2,4,6,8) or v[5] not in (0,1):return None
+    if original_lake_contract((a,eid,b),source_portal_contracts)!=(event.attrs["@x"],event.attrs["@y"],v[2],v[3]):return None
+    return (event.attrs["@x"],event.attrs["@y"],dst,*v[2:])
+
+def valor_rock_mask_allowed(threshold, occupied, verified_portal, post_chase_story):
+    # A normal Rock cell may be occupied by an NPC. Its terrain mask is
+    # unchanged, and the common free-cell subtraction excludes that NPC.
+    # The decorative threshold is narrower: an occupied threshold is
+    # usable only for the verified original portal in the post-chase model.
+    return not (threshold and occupied) or (verified_portal and post_chase_story)
+
+def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=False,seed_cells=None,strict_movement=False,rock_cells=(),valor_rock=(),blocked_cells=(),blocked_lanes=(),post_chase_story=False,edge_sink=None,source_portal_contracts=None):
     reverse={mid:sym for sym,mid in mapping.items()}
     tiles=conn.read_marshal(blobs["Data/Tilesets.rxdata"],"F10B7_QA_TILES")
     worlds={mid:conn.read_marshal(blobs["Data/Map%03d.rxdata"%mid],"F10B7_QA") for mid in reverse}
-    index={};groups={};free={};passages={}
-    rock_cells=set(rock_cells)
+    index={};groups={};free={};passages={};arrival_only={};portal_events={}
+    rock_cells=set(rock_cells);valor_rock=dict(valor_rock);blocked_cells=set(blocked_cells);blocked_lanes=set(blocked_lanes)
+    if (blocked_cells or blocked_lanes or post_chase_story) and (not directional or not strict_movement):raise ValueError("F12D_GATE_GRAPH_SCOPE")
+    if valor_rock and (not directional or not strict_movement or any(reverse.get(m) not in
+            {"SINNOH_VALOR_CAVERN","SINNOH_MT_CORONET_WEST_APPROACH"} for m,x,y in valor_rock)):
+        raise ValueError("F12D_VALOR_ROCK_SCOPE")
     rock_symbols={"SINNOH_ROUTE_210","SINNOH_SOLACEON_TOWN","SINNOH_ROUTE_209","SINNOH_ROUTE_210_SEGMENT_2","SINNOH_HEARTHOME_CITY","SINNOH_F07_INTERIOR_125","SINNOH_ROUTE_215","SINNOH_VEILSTONE_CITY","SINNOH_ROUTE_214","SINNOH_VALOR_LAKEFRONT","SINNOH_ROUTE_213","SINNOH_PASTORIA_CITY","SINNOH_ROUTE_212","SINNOH_ROUTE_212_SEGMENT_2"}
     if rock_cells and (not directional or not strict_movement or reverse.get(473)!="SINNOH_ROUTE_210_SEGMENT_2" or any(reverse.get(m) not in rock_symbols for m,x,y in rock_cells)):
         raise ValueError("F12D3_ROCK_GRAPH_SCOPE")
     for mid,world in worlds.items():
         occupied={(e.attrs["@x"],e.attrs["@y"]) for e in world.attrs["@events"].values()}
+        if post_chase_story:
+            # Only existing statically recognised through transfers qualify.
+            # Ordinary NPCs, conditions and solid events remain occupied.
+            by_cell={}
+            for e in world.attrs["@events"].values():
+                by_cell.setdefault((e.attrs["@x"],e.attrs["@y"]),[]).append(e)
+            for xy,events in by_cell.items():
+                if len(events)!=1:continue
+                e=events[0]
+                transfer,_=conn.classify_transfer(e)
+                if not transfer:transfer=verified_verity_entry(e,mid,mapping) or verified_original_lake_entry(e,mid,mapping,source_portal_contracts)
+                if not transfer:continue
+                p=e.attrs["@pages"][0].attrs
+                if p.get("@through") is not True:continue
+                portal_events[mid,xy]=p.get("@trigger")
+                if p.get("@trigger")==0:occupied.discard(xy)
         if directional:
             passages[mid]=directional_masks(world,tiles)
             # The private movement guard rejects every stack with any passage bit.
@@ -151,8 +247,39 @@ def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=Fal
                 if stack!=(462,0,0) or mask!=0 or tag!=4 or priority!=0 or (x,y) in occupied:
                     raise ValueError("F12D3_ROCK_GRAPH_CELL_CHANGED")
                 passages[mid][x,y]=0
+            for (m,x,y),expected in valor_rock.items():
+                if m!=mid:continue
+                a=world.attrs;w,h=a["@width"],a["@height"]
+                if not (0<x<w-1 and 0<y<h-1):raise ValueError("F12D_VALOR_ROCK_PERIMETER")
+                stack=tuple(struct.unpack_from("<H",a["@data"].data,20+2*(z*w*h+y*w+x))[0] for z in range(3))
+                ts=tiles[a["@tileset_id"]].attrs
+                tags=[struct.unpack_from("<H",ts["@terrain_tags"].data,20+2*k)[0] for k in stack if k]
+                priorities=tuple(struct.unpack_from("<H",ts["@priorities"].data,20+2*k)[0] for k in stack if k)
+                threshold=reverse[mid]=="SINNOH_VALOR_CAVERN" and (x,y)==(22,36) and tags==[4,0] and priorities==(0,1)
+                if stack!=expected or 4 not in tags or any(tag not in (0,4) for tag in tags) or any(
+                    struct.unpack_from("<H",ts["@passages"].data,20+2*k)[0]&15 for k in stack if k) or (not threshold and any(priorities)):
+                    raise ValueError("F12D_VALOR_ROCK_CHANGED")
+                valid=threshold and (x,y) in occupied and any(verified_original_lake_entry(e,mid,mapping,source_portal_contracts)
+                    for e in world.attrs["@events"].values() if (e.attrs["@x"],e.attrs["@y"])==(x,y))
+                if not valor_rock_mask_allowed(threshold,(x,y) in occupied,valid,post_chase_story):
+                    continue
+                passages[mid][x,y]=0
+            for m,x,y in blocked_cells:
+                if m==mid:passages[mid].pop((x,y),None)
             free[mid]=set(passages[mid])-occupied
             index[mid],groups[mid]=index_components(free[mid],passages[mid])
+            if post_chase_story:
+                # An actual transfer can land on an automatic through portal.
+                # Such a cell can be left, but stepping onto it must trigger
+                # the transfer rather than silently connecting components.
+                for (m,xy),trigger in sorted(portal_events.items()):
+                    if m!=mid or trigger not in (1,2) or xy not in passages[mid]:continue
+                    adjacent=[q for q in teleport.neighbours(*xy) if q in free[mid] and
+                        step_allowed(passages[mid][xy],passages[mid][q],(q[0]-xy[0],q[1]-xy[1]))]
+                    if not adjacent:continue
+                    label=len(groups[mid])
+                    groups[mid].append({xy});index[mid][xy]=label
+                    arrival_only[mid,xy]=adjacent
         else:
             free[mid]=conn.safe_cells(world,tiles,reverse[mid],allowed={0,2})-occupied
             index[mid],groups[mid]=index_components(free[mid])
@@ -164,6 +291,8 @@ def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=Fal
     def node(mid,xy):
         if mid not in index or xy not in index[mid]:return None
         return mid,index[mid][xy]
+    for (mid,xy),neighbours in arrival_only.items():
+        for q in neighbours:add(node(mid,xy),node(mid,q),"existing_portal_arrival_exit")
     if seed_cells is None:
         for row in teleport.build(blobs,mapping,components,root):
             if row[3] and (seed_symbols is None or row[0] in seed_symbols):
@@ -176,6 +305,7 @@ def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=Fal
     for mid,world in worlds.items():
         for e in world.attrs["@events"].values():
             transfer,why=conn.classify_transfer(e)
+            if not transfer and post_chase_story:transfer=verified_verity_entry(e,mid,mapping) or verified_original_lake_entry(e,mid,mapping,source_portal_contracts)
             if not transfer:continue
             x,y,dst,dx,dy,_,_=transfer
             # Native action portal can be activated from a safe adjacent cell.
@@ -198,8 +328,11 @@ def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=Fal
                 y=(j,0 if dd=="N" else dh-1) if dd in ("N","S") else (0 if dd=="W" else dw-1,j)
                 if directional and (x not in passages[src] or y not in passages[dst] or
                     passages[src][x]&EDGE_BITS[sd] or passages[dst][y]&EDGE_BITS[dd]):continue
-                add(node(src,x),node(dst,y),"existing_continuous_edge")
+                if post_chase_story and ((src,x) in arrival_only or (dst,y) in arrival_only):continue
+                if (src,*x,dst,*y) not in blocked_lanes:add(node(src,x),node(dst,y),"existing_continuous_edge")
     reached=closure(edges,seeds)
+    if edge_sink is not None:
+        edge_sink.clear();edge_sink.update({k:set(v) for k,v in edges.items()})
     return worlds,tiles,index,groups,reached,{"seed_components":len(seeds),"reachable_components":len(reached),"edge_counts":dict(counts),**({"movement_model":"BOTH_DIRECTION_BITS_CONSERVATIVE"} if directional else {})}
 
 def audit(blobs,mapping,components,path,root=f.ROOT):

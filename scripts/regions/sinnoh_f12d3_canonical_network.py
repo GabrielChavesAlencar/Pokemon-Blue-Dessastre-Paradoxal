@@ -137,8 +137,17 @@ def edit_attribution(edits,partial,edge_points):
     return [{"source_id":s,"kind":k,"location":where,"count":n}
         for (s,k,where),n in sorted(counts.items())]
 
-def inspect(blobs,mapping,components,cr,expanded,original,source,root,directional_repair=False,rock_repair=False,rock_network=False):
+def authorial_path_plan(goals,parents,cost,edit_allowed):
+    paths=[trace(p,parents) for p in sorted(goals)]
+    nodes={p for path in paths for u,v,r,k in path for p in (u,v)}
+    edits={p for p in nodes if cost(p)==1}
+    if any(not edit_allowed(p) for p in edits):return None
+    return paths,nodes,edits
+
+def inspect(blobs,mapping,components,cr,expanded,original,source,root,directional_repair=False,rock_repair=False,rock_network=False,integrated_payload=None):
     chase.validate(blobs,mapping);before=chase.digest(blobs)
+    integrated=integrated_payload is not None
+    if integrated:integrated_payload.clear()
     if expanded.get("input_hashes")!=before or not cr.get("runtime_install_enabled") or original.get("status")!="F12D3_ORIGINAL_NETWORK_EVIDENCE_ONLY":
         raise ValueError("F12D3_CANONICAL_STALE")
     catalog,_,_=conn.graph(root)
@@ -164,6 +173,7 @@ def inspect(blobs,mapping,components,cr,expanded,original,source,root,directiona
         "activation_allowed":False,"new_maps":0,"new_portals":0,"new_events":0,"changed_cells_installed":0,
         "budget":BUDGET,"directional_repair":directional_repair,"wrong_source_record":list(WRONG),"wrong_source_destination":"SINNOH_OREBURGH_CITY",
         "authorial_candidates":[],"exact_repair_axes":[],"trials":[],"witness":None}
+    if integrated:result.update(budget=None,policy="AUTHORIAL_GEOMETRIC_PROOF_NO_FIXED_CELL_COUNT")
     def finish(reason):
         if chase.digest(blobs)!=before:raise ValueError("F12D3_CANONICAL_MUTATED")
         result["reason"]=reason;return result
@@ -340,6 +350,12 @@ def inspect(blobs,mapping,components,cr,expanded,original,source,root,directiona
     def adj(p):
         for q in tp.neighbours(*p[1:]):
             v=(p[0],*q)
+            if integrated:
+                # A newly cut perimeter cell can be a seam endpoint, not a
+                # cheap path along the map border. Only inward/outward steps.
+                w,h=sdims[p[0]]
+                def perimeter(a):return a[1] in (0,w-1) or a[2] in (0,h-1)
+                if perimeter(p) and perimeter(v) and (cell_cost(p) is None or cell_cost(v) is None):continue
             if local_allowed(p,v):yield v,(),"local"
         yield from sorted(cross.get(p,()))
     banned_sets=[frozenset()];seen=set()
@@ -414,6 +430,11 @@ def inspect(blobs,mapping,components,cr,expanded,original,source,root,directiona
         goal=min(goals,key=lambda p:(d[p],p));path=trace(goal,parents)
         nodes={p for u,v,r,k in path for p in (u,v)}
         edits={p for p in nodes if cost(p)==1}
+        if integrated:
+            plan=authorial_path_plan(goals,parents,cost,lambda p: p[1:] not in protected[p[0]] and edit_ok(p[0],p[1:]))
+            if plan is None:continue
+            paths,nodes,edits=plan
+            path=[edge for p in paths for edge in p]
         additions=[];endpoints=set()
         for u,v,r,k in path:
             if k in ("original","authorial"):
@@ -429,7 +450,8 @@ def inspect(blobs,mapping,components,cr,expanded,original,source,root,directiona
         result["trials"].append(row)
         for r in additions:
             if kinds[r]=="authorial":banned_sets.append(banned|{r})
-        if len(edits)>BUDGET:row["reason"]="over_budget";continue
+        if not integrated and len(edits)>BUDGET:row["reason"]="over_budget";continue
+        if integrated:row["authorial_justification"]="Union of minimum-cost physical paths to all five exits; protected/special/occupied cells excluded"
         if any(cell_cost(p) is None and p not in endpoints for p in edits):row["reason"]="unrelated_perimeter_edit";continue
         selected=[];conflict=False
         for r in additions:
@@ -457,6 +479,14 @@ def inspect(blobs,mapping,components,cr,expanded,original,source,root,directiona
             check=conn.read_marshal(out,"F12D3_CANONICAL_VERIFY");_,after=corridor.grid(check,tiles)
             if {q for q in shapes if shapes[q]!=after[q]}!=changes or not all(corridor.ordinary(after[q]) for q in changes):
                 raise ValueError("F12D3_CANONICAL_DELTA")
+            if integrated:
+                # Reject new side edges to components absent from the witness.
+                represented={idx[m][p[1:]] for p in nodes if p[0]==s and p[1:] in idx[m]}
+                unintended=[(q,v) for q in changes for v in tp.neighbours(*q)
+                    if v in after and (corridor.ordinary(after[v]) or (m,*v) in rock_cells)
+                    and v not in occupied[s] and (s,*v) not in nodes and idx[m].get(v) not in represented]
+                if unintended:
+                    failed=True;row["reason"]="unplanned_local_side_component";row["unexpected_local_edges"]=len(unintended);break
             partial_edits={q for q in changes if partial((s,*q))}
             rock_conflict=any(not dry.permitted_step(shapes[q],shapes[v],(v[0]-q[0],v[1]-q[1]),True,False)
                 for q in partial_edits for v in tp.neighbours(*q) if (m,*v) in rock_cells)
@@ -467,14 +497,28 @@ def inspect(blobs,mapping,components,cr,expanded,original,source,root,directiona
             trial[rel]=out
         if failed:continue
         _,_,ix,_,reach,_=graph(trial);cells=trainers.reached_cells(ix,reach)
-        required={bound[s] for s in (80,116,126,222,223)}
+        required={bound[s] for s in (80,116,126,222,223)} if not integrated else {bound[p[0]] for p in nodes}
         if not prior<=cells or not required<={m for m,x,y in cells} or not {(bound[116],*p[1:]) for p in goals}<=cells or tp.build(trial,old,components,root)!=entries:
             row["reason"]="global_fixture_failed";continue
         if not {(bound[s],x,y) for s,x,y in nodes}<=cells:row["reason"]="path_not_reachable";continue
         row.update(fixture_passed=True,edits=donors,path=[{"from":list(u),"to":list(v),"record":list(r),"kind":k} for u,v,r,k in path],
             requires_progression_gate=True,reason=None)
+        if integrated:
+            expected={(r,u,v) for u,v,r,k in path if k in ("original","authorial")}
+            invalid=[]
+            for r in additions:
+                for _,x,y in gated.all_lanes(r,ix,dims):
+                    u,v=(inv[r[0]],*x),(inv[r[3]],*y)
+                    if u not in edits and v not in edits:continue
+                    if (r,u,v) not in expected and (r,v,u) not in expected:invalid.append((r,u,v))
+            if invalid:
+                row.update(fixture_passed=False,reason="unplanned_new_seam_lane",unexpected_lanes=len(invalid))
+                continue
+        cut_payload={} if integrated else None
         row["cut"]=cut.inspect(blobs,blobs,mapping,components,cr,expanded,{},root,recovered_alternative=trial,
-            source_protected={(bound[116],*q) for q in protected[116]},rock_cells=rock_cells)
+            source_protected={(bound[116],*q) for q in protected[116]},rock_cells=rock_cells,prepared=cut_payload)
         result["witness"]=row
-        if any(c["status"]=="AUTHORIAL_EXIT_CUT_FIXTURE_ONLY" for c in row["cut"]["cases"]):break
+        if any(c["status"]=="AUTHORIAL_EXIT_CUT_FIXTURE_ONLY" for c in row["cut"]["cases"]):
+            if integrated:integrated_payload.update(cut_payload,rock_cells=frozenset(rock_cells),edits=donors,connections=tuple(additions))
+            break
     return finish("canonical_fixture_only" if result["witness"] else "no_verified_canonical_network")
