@@ -82,6 +82,8 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Kanto phase 15 source PBS inventory failed'}
           python scripts/regions/pilot.py
           if($LASTEXITCODE -ne 0){throw 'Pilot build failed'}
+          python scripts/regions/audit_cerulean_interiors.py
+          if($LASTEXITCODE -ne 0){throw 'K02-C isolated source geometry migration failed'}
           $scope='.blue-work/kanto-pilot/Data/blue-kanto-music.txt'
           if(-not (Test-Path $scope)){throw 'Missing regional Kanto music scope'}
           $scopeRows=@(Get-Content $scope | Where-Object { $_ -match '^SCOPE[\t]' })
@@ -112,6 +114,13 @@ jobs:
           Copy-Item .blue-work/kanto-pilot/Data/Scripts.rxdata .blue-work/kanto-clean-main.rxdata
           python scripts/regions/native_check.py .blue-work/kanto-pilot
           if($LASTEXITCODE -ne 0){throw 'Native check preparation failed'}
+      - name: Preservar recibo K02-C da fonte e migracao isolada
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k02c-source-and-geometry
+          path: .blue-work/kanto-k02c-source.json
+          if-no-files-found: error
       - name: Preservar cobertura completa dos mapas de Kanto
         if: always()
         uses: actions/upload-artifact@v4
