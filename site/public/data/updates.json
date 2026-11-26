@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "583128102d3f76d7ca88dda2461a02151928adff",
+      "date": "2026-11-26T10:41:13-03:00",
+      "title": "Merge PR #346: K00 Android published delta recovery proof",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "c73d5b0675e50bd4d30d383acf4c0dc26715dc44",
+      "date": "2026-11-26T10:35:41-03:00",
+      "title": "QA K00-A: verify published Android 74 to 75 delta with hard interruption and resume",
+      "category": "Melhorias"
+    },
+    {
       "sha": "2ef546b565a5d69913736a1fd12ec3ce9c05e296",
       "date": "2026-11-26T10:26:42-03:00",
       "title": "Merge PR #345: K00 Windows RXDATA migration regression proof",
