@@ -84,6 +84,16 @@ class KantoInstallerTest(unittest.TestCase):
                 installer.repair_portraits(game, True)
             self.assertFalse((graphics / "BLUE_KANTO_CAMPER.png").exists())
 
+    def test_migration_allocation_preserves_existing_ids_and_other_regions(self):
+        from audit import allocate_kanto_ids
+        existing = {5: 300, 7: 302}
+        mapping = allocate_kanto_ids({5, 7, 53, 54, 55}, {300, 302, 700}, existing)
+        self.assertEqual(mapping, {5: 300, 7: 302, 53: 701, 54: 702, 55: 703})
+        with self.assertRaises(ValueError):
+            allocate_kanto_ids({5, 7}, {300}, existing)
+        with self.assertRaises(ValueError):
+            allocate_kanto_ids({5, 7, 53}, {300, 302, 999}, existing)
+
     def test_dry_run_never_writes_into_game(self):
         with tempfile.TemporaryDirectory() as folder:
             root, game, src, files = self.with_game(folder)
