@@ -54,7 +54,7 @@ def serialize(value, extra_classes=()):
     return result
 
 
-def stage(project, source, game, output, existing=None):
+def stage(project, source, game, output, existing=None, *, manifest=None):
     """Publish a complete preview directory by rename, or leave no output at all."""
     allowed = (project / ".blue-work").resolve()
     output = output.resolve()
@@ -62,7 +62,8 @@ def stage(project, source, game, output, existing=None):
         raise ValueError("Staging requires a new folder inside .blue-work")
     if source.resolve().is_relative_to(output) or game.resolve().is_relative_to(output):
         raise ValueError("Staging cannot replace the source or the installed game")
-    plan = map_plan(source, game, json_file(KANTO), existing=existing)
+    plan = map_plan(source, game, json_file(KANTO) if manifest is None else manifest,
+                    existing=existing)
     source_infos, files = inventory(source)
     dest_infos, dest_files = inventory(game)
     source_tiles = load(source / "Data/Tilesets.rxdata")
