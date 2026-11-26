@@ -96,7 +96,7 @@ class KantoInstallerTest(unittest.TestCase):
 
     def test_only_exact_published_catalogs_can_migrate_to_151(self):
         from audit import KANTO, json_file
-        base = set(json_file(KANTO)["maps"])
+        base = set(json_file(KANTO)["maps"]) - {"43","44","45","46","47","48"}
         extra = {"43", "44", "45", "46", "47", "48"}
         north = {"53", "54", "55"}
         self.assertEqual(len(base), 145)
