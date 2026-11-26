@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "96394873cbec069544f7cd38dfe5ecdb8ea20653",
+      "date": "2026-11-26T12:21:40-03:00",
+      "title": "Merge PR #350: native Pallet and Oak parcel progression proof",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "62b6b7976ed74dbfea2e40d893028c332029f6ab",
+      "date": "2026-11-26T12:15:04-03:00",
+      "title": "QA K01-B: native counter-aware action witness and persistent route traces",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "f4561c0498fe98e9f03f35d8dbc36eafde6ee1dc",
+      "date": "2026-11-26T12:08:25-03:00",
+      "title": "QA K01-B: native Pallet gate and bidirectional Oak parcel route",
+      "category": "Melhorias"
+    },
+    {
       "sha": "c435335003ed705027aa3402d022cb02eef1a8fe",
       "date": "2026-11-26T12:07:09-03:00",
       "title": "Merge PR #349: native Kanto three-starter save/reload proof",
