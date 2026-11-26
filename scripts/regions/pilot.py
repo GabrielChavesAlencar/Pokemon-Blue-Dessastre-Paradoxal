@@ -944,6 +944,7 @@ def install_events(source, target, mapping):
                          34: {2: "BlueKantoPilot.heal"},
                          40: {2: "BlueKantoPilot.heal"},
                          36: {18: KANTO_MOONSTONE_CALLBACK},
+                         58: {3: "BlueKantoPilot.daycare_menu"},
                          65: {2: "BlueKantoPilot.heal"},
                          64: {7: "BlueKantoPilot.ticketmaster"},
                          76: {2: "BlueKantoPilot.captain"}}
@@ -1016,6 +1017,12 @@ def install_events(source, target, mapping):
             # This does NOT affect any geometry-only preview region.
             passive_field = bool(source_sign_dialogue(event)) or (
                 source_obstacle(event) == "cut")
+            # Source Map058 exit and caretaker are adapted locally.
+            # Do not execute its donor entrance movement/quest scripts.
+            if original == 58 and event_id == 4:
+                continue
+            if original == 58 and event_id not in (1, 3) and not passive_field:
+                continue
             if not saffron_event_allowed(original, event_id, event):
                 continue
             if not cinnabar_event_allowed(original, event_id) and not passive_field:

@@ -380,6 +380,9 @@ def known_legacy_catalog(wanted, previous):
         return previous == wanted - north
     if len(wanted) == 151 and north | interiors <= wanted:
         return previous in (wanted - interiors, wanted - interiors - north)
+    if len(wanted) == 152 and north | interiors | {"58"} <= wanted:
+        published = wanted - {"58"}
+        return previous in (published, published - interiors, published - interiors - north)
     return False
 
 

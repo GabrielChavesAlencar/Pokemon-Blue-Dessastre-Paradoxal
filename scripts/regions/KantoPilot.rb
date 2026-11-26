@@ -117,6 +117,70 @@ module BlueKantoPilot
     $PokemonGlobal.blue_regions ||= BlueRegions.new_state("KANTO")
   end
 
+  # Route 5 Day Care: one slot, using the native Essentials transactions.
+  def self.daycare_active?
+    kanto_current? && $game_map && $game_map.map_id == kanto_map_id(58) &&
+      defined?(DayCare) && $PokemonGlobal.respond_to?(:day_care)
+  end
+
+  def self.daycare_deposit(index)
+    return false unless daycare_active? && index.is_a?(Integer) &&
+      index >= 0 && index < $player.party.length
+    care = $PokemonGlobal.day_care
+    return false unless care && care.count == 0
+    pokemon = $player.party[index]
+    return false if !pokemon || pokemon.egg? || pokemon.cannot_store
+    return false unless $player.party.each_with_index.any? { |p,i|
+      i != index && !p.egg? && !p.fainted? }
+    DayCare.deposit(index)
+    true
+  end
+
+  def self.daycare_withdraw
+    return false unless daycare_active?
+    care = $PokemonGlobal.day_care
+    index = care.slots.index { |slot| slot.filled? }
+    return false unless index && !$player.party_full?
+    cost = care[index].cost
+    return false unless cost.is_a?(Integer) && cost >= 0 && $player.money >= cost
+    DayCare.withdraw(index)
+    $player.money -= cost
+    true
+  end
+
+  def self.daycare_menu
+    return false unless daycare_active?
+    care = $PokemonGlobal.day_care
+    if care.count == 0
+      commands = $player.party.map { |p| t("{1} Lv.{2}", "{1} Nv.{2}",p.name,p.level) }
+      commands << t("Cancel","Cancelar")
+      choice = pbMessage(t("Day Care: Which Pokémon should I look after?",
+        "Creche: De qual Pokémon devo cuidar?"),commands,commands.length)
+      return false unless choice.is_a?(Integer) && choice >= 0 && choice < commands.length-1
+      unless daycare_deposit(choice)
+        pbMessage(t("Keep at least one Pokémon able to battle. Eggs cannot be deposited here.",
+          "Mantenha pelo menos um Pokémon capaz de batalhar. Ovos não podem ficar aqui."))
+        return false
+      end
+      pbMessage(t("I'll take good care of your Pokémon. Come back later!",
+        "Vou cuidar bem do seu Pokémon. Volte mais tarde!"))
+      return true
+    end
+    slot = care.slots.find { |entry| entry.filled? }
+    return false unless slot
+    return false unless pbConfirmMessage(t(
+      "{1} gained {2} level(s). Take it back for $ {3}?",
+      "{1} ganhou {2} nível(is). Quer retirá-lo por $ {3}?",
+      slot.pokemon.name,slot.level_gain,slot.cost))
+    unless daycare_withdraw
+      pbMessage(t("You need room in your party and enough money.",
+        "Você precisa de espaço na equipe e dinheiro suficiente."))
+      return false
+    end
+    pbMessage(t("Take good care of your Pokémon!", "Cuide bem do seu Pokémon!"))
+    true
+  end
+
   def self.choose_profile
     return unless progress["pilot_profile_pending"]
     pbCharacterSelect
@@ -2303,3 +2367,20 @@ MenuHandlers.add(:pause_menu, :blue_kanto_fossil_lab, {
     false
   end
 })
+
+# Region-specific serialized native storage. The ordinary Essentials DayCare
+# instance is never replaced; the native walking handler uses this getter.
+if defined?(PokemonGlobalMetadata) && defined?(DayCare)
+  module BlueKantoDayCareMetadata
+    def day_care
+      return super unless BlueKantoPilot.kanto_current?
+      if !@blue_kanto_day_care
+        @blue_kanto_day_care = DayCare.new
+        @blue_kanto_day_care.gain_exp = true
+        @blue_kanto_day_care.share_egg_moves = false
+      end
+      @blue_kanto_day_care
+    end
+  end
+  PokemonGlobalMetadata.prepend(BlueKantoDayCareMetadata)
+end
