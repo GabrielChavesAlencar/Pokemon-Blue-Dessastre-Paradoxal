@@ -15,6 +15,7 @@
     "windows_twinleaf_agent_verified": true,
     "windows_round_trips": ["DECADES", "KANTO", "JOHTO", "HOENN"],
     "windows_save_reload_verified": true,
+    "android_qa_archive_verified": true,
     "public_release": false,
     "distribution_approved": false,
     "joiplay_native_verified": false,

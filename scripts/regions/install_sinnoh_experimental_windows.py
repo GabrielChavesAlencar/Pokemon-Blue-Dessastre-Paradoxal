@@ -1062,7 +1062,7 @@ def build_files(base:Path,project:Path=ROOT,*,shared_runtime=False):
         return files, {"mapids":mapping,"maps_prepared":len(mapping),
                        "start":[mapping["SINNOH_PLAYER_BEDROOM"],*start],
                        "private_visual_import":{"maps":imported},
-                       "campaign":{stage:{key:report[key] for key in ("status","reason") if key in report}
+                       "campaign":{stage:{key:report[key] for key in ("status","reason","invariant") if key in report}
                                    for stage,report in
                                    (("windworks",f12b4_report),("mars",f12b5_report),
                                     ("eterna_preflight",f12c_report),("f12c4",f12c4_report),("f12d",f12d_report),

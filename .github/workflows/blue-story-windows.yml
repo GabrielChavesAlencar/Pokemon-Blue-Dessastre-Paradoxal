@@ -7,6 +7,8 @@ on:
       - data/regions/sinnoh-shared-mapids.json
       - scripts/regions/install_sinnoh_experimental_windows.py
       - scripts/regions/sinnoh_source_download.py
+      - scripts/regions/sinnoh_f12d_integrated.py
+      - scripts/regions/sinnoh_f12d3_canonical_network.py
       - scripts/regions/sinnoh_f12d3_secretpotion_audit.py
       - scripts/regions/sinnoh_f12d3_expanded_evidence.py
       - scripts/regions/sinnoh_f12d3_route210_recovery.py
@@ -59,6 +61,8 @@ on:
       - tests/test_sinnoh_shared_install.py
       - scripts/regions/install_sinnoh_experimental_windows.py
       - scripts/regions/sinnoh_source_download.py
+      - scripts/regions/sinnoh_f12d_integrated.py
+      - scripts/regions/sinnoh_f12d3_canonical_network.py
       - scripts/regions/sinnoh_f12d3_secretpotion_audit.py
       - scripts/regions/sinnoh_f12d3_expanded_evidence.py
       - scripts/regions/sinnoh_f12d3_route210_recovery.py

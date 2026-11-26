@@ -1351,6 +1351,6 @@ def installer_preflight(blobs,mapping,components,cr,base,root,source,staged=None
     except (OSError,ValueError,TypeError,KeyError,UnicodeError) as exc:
         code=str(exc)
         # Report only project-defined, non-sensitive invariant identifiers.
-        detail=code if isinstance(exc,ValueError) and re.fullmatch(r"(?:F12D|F10B7|F10B8)_[A-Z0-9_]{1,100}",code) else None
+        detail=code if isinstance(exc,ValueError) and re.fullmatch(r"(?:F12D3?|F10B7|F10B8|SINNOH_F01)_[A-Z0-9_]{1,100}",code) else None
         return {**result,"reason":"preflight_failed:"+type(exc).__name__,
             "invariant":detail}

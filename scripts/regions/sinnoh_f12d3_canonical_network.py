@@ -211,16 +211,17 @@ def inspect(blobs,mapping,components,cr,expanded,original,source,root,directiona
     result["qa_hashes"]={str(s):hashlib.sha256(blobs["Data/Map%03d.rxdata"%m]).hexdigest() for s,m in sorted(bound.items())}
     result["protected_counts"]={str(s):len(protected[s]) for s in sorted(bound)}
     if rock_repair:
-        if not directional_repair or bound[116]!=473:raise ValueError("F12D3_ROCK_SCOPE")
-        guard=pv.movement_masks(blobs,mapping,extra_symbols={SYMBOLS[116]})[bound[116]]
-        raw=tiles[worlds[bound[116]].attrs["@tileset_id"]].attrs["@priorities"].data[20:]
+        if not directional_repair:raise ValueError("F12D3_ROCK_SCOPE")
+        route_210_north=bound[116]
+        guard=pv.movement_masks(blobs,mapping,extra_symbols={SYMBOLS[116]})[route_210_north]
+        raw=tiles[worlds[route_210_north].attrs["@tileset_id"]].attrs["@priorities"].data[20:]
         qp=struct.unpack("<%dH"%(len(raw)//2),raw)
         accepted=set()
         for q in sorted(ROCK_FRONTIER):
             a,b=source_mid_stacks[q],qa[116][0][q]
             if rock_frontier_match(q,a,b,src[116][q],qa[116][1][q],
                 source_mid_priorities[a[0]],qp[b[0]],guard[q[1]][q[0]],q in occupied[116],q in protected[116]):
-                accepted.add((473,*q))
+                accepted.add((route_210_north,*q))
         result["rock_model"]={"scope":"EXACT_THREE_ROCK_CELLS_REFERENCE_ENGINE_ONLY",
             "accepted":[list(p) for p in sorted(accepted)],"engine_reference":"Essentials v21.1 Rock tag 4",
             "local_engine_verified":False,"runtime_changed":False}
