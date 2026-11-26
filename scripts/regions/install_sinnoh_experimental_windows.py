@@ -795,7 +795,7 @@ def compatible_save_token(project,mapping,base_hash,generated_maps=None,previous
     return max(candidates)[2] if candidates else None
 
 
-def build_files(base:Path,project:Path=ROOT):
+def build_files(base:Path,project:Path=ROOT,*,shared_runtime=False):
     base=safe_path(base)
     if not base.is_dir():fail("GAME_FOLDER_NOT_FOUND")
     for name in ("Game.exe","Game.ini","mkxp.json","Data/MapInfos.rxdata",
@@ -1075,6 +1075,12 @@ def build_files(base:Path,project:Path=ROOT):
     else:
         proof=sha(("SinnohExperimental:"+token+file_hashes["Data/MapInfos.rxdata"]).encode())
     final["Data/sinnoh-experimental-compile-request.txt"]=proof.encode("ascii")
+    if shared_runtime:
+        from prepare_sinnoh_shared import shared_handlers
+        handlers = (movement, forest_code, f10b_plugin, f10c_plugin, f11a_plugin, f11b_plugin,
+                    f11c_plugin, f11d_plugin, f11e_plugin, f11f_plugin, f11g_plugin, f11h_plugin,
+                    f12b5_plugin, f12c4_plugin, f12d_plugin, f12d_integrated_plugin)
+        final.update(shared_handlers(project, handlers))
     # These hashes do not claim human rights approval, or native gameplay acceptance.
     report={"schema":1,"region":"SINNOH","mode":MODE,
         "maps_prepared":len(mapping),"static_events_placed":len(events)+story.get("extra_event_count",0)+len(route_trainers)+len(connection_report.get("portals",[]))+len(f08c_report.get("portals",[]))+f10b_report.get("new_trainers",0)+f10c_report.get("new_npcs",0)+f11a_report.get("gym_leaders_added",0)+f11a_report.get("new_portals",0)+f11b_report.get("gym_leaders_added",0)+f11b_report.get("new_portals",0)+f11c_report.get("gym_leaders_added",0)+f11c_report.get("new_portals",0)+f11d_report.get("gym_leaders_added",0)+f11d_report.get("new_portals",0)+f11e_report.get("gym_leaders_added",0)+f11e_report.get("new_portals",0)+f11f_report.get("gym_leaders_added",0)+f11f_report.get("new_portals",0)+f11g_report.get("gym_leaders_added",0)+f11g_report.get("new_portals",0)+f11h_report.get("gym_leaders_added",0)+f11h_report.get("new_portals",0)+f12b5_report.get("new_events",0)+f12c4_report.get("new_events",0)+f12d_report.get("new_events",0)+f12d_integrated_report.get("new_events",0),

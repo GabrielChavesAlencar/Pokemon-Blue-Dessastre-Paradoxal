@@ -52,6 +52,8 @@ on:
       - scripts/install_game.py
       - scripts/regions/sinnoh_shared.py
       - scripts/regions/prepare_sinnoh_shared.py
+      - scripts/regions/stage_sinnoh_shared_qa.py
+      - scripts/regions/SinnohSharedEvents.rb
       - tests/test_sinnoh_shared_install.py
       - scripts/regions/install_sinnoh_experimental_windows.py
       - scripts/regions/sinnoh_source_download.py
@@ -134,7 +136,7 @@ jobs:
           path: dist/Blue-Story.exe
           compression-level: 0
       - name: Atualizar link estável de download do instalador geral
-        if: github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
@@ -161,6 +163,8 @@ jobs:
       GIT_CONFIG_KEY_0: http.sslBackend
       GIT_CONFIG_VALUE_0: openssl
       PYTHONUTF8: '1'
+      GALLIUM_DRIVER: llvmpipe
+      ALSOFT_DRIVERS: 'null'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -169,7 +173,7 @@ jobs:
       - name: Preparar jogo principal em runner descartavel
         run: python scripts/install_game.py --apply
       - name: Gerar 144 mapas contra o jogo principal (sem ativar)
-        run: python scripts/regions/prepare_sinnoh_shared.py
+        run: python -u scripts/regions/prepare_sinnoh_shared.py
       - name: Confirmar candidato e ausência de ativação
         shell: pwsh
         run: |
@@ -178,6 +182,28 @@ jobs:
           if (Test-Path game/Data/blue-sinnoh-shared.txt) { throw 'Unreviewed candidate activated' }
           if (Test-Path .blue-work/sinnoh-shared/manifest.json) { throw 'Unreviewed candidate promoted' }
           Write-Host 'SINNOH_SHARED_144_MAP_CANDIDATE_PREPARED_NOT_NATIVE_APPROVED'
+      - name: Preparar driver gráfico Windows descartável
+        shell: pwsh
+        run: |
+          $archive = Join-Path $env:RUNNER_TEMP 'mesa.7z'
+          $mesa = Join-Path $env:RUNNER_TEMP 'blue-shared-mesa'
+          Invoke-WebRequest -UseBasicParsing 'https://github.com/pal1000/mesa-dist-win/releases/download/26.2.6/mesa3d-26.2.6-release-mingw.7z' -OutFile $archive
+          if ((Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLower() -ne 'da0f71d9181b672c1918f3c342f11118c687f6059a46b16502845160733cc388') { throw 'Mesa checksum failed' }
+          & "$env:ProgramFiles\7-Zip\7z.exe" x $archive "-o$mesa" -y | Out-Null
+          if ($LASTEXITCODE -ne 0) { throw 'Mesa extraction failed' }
+          Get-ChildItem -LiteralPath $mesa -Recurse -File -Filter '*.dll' |
+            Where-Object { $_.DirectoryName -match '[\\/]x64$' } |
+            Copy-Item -Destination game -Force
+          if (-not (Test-Path 'game/opengl32.dll')) { throw 'CI Mesa x64 OpenGL runtime missing' }
+      - name: Instalar e compilar Sinnoh em cópia QA compartilhada
+        run: python -u scripts/regions/stage_sinnoh_shared_qa.py --compile
+      - name: Verificar o recibo de compilação e o isolamento
+        shell: pwsh
+        run: |
+          $stage = Get-Content .blue-work/sinnoh-shared-qa/stage.json -Raw | ConvertFrom-Json
+          if ($stage.maps -ne 144 -or -not $stage.plugin_cache_sha256 -or $stage.windows_travel -or $stage.joiplay_travel) { throw 'Invalid shared QA receipt' }
+          if (Test-Path game/Data/blue-sinnoh-shared.txt) { throw 'Shared QA activated the main game' }
+          Write-Host 'SINNOH_SHARED_WINDOWS_144_MAPS_COMPILED_QA'
 
   sinnoh-original-source-live:
     # Explicit acceptance checks for the download and continuity PRs only.

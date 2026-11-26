@@ -33,7 +33,8 @@ class SinnohSharedInstallerTests(unittest.TestCase):
         map_data = RubyData("Table",struct.pack("<5I",3,4,4,3,48)+struct.pack("<48H",*([1]*16+[0]*32)))
         world = RubyObject("RPG::Map", {"@width":4,"@height":4,"@tileset_id":2,"@events":{},"@data":map_data})
         self.base = {shared.MAP_INFOS:serialize({1:b"Decades"}),shared.TILESETS:serialize([None,tileset]),
-                     shared.CONNECTIONS:serialize([]),shared.PBS_CONNECTIONS:b"# Existing regions\n"}
+                     shared.CONNECTIONS:serialize([]),shared.PBS_CONNECTIONS:b"# Existing regions\n",
+                     "PBS/encounters.txt":b"[001]\nLand,20\n100,PIDGEY,4\n"}
         self.files = {shared.MAP_INFOS:serialize({1:b"Decades", **dict.fromkeys(range(442,586), b"Example"), 443:RubyObject("RPG::MapInfo", {"@name": b"Twinleaf Town"})}),
                       shared.TILESETS:serialize([None,tileset,tileset]),
                       shared.CONNECTIONS:serialize([[442,b"E",0,443,b"W",0]]),
@@ -58,7 +59,7 @@ class SinnohSharedInstallerTests(unittest.TestCase):
             self.put(self.overlay / rel,raw)
         proof = {"schema":1,"profile":"BLUE_SINNOH_SHARED_V1","map_ids":list(range(442,586)),
                  "approvals":self.approvals,"start":[442,1,1],"arrival":[443,1,1],"agent":[443,2,1],
-                 "base":{p:shared.sha(raw) for p,raw in self.base.items()},
+                 "base":{p:shared.sha(raw) for p,raw in self.base.items() if p in self.files},
                  "files":{p:shared.sha(raw) for p,raw in self.files.items()}}
         self.put(self.overlay / 'manifest.json', json.dumps(proof).encode())
         return proof
@@ -78,7 +79,7 @@ class SinnohSharedInstallerTests(unittest.TestCase):
         outputs = dict(self.files)
         outputs["Game.ini"] = b"isolated title"
         outputs["Data/Scripts.rxdata"] = b"isolated scripts"
-        outputs["PBS/encounters.txt"] = b"candidate encounters"
+        outputs["PBS/encounters.txt"] = self.base["PBS/encounters.txt"] + b"[442]\nLand,20\n100,STARLY,4\n"
         report = {"maps_prepared":144,
                   "mapids":{"SINNOH_TWINLEAF_TOWN":443,"SINNOH_PLAYER_BEDROOM":442,
                             **{f"MAP_{mid}":mid for mid in range(444,586)}},
@@ -92,14 +93,37 @@ class SinnohSharedInstallerTests(unittest.TestCase):
         self.assertEqual(proof["agent"][0],443)
         self.assertNotIn("Game.ini",world)
         self.assertNotIn("Data/Scripts.rxdata",world)
-        self.assertNotIn(shared.PLUGIN,world)
-        self.assertIn("PBS/encounters.txt",review)
+        self.assertIn(shared.PLUGIN,world)
+        self.assertIn("PBS/encounters.txt",world)
         self.assertFalse(any(proof["approvals"].values()))
         self.assertFalse(proof["runtime_install_enabled"])
         self.assertFalse((self.game / "Data/Map442.rxdata").exists())
         self.assertEqual((self.game / "Saves/Game.rxdata").read_bytes(),b"existing save")
         with self.assertRaises(ValueError):
             shared.validate_manifest(proof)
+        proof["profile"] = shared.QA_PROFILE
+        proof["map_symbols"] = {("SINNOH_" + key if key.startswith("MAP_") else key):mid
+                                for key,mid in proof["map_symbols"].items()}
+        shared.validate_manifest(proof,qa=True)
+        with self.assertRaises(ValueError):
+            shared.validate_manifest(proof,android=True)
+
+    def test_occupied_twinleaf_portal_keeps_its_event(self):
+        world = shared.read_marshal(self.files["Data/Map443.rxdata"],"TEST_TWINLEAF")
+        portal = RubyObject("RPG::Event",{"@name":b"SN_TOWN_TO_ROUTE201","@x":1,"@y":1})
+        world.attrs["@events"][1] = portal
+        tiles = shared.read_marshal(self.files[shared.TILESETS],"TEST_TILESETS")
+        arrival, agent = candidate.choose_town_points(world,tiles,(1,1))
+        self.assertNotIn((1,1),(arrival,agent))
+        self.assertIs(world.attrs["@events"][1],portal)
+
+    def test_map_pbs_preserves_other_regions_and_rejects_duplicate_ids(self):
+        rel = "PBS/encounters.txt"
+        original = self.base[rel]
+        with self.assertRaisesRegex(ValueError,"outras regiões"):
+            shared.preserve_map_pbs(rel,original,original.replace(b"PIDGEY",b"STARLY"),{442})
+        with self.assertRaisesRegex(ValueError,"duplicados"):
+            shared.preserve_map_pbs(rel,original,original+b"[1,0]\n",{442})
 
     def test_agent_cannot_be_placed_in_a_later_town(self):
         infos = shared.read_marshal(self.files[shared.MAP_INFOS], "TEST_INFOS")

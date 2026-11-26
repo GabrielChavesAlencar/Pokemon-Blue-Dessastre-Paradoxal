@@ -35,6 +35,12 @@ module BlueSinnohPilot
     stage = "regional_state"
     state = regional_state
     raise "Sinnoh QA: perfil regional ausente" unless state
+    if defined?(BlueSinnohSharedEvents) && BlueSinnohSharedEvents.active?
+      # The shared New Game already selected a player. A visitor retains the
+      # identity and party from their original region as well.
+      state["sinnoh_profile_complete"] = true
+      return true
+    end
     return true if state["sinnoh_profile_complete"] == true
     stage = "native_api"
     raise "Sinnoh QA: tela de personagem indisponivel" unless
@@ -125,6 +131,7 @@ module BlueSinnohPilot
     return nil unless record.is_a?(Hash) &&
                       record["version"] == 1 &&
                       record["current"] == "SINNOH"
+    return BlueSinnohSharedEvents.active? ? record : nil if defined?(BlueSinnohSharedEvents)
     # CH07: private Sinnoh QA saves must not borrow another region's initial.
     return nil if record.key?("initial") && record["initial"] != "SINNOH"
     record
@@ -426,7 +433,8 @@ module BlueSinnohPilot
       ready_for_release = false
       qa_test_only = false
     end
-    unless (ready_for_release || qa_test_only || experimental_test) && compiled_rival_valid? &&
+    shared_play = defined?(BlueSinnohSharedEvents) && BlueSinnohSharedEvents.active?
+    unless (shared_play || ready_for_release || qa_test_only || experimental_test) && compiled_rival_valid? &&
            all_rival_versions_valid? && defined?(TrainerBattle) && TrainerBattle.respond_to?(:start)
       pbMessage(_INTL("Barry: Nossa primeira batalha estará disponível no piloto de Sinnoh."))
       return false
@@ -592,8 +600,13 @@ module BlueSinnohPilot
   def self.route_trainer(key)
     state=regional_state
     spec=ROUTE_TRAINERS[key]
-    return false unless state && spec && route202_allowed? &&
-      defined?(BlueSinnohExperimental) && BlueSinnohExperimental.private_copy?
+    return false unless state && spec && route202_allowed?
+    if defined?(BlueSinnohSharedEvents)
+      return false unless BlueSinnohSharedEvents.active?
+    else
+      return false unless defined?(BlueSinnohExperimental) && BlueSinnohExperimental.private_copy? &&
+        defined?(BlueKantoTitle) && BlueKantoTitle.sinnoh_experimental_barry_compiled?
+    end
     victories=state["sinnoh_route202_victories"]
     return false unless victories.nil? || (victories.is_a?(Array) &&
       victories.all? { |k| ROUTE_TRAINERS.key?(k) } && victories.uniq==victories)
@@ -602,7 +615,6 @@ module BlueSinnohPilot
       return true
     end
     return false if @route_trainer_in_progress
-    return false unless defined?(BlueKantoTitle) && BlueKantoTitle.sinnoh_experimental_barry_compiled?
     trainer=GameData::Trainer.get(spec[0],spec[1],ROUTE_TRAINER_VERSION)
     return false unless trainer && trainer.pokemon.length==1
     mon=trainer.pokemon.first

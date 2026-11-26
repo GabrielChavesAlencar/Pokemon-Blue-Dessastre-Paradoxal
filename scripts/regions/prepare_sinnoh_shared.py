@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import re
 import sys
 import tempfile
 
@@ -18,21 +19,53 @@ sys.path[:0] = [str(ROOT), str(ROOT / "scripts/regions")]
 
 import sinnoh_shared as shared
 from audit_sinnoh_rxdata import read_marshal
-from sinnoh_f10b7_field_audit import cell_shape, directional_component, directional_masks
+from sinnoh_f10b7_field_audit import cell_shape, directional_component, directional_masks, step_allowed
 from stage import serialize
 
 CANDIDATE = ".blue-work/sinnoh-shared-candidate"
-PBS_REVIEW = {"PBS/encounters.txt", "PBS/map_metadata.txt"}
+
+
+def shared_handlers(project, handlers):
+    region = project / "scripts/regions"
+    code = [region.joinpath("SinnohSharedEvents.rb").read_bytes(),
+            region.joinpath("SinnohPilot.rb").read_bytes()]
+    for part in handlers:
+        # Port the generated regional tables and their handlers together.
+        # Do not load the private bootstrap, save token or teleport tools.
+        part = re.sub(rb"defined\?\(BlueSinnohExperimental\)\s*&&\s*BlueSinnohExperimental\.private_copy\?|BlueSinnohExperimental\.private_copy\?",
+                      b"BlueSinnohSharedEvents.active?", part)
+        part = re.sub(rb"defined\?\(BlueKantoTitle\)\s*&&\s*BlueKantoTitle\.sinnoh_experimental_barry_compiled\?",
+                      b"BlueSinnohSharedEvents.ready?", part)
+        part = part.replace(b"def self.install!\n    return unless BlueSinnohSharedEvents.active?\n",
+                            b"def self.install!\n")
+        part = part.replace(b"return unless BlueSinnohSharedEvents.active? && defined?(TilemapRenderer)",
+                            b"return unless defined?(TilemapRenderer)")
+        if b"BlueSinnohExperimental" in part or b"BlueSinnohQAStart" in part or b"sinnoh_experimental_barry_compiled?" in part:
+            raise ValueError("Private QA gate in a shared Sinnoh handler")
+        code.append(part)
+    code.append(b"BlueSinnohSharedEvents.bind!\n")
+    return {shared.PLUGIN:b"\n".join(code),
+            shared.META:b"Name = Blue Sinnoh Shared\nVersion = 0.1\nEssentials = 21.1\nRequires = Blue Battle Presentation and Story\nScripts = SinnohSharedEvents.rb\n"}
 
 
 def choose_town_points(world, tiles, anchor):
     """Choose adjacent, unoccupied cells on the actual initial-town component."""
-    occupied = {(e.attrs["@x"], e.attrs["@y"]) for e in world.attrs["@events"].values()}
+    occupied = {(e.attrs["@x"], e.attrs["@y"]): e.attrs.get("@name")
+                for e in world.attrs["@events"].values()}
     masks = directional_masks(world, tiles)
     dry = {p for p in masks if cell_shape(world, tiles, p).get("ordinary_walkable")}
-    dry -= occupied
     if anchor not in dry:
-        raise ValueError("Twinleaf entry witness is not a free dry cell")
+        raise ValueError("Twinleaf entry witness is not on dry ground")
+    dry.difference_update(occupied)
+    if anchor not in dry:
+        if occupied[anchor] not in (b"SN_TOWN_TO_ROUTE201", "SN_TOWN_TO_ROUTE201"):
+            raise ValueError("Unexpected event on the Twinleaf entry witness")
+        x, y = anchor
+        neighbours = [(x+dx,y+dy) for dx,dy in ((0,1),(-1,0),(1,0),(0,-1))
+                      if (x+dx,y+dy) in dry and step_allowed(masks[anchor], masks[x+dx,y+dy], (dx,dy))]
+        if not neighbours:
+            raise ValueError("No clear dry step from the Twinleaf portal")
+        anchor = max(neighbours, key=lambda point: len(directional_component(dry, point, masks)))
     reachable = directional_component(dry, anchor, masks)
     for arrival in sorted(reachable, key=lambda p: (abs(p[0]-anchor[0])+abs(p[1]-anchor[1]), p)):
         for agent in sorted(reachable):
@@ -84,17 +117,23 @@ def prepare_world(game, outputs, report):
     if any((e.attrs["@x"],e.attrs["@y"]) == tuple(start[1:]) for e in start_world.attrs["@events"].values()):
         raise ValueError("Shared New Game start overlaps an event")
     base = {p:shared.sha(shared.safe_file(game,p).read_bytes()) for p in shared.SHARED_FILES}
-    proof = {"map_ids":ids, "base":base, "start":start,
+    proof = {"map_ids":ids, "map_symbols":dict(sorted(mapping.items())), "base":base, "start":start,
              "arrival":[town_id,*arrival], "agent":[town_id,*agent]}
     shared.preserve_base(game, proof, files)
-    # Copy only namespaced regional resources; shared PBS additions remain
-    # separate review inputs until the compiler and foreign sections are checked.
+    # Copy only namespaced regional resources and reviewed regional additions.
     for p, raw in outputs.items():
-        if shared.ASSET.fullmatch(p):
+        if shared.ASSET.fullmatch(p) or p in (shared.PLUGIN, shared.META):
             if (game / p).exists() or (game / p).is_symlink():
                 raise ValueError("Regional asset collision: "+p)
             files[p] = raw
-    review = {p:outputs[p] for p in PBS_REVIEW if p in outputs}
+    review = {}
+    for p in sorted(shared.MAP_PBS & outputs.keys()):
+        old = shared.safe_file(game,p).read_bytes()
+        shared.preserve_map_pbs(p,old,outputs[p],set(ids))
+        files[p] = outputs[p]
+        base[p] = shared.sha(old)
+    proof["connection_rows"] = [list(row) for row in shared.parse_connections(
+        files[shared.PBS_CONNECTIONS][len(shared.safe_file(game,shared.PBS_CONNECTIONS).read_bytes()):])]
     unhandled = sorted(p for p in outputs if p not in files and p not in review)
     proof.update(schema=1, profile="BLUE_SINNOH_SHARED_CANDIDATE_V1",
                  files={p:shared.sha(raw) for p,raw in files.items()},
@@ -103,8 +142,7 @@ def prepare_world(game, outputs, report):
                  approvals={k:False for k in ("map_ids","asset_rights","connected_world",
                                                 "windows_travel","joiplay_travel","android_distribution")},
                  runtime_install_enabled=False, native_verified=False,
-                 blockers=["shared event runtime and PBS merge/compilation",
-                           "full Windows and JoiPlay travel receipts",
+                 blockers=["native compiler and full Windows and JoiPlay travel receipts",
                            "asset distribution approval"])
     return files, review, proof
 
@@ -120,7 +158,7 @@ def prepare(project, game):
     from sinnoh_source_download import ensure_sources
     from install_sinnoh_experimental_windows import build_files
     ensure_sources(project)
-    outputs, report = build_files(game, project)
+    outputs, report = build_files(game, project, shared_runtime=True)
     files, review, proof = prepare_world(game, outputs, report)
     folder.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="sinnoh-shared-", dir=folder.parent) as tmp:
@@ -138,4 +176,9 @@ if __name__ == "__main__":
     parser.add_argument("--project", type=Path, default=ROOT)
     args = parser.parse_args()
     result = prepare(args.project,args.project/"game")
-    print("SINNOH_SHARED_WORLD_CANDIDATE", json.dumps(result,ensure_ascii=False))
+    print("SINNOH_SHARED_WORLD_CANDIDATE", json.dumps({
+        "map_count":len(result["map_ids"]), "start":result["start"],
+        "arrival":result["arrival"], "agent":result["agent"],
+        "connection_count":len(result["connection_rows"]),
+        "runtime_install_enabled":result["runtime_install_enabled"],
+    }),flush=True)
