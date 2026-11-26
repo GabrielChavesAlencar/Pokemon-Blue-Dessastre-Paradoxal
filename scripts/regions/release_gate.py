@@ -38,15 +38,17 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
     site = json_file(root / "site/public/data/kanto.json")
     dex = json_file(root / "site/public/data/catalog.json")
     expected_ids = {int(key) for key in manifest["maps"]}
-    if len(expected_ids) != 145:
-        raise ValueError("Kanto catalog must include 142 stable IDs and three appended north Cerulean maps")
+    if len(expected_ids) != 151:
+        raise ValueError("Kanto catalog must include 145 stable IDs and six appended Cerulean interiors")
     expected_order = stable_source_order(expected_ids)
     if len(expected_order) != len(set(expected_order)) or set(expected_order) != expected_ids:
         raise ValueError("Kanto source ID plan is corrupt")
     if len(expected_order[:127]) != 127 or expected_order[126] != 13:
         raise ValueError("Previous Kanto save IDs were shifted")
-    if expected_order[-3:] != [53, 54, 55] or len(expected_order[:-3]) != 142:
+    if expected_order[142:145] != [53, 54, 55] or len(expected_order[:142]) != 142:
         raise ValueError("Cerulean north maps are not appended after the old save IDs")
+    if expected_order[145:] != [43, 44, 45, 46, 47, 48]:
+        raise ValueError("Cerulean interiors are not appended after the 145 published save IDs")
     preview = set(manifest["preview_only"])
     if len(preview) != 35 or not preview.issubset(expected_ids):
         raise ValueError("35 geometry-only previews must remain protected")
@@ -60,8 +62,8 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
     badges = [badge for _, badge in BADGES]
     if official["milestones"] != badges:
         raise ValueError("Regional milestone order no longer matches the eight Kanto gyms")
-    if site.get("version") != 1 or len(site["locations"]) != 145 or len(site["trainers"]) != 161:
-        raise ValueError("Kanto portal is not synchronized with 145 maps/161 grouped trainers")
+    if site.get("version") != 1 or len(site["locations"]) != 151 or len(site["trainers"]) != 162:
+        raise ValueError("Kanto portal is not synchronized with 151 maps/162 grouped trainers")
 
     locations = {loc["id"]: loc for loc in site["locations"]}
     if len(locations) != len(site["locations"]):
@@ -152,7 +154,7 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
         from pilot_catalog import prepared_plan
         plan = prepared_plan(pilot, manifest)
         mapping = {row["source_id"]:row["proposed_id"] for row in plan["maps"]}
-        if len(mapping) != 145 or len(set(mapping.values())) != 145:
+        if len(mapping) != 151 or len(set(mapping.values())) != 151:
             raise ValueError("Compiled pilot map IDs are incomplete")
         # The canonical stable order must also remain stable for old saves,
         # despite lower-numbered source IDs appended in later phases.
