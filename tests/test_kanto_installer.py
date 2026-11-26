@@ -14,6 +14,40 @@ finally:
 
 
 class KantoInstallerTest(unittest.TestCase):
+    def test_cerulean_items_overlay_preserves_base_catalogue(self):
+        from pilot import install_cerulean_items
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            donor, target = root / "source", root / "game"
+            for project in (donor,target):
+                (project / "PBS").mkdir(parents=True)
+            bike = "[BICYCLE]\nName = Bicycle\nPocket = 8\nPrice = 0\nFieldUse = Direct\nConsumable = false\nFlags = KeyItem\n"
+            voucher = "[BIKEVOUCHER]\nName = Bike Voucher\nPocket = 8\nPrice = 0\nConsumable = false\nFlags = KeyItem\n"
+            base = target / "PBS/items.txt"
+            base.write_text(bike, encoding="utf8")
+            (donor / "PBS/items.txt").write_text(bike + voucher, encoding="utf8")
+            overlay = target / "PBS/items_kanto.txt"
+            install_cerulean_items(donor,target)
+            result = overlay.read_text("utf8")
+            self.assertIn("[BIKEVOUCHER]", result)
+            self.assertNotIn("[BICYCLE]", result)
+            self.assertEqual(base.read_text("utf8"),bike)
+            install_cerulean_items(donor,target)
+            self.assertEqual(overlay.read_text("utf8"),result)
+            base.write_text(bike + voucher, encoding="utf8")
+            install_cerulean_items(donor,target)
+            self.assertNotIn("[BIKEVOUCHER]",overlay.read_text("utf8"))
+            self.assertNotIn("[BICYCLE]",overlay.read_text("utf8"))
+            base.write_text("",encoding="utf8")
+            install_cerulean_items(donor,target)
+            self.assertIn("[BICYCLE]",overlay.read_text("utf8"))
+            self.assertIn("[BIKEVOUCHER]",overlay.read_text("utf8"))
+            self.assertIn("items_kanto.txt",installer.PBS_NAMES)
+            (donor / "PBS/items.txt").write_text(bike,encoding="utf8")
+            with self.assertRaisesRegex(ValueError,"missing original item definitions"):
+                install_cerulean_items(donor,target)
+            self.assertIn("[BIKEVOUCHER]",overlay.read_text("utf8"))
+
     def with_game(self, folder):
         root = Path(folder)
         game = root / "game"
