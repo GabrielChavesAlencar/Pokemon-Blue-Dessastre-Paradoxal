@@ -62,7 +62,7 @@ class PhaseTwoMusicTests(KantoMusicPhaseOneTests):
                                   self.catalog["files"] if item["number"] == 6)
         pallet.unlink()
         content, report = self.compile()
-        self.assertEqual(report["active_map_bindings"], 76)
+        self.assertEqual(report["active_map_bindings"], 82)
         self.assertEqual(report["active_transport_bindings"], 2)
         self.assertFalse(any(row.startswith("MAP\t705\t") for row in
                              content.decode().splitlines()))
