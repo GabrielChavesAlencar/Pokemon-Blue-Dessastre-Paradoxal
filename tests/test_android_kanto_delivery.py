@@ -6,7 +6,8 @@ import unittest
 from zipfile import ZipFile
 import zlib
 
-from scripts.android.verify_kanto_cerulean import assert_delivery, EDGES, JOURNEY, KANTO_RUNTIME
+from scripts.android.verify_kanto_cerulean import assert_delivery, EDGES, JOURNEY, KANTO_RUNTIME, KANTO_ATLAS
+from scripts.regions.kanto_wall_atlas import render_wall_atlas
 from scripts.official_rules.prepare_restore import RubyString, dump
 from server.ruby_marshal import integer
 
@@ -37,7 +38,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class KantoDeliveryTests(unittest.TestCase):
-    def fixture(self, channel, omit=None, short=None, omit_rival=False, omit_ticket=False, omit_bike=False, invalid_dig=False):
+    def fixture(self, channel, omit=None, short=None, omit_rival=False, omit_ticket=False, omit_bike=False, invalid_dig=False, atlas="authored"):
         manifest = json.loads((ROOT / "data/regions/kanto-source.json").read_text("utf8"))
         mapping = {source: 600 + index for index, source in enumerate(manifest["maps"])}
         root, marker = (("Pokemon-Blue-Kanto-Android/", "Kanto pilot.json")
@@ -66,6 +67,8 @@ class KantoDeliveryTests(unittest.TestCase):
                              "\n".join(f"[BLUE_KANTO_RIVAL,Blue,{v}]" for v in (31, 32, 33)))
             if not omit_rival:
                 archive.writestr(root + KANTO_RUNTIME, rival)
+            if atlas is not None:
+                archive.writestr(root + KANTO_ATLAS, render_wall_atlas() if atlas == "authored" else b"donor-or-invalid")
             archive.writestr(root + JOURNEY, source)
             archive.writestr(root + "Plugins/ZZZZ Blue Story and Presentation/RegionTravel.rb", travel)
             archive.writestr(root + "Data/PluginScripts.rxdata", cache)
@@ -77,6 +80,13 @@ class KantoDeliveryTests(unittest.TestCase):
         for channel in ("kanto", "multiregion"):
             with self.subTest(channel=channel):
                 self.assertEqual(assert_delivery(self.fixture(channel), channel)["kanto_maps"], 151)
+
+    def test_authored_atlas_required_in_both_channels(self):
+        for channel in ("kanto", "multiregion"):
+            for atlas in (None, "foreign"):
+                with self.subTest(channel=channel, atlas=atlas):
+                    with self.assertRaisesRegex(ValueError, "authored atlas"):
+                        assert_delivery(self.fixture(channel, atlas=atlas), channel)
 
     def test_gary_runtime_cannot_be_omitted(self):
         for channel in ("kanto", "multiregion"):

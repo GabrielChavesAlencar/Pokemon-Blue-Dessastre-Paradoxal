@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from scripts.android.package import compiled_region
 from server.ruby_marshal import loads, RubyObject
+from scripts.regions.kanto_wall_atlas import render_wall_atlas
 
 SOURCE_MAP_IDS = ("39", "42", "43", "44", "45", "46", "47", "48", "53", "54", "55")
 EDGES = (("39", "53"), ("39", "54"), ("53", "54"))
@@ -25,6 +26,7 @@ EXPECTED_KANTO_MAPS = 151
 EXPECTED_MUSIC_MAPS = 83
 JOURNEY = "Plugins/ZZZZ Blue Story and Presentation/Journey.rb"
 KANTO_RUNTIME = "Plugins/ZZZZZ Blue Kanto Pilot/KantoPilot.rb"
+KANTO_ATLAS = "Plugins/ZZZZZ Blue Kanto Pilot/KantoWallMap.png"
 
 
 def assert_delivery(path: Path, channel: str) -> dict:
@@ -105,6 +107,8 @@ def assert_delivery(path: Path, channel: str) -> dict:
             if callback not in rival:
                 raise ValueError("Cerulean interiors runtime missing")
         compiled_region(cache, "KantoPilot.rb", rival)
+        if root + KANTO_ATLAS not in files or archive.read(root + KANTO_ATLAS) != render_wall_atlas():
+            raise ValueError("Kanto authored atlas absent or differs from release policy")
         # Verify the actual compiled native item, not merely a PBS section.
         catalog = loads(archive.read(root + "Data/items.dat"))
         ticket = catalog.get("BLUE_KANTO_SSTICKET") if isinstance(catalog, dict) else None

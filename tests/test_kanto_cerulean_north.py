@@ -5,6 +5,8 @@ Kanto's source-present runner additionally checks real Map039/053/054/055
 coordinates. Nothing is taken from guessed MapIDs or donor Ruby scripts.
 """
 import json
+import struct
+import zlib
 import shutil
 import subprocess
 import sys
@@ -15,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts/regions"))
 from audit import stable_source_order, allocate_kanto_ids, load
 from pilot import TRAINERS
+from kanto_wall_atlas import render_wall_atlas, PLACES, PROVENANCE
 from kanto_overworld import CERULEAN_FURNITURE, source_cerulean_furniture
 from server.ruby_marshal import RubyObject
 
@@ -66,6 +69,28 @@ class CeruleanNorthContract(unittest.TestCase):
         self.assertIn('pbStartTrade(index, received, "Zynx", "Dontae", 0)', runtime)
         self.assertIn('KantoWallMap.png', runtime)
         self.assertNotIn('pbChoosePokemonForTrade(1, 2', runtime)
+
+    def test_authored_wall_atlas_is_deterministic_valid_and_complete(self):
+        image = render_wall_atlas()
+        self.assertEqual(image, render_wall_atlas())
+        self.assertEqual(image[:8], b"\x89PNG\r\n\x1a\n")
+        self.assertEqual(struct.unpack(">II", image[16:24]), (480, 320))
+        self.assertIn(PROVENANCE, image)
+        self.assertEqual(len({name for name, *_ in PLACES}), 11)
+        pos, data = 8, b""
+        while pos < len(image):
+            size = struct.unpack(">I", image[pos:pos+4])[0]
+            kind = image[pos+4:pos+8]
+            chunk = image[pos+8:pos+8+size]
+            crc = struct.unpack(">I", image[pos+8+size:pos+12+size])[0]
+            self.assertEqual(crc, zlib.crc32(kind+chunk) & 0xffffffff)
+            if kind == b"IDAT":
+                data += chunk
+            pos += 12+size
+        self.assertEqual(pos, len(image))
+        raw = zlib.decompress(data)
+        self.assertEqual(len(raw), 320*(1+480*3))
+        self.assertGreater(len(set(raw)), 8)
 
     def test_native_message_fixture_restores_underlying_method_with_prepend(self):
         ruby = shutil.which("ruby")

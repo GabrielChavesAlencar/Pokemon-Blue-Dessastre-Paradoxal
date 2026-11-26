@@ -22,6 +22,7 @@ from kanto_overworld import (MissingActorGraphic, safely_adapt_source_field_even
                              source_obstacle, CERULEAN_FURNITURE, source_cerulean_furniture)
 from kanto_npc_locale import install_npc_locale, npc_literals
 from kanto_locale_audit import write_audit
+from kanto_wall_atlas import render_wall_atlas
 from server.ruby_marshal import RubyObject, dumps_simple, text
 from stage import serialize, stage
 
@@ -33,6 +34,7 @@ PILOT_META = "Kanto pilot.json"
 # Changes to any of these inputs require a new isolated pilot build.
 PILOT_INPUTS = (
     "scripts/regions/pilot.py",
+    "scripts/regions/kanto_wall_atlas.py",
     "scripts/regions/kanto_overworld.py",
     "scripts/regions/kanto_npc_locale.py",
     "scripts/regions/kanto_locale_audit.py",
@@ -1657,7 +1659,7 @@ def cerulean_voucher_event_witness(source):
 
 
 def install_cerulean_wall_map(source, target):
-    """Copy only the original Kanto atlas image; no Decades atlas overwrite."""
+    """Verify donor atlas privately; distribute only an original Blue schematic."""
     candidates = []
     atlas_pbs = [path for path in sorted((source / "PBS").glob("*.txt"))
                  if re.fullmatch(r"(?:town_map|townmap)(?:_[^/]+)?\.txt", path.name, re.I)]
@@ -1692,10 +1694,16 @@ def install_cerulean_wall_map(source, target):
         raise ValueError("K02-C invalid Kanto atlas PNG")
     destination = target / "Plugins/ZZZZZ Blue Kanto Pilot/KantoWallMap.png"
     destination.parent.mkdir(parents=True, exist_ok=True)
-    destination.write_bytes(image)
+    authored = render_wall_atlas()
+    if authored == image:
+        raise ValueError("K02-C donor atlas cannot be distributed")
+    destination.write_bytes(authored)
     print("KANTO_K02C_WALL_MAP_SOURCE:" + json.dumps({
         "region": region, "source": found[0].relative_to(source).as_posix(),
-        "sha256": hashlib.sha256(image).hexdigest()}), flush=True)
+        "sha256": hashlib.sha256(image).hexdigest(), "private_reference_only": True}), flush=True)
+    print("KANTO_K02C_WALL_MAP_DELIVERY:" + json.dumps({
+        "kind": "blue_authored_schematic_v1", "donor_pixels": False,
+        "sha256": hashlib.sha256(authored).hexdigest()}), flush=True)
 
 
 def install_cerulean_items(source, target):

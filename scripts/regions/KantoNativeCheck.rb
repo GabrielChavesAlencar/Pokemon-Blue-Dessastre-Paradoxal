@@ -280,8 +280,11 @@ module KantoNativeCheck
     require!(furniture_report.length == 14,"K02-C incomplete furniture callbacks")
     puts "KANTO_K02C_FURNITURE_NATIVE_REPORT:#{furniture_report.inspect}"
     atlas = Bitmap.new(BlueKantoPilot::KANTO_WALL_MAP)
-    require!(atlas.width > 0 && atlas.height > 0,"K02-C original atlas invalid")
-    atlas_report = {"width"=>atlas.width,"height"=>atlas.height,"manual_ui"=>false}
+    require!(atlas.width == 480 && atlas.height == 320,"K02-C authored atlas invalid")
+    require!(File.binread(BlueKantoPilot::KANTO_WALL_MAP).include?("Blue authored schematic v1"),
+             "K02-C authored atlas provenance missing")
+    atlas_report = {"width"=>atlas.width,"height"=>atlas.height,"manual_ui"=>false,
+                    "kind"=>"blue_authored_schematic_v1"}
     atlas.dispose
     puts "KANTO_K02C_OPTIONAL_NATIVE_REPORT:#{ {"trade"=>trade_report,"furniture"=>furniture_report,
       "badge_choices"=>choices,"atlas"=>atlas_report}.inspect }"
