@@ -20,6 +20,10 @@ KANTO_PLUGIN = "Plugins/ZZZZZ Blue Kanto Pilot/KantoPilot.rb"
 HOENN_PLUGIN = "Plugins/ZZZZZ Blue Hoenn Pilot/HoennPilot.rb"
 REGION_START_PLUGIN = "Plugins/ZZZZ Blue Story and Presentation/RegionStart.rb"
 REGION_TRAVEL_PLUGIN = "Plugins/ZZZZ Blue Story and Presentation/RegionTravel.rb"
+JOHTO_QA_PROOF = "Data/blue-johto-main-preview.json"
+JOHTO_QA_READY = "Data/blue-johto-preview-ready.txt"
+JOHTO_QA_BOOT = "Plugins/ZZZZZ Blue Johto Main/Boot.rb"
+JOHTO_QA_IDS = range(600,700)
 REGIONAL_FILES = (
     "Data/blue-kanto-install.json", "Data/blue-kanto-start.txt",
     "Data/blue-kanto-ready.txt", "Data/blue-kanto-music.txt",
@@ -76,6 +80,21 @@ def verify_sinnoh(read, *, qa=False):
         compiled_region(compiled, Path(rel).name, read(rel))
 
 
+def verify_johto_qa(read):
+    proof = json.loads(read(JOHTO_QA_PROOF))
+    ready = read(JOHTO_QA_READY).strip()
+    if (proof.get("region") != "JOHTO" or proof.get("status") != "EXPERIMENTAL_PRIVATE_UNVERIFIED"
+            or proof.get("source_bundle_sha256") != "74e727875803f70b3c0598b6b88fe5d79717df849ba1b888fae0583c09202a49"
+            or proof.get("native_gameplay_verified") is not False or proof.get("map_ids") != list(JOHTO_QA_IDS)
+            or ready != b"BLUE_JOHTO_PRIVATE_PREVIEW_V1,100,674,6,7,600,10,26,600,10,25"):
+        raise ValueError("A matriz de viagens QA requer a prévia local de Johto com 100 mapas.")
+    for rel in ("PBS/trainers_johto.txt", "PBS/trainer_types_johto.txt", "PBS/map_metadata_johto_main.txt",
+                *(f"Data/Map{mid:03d}.rxdata" for mid in JOHTO_QA_IDS)):
+        if not read(rel):
+            raise ValueError("Arquivo Johto ausente no pacote de QA: " + rel)
+    compiled_region(read("Data/PluginScripts.rxdata"),Path(JOHTO_QA_BOOT).name,read(JOHTO_QA_BOOT))
+
+
 def compiled_mobile(cache,source):
     expected=source.replace(b'\r\n',b'\n')
     for plugin in loads(cache):
@@ -114,6 +133,10 @@ def verify_archive(output,revision,source_sha=None,channel='decades',*,sinnoh_qa
             verify_sinnoh(lambda rel: archive.read(base+rel),qa=sinnoh_qa)
         elif sinnoh_qa:
             raise ValueError('Pacote Android QA sem arquivos de Sinnoh.')
+        if sinnoh_qa:
+            verify_johto_qa(lambda rel: archive.read(base+rel))
+        elif any(base+rel in archive.namelist() for rel in (JOHTO_QA_PROOF,JOHTO_QA_READY)):
+            raise ValueError("A prévia privada de Johto só pode integrar o pacote local de QA.")
     return {'revision':revision,'mobileSha256':actual}
 
 def fingerprint(game):
@@ -177,6 +200,8 @@ def build(game,output,revision,channel='decades',*,sinnoh_qa=False):
     if has_sinnoh:
         if channel != 'multiregion':raise ValueError('Sinnoh exige o canal compartilhado no Android.')
         verify_sinnoh(lambda rel: sinnoh_shared.safe_file(game,rel).read_bytes(),qa=sinnoh_qa)
+    if sinnoh_qa:
+        verify_johto_qa(lambda rel: sinnoh_shared.safe_file(game,rel).read_bytes())
     marker=game/'Data/blue-android-compiled.txt'
     if not marker.is_file():raise ValueError('The native compiler did not produce its completion marker. No Android download can be published.')
     if marker.read_text()!=fingerprint(game):raise ValueError('The native compiler completion marker is stale for the current plugins. No Android download can be published.')
@@ -197,6 +222,8 @@ def build(game,output,revision,channel='decades',*,sinnoh_qa=False):
                 plans[name]=game/name
         if sinnoh_qa:
             plans[sinnoh_shared.QA_MARKER]=qa_marker
+            for name in (JOHTO_QA_PROOF,JOHTO_QA_READY):
+                plans[name]=game/name
     output.parent.mkdir(parents=True,exist_ok=True)
     build_utc=datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00","Z")
     build_info=('Compatibility: 2\nRevision: '+revision+'\nBuild-UTC: '+build_utc+
@@ -227,7 +254,8 @@ def build(game,output,revision,channel='decades',*,sinnoh_qa=False):
         if has_sinnoh:
             readme += 'SINNOH: selecione Novo Jogo ou use o Agente de Transporte Regional no mesmo save.\n'
         if sinnoh_qa:
-            readme = 'Copia local de QA de Sinnoh. Use apenas saves de teste.\n' + readme
+            readme = ('Copia local de QA de Sinnoh e da previa privada de Johto. Use apenas saves de teste.\n'
+                      'Use este ZIP em pasta separada. O atualizador estavel recusa a copia de QA.\n' + readme)
         archive.writestr('Pokemon-Blue-Android/LEIA-ME-ANDROID.txt', readme)
         # Inventory is checked by the release publisher and the Android updater.
         extras={
