@@ -19,10 +19,10 @@ sys.path.insert(0, str(ROOT))
 from scripts.android.package import compiled_region
 from server.ruby_marshal import loads, RubyObject
 
-SOURCE_MAP_IDS = ("39", "42", "53", "54", "55")
+SOURCE_MAP_IDS = ("39", "42", "43", "44", "45", "46", "47", "48", "53", "54", "55")
 EDGES = (("39", "53"), ("39", "54"), ("53", "54"))
-EXPECTED_KANTO_MAPS = 145
-EXPECTED_MUSIC_MAPS = 77
+EXPECTED_KANTO_MAPS = 151
+EXPECTED_MUSIC_MAPS = 83
 JOURNEY = "Plugins/ZZZZ Blue Story and Presentation/Journey.rb"
 KANTO_RUNTIME = "Plugins/ZZZZZ Blue Kanto Pilot/KantoPilot.rb"
 
@@ -46,7 +46,7 @@ def assert_delivery(path: Path, channel: str) -> dict:
         if (not isinstance(mapping, dict) or
                 len(mapping) != EXPECTED_KANTO_MAPS or
                 not all(source in mapping for source in SOURCE_MAP_IDS)):
-            raise ValueError("Android ZIP lacks the 145-map Kanto/Cerulean revision")
+            raise ValueError("Android ZIP lacks the 151-map Kanto/Cerulean revision")
         all_ids = list(mapping.values())
         if (any(type(value) is not int or value <= 0 for value in all_ids)
                 or len(set(all_ids)) != len(all_ids)):
@@ -84,6 +84,7 @@ def assert_delivery(path: Path, channel: str) -> dict:
         pbs = archive.read(trainer_pbs).decode("utf-8-sig")
         for section in ("[BLUE_KANTO_SWIMMER,Luis,0]",
                         "[BLUE_KANTO_PICNICKER,Diana,0]",
+                        "[BLUE_KANTO_ROCKET,Grunt,6]",
                         *(f"[BLUE_KANTO_RIVAL,Blue,{version}]" for version in (31, 32, 33))):
             if section not in pbs:
                 raise ValueError(f"Native trainer is missing from Kanto PBS: {section}")
@@ -100,6 +101,9 @@ def assert_delivery(path: Path, channel: str) -> dict:
         if (b"def self.cerulean_rival_crossing?" not in rival or
                 b"Game_Event.prepend(BlueKantoPilot::CeruleanRivalActor)" not in rival):
             raise ValueError("Cerulean Gary movement/actor fix missing")
+        for callback in (b"def self.cerulean_bike_exchange", b"def self.cerulean_rocket", b"def self.cerulean_house_entry?"):
+            if callback not in rival:
+                raise ValueError("Cerulean interiors runtime missing")
         compiled_region(cache, "KantoPilot.rb", rival)
         # Verify the actual compiled native item, not merely a PBS section.
         catalog = loads(archive.read(root + "Data/items.dat"))
@@ -132,7 +136,7 @@ def assert_delivery(path: Path, channel: str) -> dict:
         count = sum(line.startswith("MAP\t") for line in
                     archive.read(music).decode("utf8").splitlines())
         if count != EXPECTED_MUSIC_MAPS:
-            raise ValueError(f"Stale Kanto music scope: {count}, expected 77")
+            raise ValueError(f"Stale Kanto music scope: {count}, expected 83")
     return {"channel": channel, "kanto_maps": EXPECTED_KANTO_MAPS,
             "cerulean_sources": list(SOURCE_MAP_IDS),
             "music_maps": EXPECTED_MUSIC_MAPS,
