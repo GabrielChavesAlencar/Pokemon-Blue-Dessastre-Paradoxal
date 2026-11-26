@@ -52,7 +52,7 @@ class KantoDeliveryTests(unittest.TestCase):
             archive.writestr(root + "PBS/map_connections_kanto.txt", "\n".join(
                 f"{mapping[a]},North,0,{mapping[b]},South,0" for a, b in EDGES))
             archive.writestr(root + "PBS/trainers_kanto.txt",
-                             "[BLUE_KANTO_SWIMMER,Luis,0]\n[BLUE_KANTO_PICNICKER,Diana,0]\n" +
+                             "[BLUE_KANTO_SWIMMER,Luis,0]\n[BLUE_KANTO_PICNICKER,Diana,0]\n[BLUE_KANTO_ROCKET,Grunt,6]\n" +
                              "\n".join(f"[BLUE_KANTO_RIVAL,Blue,{v}]" for v in (31, 32, 33)))
             if not omit_rival:
                 archive.writestr(root + KANTO_RUNTIME, rival)
@@ -60,13 +60,13 @@ class KantoDeliveryTests(unittest.TestCase):
             archive.writestr(root + "Plugins/ZZZZ Blue Story and Presentation/RegionTravel.rb", travel)
             archive.writestr(root + "Data/PluginScripts.rxdata", cache)
             archive.writestr(root + "Data/items.dat", b"\x04\x08{\x00" if omit_ticket else ticket_catalog())
-            archive.writestr(root + "Data/blue-kanto-music.txt", "MAP\tfixture\n" * 77)
+            archive.writestr(root + "Data/blue-kanto-music.txt", "MAP\tfixture\n" * 83)
         return target
 
     def test_all_maps_and_compiled_luis_guard_pass_in_both_channels(self):
         for channel in ("kanto", "multiregion"):
             with self.subTest(channel=channel):
-                self.assertEqual(assert_delivery(self.fixture(channel), channel)["kanto_maps"], 145)
+                self.assertEqual(assert_delivery(self.fixture(channel), channel)["kanto_maps"], 151)
 
     def test_gary_runtime_cannot_be_omitted(self):
         for channel in ("kanto", "multiregion"):
