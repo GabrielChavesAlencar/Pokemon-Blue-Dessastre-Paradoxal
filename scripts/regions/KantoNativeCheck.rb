@@ -193,7 +193,7 @@ module KantoNativeCheck
       require!(BlueKantoPilot.cerulean_trade_selected(index),"K02-C native trade failed")
       received = $player.party[index]
       require!(received.species == :JYNX && received.level == 17 && received.name == "Zynx" &&
-               received.nature == :MILD && received.iv[:SPECIAL_DEFENSE] == 25 &&
+               received.nature_id == :MILD && received.iv[:SPECIAL_DEFENSE] == 25 &&
                !BlueKantoPilot.cerulean_trade_selected(index),"K02-C original trade attributes or repeat guard failed")
     ensure
       Object.send(:define_method,:pbFadeOutInWithMusic,original_fade)
