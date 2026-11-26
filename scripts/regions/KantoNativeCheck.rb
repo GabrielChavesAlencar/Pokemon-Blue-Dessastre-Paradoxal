@@ -52,13 +52,22 @@ module KantoNativeCheck
         nx,ny = x+dx,y+dy
         next if nx < 0 || ny < 0 || nx >= $game_map.width || ny >= $game_map.height
         next if seen.key?([nx,ny])
-        next unless $game_player.passable?(x,y,dir) &&
-                    $game_player.passable?(nx,ny,opposite.fetch(dir))
+        # Game_Player is a live native object; synchronize its current tile
+        # before each directional probe, including the reverse check.
+        $game_player.moveto(x,y)
+        next unless $game_player.passable?(x,y,dir)
+        $game_player.moveto(nx,ny)
+        next unless $game_player.passable?(nx,ny,opposite.fetch(dir))
         seen[[nx,ny]] = seen[[x,y]] + 1
         queue << [nx,ny]
       end
     end
-    require!(seen.length > 1, "K00-C isolated anchor #{map_id}:#{point.inspect}")
+    $game_player.moveto(*point)
+    probes = directions.map do |dir,(dx,dy)|
+      [dir,$game_player.passable?(point[0],point[1],dir)]
+    end
+    puts "KANTO_K00_COLLISION_COMPONENT:#{[map_id,point,seen.length,probes].inspect}"
+    require!(seen.length > 1, "K00-C isolated anchor #{map_id}:#{point.inspect}; forward=#{probes.inspect}")
     seen
   end
 
@@ -68,7 +77,7 @@ module KantoNativeCheck
     $game_player.passable?(point[0],point[1],dir)
   end
 
-  def self.north_witness(map_a, comp_a, map_b, comp_b, axis)
+  def self.north_witness(map_a, comp_a, map_b, axis)
     $map_factory.setup(map_a)
     aw,ah = $game_map.width,$game_map.height
     $map_factory.setup(map_b)
@@ -83,9 +92,11 @@ module KantoNativeCheck
       forward,reverse = 6,4
     end
     candidates.each do |a,b|
-      next unless comp_a.key?(a) && comp_b.key?(b)
+      next unless comp_a.key?(a)
       next unless north_edge_cell(map_a,a,forward) && north_edge_cell(map_b,b,reverse)
-      return [map_a,a,map_b,b,comp_a[a],comp_b[b]]
+      # Start the destination component at the actual matched seam cell.
+      # Do not substitute another connected area if this cell is isolated.
+      return [map_a,a,map_b,b,comp_a[a]]
     end
     raise "K00-C no bidirectional native collision seam #{map_a}/#{map_b}"
   end
@@ -167,11 +178,21 @@ module KantoNativeCheck
     require!(rows.include?("#{bridge},South,0,#{city},North,0") &&
              rows.include?("#{route},West,0,#{bridge},East,0"),
              "K00-C source seam registry changed")
-    a = north_component(city,[22,20])
-    b = north_component(bridge,[23,40])
-    c = north_component(route,[48,12])
-    seam1 = north_witness(city,a,bridge,b,:north)
-    seam2 = north_witness(bridge,b,route,c,:east)
+    # Use the actual Center exit's authored arrival rather than an
+    # experimental teleport coordinate that may land on an obstacle.
+    center = BlueKantoPilot.kanto_map_id(40)
+    $map_factory.setup(center)
+    center_exit = $game_map.events.values.find { |ev| Array(ev.list).any? { |op|
+      op.code == 201 && op.parameters[0] == 0 && op.parameters[1] == city } }
+    city_landing = north_transfer!(center_exit,city)
+    puts "KANTO_K00_CITY_CENTER_EXIT:#{[center,center_exit.id,city,city_landing].inspect}"
+    a = north_component(city,city_landing)
+    seam1 = north_witness(city,a,bridge,:north)
+    puts "KANTO_K00_NATIVE_SEAM:#{seam1.inspect}"
+    b = north_component(bridge,seam1[3])
+    seam2 = north_witness(bridge,b,route,:east)
+    puts "KANTO_K00_NATIVE_SEAM:#{seam2.inspect}"
+    c = north_component(route,seam2[3])
     $map_factory.setup(bridge)
     require!(north_event_reachable?(b,$game_map.events[6]), "Rocket unreachable from bridge component")
     $map_factory.setup(route)
@@ -205,7 +226,7 @@ module KantoNativeCheck
       "Cottage return landing disconnected")
     report = {"mode"=>"native_collision_and_scripted_battle_results",
       "manual_gameplay"=>false,"map_ids"=>[city,gym,bridge,route,cottage],
-      "collision_components"=>[a.length,b.length,c.length,d.length],
+      "city_center_landing"=>city_landing,"collision_components"=>[a.length,b.length,c.length,d.length],
       "bidirectional_seams"=>[seam1,seam2],"bill_landing"=>landing,
       "bill_return"=>return_landing,"nugget_quantity"=>$bag.quantity(:NUGGET),
       "ticket_mode"=>(ticket_item ? "native_item" : "regional_permit"),
