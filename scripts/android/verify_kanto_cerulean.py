@@ -122,6 +122,11 @@ def assert_delivery(path: Path, channel: str) -> dict:
                     or item.attrs.get("@consumable") is not False
                     or not any(flag in ("KeyItem", b"KeyItem") for flag in item.attrs.get("@flags", []))):
                 raise ValueError(f"Compiled Cerulean key item missing or invalid: {key}")
+        tm = catalog.get("TM28")
+        if (not isinstance(tm, RubyObject) or tm.name != "GameData::Item"
+                or tm.attrs.get("@id") != "TM28" or tm.attrs.get("@move") != "DIG"
+                or tm.attrs.get("@field_use") not in (3, 5)):
+            raise ValueError("Compiled Cerulean TM28/DIG machine missing or invalid")
         if b"pilot_bill_ticket_item_granted" not in rival:
             raise ValueError("Legacy digital ticket upgrade missing")
         if channel == "multiregion":
@@ -148,7 +153,8 @@ def assert_delivery(path: Path, channel: str) -> dict:
             "cerulean_sources": list(SOURCE_MAP_IDS),
             "music_maps": EXPECTED_MUSIC_MAPS,
             "compiled_journey": True, "compiled_cerulean_gary": True,
-            "compiled_kanto_ss_ticket": True, "compiled_cerulean_bike_items": True}
+            "compiled_kanto_ss_ticket": True, "compiled_cerulean_bike_items": True,
+            "compiled_cerulean_dig_machine": True}
 
 
 def main() -> None:

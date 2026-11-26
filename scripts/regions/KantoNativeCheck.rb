@@ -152,6 +152,12 @@ module KantoNativeCheck
         require!(north_transfer!(event,city) == exits[source][eid],"K02-C wrong exit #{source}/#{eid}")
         require!(north_event_reachable?(interior,event),"K02-C exit unreachable #{source}/#{eid}")
       end
+      if [43,48].include?(source)
+        actor = $game_map.events[1]
+        name = actor && actor.character_name.to_s
+        require!(name && !name.empty? && pbResolveBitmap("Graphics/Characters/#{name}"),
+                 "K02-C required actor sprite missing #{source}/1")
+      end
       if source == 43
         require!(opening_action_witness(interior,$game_map.events[1]),"K02-C bike owner unreachable")
         north_callback!($game_map.events[1],"BlueKantoPilot.cerulean_bike_exchange")
@@ -177,6 +183,12 @@ module KantoNativeCheck
     require!(GameData::Item.get(:BIKEVOUCHER).is_key_item? && GameData::Item.get(:BICYCLE).is_key_item? &&
              !GameData::Item.get(:BIKEVOUCHER).consumable && !GameData::Item.get(:BICYCLE).consumable,
              "K02-C bike/voucher must remain regional key items")
+    require!(GameData::Item.get(:BICYCLE).field_use == 2 &&
+             ItemHandlers.hasOutHandler(:BICYCLE) && ItemHandlers.hasUseInFieldHandler(:BICYCLE),
+             "K02-C bicycle native use/register handlers missing")
+    require!(BlueRegionTravel.regional_item?(:BIKEVOUCHER) &&
+             BlueRegionTravel.regional_item?(:BICYCLE) && !BlueRegionTravel.regional_item?(:TM28),
+             "K02-C regional key items or global TM28 policy changed")
     require!(!$bag.has?(:BIKEVOUCHER) && !$bag.has?(:BICYCLE),"K02-C fresh bag unexpectedly has bicycle")
     require!(!BlueKantoPilot.cerulean_bike_exchange && !$bag.has?(:BICYCLE),"K02-C free bike")
     # Test the store contract with a native item fixture. Its actual Fan Club
@@ -185,9 +197,21 @@ module KantoNativeCheck
     require!(BlueKantoPilot.cerulean_bike_exchange && $bag.quantity(:BICYCLE)==1 &&
              $bag.quantity(:BIKEVOUCHER)==0,"K02-C voucher exchange failed")
     require!(BlueKantoPilot.cerulean_bike_exchange && $bag.quantity(:BICYCLE)==1,"K02-C bicycle duplicated")
+    staged_bag, local_items, = BlueRegionTravel.stage_local_bag({}, "DECADES")
+    require!(!staged_bag.has?(:BICYCLE) && !staged_bag.has?(:BIKEVOUCHER) &&
+             local_items["items"].include?([:BICYCLE,1]) && $bag.quantity(:BICYCLE)==1,
+             "K02-C staged regional travel leaked or lost the bicycle")
     $map_factory.setup(city)
     require!(GameData::Trainer.get(:BLUE_KANTO_ROCKET,"Grunt",6).pokemon.length > 0,"K02-C native Grunt6 missing")
-    require!(GameData::Item.exists?(:TM28) && GameData::Item.get(:TM28).move == :DIG,"K02-C native TM28/Dig missing")
+    require!(GameData::Item.exists?(:TM28) && GameData::Item.get(:TM28).move == :DIG &&
+             (GameData::Item.get(:TM28).is_TM? || GameData::Item.get(:TM28).is_TR?),
+             "K02-C native TM28/Dig machine missing")
+    [25,26].each do |id|
+      actor = $game_map.events[id]
+      name = actor && actor.character_name.to_s
+      require!(name && !name.empty? && pbResolveBitmap("Graphics/Characters/#{name}"),
+               "K02-C required Cerulean actor sprite missing #{id}")
+    end
     [26,37,38].each { |id| north_callback!($game_map.events[id],"BlueKantoPilot.cerulean_rocket") }
     tm_before = $bag.quantity(:TM28)
     losses_remaining["Grunt"] = 1
@@ -200,7 +224,8 @@ module KantoNativeCheck
     require!([26,37,38].all? { |id| $game_self_switches[[city,id,"A"]] &&
              $game_map.events[id].character_name.to_s.empty? },"K02-C Rocket pages not hidden")
     {"manual_gameplay"=>false,"witnesses"=>witnesses,"bicycle"=>1,"voucher"=>0,
-     "tm28"=>$bag.quantity(:TM28),"rocket_retry"=>true,"voucher_fixture"=>true}
+     "tm28"=>$bag.quantity(:TM28),"rocket_retry"=>true,"voucher_fixture"=>true,
+     "native_bike_handlers"=>true,"regional_bag_staging"=>true,"required_actor_sprites"=>true}
   end
 
   def self.north_story(battle_calls, losses_remaining)

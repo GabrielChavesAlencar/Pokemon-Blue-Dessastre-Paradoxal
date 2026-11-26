@@ -11,12 +11,12 @@ from scripts.official_rules.prepare_restore import RubyString, dump
 from server.ruby_marshal import integer
 
 
-def ticket_catalog(omit_bike=False):
+def ticket_catalog(omit_bike=False, invalid_dig=False):
     # Minimal inert Ruby Marshal fixture matching native GameData::Item.
     def sym(value):
         raw = value.encode("ascii")
         return b":" + integer(len(raw)) + raw
-    ids = ["BLUE_KANTO_SSTICKET", "BIKEVOUCHER"]
+    ids = ["BLUE_KANTO_SSTICKET", "BIKEVOUCHER", "TM28"]
     if not omit_bike:
         ids.append("BICYCLE")
     records = []
@@ -24,6 +24,10 @@ def ticket_catalog(omit_bike=False):
         attrs = {"@id": sym(key), "@pocket": dump(8),
                  "@price": dump(0), "@consumable": dump(False),
                  "@flags": dump([RubyString(b"KeyItem")])}
+        if key == "TM28":
+            attrs = {"@id": sym(key), "@pocket": dump(9), "@price": dump(2000),
+                     "@consumable": dump(True), "@flags": dump([RubyString(b"Fling_80")]),
+                     "@field_use": dump(5), "@move": sym("CUT" if invalid_dig else "DIG")}
         record = b"o" + sym("GameData::Item") + integer(len(attrs)) + b"".join(
             sym(name) + value for name, value in attrs.items())
         records.append(sym(key) + record)
@@ -33,7 +37,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class KantoDeliveryTests(unittest.TestCase):
-    def fixture(self, channel, omit=None, short=None, omit_rival=False, omit_ticket=False, omit_bike=False):
+    def fixture(self, channel, omit=None, short=None, omit_rival=False, omit_ticket=False, omit_bike=False, invalid_dig=False):
         manifest = json.loads((ROOT / "data/regions/kanto-source.json").read_text("utf8"))
         mapping = {source: 600 + index for index, source in enumerate(manifest["maps"])}
         root, marker = (("Pokemon-Blue-Kanto-Android/", "Kanto pilot.json")
@@ -65,7 +69,7 @@ class KantoDeliveryTests(unittest.TestCase):
             archive.writestr(root + JOURNEY, source)
             archive.writestr(root + "Plugins/ZZZZ Blue Story and Presentation/RegionTravel.rb", travel)
             archive.writestr(root + "Data/PluginScripts.rxdata", cache)
-            archive.writestr(root + "Data/items.dat", b"\x04\x08{\x00" if omit_ticket else ticket_catalog(omit_bike))
+            archive.writestr(root + "Data/items.dat", b"\x04\x08{\x00" if omit_ticket else ticket_catalog(omit_bike, invalid_dig))
             archive.writestr(root + "Data/blue-kanto-music.txt", "MAP\tfixture\n" * 83)
         return target
 
@@ -87,6 +91,10 @@ class KantoDeliveryTests(unittest.TestCase):
     def test_missing_compiled_bicycle_is_rejected(self):
         with self.assertRaisesRegex(ValueError, "Compiled Cerulean key item missing or invalid: BICYCLE"):
             assert_delivery(self.fixture("multiregion", omit_bike=True), "multiregion")
+
+    def test_wrong_compiled_dig_machine_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, "TM28/DIG machine"):
+            assert_delivery(self.fixture("multiregion", invalid_dig=True), "multiregion")
 
     def test_missing_pallet_map_is_rejected_even_with_cerulean_present(self):
         for channel in ("kanto", "multiregion"):

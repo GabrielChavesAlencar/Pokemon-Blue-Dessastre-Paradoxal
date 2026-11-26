@@ -21,7 +21,7 @@ class KantoInstallerTest(unittest.TestCase):
             donor, target = root / "source", root / "game"
             for project in (donor,target):
                 (project / "PBS").mkdir(parents=True)
-            bike = "[BICYCLE]\nName = Bicycle\nPocket = 8\nPrice = 0\nFieldUse = Direct\nConsumable = false\nFlags = KeyItem\n"
+            bike = "[BICYCLE]\nName = Bicycle\nNamePlural = Bicycles\nPocket = 8\nPrice = 0\nFieldUse = Direct\nFlags = KeyItem\n"
             voucher = "[BIKEVOUCHER]\nName = Bike Voucher\nPocket = 8\nPrice = 0\nConsumable = false\nFlags = KeyItem\n"
             base = target / "PBS/items.txt"
             base.write_text(bike, encoding="utf8")
@@ -59,7 +59,7 @@ class KantoInstallerTest(unittest.TestCase):
                 (project / "PBS").mkdir(parents=True)
             (donor / "Data").mkdir()
             (donor / "Data/Map043.rxdata").write_bytes(b"fixture")
-            bike = "[BICYCLE]\nName = Bicycle\nPocket = 8\nPrice = 0\nConsumable = false\nFlags = KeyItem\n"
+            bike = "[BICYCLE]\nName = Bicycle\nNamePlural = Bicycles\nPocket = 8\nPrice = 0\nFieldUse = Direct\nFlags = KeyItem\n"
             base = target / "PBS/items.txt"
             base.write_text(bike, encoding="utf8")
             (donor / "PBS/items.txt").write_text(bike, encoding="utf8")
@@ -90,6 +90,51 @@ class KantoInstallerTest(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "missing original item definitions"):
                     install_cerulean_items(donor, target)
                 self.assertEqual(overlay.read_text("utf8"), first)
+
+    def test_native_key_item_defaults_and_explicit_conflicts(self):
+        from pilot import install_cerulean_items
+        with tempfile.TemporaryDirectory() as folder:
+            donor, target = Path(folder) / "source", Path(folder) / "game"
+            for project in (donor, target):
+                (project / "PBS").mkdir(parents=True)
+            bike = "[BICYCLE]\nName = Bicycle\nPocket = 8\nFieldUse = Direct\nFlags = KeyItem\n"
+            voucher = "[BIKEVOUCHER]\nName = Bike Voucher\nPocket = 8\nFlags = KeyItem\n"
+            base = target / "PBS/items.txt"
+            (donor / "PBS/items.txt").write_text(voucher, encoding="utf8")
+            for extra in ("", "Consumable = false\n", "Consumable = False # default\n"):
+                base.write_text(bike + extra, encoding="utf8")
+                install_cerulean_items(donor, target)
+                self.assertEqual(base.read_text("utf8"), bike + extra)
+            overlay = target / "PBS/items_kanto.txt"
+            before = overlay.read_bytes()
+            for invalid in (bike + "Consumable = true\n",
+                            bike + "Consumable = nonsense\n",
+                            bike.replace("KeyItem", "Fling_30"),
+                            bike.replace("FieldUse = Direct", "FieldUse = OnPokemon")):
+                base.write_text(invalid, encoding="utf8")
+                with self.assertRaisesRegex(ValueError, "incompatible regional key item BICYCLE"):
+                    install_cerulean_items(donor, target)
+                self.assertEqual(overlay.read_bytes(), before)
+                self.assertEqual(base.read_text("utf8"), invalid)
+
+    def test_cerulean_reward_preserves_native_decades_tr(self):
+        from pilot import audit_cerulean_reward_item
+        with tempfile.TemporaryDirectory() as folder:
+            game = Path(folder)
+            (game / "PBS").mkdir()
+            path = game / "PBS/items.txt"
+            native = "[TM28]\nName = TM28\nPocket = 9#4\nPrice = 2000\nFieldUse = TR\nFlags = Fling_80\nMove = DIG\n"
+            path.write_text(native, encoding="utf8")
+            audit_cerulean_reward_item(game)
+            self.assertEqual(path.read_text("utf8"), native)
+            for invalid in ("", native.replace("DIG", "CUT"), native.replace("TR", "Direct")):
+                path.write_text(invalid, encoding="utf8")
+                with self.assertRaisesRegex(ValueError, "TM28/DIG"):
+                    audit_cerulean_reward_item(game)
+            path.write_text(native, encoding="utf8")
+            (game / "PBS/items_other.txt").write_text(native, encoding="utf8")
+            with self.assertRaisesRegex(ValueError, "TM28/DIG"):
+                audit_cerulean_reward_item(game)
 
     def with_game(self, folder):
         root = Path(folder)

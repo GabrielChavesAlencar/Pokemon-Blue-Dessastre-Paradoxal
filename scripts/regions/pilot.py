@@ -1680,12 +1680,20 @@ def install_cerulean_items(source, target):
         authored.add("BIKEVOUCHER")
     if set(donor) != missing:
         raise ValueError(f"K02-C missing original item definitions: {sorted(missing - donor.keys())}")
+    effective = {}
     for key, rows in {**existing, **donor}.items():
-        fields = {k.strip(): v.strip() for row in rows
+        fields = {k.strip(): v.split("#", 1)[0].strip() for row in rows
                   for k, sep, v in [row.partition("=")] if sep}
-        if ("KeyItem" not in {v.strip() for v in fields.get("Flags", "").split(",")}
-                or fields.get("Consumable", "").lower() != "false"):
-            raise ValueError(f"K02-C incompatible regional key item {key}")
+        # Essentials v21.1 GameData::Item initializes an omitted Consumable
+        # to !is_important?, and KeyItem is important. Preserve original PBS.
+        flags = {v.strip().lower() for v in fields.get("Flags", "").split(",")}
+        raw = fields.get("Consumable")
+        if ("keyitem" not in flags or (raw is not None and raw.lower() != "false")
+                or (key == "BICYCLE" and fields.get("FieldUse") != "Direct")):
+            raise ValueError(f"K02-C incompatible regional key item {key}: "
+                             f"flags={sorted(flags)}, Consumable={raw!r}, FieldUse={fields.get('FieldUse')!r}")
+        effective[key] = {"consumable": False, "explicit": raw is not None,
+                          "field_use": fields.get("FieldUse", "None")}
     # Local PBS descriptions and explicit metadata keep the donor's binary
     # item IDs and Essentials handlers, without importing its scripts.
     lines = ["# K02-C: missing native key items only"]
@@ -1695,6 +1703,22 @@ def install_cerulean_items(source, target):
     print("KANTO_K02C_ITEM_PBS_REPORT:" + json.dumps({
         "existing": sorted(existing), "added": sorted(donor),
         "source": "pinned FRLG PBS", "authored_event_witness": sorted(authored),
+        "effective": effective, "native_compiled": False}), flush=True)
+
+
+def audit_cerulean_reward_item(target):
+    # Decades' pinned TM28 is a TR teaching DIG. Preserve its authored
+    # machine type, price, and global item policy, rather than replacing it.
+    found = []
+    for path in sorted((target / "PBS").glob("items*.txt")):
+        for rows in read_blocks(path, {"TM28"}).values():
+            fields = {k.strip(): v.split("#", 1)[0].strip() for row in rows
+                      for k, sep, v in [row.partition("=")] if sep}
+            found.append((path.name, fields))
+    if len(found) != 1 or found[0][1].get("Move") != "DIG" or found[0][1].get("FieldUse") not in ("TM", "TR"):
+        raise ValueError("K02-C requires exactly one native TM28/DIG machine")
+    print("KANTO_K02C_REWARD_PBS_REPORT:" + json.dumps({
+        "file": found[0][0], "move": "DIG", "field_use": found[0][1]["FieldUse"],
         "native_compiled": False}), flush=True)
 
 
@@ -1886,6 +1910,7 @@ def build(source, game, output, existing=None):
         copy_game(game, target)
         for folder in ("Data", "Graphics"):
             shutil.copytree(preview / folder, target / folder, dirs_exist_ok=True)
+        audit_cerulean_reward_item(target)
         install_cerulean_items(source, target)
         install_events(source, target, mapping)
         install_pewter_route3_gate(source, target, mapping)
