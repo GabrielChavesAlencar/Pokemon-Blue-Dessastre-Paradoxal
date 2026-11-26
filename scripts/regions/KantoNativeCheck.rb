@@ -460,6 +460,100 @@ module KantoNativeCheck
     result
   end
 
+  # K03-A: traverse the installed Underground corridor in both directions.
+  # Each recursive leg derives its own native component from the actual
+  # arrival tile. No Saffron shortcut or QA teleport is accepted as a path.
+  def self.k03a_trace(label,row)
+    File.open("Data/blue-kanto-k03a-trace.txt","a") { |file| file.puts("#{label}:#{row.inspect}") }
+    puts "#{label}:#{row.inspect}"
+  end
+
+  def self.k03a_chain(sequence,anchor,target_anchor,cache={})
+    current = sequence.first
+    key = [sequence,anchor]
+    return nil if cache[key]
+    cache[key] = true
+    comp = opening_component(current,anchor)
+    if sequence.length == 1
+      return comp.key?(target_anchor) ? [] : nil
+    end
+    next_map = sequence[1]
+    candidates = $game_map.events.values.flat_map do |ev|
+      next [] unless [1,2].include?(ev.trigger) && north_event_reachable?(comp,ev)
+      ev.list.filter_map do |op|
+        next unless op.code == 201 && op.parameters[0] == 0 && op.parameters[1] == next_map
+        {"kind"=>"touch_transfer","event_id"=>ev.id,"from_map"=>current,
+          "from_xy"=>[ev.x,ev.y],"to_map"=>next_map,"to_xy"=>op.parameters[2,2]}
+      end
+    end
+    rows = File.readlines("PBS/map_connections_kanto.txt").map { |line| line.split("#",2)[0].to_s.strip.split(",").map(&:strip) }
+    if rows.any? { |f| f.length == 6 && [f[0].to_i,f[3].to_i].sort == [current,next_map].sort }
+      opening_crossings(current,comp,next_map).each do |left,right|
+        candidates << {"kind"=>"native_seam","from_map"=>current,"from_xy"=>left,
+          "to_map"=>next_map,"to_xy"=>right}
+      end
+    end
+    k03a_trace("KANTO_K03A_CORRIDOR_LEG",{"map"=>current,"anchor"=>anchor,
+      "component"=>comp.length,"next"=>next_map,"candidates"=>candidates})
+    candidates.each do |leg|
+      suffix = k03a_chain(sequence.drop(1),leg["to_xy"],target_anchor,cache)
+      return [leg]+suffix if suffix
+    end
+    nil
+  end
+
+  def self.k03a_corridor_proof(north_report,battle_calls,losses_remaining)
+    source_ids = [39,56,59,60,63,61,64]
+    sequence = source_ids.map { |id| BlueKantoPilot.kanto_map_id(id) }
+    require!(sequence.all? && sequence.uniq.length == source_ids.length, "K03-A installed corridor IDs missing")
+    city = sequence.last
+    center = BlueKantoPilot.kanto_map_id(65)
+    $map_factory.setup(center)
+    exit_event = $game_map.events.values.find { |ev| ev.list.any? { |op|
+      op.code == 201 && op.parameters[0] == 0 && op.parameters[1] == city } }
+    arrival = north_transfer!(exit_event,city)
+    anchor = north_report["city_center_landing"]
+    outbound = k03a_chain(sequence,anchor,arrival)
+    require!(outbound && outbound.length == sequence.length-1, "K03-A no natural route to Vermilion via Underground")
+    back = k03a_chain(sequence.reverse,arrival,anchor)
+    require!(back && back.length == sequence.length-1, "K03-A no independent return to Cerulean via Underground")
+    route6 = BlueKantoPilot.kanto_map_id(61)
+    route_arrival = outbound.find { |leg| leg["to_map"] == route6 }["to_xy"]
+    comp = opening_component(route6,route_arrival)
+    trainers = [[8,:BLUE_KANTO_BUGCATCHER,"Keigo"],[9,:BLUE_KANTO_PICNICKER,"Nancy"],
+      [10,:BLUE_KANTO_CAMPER,"Ricky"],[12,:BLUE_KANTO_BUGCATCHER,"Elijah"],
+      [13,:BLUE_KANTO_PICNICKER,"Isabelle"],[14,:BLUE_KANTO_CAMPER,"Jeff"]].map do |id,type,name|
+      ev = $game_map.events[id]
+      key = "KANTO_061_%03d" % id
+      north_callback!(ev,"BlueKantoPilot.battle(:#{type}, \"#{name}\", \"#{key}\")")
+      team = GameData::Trainer.get(type,name,0).pokemon
+      require!(!team.empty?, "K03-A compiled Route6 team missing")
+      witness = opening_action_witness(comp,ev)
+      if !witness && ev.trigger == 2
+        witness = north_event_reachable?(comp,ev) ? {"mode"=>"touch_adjacency"} : nil
+      end
+      require!(witness, "K03-A Route6 trainer #{name} inaccessible")
+      losses_remaining[name] = 1 if id == 8
+      calls = battle_calls.length
+      if id == 8
+        require!(!BlueKantoPilot.battle(type,name,key) &&
+          !$game_self_switches[[route6,id,"A"]], "K03-A trainer loss marked victory")
+      end
+      require!(BlueKantoPilot.battle(type,name,key) && BlueKantoPilot.sync_trainer_event(key,name,id),
+        "K03-A trainer retry/victory failed")
+      require!($game_self_switches[[route6,id,"A"]], "K03-A trainer page not persisted")
+      BlueKantoPilot.battle(type,name,key)
+      require!(battle_calls.length-calls == (id==8 ? 2 : 1), "K03-A trainer replayed after victory")
+      {"event"=>id,"key"=>key,"name"=>name,"witness"=>witness,
+        "roster"=>team.map { |mon| [mon[:species].to_s,mon[:level]] }}
+    end
+    result = {"source_ids"=>source_ids,"map_ids"=>sequence,"outbound"=>outbound,"return"=>back,
+      "vermilion_center_landing"=>arrival,"route6_trainers"=>trainers,"controlled_battle_results"=>true,
+      "manual_gameplay"=>false,"daycare_installed"=>false}
+    k03a_trace("KANTO_K03A_CORRIDOR_REPORT",result)
+    result
+  end
+
   def self.north_story(battle_calls, losses_remaining)
     city,gym,bridge,route,cottage = [39,42,53,54,55].map { |id| BlueKantoPilot.kanto_map_id(id) }
     require!([city,gym,bridge,route,cottage].all?, "K00-C missing installed source IDs")
@@ -1779,6 +1873,7 @@ module KantoNativeCheck
     require!(!BlueKantoPilot.cerulean_house_open?, "K02-C house opened before Bill")
     north_report = north_story(battle_calls, losses_remaining)
     interiors_report = cerulean_interiors_proof(battle_calls, losses_remaining)
+    k03a_report = k03a_corridor_proof(north_report,battle_calls,losses_remaining)
     BlueKantoPilot.ticketmaster
     require!(BlueKantoPilot.progress["pilot_ss_ticket"] == true,
              "Vermilion ticket missing after Bill's quest")
@@ -2479,6 +2574,15 @@ module KantoNativeCheck
     File.write("Data/blue-kanto-k02d-proof.txt",k02d_report.inspect)
     puts "KANTO_K02D_NATIVE_CERULEAN_REPORT:#{k02d_report.inspect}"
     puts "KANTO_K02D_GARY_BILL_MISTY_SAVE_RELOAD_OK"
+    route6 = BlueKantoPilot.kanto_map_id(61)
+    require!(k03a_report["route6_trainers"].all? { |row|
+      north_state["pilot_wins"].include?(row["key"]) && $game_self_switches[[route6,row["event"],"A"]] },
+      "K03-A Route6 trainer state lost on native reload")
+    k03a_report["save_reload"] = true
+    k03a_report["status"] = "CORRIDOR_PASS_DAYCARE_PENDING"
+    File.write("Data/blue-kanto-k03a-proof.txt",k03a_report.inspect)
+    puts "KANTO_K03A_NATIVE_CORRIDOR_REPORT:#{k03a_report.inspect}"
+    puts "KANTO_K03A_ROUTE5_ROUTE6_TRAINERS_SAVE_RELOAD_OK"
     # The final campaign reload must retain the chosen starter as well.
     require!(BlueKantoPilot.starter == :BULBASAUR &&
              [18,19,20].all? { |eid| $game_self_switches[[lab,eid,"A"]] },

@@ -4,7 +4,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-    paths: ['scripts/regions/**', 'scripts/music/**', 'scripts/battle_polish/Title.rb', 'data/kanto-music-rules.json', 'data/regions/kanto-source.json', '.github/workflows/kanto-pilot-check.yml']
+    paths: ['scripts/regions/**', 'tests/qa_k03a_daycare_source.py', 'scripts/music/**', 'scripts/battle_polish/Title.rb', 'data/kanto-music-rules.json', 'data/regions/kanto-source.json', '.github/workflows/kanto-pilot-check.yml']
   workflow_dispatch:
 permissions:
   contents: write
@@ -47,6 +47,8 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Kanto release selector regression tests failed'}
           python scripts/regions/audit_vermilion.py --output .blue-work/kanto-phase-08-audit.json
           if($LASTEXITCODE -ne 0){throw 'Kanto phase 08 source audit failed'}
+          python tests/qa_k03a_daycare_source.py
+          if($LASTEXITCODE -ne 0){throw 'K03-A Day Care source identity/transfer audit failed'}
           python scripts/regions/audit_celadon.py --output .blue-work/kanto-phase-09-audit.json
           if($LASTEXITCODE -ne 0){throw 'Kanto phase 09 source audit failed'}
           python scripts/regions/audit_celadon_core.py
@@ -146,6 +148,14 @@ jobs:
           path: .blue-work/kanto-phase-08-audit.json
           if-no-files-found: warn
           retention-days: 14
+      - name: Preservar inventario K03-A Day Care
+        if: always() && hashFiles('.blue-work/kanto-k03a-daycare-source.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k03a-daycare-source
+          path: .blue-work/kanto-k03a-daycare-source.json
+          include-hidden-files: true
+          if-no-files-found: error
       - name: Publicar inventario de Celadon sem eventos
         if: always()
         uses: actions/upload-artifact@v4
@@ -271,6 +281,12 @@ jobs:
               Get-Content $ceruleanTrace
               Write-Host ("KANTO_K02D_NATIVE_CERULEAN_REPORT:" + (Get-Content $ceruleanProof -Raw).Trim())
               Write-Host 'KANTO_K02D_GARY_BILL_MISTY_SAVE_RELOAD_OK'
+              $corridorTrace="$pilot/Data/blue-kanto-k03a-trace.txt"
+              $corridorProof="$pilot/Data/blue-kanto-k03a-proof.txt"
+              if(-not (Test-Path $corridorTrace) -or -not (Test-Path $corridorProof)){throw 'K03-A native corridor proof missing'}
+              Get-Content $corridorTrace
+              Write-Host ("KANTO_K03A_NATIVE_CORRIDOR_REPORT:" + (Get-Content $corridorProof -Raw).Trim())
+              Write-Host 'KANTO_K03A_ROUTE5_ROUTE6_TRAINERS_SAVE_RELOAD_OK'
               Get-Content "$pilot/Data/blue-kanto-proof.txt"
               exit 0
             }
@@ -296,7 +312,19 @@ jobs:
           if(Test-Path $moonTrace){Get-Content $moonTrace}
           $ceruleanTrace="$pilot/Data/blue-kanto-k02d-trace.txt"
           if(Test-Path $ceruleanTrace){Get-Content $ceruleanTrace}
+          $corridorTrace="$pilot/Data/blue-kanto-k03a-trace.txt"
+          if(Test-Path $corridorTrace){Get-Content $corridorTrace}
           throw 'Kanto native proof missing'
+      - name: Preservar recibos K03-A corredor
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k03a-trace.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k03a-corridor-native
+          path: |
+            .blue-work/kanto-pilot/Data/blue-kanto-k03a-trace.txt
+            .blue-work/kanto-pilot/Data/blue-kanto-k03a-proof.txt
+          include-hidden-files: true
+          if-no-files-found: error
       - name: Preservar recibos K02-D Cerulean
         if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k02d-trace.txt') != ''
         uses: actions/upload-artifact@v4
