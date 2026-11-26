@@ -56,6 +56,18 @@ class SinnohSharedInstallerTests(unittest.TestCase):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(raw)
 
+    def test_shared_reservation_is_disjoint_from_clean_kanto_and_migration(self):
+        from audit import allocate_kanto_ids
+        wanted = {int(mid) for mid in json.loads(
+            (ROOT/"data/regions/kanto-source.json").read_text("utf-8"))["maps"]}
+        clean_ids = allocate_kanto_ids(wanted, {1, 299})
+        previous = {src:dst for src,dst in clean_ids.items() if src not in range(43,49)}
+        migrated_ids = allocate_kanto_ids(wanted, set(previous.values()) | {1, 299, 898}, previous)
+        pinned = json.loads((ROOT/candidate.MAP_RESERVATION).read_text("utf-8"))
+        self.assertEqual(sorted(pinned.values()),list(shared.SHARED_IDS))
+        self.assertFalse(set(pinned.values()) & set(clean_ids.values()))
+        self.assertFalse(set(pinned.values()) & set(migrated_ids.values()))
+
     def prepare(self):
         for rel, raw in self.files.items():
             self.put(self.overlay / rel,raw)

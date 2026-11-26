@@ -18,6 +18,9 @@ import zipfile
 REPO = "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal"
 API = "https://api.github.com/repos/" + REPO
 MARKER = "Data/blue-update.json"
+# This hotfix mislabeled a 142-map historical ZIP as the 151-map revision.
+# Preserve its manifest for migration, not as a candidate for installation.
+WITHDRAWN_MULTIREGION_TAGS = frozenset({"android-multiregion-hotfix-31-e7200ef"})
 CHANNELS = {
     "decades": ("Blue-Android-JoiPlay.zip", "Blue-Android-JoiPlay.update.json"),
     "kanto": ("Blue-Android-Kanto-Piloto.zip", "Blue-Android-Kanto-Piloto.update.json"),
@@ -100,6 +103,7 @@ def release_for(channel):
             break
         for release in entries:
             if (str(release.get("tag_name", "")).startswith(prefix) and
+                    not (channel == "multiregion" and release.get("tag_name") in WITHDRAWN_MULTIREGION_TAGS) and
                     not release.get("draft", False) and
                     asset_url(release, CHANNELS[channel][0]) and
                     asset_url(release, CHANNELS[channel][1])):

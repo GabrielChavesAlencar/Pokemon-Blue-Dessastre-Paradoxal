@@ -280,7 +280,7 @@ module BlueRegionStart
     return false unless spawn && File.file?(path) && !File.symlink?(path)
     fields = File.read(path, 128).strip.split(",")
     fields.length == 3 && fields[0] == "BLUE_KANTO_READY_V1" &&
-      ["142", "145"].include?(fields[1]) && fields[2] == spawn[0].to_s
+      ["142", "145", "151"].include?(fields[1]) && fields[2] == spawn[0].to_s
   rescue StandardError
     false
   end
@@ -305,7 +305,7 @@ module BlueRegionStart
     # MUST agree; random or partial archives remain fail-closed.
     gate = File.read("Data/blue-kanto-ready.txt", 128).strip.split(",")
     expected_count = Integer(gate[1], 10)
-    return nil unless [142, 145].include?(expected_count)
+    return nil unless [142, 145, 151].include?(expected_count)
     return nil unless rest.empty? && pairs.length == expected_count
     maps = {}
     pairs.each do |src, dst|
@@ -315,8 +315,11 @@ module BlueRegionStart
     end
     return nil unless maps.values.uniq.length == expected_count &&
                       maps["7"] == spawn[0] && maps["5"].is_a?(Integer)
-    if expected_count == 145
+    if expected_count >= 145
       return nil unless ["53", "54", "55"].all? { |source| maps[source].is_a?(Integer) }
+    end
+    if expected_count == 151
+      return nil unless (43..48).all? { |source| maps[source.to_s].is_a?(Integer) }
     end
     return nil unless maps.values.all? { |id|
       pbRgssExists?(sprintf("Data/Map%03d.rxdata", id))

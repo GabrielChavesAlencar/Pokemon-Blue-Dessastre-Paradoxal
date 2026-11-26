@@ -27,7 +27,20 @@ TAG = re.compile(
 )
 
 
-def select_releases(payload: object) -> tuple[list[str], int, int]:
+# Revisions previously reported in real installations must not age out of
+# the sliding window. Keep this small, evidence-based list until migration
+# is confirmed for those installations (issues #250 and #342).
+REQUIRED_BASELINES = (
+    "android-multiregion-hotfix-2-5d0cc84",
+    "android-multiregion-hotfix-30-ba020a5",
+    # Keep the bad install as a migration input, NEVER as a download target.
+    "android-multiregion-hotfix-31-e7200ef",
+    "android-multiregion-82-e23ff33",
+)
+
+
+def select_releases(payload: object, *, require_known_baselines: bool = False
+                    ) -> tuple[list[str], int, int]:
     if not isinstance(payload, list) or not payload:
         raise ValueError("Missing GitHub release history")
     if all(isinstance(p, list) for p in payload):
@@ -66,6 +79,13 @@ def select_releases(payload: object) -> tuple[list[str], int, int]:
             item["tag_name"] for item in selected}:
         selected.append(ordered[-1])
     tags = [row["tag_name"] for row in selected]
+    for tag in REQUIRED_BASELINES:
+        if tag not in valid:
+            if require_known_baselines:
+                raise ValueError("Missing required multiregion baseline: " + tag)
+            continue
+        if tag not in tags:
+            tags.append(tag)
     if len(set(tags)) != len(tags):
         raise ValueError("Duplicate multiregion baseline")
     return tags, len(pages), len(ordered)
@@ -74,12 +94,14 @@ def select_releases(payload: object) -> tuple[list[str], int, int]:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--fetch-github", action="store_true")
+    parser.add_argument("--require-known-baselines", action="store_true")
     args = parser.parse_args(argv)
     try:
         pages = (fetch_release_pages(os.environ.get("GITHUB_REPOSITORY", ""),
                                      os.environ.get("GH_TOKEN", ""))
                  if args.fetch_github else json.load(sys.stdin))
-        tags, page_count, candidate_count = select_releases(pages)
+        tags, page_count, candidate_count = select_releases(
+            pages, require_known_baselines=args.require_known_baselines)
         print_tags = tags
     except (ValueError, TypeError, OSError, urllib.error.URLError) as error:
         print("Multiregion Android baseline selection blocked: " + str(error),

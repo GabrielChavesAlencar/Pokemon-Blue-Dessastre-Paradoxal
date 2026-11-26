@@ -36,9 +36,9 @@ class KantoReleaseGateTests(unittest.TestCase):
     def test_current_catalog_is_safe_prototype_not_final_acceptance(self):
         result=release_gate.inspect(ROOT)
         self.assertTrue(result["ci_preflight_passed"])
-        self.assertEqual(result["map_count"],145)
+        self.assertEqual(result["map_count"],151)
         self.assertEqual(result["preview_maps"],35)
-        self.assertEqual(result["trainers"],161)
+        self.assertEqual(result["trainers"],162)
         self.assertEqual(result["wild_locations"],28)
         self.assertEqual(result["wild_methods"],99)
         self.assertEqual(result["wild_species"],68)
@@ -46,6 +46,24 @@ class KantoReleaseGateTests(unittest.TestCase):
         self.assertFalse(result["declared_playable"])
         self.assertFalse(result["accepted_integrally"])
         self.assertGreater(len(result["blocking_checks"]),4)
+
+    def test_missing_new_interior_cannot_pass_release_gate(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder)
+            self.clone(root)
+            self.patch_json(root,"data/regions/kanto-source.json",
+                            lambda d:d["maps"].pop("48"))
+            with self.assertRaisesRegex(ValueError,"145 stable IDs"):
+                release_gate.inspect(root)
+
+    def test_stale_portal_cannot_pass_release_gate(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder)
+            self.clone(root)
+            self.patch_json(root,"site/public/data/kanto.json",
+                            lambda d:d["locations"].pop())
+            with self.assertRaisesRegex(ValueError,"151 maps/162 grouped trainers"):
+                release_gate.inspect(root)
 
     def test_forged_playable_status_rejected_before_manual_qa(self):
         with tempfile.TemporaryDirectory() as folder:

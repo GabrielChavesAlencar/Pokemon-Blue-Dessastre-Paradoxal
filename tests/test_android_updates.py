@@ -415,6 +415,18 @@ class AndroidUpdatesTest(unittest.TestCase):
             best = release_for("multiregion")
         self.assertEqual(best["tag_name"], "android-multiregion-15-125155e")
 
+    def test_withdrawn_multiregion_hotfix_never_offered(self):
+        good = self._release("android-multiregion-82-e23ff33", "2026-11-26T15:00:00Z")
+        bad = self._release("android-multiregion-hotfix-31-e7200ef", "2026-11-26T19:30:00Z")
+        fixed = self._release("android-multiregion-127-abcdef0", "2026-11-26T20:00:00Z")
+        with patch("scripts.android.update_client.get_json", return_value=[good, bad]):
+            self.assertEqual(release_for("multiregion")["tag_name"], good["tag_name"])
+        with patch("scripts.android.update_client.get_json", return_value=[bad, good, fixed]):
+            self.assertEqual(release_for("multiregion")["tag_name"], fixed["tag_name"])
+        with patch("scripts.android.update_client.get_json", return_value=[bad]):
+            with self.assertRaisesRegex(ValueError, "No verified Android release"):
+                release_for("multiregion")
+
     def test_kanto_release_on_fourth_page_is_discovered(self):
         def kanto(tag, published):
             row = self._release(tag, published)

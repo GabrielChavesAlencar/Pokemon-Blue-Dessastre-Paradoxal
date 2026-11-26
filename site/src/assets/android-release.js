@@ -81,6 +81,8 @@ const withVerifiedFallback=(found,platform)=>Object.fromEntries(Object.keys(pilo
 
 const integratedAsset='Blue-Android-Decades-Kanto-Hoenn.zip';
 const integratedReleasePrefix='android-multiregion-';
+// Known 142-map package mislabeled as the 151-map release: migration input only.
+const withdrawnIntegratedTags=new Set(['android-multiregion-hotfix-31-e7200ef']);
 
 // No static latest/download URL: the combined Android file does not exist
 // until a release really uploads a validated, compiled ZIP.
@@ -100,6 +102,7 @@ export async function combinedAndroidRelease(fetcher=fetch){
     if(!Array.isArray(releases))return newest?.status??{state:'unavailable'};
     for(const release of releases){
       if(!release.tag_name?.startsWith(integratedReleasePrefix) || release.draft ||
+         withdrawnIntegratedTags.has(release.tag_name) ||
          !/^[a-f0-9]{40}$/.test(release.target_commitish??''))continue;
       const asset=uploaded(release,integratedAsset);
       if(!asset || typeof asset.browser_download_url!=='string')continue;

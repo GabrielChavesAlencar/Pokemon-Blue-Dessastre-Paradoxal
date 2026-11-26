@@ -113,6 +113,42 @@ def source_npc_dialogue(event, sign=False):
     return None
 
 
+# Pinned K02-C source receipt: exact EventIDs, names and coordinates.
+CERULEAN_FURNITURE = {
+    (44, 5): ("Cupboard size(2,1)", 0, 1),
+    (46, 6): ("Sink size(2,1)", 0, 1),
+    (46, 7): ("Cupboard", 3, 1),
+    (46, 8): ("Television", 5, 1),
+    (47, 5): ("Sink size(2,1)", 0, 1),
+    (47, 6): ("Cupboard size(2,1)", 2, 1),
+    (47, 7): ("Television", 5, 1),
+    (48, 6): ("Sink", 0, 1),
+    (48, 7): ("Ransacked Furniture size(2,1)", 2, 1),
+    (48, 8): ("Ransacked Furniture", 7, 1),
+    (48, 9): ("Ransacked Furniture", 8, 2),
+    (48, 10): ("Ransacked Furniture", 9, 3),
+    (48, 11): ("Ransacked Furniture size(2,1)", 8, 7),
+    (48, 12): ("Ransacked Furniture", 3, 5),
+}
+
+
+def source_cerulean_furniture(event, source, event_id):
+    expected = CERULEAN_FURNITURE.get((source, event_id))
+    attrs = event.attrs
+    if expected != (text(attrs["@name"]), attrs["@x"], attrs["@y"]):
+        return None
+    page = base_page(event)
+    if (page is None or len(attrs["@pages"]) != 1 or page["@trigger"] != 0
+            or page["@graphic"].attrs["@character_name"]
+            or page["@graphic"].attrs["@tile_id"] != 0):
+        return None
+    commands = page["@list"]
+    if any(op.attrs["@code"] not in (0, 101, 401) or op.attrs.get("@indent", 0) != 0
+           for op in commands):
+        return None
+    return [copy.deepcopy(op) for op in commands if op.attrs["@code"] in (101, 401)] or None
+
+
 def source_sign_dialogue(event):
     """Only explicitly named sign/notice events with safe literal speech."""
     return source_npc_dialogue(event, sign=True)

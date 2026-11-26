@@ -8,7 +8,24 @@ def check(value, reason)
   raise "KANTO_CERULEAN_ANDROID: #{reason}" unless value
 end
 
-class Game_Player; end
+class Game_Player
+  attr_accessor :x, :y
+  attr_reader :moves
+  def initialize(x, y); @x, @y, @moves = x, y, []; end
+  def turn_generic(*); end
+  def move_generic(dir, *); @moves << dir; end
+end
+class Game_Event
+  def initialize(map_id, id); @map_id, @id = map_id, id; end
+  def character_name; ""; end
+end
+def load_data(path)
+  raise "Unexpected map lookup: #{path}" unless path == "Data/Map600.rxdata"
+  graphic = Struct.new(:character_name).new("FRLG_Pilot_Gary_fixture")
+  page = Struct.new(:graphic).new(graphic)
+  actor = Struct.new(:pages).new([page])
+  Struct.new(:events).new({14=>actor})
+end
 module MenuHandlers
   def self.add(*); end
 end
@@ -77,7 +94,7 @@ end
 Dir.mktmpdir("kanto-cerulean-android-") do |folder|
   Dir.chdir(folder) do
     FileUtils.mkdir_p("Data")
-    File.write("Data/blue-kanto-install.json", '{"maps":{"42":501}}')
+    File.write("Data/blue-kanto-install.json", '{"maps":{"6":600,"39":501,"42":502}}')
     load source
     $PokemonGlobal = Struct.new(:blue_regions).new(BlueRegions.new_state("KANTO"))
     $PokemonGlobal.blue_regions["pilot_starter"] = "SQUIRTLE"
@@ -149,16 +166,57 @@ Dir.mktmpdir("kanto-cerulean-android-") do |folder|
     check(BlueKantoPilot.cerulean_rival, "Gary's previously won scene failed")
     check($attempts.size == before, "Gary re-challenged a completed scene")
 
+    # 6b. A save with a generic Blue win and stale lane self-switches
+    # must still meet Cerulean Gary. Actual movement entry, not merely
+    # direct invocation of the scripted event callback.
+    actor = Game_Event.new(501, 32)
+    other = Game_Event.new(502, 32)
+    [[:BULBASAUR, 31], [:CHARMANDER, 32], [:SQUIRTLE, 33]].each do |species, version|
+      state = $PokemonGlobal.blue_regions
+      state["pilot_starter"] = species.to_s
+      state.delete("pilot_cerulean_rival")
+      state["pilot_wins"] = ["Blue"]
+      [15, 32, 34].each { |id| $game_self_switches[[501, id, "A"]] = true }
+      GameData::Trainer::DATA[[:BLUE_KANTO_RIVAL, "Blue", version]] = true
+      check(actor.character_name == "FRLG_Pilot_Gary_fixture", "pending Gary invisible")
+      check(other.character_name == "", "Gary leaked outside Cerulean")
+      [22, 23, 24].each do |x|
+        player = Game_Player.new(x, 7)
+        $battle_win = false
+        before = $attempts.size
+        player.move_generic(8)
+        check($attempts.size == before + 1 &&
+              $attempts.last == [:BLUE_KANTO_RIVAL, "Blue", version],
+              "lane #{x} did not start the correct rival battle")
+        check(player.moves.empty?, "player crossed before victory")
+        check(!state["pilot_cerulean_rival"], "loss marked rival as defeated")
+      end
+      player = Game_Player.new(23, 5)
+      $battle_win = true
+      player.move_generic(2)
+      check(state["pilot_wins"].include?("KANTO_CERULEAN_RIVAL"), "exact win missing")
+      check(state["pilot_cerulean_rival"], "victory flag missing")
+      check(actor.character_name == "", "Gary still visible after victory")
+      before = $attempts.size
+      player.move_generic(2)
+      check(player.moves == [2] && $attempts.size == before, "won scene replayed")
+      state.delete("pilot_cerulean_rival")
+      check(BlueKantoPilot.cerulean_rival, "exact win did not restore completion")
+      check($attempts.size == before, "exact win replayed battle")
+    end
+
     # 7. Nugget is awarded once, even when Rocket defeats the player.
     class << GameData
       def self.note; end
     end
     module_items = Class.new do
-      def self.exists?(item); [:NUGGET, :SSTICKET].include?(item); end
+      def self.exists?(item); [:NUGGET, :BLUE_KANTO_SSTICKET, :SSTICKET].include?(item); end
     end
     GameData.const_set(:Item, module_items) unless GameData.const_defined?(:Item)
     bag = Object.new
+    def bag.has?(item); Array($granted_items).any? { |id,qty| id == item && qty > 0 }; end
     def bag.add(item, quantity)
+      return false if $ticket_bag_full && item == :BLUE_KANTO_SSTICKET
       $granted_items ||= []
       $granted_items << [item, quantity]
       true
@@ -181,9 +239,27 @@ Dir.mktmpdir("kanto-cerulean-android-") do |folder|
     check(BlueKantoPilot.bill_computer, "Bill not restored via PC")
     check($PokemonGlobal.blue_regions["pilot_bill_helped"], "Bill quest flag missing")
     check(BlueKantoPilot.bill_reward, "Bill did not grant S.S. Ticket")
-    check($granted_items.count([:SSTICKET, 1]) == 1, "Bill ticket duplicated/missing")
+    check($granted_items.count([:BLUE_KANTO_SSTICKET, 1]) == 1, "Bill ticket duplicated/missing")
     check(BlueKantoPilot.bill_reward, "Bill's post-quest talk failed")
-    check($granted_items.count([:SSTICKET, 1]) == 1, "Bill ticket duplicated on talk")
+    check($granted_items.count([:BLUE_KANTO_SSTICKET, 1]) == 1, "Bill ticket duplicated on talk")
+    state = $PokemonGlobal.blue_regions
+    state.delete("pilot_bill_ticket_item_granted")
+    $granted_items.delete([:BLUE_KANTO_SSTICKET,1])
+    $ticket_bag_full = true
+    check(BlueKantoPilot.bill_reward && state["pilot_ss_ticket"] &&
+          !state["pilot_bill_ticket_item_granted"], "Full bag revoked old permit")
+    $ticket_bag_full = false
+    check(BlueKantoPilot.bill_reward && state["pilot_bill_ticket_item_granted"], "Legacy permit upgrade failed")
+    check(BlueKantoPilot.bill_reward && $granted_items.count([:BLUE_KANTO_SSTICKET,1]) == 1,
+          "Legacy permit duplicated")
+    state.delete("pilot_bill_ticket_item_granted")
+    $granted_items.delete([:BLUE_KANTO_SSTICKET,1])
+    $granted_items << [:SSTICKET,1]
+    check(BlueKantoPilot.bill_reward && state["pilot_bill_ticket_item_granted"] &&
+          $granted_items.none? { |row| row[0] == :BLUE_KANTO_SSTICKET }, "Legacy real ticket duplicated")
+    $granted_items.delete([:SSTICKET,1])
+    check(BlueKantoPilot.bill_reward && $granted_items.none? { |row| row[0] == :BLUE_KANTO_SSTICKET },
+          "Already materialized ticket granted twice")
   end
 end
 

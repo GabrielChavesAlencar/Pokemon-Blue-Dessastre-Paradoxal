@@ -16,7 +16,7 @@ O ponto de chegada e o agente devem estar no mapa exterior original `Twinleaf To
 
 ## Geração do candidato de 144 mapas
 
-Na raiz do projeto, com o jogo fechado, `python scripts/regions/prepare_sinnoh_shared.py` usa a instalação `game/` para leitura. Use `--base-game` para indicar outra instalação Blue-Story. A reserva compartilhada de Sinnoh vai de 445 a 588. O candidato grava em `.blue-work/sinnoh-shared-candidate/world/` os RXDATA, índices, tilesets, conexões, eventos e recursos regionais. Encontros e metadados entram com validação das seções por MapID. O arquivo `candidate.json` registra hashes, IDs simbólicos e as posições calculadas de Twinleaf.
+Na raiz do projeto, com o jogo fechado, `python scripts/regions/prepare_sinnoh_shared.py` usa a instalação `game/` para leitura. Use `--base-game` para indicar outra instalação Blue-Story. A reserva compartilhada de Sinnoh vai de 451 a 594 para comportar os 151 mapas de Kanto em uma instalação limpa. Gere uma nova cópia de QA caso tenha usado a reserva provisória de 445 a 588. O candidato grava em `.blue-work/sinnoh-shared-candidate/world/` os RXDATA, índices, tilesets, conexões, eventos e recursos regionais. Encontros e metadados entram com validação das seções por MapID. O arquivo `candidate.json` registra hashes, IDs simbólicos e as posições calculadas de Twinleaf.
 
 ## Teste em cópia descartável
 

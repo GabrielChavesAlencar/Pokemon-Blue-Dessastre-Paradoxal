@@ -19,7 +19,7 @@ from pilot import OUTPUT, SOURCE, PILOT_META, TYPES, build, pilot_is_current, re
 from verify_pilot import inspect
 
 PBS_NAMES = ("encounters_kanto.txt", "trainers_kanto.txt", "trainer_types_kanto.txt",
-             "map_metadata_kanto.txt", "map_connections_kanto.txt")
+             "map_metadata_kanto.txt", "map_connections_kanto.txt", "items_kanto.txt")
 DATA_NAMES = ("MapInfos.rxdata", "Tilesets.rxdata")
 PLUGIN = Path("Plugins/ZZZZZ Blue Kanto Pilot")
 MARKER = Path("Data/blue-kanto-start.txt")
@@ -372,8 +372,19 @@ def apply_install(game, pilot, commit=False, migration=None):
     return plan
 
 
+def known_legacy_catalog(wanted, previous):
+    """Accept only published predecessor sets; never an arbitrary map count."""
+    north = {"53", "54", "55"}
+    interiors = {"43", "44", "45", "46", "47", "48"}
+    if len(wanted) == 145 and north <= wanted and not interiors.intersection(wanted):
+        return previous == wanted - north
+    if len(wanted) == 151 and north | interiors <= wanted:
+        return previous in (wanted - interiors, wanted - interiors - north)
+    return False
+
+
 def legacy_proof(game):
-    """Only the published 142-map registry is eligible for the 145-map migration."""
+    """Verify an exact published predecessor before transactional migration."""
     path = game / "Data/blue-kanto-install.json"
     marker = game / MARKER
     if any(p.is_symlink() or not p.is_file() for p in (path, marker)):
@@ -382,10 +393,10 @@ def legacy_proof(game):
     mapping = proof.get("maps")
     wanted = {str(k) for k in json_file(KANTO)["maps"]}
     if (proof.get("schema") != 1 or proof.get("source") != "Essentials FRLG 21.1" or
-            len(wanted) != 145 or not isinstance(mapping, dict) or
-            len(mapping) != 142 or set(mapping) != wanted - {"53", "54", "55"} or
+            not isinstance(mapping, dict) or
+            not known_legacy_catalog(wanted, set(mapping)) or
             any(type(v) is not int or not 0 < v < 1000 for v in mapping.values()) or
-            len(set(mapping.values())) != 142 or
+            len(set(mapping.values())) != len(mapping) or
             marker.read_text(encoding="ascii").strip() !=
             f"BLUE_KANTO_START_V1,KANTO,{mapping.get('7')},25,7"):
         raise ValueError("Unknown legacy Kanto mapping; refusing migration")
@@ -541,7 +552,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--apply", action="store_true")
     parser.add_argument("--migrate-existing", action="store_true",
-                        help="Migrate the verified 142-map Kanto to 145 without reassigning IDs")
+                        help="Migrate only a verified published Kanto catalog without reassigning IDs")
     parser.add_argument("--verify-installed", action="store_true",
                         help="Check main Kanto mapping/resources without changing files")
     parser.add_argument("--sync-runtime", action="store_true",

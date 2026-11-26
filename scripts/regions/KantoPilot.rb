@@ -9,8 +9,8 @@ module BlueKantoPilot
   LEAGUE_CHAMPION_VERSIONS = {BULBASAUR: 1, CHARMANDER: 2, SQUIRTLE: 3}.freeze
   FULL_POWER_OFFSET = 100
   # The Blue protagonist charset can be taller than FRLG NPC frames.
-  # Scale ONLY the player in the separately built Kanto pilot; a fixed 75%
-  # still looked oversized with the larger charset selected after loading.
+  # Scale ONLY the player while in Kanto, including the integrated game;
+  # a fixed 75% still looked oversized with larger charsets after loading.
   PLAYER_OVERWORLD_ZOOM = 0.60
   PLAYER_OVERWORLD_MAX_HEIGHT = 30
   PILOT_OVERWORLD_SCALE = File.file?("Kanto pilot.json")
@@ -713,12 +713,68 @@ module BlueKantoPilot
     progress.fetch("pilot_wins", []).include?(event_key)
   end
 
+  CERULEAN_RIVAL_KEY = "KANTO_CERULEAN_RIVAL".freeze
+  CERULEAN_RIVAL_LANES = [22, 23, 24].freeze
+  CERULEAN_RIVAL_ROW = 6
+  CERULEAN_RIVAL_ACTOR = 32
+
+  def self.cerulean_rival_map?(map_id)
+    return false unless kanto_current?
+    id = (@cerulean_rival_map_id ||= kanto_map_id(39))
+    id && map_id == id
+  end
+
+  def self.cerulean_rival_pending?
+    RIVAL_VERSIONS.key?(starter) &&
+      !progress["pilot_cerulean_rival"] &&
+      !progress.fetch("pilot_wins", []).include?(CERULEAN_RIVAL_KEY)
+  end
+
+  # The old import emitted three transparent Event Touch markers. A player
+  # could pass their line without any visible Gary or a native event start.
+  # Use the already-audited Map039 line in the player movement path as well.
+  # This repairs old RXDATA and loaded saves without rewriting any map.
+  def self.cerulean_rival_crossing?(player, direction)
+    return false unless player && $game_map &&
+      cerulean_rival_map?($game_map.map_id) && cerulean_rival_pending?
+    return false if player.respond_to?(:move_route_forcing) && player.move_route_forcing
+    dx = {4=>-1, 6=>1}.fetch(direction, 0)
+    dy = {2=>1, 8=>-1}.fetch(direction, 0)
+    return false if dx == 0 && dy == 0
+    # Also recover a save made on the trigger row before this patch.
+    (player.y + dy == CERULEAN_RIVAL_ROW &&
+      CERULEAN_RIVAL_LANES.include?(player.x + dx)) ||
+      (player.y == CERULEAN_RIVAL_ROW &&
+        CERULEAN_RIVAL_LANES.include?(player.x))
+  end
+
+  # Reuse Gary's actual, already-imported Oak Lab charset. Do not invent a
+  # donor sprite filename or introduce a second character/foreign switch.
+  # Native RXDATA lookup is read-only, and the source ID is remapped.
+  def self.cerulean_rival_graphic
+    return @cerulean_rival_graphic if @cerulean_rival_graphic
+    lab_id = kanto_map_id(6)
+    return nil unless lab_id
+    lab = load_data(sprintf("Data/Map%03d.rxdata", lab_id))
+    actor = lab.events[14]
+    return nil unless actor
+    name = actor.pages.map { |page| page.graphic.character_name }.find do |value|
+      value.is_a?(String) && !value.empty?
+    end
+    @cerulean_rival_graphic = name if name
+  rescue StandardError
+    nil
+  end
+
   # FRLG Map039 has three northbound touch tiles, not one event on Route24.
   # The separate key prevents Oak Lab's first Gary battle from suppressing
   # this encounter, and persists across all three entrance lanes.
   def self.cerulean_rival
-    return false unless kanto_current? && starter
-    key = "KANTO_CERULEAN_RIVAL"
+    return false unless kanto_current? && RIVAL_VERSIONS.key?(starter)
+    key = CERULEAN_RIVAL_KEY
+    # A persisted exact win is proof even if an older scene stopped before
+    # setting its completion flag. A generic legacy "Blue" win is not.
+    progress["pilot_cerulean_rival"] = true if progress.fetch("pilot_wins", []).include?(key)
     unless progress["pilot_cerulean_rival"]
       version = RIVAL_VERSIONS.fetch(starter) + 20
       pbMessage(t("Gary: Hey! Let's see the Pokémon you've caught since Pallet!",
@@ -769,6 +825,7 @@ module BlueKantoPilot
     end
     # No foreign switches 87 or event scripts are executed.
     progress["pilot_bill_helped"] = true
+    sync_cerulean_quest_pages(kanto_map_id(39))
     map_id = $game_map.map_id
     [3, 4, 8].each do |event_id|
       next unless $game_map.events[event_id]
@@ -780,6 +837,30 @@ module BlueKantoPilot
     true
   end
 
+  # Namespaced native Key Item avoids collisions with another region's PBS.
+  # Keep recognizing the older unnamespaced ID if a legacy game provided it.
+  BILL_TICKET_IDS = [:BLUE_KANTO_SSTICKET, :SSTICKET].freeze
+
+  def self.bill_ticket_item
+    return nil unless defined?(GameData::Item)
+    BILL_TICKET_IDS.find { |id| GameData::Item.exists?(id) }
+  end
+
+  def self.bill_ticket_in_bag?
+    return false unless defined?(GameData::Item) && $bag
+    BILL_TICKET_IDS.any? { |id| GameData::Item.exists?(id) && $bag.has?(id) }
+  end
+
+  def self.bill_ticket_owned?
+    return true if bill_ticket_in_bag?
+    # A legacy native ticket may already be stored in Kanto's item PC.
+    # Never duplicate it. Regional travel stores and restores that PC.
+    pc = $PokemonGlobal.respond_to?(:pcItemStorage) ? $PokemonGlobal.pcItemStorage : nil
+    pc && pc.respond_to?(:items) && pc.items.any? { |entry|
+      entry.is_a?(Array) && BILL_TICKET_IDS.include?(entry[0]) && entry[1].to_i > 0
+    }
+  end
+
   def self.bill_reward
     return false unless kanto_current?
     unless progress["pilot_bill_helped"]
@@ -787,26 +868,33 @@ module BlueKantoPilot
                   "Converse com Bill e opere o computador primeiro."))
       return false
     end
-    if progress["pilot_bill_ticket"] || progress["pilot_ss_ticket"]
+    already_permitted = progress["pilot_bill_ticket"] || progress["pilot_ss_ticket"]
+    if progress["pilot_bill_ticket_item_granted"] || bill_ticket_owned?
+      progress["pilot_bill_ticket_item_granted"] = true
+      progress["pilot_bill_ticket"] = true
+      progress["pilot_ss_ticket"] = true
       pbMessage(t("Bill: Have fun aboard the S.S. Anne!",
                   "Bill: Divirta-se a bordo do S.S. Anne!"))
       return true
     end
-    unless defined?(GameData::Item) && GameData::Item.exists?(:SSTICKET)
-      # Some old Decades builds have no S.S. Ticket item identifier. In that
-      # case, and only AFTER restoring Bill, grant a region-local digital
-      # boarding permit rather than corrupting native item data or softlocking.
+    item = bill_ticket_item
+    unless item
+      # Compatibility with an old runtime/data pair. The delivery gate
+      # requires the native item for all newly published Kanto packages.
       progress["pilot_bill_ticket"] = true
       progress["pilot_ss_ticket"] = true
       pbMessage(t("Bill: Your digital S.S. Anne boarding pass is ready!",
                   "Bill: Sua passagem digital para o S.S. Anne está pronta!"))
       return true
     end
-    unless $bag.add(:SSTICKET, 1)
+    unless $bag.add(item, 1)
       pbMessage(t("Your Bag is full. Come back to receive Bill's S.S. Ticket.",
                   "Sua Bolsa está cheia. Volte para receber o S.S. Ticket do Bill."))
-      return false
+      # A previously issued permit stays valid, even if the physical
+      # upgrade has to be retried after making space.
+      return !!already_permitted
     end
+    progress["pilot_bill_ticket_item_granted"] = true
     progress["pilot_bill_ticket"] = true
     progress["pilot_ss_ticket"] = true
     BlueMusic.kanto_me_play("obtained_item") if defined?(BlueMusic)
@@ -817,6 +905,177 @@ module BlueKantoPilot
 
   # Source Map053 Event006: reward precedes the sixth battle. Recording the
   # item independently prevents defeat/retry from duplicating Nuggets.
+  # K02-C: keep donor switch 87/88 out of the shared save. Bill's
+  # verified local quest unlocks the original front and rear doors.
+  CERULEAN_ROCKET_KEY = "KANTO_039_026".freeze
+  def self.cerulean_house_open?
+    kanto_current? && !!progress["pilot_bill_helped"]
+  end
+
+  def self.cerulean_house_entry?
+    return true if cerulean_house_open?
+    pbMessage(t("The police are investigating. Help Bill first.",
+                "A polícia está investigando. Ajude Bill primeiro.")) if kanto_current?
+    false
+  end
+
+  def self.cerulean_police
+    return unless kanto_current?
+    pbMessage(t("Team Rocket robbed this house. We are investigating.",
+                "A Equipe Rocket roubou esta casa. Estamos investigando."))
+  end
+
+  def self.cerulean_house_owner
+    return unless kanto_current?
+    if progress["pilot_cerulean_dig_awarded"]
+      pbMessage(t("I decided to teach Diglett Dig without a TM.",
+                  "Decidi ensinar Dig ao Diglett sem uma TM."))
+    else
+      pbMessage(t("Team Rocket stole my Dig TM!", "A Equipe Rocket roubou minha TM Dig!"))
+    end
+  end
+
+  # K02-C optional source events. Use local progress, never donor variables 1/2.
+  def self.cerulean_trade_eligible?(pkmn)
+    pkmn && pkmn.species == :POLIWHIRL && !pkmn.egg? &&
+      !pkmn.shadowPokemon? && !pkmn.cannot_trade
+  end
+
+  def self.cerulean_trade_selected(index)
+    return false unless kanto_current? && $game_map &&
+      $game_map.map_id == kanto_map_id(46) && $player &&
+      !progress["pilot_cerulean_jynx_trade"]
+    return false unless index.is_a?(Integer) && index.between?(0,$player.party.length-1)
+    offered = $player.party[index]
+    return false unless cerulean_trade_eligible?(offered) && GameData::Species.exists?(:JYNX)
+    received = Pokemon.new(:JYNX, offered.level)
+    received.ability_index = 0
+    received.nature = :MILD
+    {HP:18, ATTACK:17, DEFENSE:18, SPECIAL_ATTACK:22, SPECIAL_DEFENSE:25, SPEED:21}.each do |stat,iv|
+      received.iv[stat] = iv
+    end
+    received.calc_stats
+    pbStartTrade(index, received, "Zynx", "Dontae", 0)
+    return false unless $player.party[index].equal?(received)
+    progress["pilot_cerulean_jynx_trade"] = true
+    true
+  end
+
+  def self.cerulean_jynx_trade
+    return false unless kanto_current? && $game_map && $game_map.map_id == kanto_map_id(46)
+    if progress["pilot_cerulean_jynx_trade"]
+      pbMessage(t("Has the Jynx I traded you grown stronger?", "A Jynx que troquei com você ficou mais forte?"))
+      return false
+    end
+    return false unless pbConfirmMessage(t("Trade your Poliwhirl for my Jynx?",
+                                            "Trocar seu Poliwhirl pela minha Jynx?"))
+    index = -1
+    pbFadeOutIn do
+      scene = PokemonParty_Scene.new
+      screen = PokemonPartyScreen.new(scene, $player.party)
+      index = screen.pbChooseTradablePokemon(proc { |pkmn| cerulean_trade_eligible?(pkmn) })
+    end
+    return false unless cerulean_trade_selected(index)
+    pbMessage(t("Thanks!", "Obrigado!"))
+    true
+  end
+
+  def self.cerulean_badge_guide
+    return false unless kanto_current? && $game_map && $game_map.map_id == kanto_map_id(44)
+    badges = LEAGUE_REQUIRED_BADGES
+    names = badges.map { |badge| badge.capitalize + " Badge" }
+    pbMessage(t("Each local Badge earns one Emerald. Field moves require the local HM, Badge and a compatible Pokémon.",
+                "Cada insígnia local concede uma esmeralda. HMs exigem o item, a insígnia local e um Pokémon compatível."))
+    loop do
+      index = pbMessage(t("Which Badge should I describe?", "Qual insígnia deseja consultar?"),
+                        names + [t("Back", "Voltar")], names.length)
+      break unless index.is_a?(Integer) && index.between?(0,names.length-1)
+      obtained = BlueRegions.local_achievements(progress, "KANTO").include?(badges[index])
+      pbMessage(t("{1}: {2}", "{1}: {2}", names[index],
+                  obtained ? t("Earned in Kanto.", "Conquistada em Kanto.") :
+                             t("Not yet earned in Kanto.", "Ainda não conquistada em Kanto.")))
+    end
+    true
+  end
+
+  KANTO_WALL_MAP = "Plugins/ZZZZZ Blue Kanto Pilot/KantoWallMap.png".freeze
+  def self.cerulean_wall_map
+    return false unless kanto_current? && $game_map &&
+      [kanto_map_id(46),kanto_map_id(47)].include?($game_map.map_id)
+    return false unless File.file?(KANTO_WALL_MAP)
+    # Read-only atlas: native Decades map UI defaults to Beatha. No global
+    # town-map registration, Fly destination or player movement is changed.
+    pbFadeOutIn do
+      viewport = Viewport.new(0,0,Graphics.width,Graphics.height)
+      viewport.z = 99999
+      sprite = Sprite.new(viewport)
+      bitmap = Bitmap.new(KANTO_WALL_MAP)
+      sprite.bitmap = bitmap
+      zoom = [Graphics.width.to_f / bitmap.width, Graphics.height.to_f / bitmap.height].min
+      sprite.zoom_x = sprite.zoom_y = zoom
+      sprite.x = ((Graphics.width-bitmap.width*zoom)/2).round
+      sprite.y = ((Graphics.height-bitmap.height*zoom)/2).round
+      loop do
+        Graphics.update
+        Input.update
+        break if Input.trigger?(Input::BACK) || Input.trigger?(Input::USE)
+      end
+    ensure
+      sprite.dispose if sprite && !sprite.disposed?
+      bitmap.dispose if bitmap && !bitmap.disposed?
+      viewport.dispose if viewport && !viewport.disposed?
+    end
+    true
+  end
+
+  def self.cerulean_bike_exchange
+    return false unless kanto_current? && $game_map &&
+      $game_map.map_id == kanto_map_id(43) && $bag && defined?(GameData::Item)
+    return false unless GameData::Item.exists?(:BIKEVOUCHER) &&
+      GameData::Item.exists?(:BICYCLE)
+    if progress["pilot_cerulean_bike_exchanged"] || $bag.has?(:BICYCLE)
+      pbMessage(t("Enjoy your Bicycle!", "Aproveite sua bicicleta!"))
+      return true
+    end
+    unless $bag.has?(:BIKEVOUCHER)
+      pbMessage(t("Bring a Bike Voucher from the Pokémon Fan Club in Vermilion.",
+                  "Traga um vale-bicicleta do Fã-Clube Pokémon de Vermilion."))
+      return false
+    end
+    return false if $bag.respond_to?(:can_add?) && !$bag.can_add?(:BICYCLE, 1)
+    return false unless $bag.remove(:BIKEVOUCHER, 1)
+    unless $bag.add(:BICYCLE, 1)
+      raise "Bike Voucher rollback failed" unless $bag.add(:BIKEVOUCHER, 1)
+      return false
+    end
+    progress["pilot_cerulean_bike_exchanged"] = true
+    pbMessage(t("You received a Bicycle!", "Você recebeu uma bicicleta!"))
+    true
+  end
+
+  # All three original Rocket events use the same stable win and reward
+  # keys. A full bag leaves a retriable reward, without replaying a battle.
+  def self.cerulean_rocket
+    return false unless cerulean_house_open? && $game_map &&
+      $game_map.map_id == kanto_map_id(39)
+    return true if progress["pilot_cerulean_dig_awarded"]
+    return false unless $bag && defined?(GameData::Item) && GameData::Item.exists?(:TM28)
+    return false unless GameData::Item.get(:TM28).move == :DIG
+    return false unless progress.fetch("pilot_wins", []).include?(CERULEAN_ROCKET_KEY) ||
+      battle(:BLUE_KANTO_ROCKET, "Grunt", CERULEAN_ROCKET_KEY, 6)
+    unless $bag.add(:TM28, 1)
+      pbMessage(t("Make room in your Bag for TM28.", "Libere espaço na Bolsa para a TM28."))
+      return false
+    end
+    progress["pilot_cerulean_dig_awarded"] = true
+    [26,37,38].each do |id|
+      $game_self_switches[[$game_map.map_id,id,"A"]] = true
+    end
+    $game_map.need_refresh = true
+    pbMessage(t("You recovered TM28!", "Você recuperou a TM28!"))
+    true
+  end
+
   def self.nugget_bridge_rocket
     return false unless kanto_current?
     (1..5).each do |eid|
@@ -864,7 +1123,8 @@ module BlueKantoPilot
     key = event_key || "#{type}:#{name}"
     # Both Silph Co. and Viridian have a boss named Giovanni. A legacy
     # Silph name-only victory must never mark the *gym* Giovanni as beaten.
-    if wins.include?(key) || (type != :BLUE_KANTO_LEADER_GIOVANNI && wins.include?(name))
+    if wins.include?(key) || (key != CERULEAN_RIVAL_KEY && key != CERULEAN_ROCKET_KEY &&
+        type != :BLUE_KANTO_LEADER_GIOVANNI && wins.include?(name))
       # Older saves may have Miguel defeated but still use his first page.
       # Both paths must offer the missing one-time prize.
       if key == "KANTO_038_019" && !progress["pilot_mt_moon_fossil"]
@@ -1032,13 +1292,16 @@ module BlueKantoPilot
   # Route25's real Bill quest now controls new tickets. Existing players
   # with an already issued regional pass keep it; no save flag is revoked.
   def self.ticketmaster
+    return false unless kanto_current?
     unless BlueRegions.local_achievements(progress, "KANTO").include?("CASCADE")
       pbMessage(t("Harbor clerk: Earn the Cascade Badge in Cerulean first.",
                   "Porto: conquiste primeiro a Cascade Badge em Cerulean."))
       return false
     end
-    if progress["pilot_ss_ticket"] ||
-       (GameData::Item.exists?(:SSTICKET) && $bag.has?(:SSTICKET))
+    if progress["pilot_ss_ticket"] || bill_ticket_in_bag?
+      # Existing digital permits are upgraded on a return to Bill or at
+      # the clerk, without ever invalidating a previously issued pass.
+      bill_reward if progress["pilot_bill_helped"] && !progress["pilot_bill_ticket_item_granted"]
       progress["pilot_ss_ticket"] = true
       pbMessage(t("Harbor clerk: You're cleared to board the S.S. Anne!",
                   "Porto: sua passagem para o S.S. Anne está liberada!"))
@@ -1054,7 +1317,8 @@ module BlueKantoPilot
   end
 
   def self.harbor_gate(map_id, x, y)
-    unless progress["pilot_ss_ticket"] || (GameData::Item.exists?(:SSTICKET) && $bag.has?(:SSTICKET))
+    return false unless kanto_current?
+    unless progress["pilot_ss_ticket"] || bill_ticket_in_bag?
       pbMessage(BlueKantoPilot.t("You need the S.S. Ticket to enter the harbor. Speak to the clerk.", "O acesso ao porto exige o S.S. Ticket. Fale com o atendente."))
       return
     end
@@ -1856,13 +2120,10 @@ module BlueKantoPilot::PlayerOverworldScale
                           ((graphic.direction - 2) / 2) * @ch, @cw, @ch)
       end
     end
-    return unless BlueKantoPilot::PILOT_OVERWORLD_SCALE
-    return unless @character && @character.equal?($game_player)
-
-    # The boot-time constant is not proof the pilot marker still exists.
-    # Save the original zoom once and restore it if the isolated pilot
-    # marker disappears (e.g. reloading into the main Decades context).
-    if File.file?("Kanto pilot.json")
+    # The pilot marker alone excluded the shared Windows/Android builds.
+    # The existing regional predicate also checks the integrated install
+    # and current save region; NPCs, other regions and collision stay intact.
+    if @character && @character.equal?($game_player) && BlueKantoPilot.kanto_current?
       unless instance_variable_defined?(:@blue_kanto_original_zoom)
         @blue_kanto_original_zoom = [zoom_x, zoom_y]
       end
@@ -1907,8 +2168,80 @@ GameData::MapMetadata.prepend(BlueKantoPilot::ViridianMapLabel) if defined?(Game
 
 # The Kanto-only markers ensure this global movement hook is inert on
 # Decades, Johto, Hoenn and Sinnoh, even when those maps share a level cap.
+# The center of the three existing source-grounded lane markers renders
+# Gary until his Cerulean battle is won. Native event/page state is retained;
+# even an old false-positive self-switch cannot conceal this pending actor.
+module BlueKantoPilot::CeruleanRivalActor
+  def character_name
+    if @id == BlueKantoPilot::CERULEAN_RIVAL_ACTOR
+      map_id = @map_id || (@map && @map.respond_to?(:map_id) && @map.map_id)
+      if BlueKantoPilot.cerulean_rival_map?(map_id)
+        return "" unless BlueKantoPilot.cerulean_rival_pending?
+        return BlueKantoPilot.cerulean_rival_graphic || super
+      end
+    end
+    super
+  end
+end
+Game_Event.prepend(BlueKantoPilot::CeruleanRivalActor) if defined?(Game_Event)
+
+# Synchronize self-switches at map boundaries, never by prepending
+# Game_Event#refresh. Event Indicators aliases that method; aliasing a
+# prepended refresh calls super back into the alias and overflows the stack.
+module BlueKantoPilot
+  def self.sync_cerulean_quest_pages(map_id)
+    return false unless $game_self_switches && $PokemonGlobal &&
+      kanto_current? && kanto_map_id(43) && map_id == kanto_map_id(39)
+    desired = {13=>cerulean_house_open?,25=>cerulean_house_open?}
+    [26,37,38].each { |id| desired[id] = !!progress["pilot_cerulean_dig_awarded"] }
+    changed = false
+    desired.each do |id, value|
+      key = [map_id,id,"A"]
+      next if !!$game_self_switches[key] == value
+      $game_self_switches[key] = value
+      changed = true
+    end
+    changed
+  end
+
+  # A save may restore an existing map without calling setup again.
+  # Refresh through the engine's existing chain only after flags change.
+  def self.sync_loaded_cerulean_map(map)
+    return unless map && sync_cerulean_quest_pages(map.map_id)
+    map.need_refresh = true
+    map.events.each_value { |event| event.refresh }
+  end
+end
+
+module BlueKantoPilot::CeruleanQuestMapSetup
+  def setup(map_id, *args)
+    BlueKantoPilot.sync_cerulean_quest_pages(map_id)
+    super
+  end
+end
+Game_Map.prepend(BlueKantoPilot::CeruleanQuestMapSetup) if defined?(Game_Map)
+
+module BlueKantoPilot::CeruleanQuestMapLoad
+  def createSpritesets(*args)
+    if $map_factory && $map_factory.respond_to?(:maps)
+      $map_factory.maps.each { |map| BlueKantoPilot.sync_loaded_cerulean_map(map) }
+    else
+      BlueKantoPilot.sync_loaded_cerulean_map($game_map)
+    end
+    super
+  end
+end
+Scene_Map.prepend(BlueKantoPilot::CeruleanQuestMapLoad) if defined?(Scene_Map)
+
 module BlueKantoPilot::Route2ExitGuard
   def move_generic(dir, turn_enabled = true)
+    if BlueKantoPilot.cerulean_rival_crossing?(self, dir)
+      turn_generic(dir, true) if turn_enabled
+      # Do not continue the old movement after a battle/blackout. Victory
+      # clears the encounter; the next ordinary movement proceeds normally.
+      BlueKantoPilot.cerulean_rival
+      return
+    end
     if BlueKantoPilot.pewter_route3_blocked?(self, dir)
       turn_generic(dir, true) if turn_enabled
       key = $game_map.map_id

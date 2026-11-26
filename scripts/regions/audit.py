@@ -71,13 +71,18 @@ KANTO_PHASE13_SOURCE_IDS = (13,)
 # and Bill's cottage are appended AFTER phase 14, never inserted by raw ID.
 KANTO_PHASE14_SOURCE_IDS = (16, 17, *range(209, 222))
 
+# Published 145-map registry: never insert 043–048 before these three.
+KANTO_CERULEAN_NORTH_SOURCE_IDS = (53, 54, 55)
+KANTO_CERULEAN_INTERIOR_SOURCE_IDS = (43, 44, 45, 46, 47, 48)
+
 
 def stable_source_order(wanted):
     chosen = set(wanted)
     stable = (*KANTO_PHASE10_SOURCE_IDS, *KANTO_PHASE11_EARLY_SOURCE_IDS,
               *KANTO_PHASE11_LATE_SOURCE_IDS,
               *KANTO_PHASE12_SOURCE_IDS, *KANTO_PHASE13_SOURCE_IDS,
-              *KANTO_PHASE14_SOURCE_IDS)
+              *KANTO_PHASE14_SOURCE_IDS, *KANTO_CERULEAN_NORTH_SOURCE_IDS,
+              *KANTO_CERULEAN_INTERIOR_SOURCE_IDS)
     result = [source for source in stable if source in chosen]
     result.extend(sorted(chosen - set(stable)))
     return result

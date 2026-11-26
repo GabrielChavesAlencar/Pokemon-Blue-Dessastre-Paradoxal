@@ -120,3 +120,14 @@ Price = 750
 FieldUse = OnPokemon
 Consumable = true
 Description = Resets only Speed EVs of one Pokemon. Consumed only when this stat changes.
+
+#-------------------------------
+[BLUE_KANTO_SSTICKET]
+Name = S.S. Ticket
+NamePlural = S.S. Tickets
+Pocket = 8
+Price = 0
+SellPrice = 0
+Consumable = false
+Flags = KeyItem
+Description = Passagem do Bill para embarcar no S.S. Anne em Vermilion.

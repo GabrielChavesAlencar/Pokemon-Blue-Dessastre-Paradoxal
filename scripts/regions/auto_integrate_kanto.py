@@ -169,15 +169,19 @@ def integrate(project: Path = ROOT, game: Path | None = None,
         try:
             invoke(KANTO_IMPORTER, "--game", str(game), "--verify-installed")
         except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError) as err:
-            # Only the known shipped 142-map proof may enter the migration.
+            # Only known shipped predecessors may enter the migration.
             # The importer independently checks exact ownership and hashes.
             try:
                 legacy = json.loads((game / KANTO_MANIFEST).read_text(encoding="utf-8"))
+                catalogue = project / "data/regions/kanto-source.json"
+                target_count = len(json.loads(catalogue.read_text("utf8"))["maps"]) if catalogue.is_file() else 145
+                old_count = len(legacy["maps"]) if isinstance(legacy.get("maps"), dict) else 0
                 candidate = (legacy.get("schema") == 1 and
                              legacy.get("source") == "Essentials FRLG 21.1" and
-                             isinstance(legacy.get("maps"), dict) and
-                             len(legacy["maps"]) == 142 and (game / KANTO_MARKER).is_file())
-            except (OSError, ValueError, TypeError, AttributeError):
+                             ((target_count == 145 and old_count == 142) or
+                              (target_count == 151 and old_count in (142, 145))) and
+                             (game / KANTO_MARKER).is_file())
+            except (OSError, ValueError, TypeError, AttributeError, KeyError):
                 candidate = False
             if candidate:
                 try:
@@ -186,7 +190,7 @@ def integrate(project: Path = ROOT, game: Path | None = None,
                     invoke(KANTO_IMPORTER, "--game", str(game), "--verify-installed")
                     recompiling = ensure_rival_compilation(project, game)
                     return _persist(project, {"status": "integrated", "changed": True,
-                                              "source": "verified_142_to_145_migration",
+                                              "source": f"verified_{old_count}_to_{target_count}_migration",
                                               "rival_compile_requested": recompiling})
                 except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError) as migration_error:
                     err = migration_error

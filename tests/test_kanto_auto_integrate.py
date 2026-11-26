@@ -20,7 +20,7 @@ class KantoAutoIntegrationTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="kanto-auto-")
         self.addCleanup(self.temp.cleanup)
-        self.project = Path(self.temp.name)
+        self.project = Path(self.temp.name).resolve()
         self.game = self.project / "game"
         (self.game / "PBS").mkdir(parents=True)
         (self.game / "Data").mkdir()
@@ -143,6 +143,29 @@ class KantoAutoIntegrationTests(unittest.TestCase):
         self.assertTrue(result["changed"])
         self.assertEqual(result["source"], "verified_142_to_145_migration")
         self.assertIn(auto.KANTO_SOURCE_BOOTSTRAP, self.calls[1])
+        self.assertIn("--migrate-existing", self.calls[2])
+        self.assertIn("--verify-installed", self.calls[3])
+
+    def test_145_map_install_routes_to_migration_only_when_151_catalogue_active(self):
+        import json
+        (self.game / auto.KANTO_MARKER).write_text("installed")
+        (self.game / auto.KANTO_MANIFEST).write_text(json.dumps({
+            "schema": 1, "source": "Essentials FRLG 21.1",
+            "maps": {str(i): i + 300 for i in range(145)}
+        }))
+        def runner(argv, project, env):
+            self.calls.append(argv)
+            if len(self.calls) == 1:
+                raise subprocess.CalledProcessError(1, argv)
+        result = auto.integrate(self.project, self.game, run=runner)
+        self.assertEqual(result["status"], "manual_migration_required")
+        self.assertEqual(len(self.calls), 1)
+        self.calls.clear()
+        catalogue = self.project / "data/regions/kanto-source.json"
+        catalogue.parent.mkdir(parents=True)
+        catalogue.write_text(json.dumps({"maps": {str(i): str(i) for i in range(151)}}))
+        result = auto.integrate(self.project, self.game, run=runner)
+        self.assertEqual(result["source"], "verified_145_to_151_migration")
         self.assertIn("--migrate-existing", self.calls[2])
         self.assertIn("--verify-installed", self.calls[3])
 

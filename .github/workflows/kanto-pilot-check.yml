@@ -36,19 +36,8 @@ jobs:
             python -c "import sys; sys.path.insert(0,'scripts/regions'); import install_sinnoh_experimental_windows; import sinnoh_f12d_integrated as i; from pathlib import Path; import json; base=Path('game'); print('SINNOH_F12D_LOCAL_ENGINE_REFERENCE_REPORT '+json.dumps(i.local_engine(base),sort_keys=True)); print('SINNOH_F12D_LOCAL_ITEM_CATALOGUE_REPORT '+json.dumps(i.item_catalogue.audit(base),sort_keys=True))"
             if($LASTEXITCODE -ne 0){throw 'Sinnoh local reference preflight failed'}
           }
-          $ProgressPreference='SilentlyContinue'
-          $source=New-Item -ItemType Directory -Force '.blue-work/frlg-source'
-          $archive=Join-Path $source.FullName 'FRLG.rar'
-          $url='https://drive.usercontent.google.com/download?id=1dsqD8lEJCz-lioEruRqQycWJLCUVxVtI&export=download&confirm=t'
-          Invoke-WebRequest -UseBasicParsing $url -OutFile $archive
-          $manifest=Get-Content data/regions/kanto-source.json -Raw | ConvertFrom-Json
-          if((Get-FileHash $archive -Algorithm SHA256).Hash.ToLower() -ne $manifest.sha256){throw 'FRLG archive hash differs'}
-          $list=Join-Path $source.FullName 'files.txt'
-          $entries=@(tar -tf $archive | Where-Object { $_ -match '^Essentials FRLG/(Data/(Map[0-9]+|MapInfos|Tilesets|System)\.rxdata|PBS/(encounters|trainers|map_connections|map_metadata)\.txt|Graphics/(Characters|Tilesets|Autotiles)/[^/]+\.png)$' })
-          if($LASTEXITCODE -ne 0 -or $entries.Count -lt 200){throw 'FRLG archive listing failed'}
-          [IO.File]::WriteAllLines($list,[string[]]$entries,(New-Object System.Text.UTF8Encoding($false)))
-          tar -xf $archive -C $source.FullName -T $list
-          if($LASTEXITCODE -ne 0){throw 'FRLG extraction failed'}
+          python scripts/regions/ensure_source.py
+          if($LASTEXITCODE -ne 0){throw 'Pinned FRLG source preparation failed'}
           python scripts/regions/audit_kanto_coverage.py > .blue-work/kanto-map-coverage.json
           if($LASTEXITCODE -ne 0){throw 'Kanto source/catalog coverage audit failed'}
           python scripts/regions/audit_next_segment.py
@@ -57,6 +46,10 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'JoiPlay Cerulean trainer identity regression failed'}
           python tests/test_kanto_cerulean_north.py
           if($LASTEXITCODE -ne 0){throw 'Kanto Cerulean north source/MapID audit failed'}
+          python tests/test_kanto_installer.py
+          if($LASTEXITCODE -ne 0){throw 'K02-C migration ownership contract failed'}
+          python tests/test_kanto_auto_integrate.py
+          if($LASTEXITCODE -ne 0){throw 'K02-C automatic migration contract failed'}
           python tests/test_kanto_release_pagination.py
           if($LASTEXITCODE -ne 0){throw 'Kanto release selector regression tests failed'}
           python scripts/regions/audit_vermilion.py --output .blue-work/kanto-phase-08-audit.json
@@ -89,15 +82,17 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Kanto phase 15 source PBS inventory failed'}
           python scripts/regions/pilot.py
           if($LASTEXITCODE -ne 0){throw 'Pilot build failed'}
+          python scripts/regions/audit_cerulean_interiors.py
+          if($LASTEXITCODE -ne 0){throw 'K02-C isolated source geometry migration failed'}
           $scope='.blue-work/kanto-pilot/Data/blue-kanto-music.txt'
           if(-not (Test-Path $scope)){throw 'Missing regional Kanto music scope'}
           $scopeRows=@(Get-Content $scope | Where-Object { $_ -match '^SCOPE[\t]' })
-          if($scopeRows.Count -ne 145){throw "Expected 145 real MapIDs; got $($scopeRows.Count)"}
+          if($scopeRows.Count -ne 151){throw "Expected 151 real MapIDs; got $($scopeRows.Count)"}
           python scripts/music/compile_kanto_music.py --game .blue-work/kanto-pilot --apply
           if($LASTEXITCODE -ne 0){throw 'Kanto regional music compiler failed'}
           $mapRows=@(Get-Content $scope | Where-Object { $_ -match '^MAP[\t]' })
           $vehicleRows=@(Get-Content $scope | Where-Object { $_ -match '^TRANSPORT[\t]' })
-          if($mapRows.Count -ne 77){throw "Fase 2: expected 77 verified map BGMs, got $($mapRows.Count)"}
+          if($mapRows.Count -ne 83){throw "Fase 2: expected 83 verified map BGMs, got $($mapRows.Count)"}
           if($vehicleRows.Count -ne 2){throw "Fase 2: expected bicycle and surf, got $($vehicleRows.Count)"}
           if(@(Get-Content $scope | Where-Object { $_ -match '^BATTLE[\t]' }).Count -ne 8){throw 'Fase 3: expected 8 regional battle/victory bindings'}
           if(@(Get-Content $scope | Where-Object { $_ -match '^ME[\t]' }).Count -ne 6){throw 'Fase 4: expected 6 confirmed ME bindings'}
@@ -109,7 +104,7 @@ jobs:
           if($meTracks.Count -ne 6){throw 'Fase 4: exactly 6 proven ME tracks are expected; unverified ME must remain absent'}
           python scripts/music/install_kanto_music.py --game .blue-work/kanto-pilot --approved
           if($LASTEXITCODE -ne 0){throw 'Fase 2 MP3 integrity failed'}
-          Write-Host 'Kanto F5: 77 maps, 2 vehicles, 8 battle, 6 ME, 5 scene BGM, 8 scene pending; 32 BGM + 6 ME installed.'
+          Write-Host 'Kanto F5: 83 maps, 2 vehicles, 8 battle, 6 ME, 5 scene BGM, 8 scene pending; 32 BGM + 6 ME installed.'
           python scripts/regions/audit_canonical.py --output .blue-work/kanto-phase-15-audit.json
           if($LASTEXITCODE -ne 0){throw 'Kanto phase 15 canonical PBS audit failed'}
           python scripts/regions/verify_pilot.py .blue-work/kanto-pilot
@@ -119,6 +114,13 @@ jobs:
           Copy-Item .blue-work/kanto-pilot/Data/Scripts.rxdata .blue-work/kanto-clean-main.rxdata
           python scripts/regions/native_check.py .blue-work/kanto-pilot
           if($LASTEXITCODE -ne 0){throw 'Native check preparation failed'}
+      - name: Preservar recibo K02-C da fonte e migracao isolada
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k02c-source-and-geometry
+          path: .blue-work/kanto-k02c-source.json
+          if-no-files-found: error
       - name: Preservar cobertura completa dos mapas de Kanto
         if: always()
         uses: actions/upload-artifact@v4
@@ -225,6 +227,57 @@ jobs:
               if(-not (Test-Path $nativeAudio)){throw "Native Kanto F6 AudioFile probe missing"}
               if(-not ((Get-Content $nativeAudio -Raw) -match "PASS_NATIVE_AUDIOFILE_DISPATCH_NOT_AUDIBLE")){throw "Kanto music F6 native probe did not pass"}
               Get-Content $nativeAudio
+              $northProof="$pilot/Data/blue-kanto-k00-cerulean-proof.txt"
+              if(-not (Test-Path $northProof)){throw 'K00-C native Cerulean proof missing'}
+              Get-Content $northProof
+              $openingProof="$pilot/Data/blue-kanto-k01a-starter-proof.txt"
+              if(-not (Test-Path $openingProof)){throw 'K01-A native starter proof missing'}
+              $openingTrace="$pilot/Data/blue-kanto-k01a-state-trace.txt"
+              if(-not (Test-Path $openingTrace)){throw 'K01-A save-state trace missing'}
+              Get-Content $openingTrace | ForEach-Object { Write-Host "KANTO_K01A_SAVE_STATE:$_" }
+              Write-Host ("KANTO_K01A_NATIVE_STARTER_REPORT:" + (Get-Content $openingProof -Raw).Trim())
+              Write-Host 'KANTO_K01A_THREE_STARTERS_SAVE_RELOAD_OK'
+              $parcelTrace="$pilot/Data/blue-kanto-k01b-route-trace.txt"
+              if(-not (Test-Path $parcelTrace)){throw 'K01-B native route trace missing'}
+              Get-Content $parcelTrace
+              $parcelProof="$pilot/Data/blue-kanto-k01b-parcel-proof.txt"
+              if(-not (Test-Path $parcelProof)){throw 'K01-B native Pallet/Oak proof missing'}
+              Write-Host ("KANTO_K01B_NATIVE_PALLET_OAK_REPORT:" + (Get-Content $parcelProof -Raw).Trim())
+              Write-Host 'KANTO_K01B_PALLET_OAK_PARCEL_SAVE_RELOAD_OK'
+              $route2Trace="$pilot/Data/blue-kanto-k01c-route2-trace.txt"
+              $route2Proof="$pilot/Data/blue-kanto-k01c-route2-proof.txt"
+              if(-not (Test-Path $route2Trace) -or -not (Test-Path $route2Proof)){throw 'K01-C native Route2 proof missing'}
+              Get-Content $route2Trace | ForEach-Object { Write-Host "KANTO_K01C_ROUTE2_GATE_STATE:$_" }
+              Write-Host ("KANTO_K01C_NATIVE_ROUTE2_REPORT:" + (Get-Content $route2Proof -Raw).Trim())
+              Write-Host 'KANTO_K01C_ROUTE2_GATE_SAVE_RELOAD_OK'
+              $forestTrace="$pilot/Data/blue-kanto-k01d-forest-trace.txt"
+              $forestProof="$pilot/Data/blue-kanto-k01d-forest-proof.txt"
+              if(-not (Test-Path $forestTrace) -or -not (Test-Path $forestProof)){throw 'K01-D native Forest proof missing'}
+              Get-Content $forestTrace
+              Write-Host ("KANTO_K01D_NATIVE_FOREST_REPORT:" + (Get-Content $forestProof -Raw).Trim())
+              Write-Host 'KANTO_K01D_FOREST_CORRIDOR_TRAINERS_SAVE_RELOAD_OK'
+              $pewterTrace="$pilot/Data/blue-kanto-k01e-pewter-trace.txt"
+              $pewterProof="$pilot/Data/blue-kanto-k01e-pewter-proof.txt"
+              if(-not (Test-Path $pewterTrace) -or -not (Test-Path $pewterProof)){throw 'K01-E native Pewter proof missing'}
+              Get-Content $pewterTrace
+              Write-Host ("KANTO_K01E_NATIVE_PEWTER_REPORT:" + (Get-Content $pewterProof -Raw).Trim())
+              Write-Host 'KANTO_K01E_BROCK_ROUTE3_SHOES_SAVE_RELOAD_OK'
+              $moonTrace="$pilot/Data/blue-kanto-k02a-moon-trace.txt"
+              $moonProof="$pilot/Data/blue-kanto-k02a-moon-proof.txt"
+              if(-not (Test-Path $moonTrace) -or -not (Test-Path $moonProof)){throw 'K02-A native Moon proof missing'}
+              Get-Content $moonTrace
+              Write-Host ("KANTO_K02A_NATIVE_MOON_REPORT:" + (Get-Content $moonProof -Raw).Trim())
+              Write-Host 'KANTO_K02A_MOON_FOSSILS_REVIVAL_SAVE_RELOAD_OK'
+              $interiorProof="$pilot/Data/blue-kanto-k02c-native-proof.txt"
+              if(-not (Test-Path $interiorProof)){throw 'K02-C native interior proof missing'}
+              Write-Host ("KANTO_K02C_NATIVE_INTERIORS_REPORT:" + (Get-Content $interiorProof -Raw).Trim())
+              Write-Host 'KANTO_K02C_INTERIORS_BIKE_ROCKET_SAVE_RELOAD_OK'
+              $ceruleanTrace="$pilot/Data/blue-kanto-k02d-trace.txt"
+              $ceruleanProof="$pilot/Data/blue-kanto-k02d-proof.txt"
+              if(-not (Test-Path $ceruleanTrace) -or -not (Test-Path $ceruleanProof)){throw 'K02-D native Cerulean proof missing'}
+              Get-Content $ceruleanTrace
+              Write-Host ("KANTO_K02D_NATIVE_CERULEAN_REPORT:" + (Get-Content $ceruleanProof -Raw).Trim())
+              Write-Host 'KANTO_K02D_GARY_BILL_MISTY_SAVE_RELOAD_OK'
               Get-Content "$pilot/Data/blue-kanto-proof.txt"
               exit 0
             }
@@ -232,7 +285,168 @@ jobs:
             if($process.ExitCode -ne 0 -and -not (Select-String -Path .blue-work/kanto-native-out.txt -Pattern 'Successfully compiled all game data' -Quiet)){break}
           }
           Get-Content .blue-work/kanto-native-out.txt,.blue-work/kanto-native-err.txt,"$pilot/Data/blue-kanto-error.txt","$pilot/errorlog.txt" -ErrorAction SilentlyContinue | Select-Object -Last 100
+          $openingTrace="$pilot/Data/blue-kanto-k01a-state-trace.txt"
+          if(Test-Path $openingTrace){
+            Get-Content $openingTrace | ForEach-Object { Write-Host "KANTO_K01A_SAVE_STATE:$_" }
+          }
+          $gateTrace="$pilot/Data/blue-kanto-k01b-gate-trace.txt"
+          if(Test-Path $gateTrace){Get-Content $gateTrace}
+          $parcelTrace="$pilot/Data/blue-kanto-k01b-route-trace.txt"
+          if(Test-Path $parcelTrace){Get-Content $parcelTrace}
+          $route2Trace="$pilot/Data/blue-kanto-k01c-route2-trace.txt"
+          if(Test-Path $route2Trace){Get-Content $route2Trace | ForEach-Object { Write-Host "KANTO_K01C_ROUTE2_GATE_STATE:$_" }}
+          $forestTrace="$pilot/Data/blue-kanto-k01d-forest-trace.txt"
+          if(Test-Path $forestTrace){Get-Content $forestTrace}
+          $pewterTrace="$pilot/Data/blue-kanto-k01e-pewter-trace.txt"
+          if(Test-Path $pewterTrace){Get-Content $pewterTrace}
+          $moonTrace="$pilot/Data/blue-kanto-k02a-moon-trace.txt"
+          if(Test-Path $moonTrace){Get-Content $moonTrace}
+          $ceruleanTrace="$pilot/Data/blue-kanto-k02d-trace.txt"
+          if(Test-Path $ceruleanTrace){Get-Content $ceruleanTrace}
           throw 'Kanto native proof missing'
+      - name: Preservar recibos K02-D Cerulean
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k02d-trace.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k02d-native-cerulean
+          path: |
+            .blue-work/kanto-pilot/Data/blue-kanto-k02d-trace.txt
+            .blue-work/kanto-pilot/Data/blue-kanto-k02d-proof.txt
+          include-hidden-files: true
+          if-no-files-found: error
+      - name: Preservar diagnóstico Mt Moon K02-A
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k02a-moon-trace.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k02a-native-moon-trace
+          path: .blue-work/kanto-pilot/Data/blue-kanto-k02a-moon-trace.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preservar recibo nativo Mt Moon K02-A
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k02a-moon-proof.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k02a-native-moon-proof
+          path: .blue-work/kanto-pilot/Data/blue-kanto-k02a-moon-proof.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preservar diagnóstico Pewter K01-E
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k01e-pewter-trace.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k01e-native-pewter-trace
+          path: .blue-work/kanto-pilot/Data/blue-kanto-k01e-pewter-trace.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preservar recibo nativo Pewter K01-E
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k01e-pewter-proof.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k01e-native-pewter-proof
+          path: .blue-work/kanto-pilot/Data/blue-kanto-k01e-pewter-proof.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preservar diagnóstico Viridian Forest K01-D
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k01d-forest-trace.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k01d-native-forest-trace
+          path: .blue-work/kanto-pilot/Data/blue-kanto-k01d-forest-trace.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preservar recibo nativo Viridian Forest K01-D
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k01d-forest-proof.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k01d-native-forest-proof
+          path: .blue-work/kanto-pilot/Data/blue-kanto-k01d-forest-proof.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preservar diagnóstico de Viridian Rota 2 K01-C
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k01c-route2-trace.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k01c-native-route2-trace
+          path: .blue-work/kanto-pilot/Data/blue-kanto-k01c-route2-trace.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preservar recibo nativo Viridian Rota 2 K01-C
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k01c-route2-proof.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k01c-native-route2-proof
+          path: .blue-work/kanto-pilot/Data/blue-kanto-k01c-route2-proof.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preservar trajetos e interação por balcão K01-B
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k01b-route-trace.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k01b-native-route-trace
+          path: .blue-work/kanto-pilot/Data/blue-kanto-k01b-route-trace.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preservar diagnóstico de saída de Pallet K01-B
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k01b-gate-trace.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k01b-native-gate-trace
+          path: .blue-work/kanto-pilot/Data/blue-kanto-k01b-gate-trace.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preservar recibo nativo Pallet Oak K01-B
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k01b-parcel-proof.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k01b-native-parcel-proof
+          path: .blue-work/kanto-pilot/Data/blue-kanto-k01b-parcel-proof.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preservar estados K01-A de save e reload
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k01a-state-trace.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k01a-native-save-state-trace
+          path: .blue-work/kanto-pilot/Data/blue-kanto-k01a-state-trace.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preservar recibo nativo K01-A
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k01a-starter-proof.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k01a-native-starter-proof
+          path: .blue-work/kanto-pilot/Data/blue-kanto-k01a-starter-proof.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preservar recibo nativo Cerulean K02-C
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k02c-native-proof.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k02c-native-proof
+          path: .blue-work/kanto-pilot/Data/blue-kanto-k02c-native-proof.txt
+          if-no-files-found: error
+      - name: Preservar recibo nativo Cerulean K00-C
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k00-cerulean-native-proof
+          path: .blue-work/kanto-pilot/Data/blue-kanto-k00-cerulean-proof.txt
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 14
       - name: Compilar a missao integrada de Sinnoh somente na copia privada
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'sinnoh-f12d-integrated-gameplay'
         timeout-minutes: 22
@@ -380,7 +594,7 @@ jobs:
           python scripts/music/compile_kanto_music.py --game game
           if($LASTEXITCODE -ne 0){throw 'Installed Kanto music MapIDs failed to compile'}
           $integrated='game/Data/blue-kanto-music.txt'
-          if(@(Get-Content $integrated | Where-Object { $_ -match '^MAP[\t]' }).Count -ne 77){throw '77 Kanto environment bindings lost in integrated game'}
+          if(@(Get-Content $integrated | Where-Object { $_ -match '^MAP[\t]' }).Count -ne 83){throw '83 Kanto environment bindings lost in integrated game'}
           if(@(Get-Content $integrated | Where-Object { $_ -match '^TRANSPORT[\t]' }).Count -ne 2){throw 'Bicycle/Surf bindings lost in integrated game'}
           if(@(Get-Content $integrated | Where-Object { $_ -match '^BATTLE[\t]' }).Count -ne 8){throw 'Kanto 8 battle/victory themes missing from installed game'}
           if(@(Get-Content $integrated | Where-Object { $_ -match '^BASEPOOL[\t]' }).Count -ne 3){throw 'Decades baseline pool fingerprints missing'}
@@ -402,6 +616,29 @@ jobs:
           if((Get-FileHash 'game/mkxp.json' -Algorithm SHA256).Hash -ne $originalConfig){throw 'Native save directory was changed'}
           python scripts/regions/install_kanto.py --apply --game game
           if($LASTEXITCODE -ne 0){throw 'Idempotent install check failed'}
+      - name: K00 - provar migracao 142 a 145 em copia descartavel com RXDATA real
+        shell: powershell
+        run: |
+          python scripts/regions/qa_k00_migration.py --from-142
+          if($LASTEXITCODE -ne 0){throw 'K00 legacy 142 migration proof failed'}
+          python scripts/regions/qa_k00_migration.py
+          if($LASTEXITCODE -ne 0){throw 'K02-C real 145 to 151 migration proof failed'}
+      - name: Preservar recibo K02-C da migracao
+        if: always() && hashFiles('.blue-work/k02c-migration-proof.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k02c-migration-proof
+          path: .blue-work/k02c-migration-proof.json
+          if-no-files-found: error
+      - name: Preservar recibo K00 da migracao
+        if: always() && hashFiles('.blue-work/k00-migration-proof.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k00-migration-proof
+          path: .blue-work/k00-migration-proof.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
       - name: Verificar origem Kanto e preservacao do ponto inicial Decades
         shell: powershell
         run: |

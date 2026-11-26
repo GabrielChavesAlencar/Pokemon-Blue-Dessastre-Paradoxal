@@ -31,9 +31,9 @@ ASSET = re.compile(r"(?:Graphics/(?:Tilesets|Autotiles|Characters)/SN(?:QA|SH)_[
                    r"Audio/(?:BGM|BGS|ME|SE)/SN(?:QA|SH)_[A-Za-z0-9_]+\.(?:ogg|wav)|"
                    r"PBS/[a-z_]+_sinnoh(?:_[a-z0-9_]+)?\.txt)")
 ID_RANGE = range(442, 600)
-# Main Kanto's 145-map migration owns 442–444. Shared Sinnoh uses a single
-# fixed reservation irrespective of whether the base Kanto install is older.
-SHARED_IDS = range(445, 589)
+# A clean 151-map Kanto installation can use IDs through 450. Its upgrades
+# can instead append above Hoenn. Use the same Sinnoh slots on both bases.
+SHARED_IDS = range(451, 595)
 QA_PROFILE = "BLUE_SINNOH_SHARED_QA_V1"
 QA_MARKER = "Data/blue-sinnoh-shared-qa.txt"
 

@@ -5,14 +5,21 @@ Kanto's source-present runner additionally checks real Map039/053/054/055
 coordinates. Nothing is taken from guessed MapIDs or donor Ruby scripts.
 """
 import json
+import struct
+import zlib
+import shutil
+import subprocess
 import sys
 import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts/regions"))
-from audit import stable_source_order, load
+from audit import stable_source_order, allocate_kanto_ids, load
 from pilot import TRAINERS
+from kanto_wall_atlas import render_wall_atlas, PLACES, PROVENANCE
+from kanto_overworld import CERULEAN_FURNITURE, source_cerulean_furniture
+from server.ruby_marshal import RubyObject
 
 SOURCE = ROOT / ".blue-work/frlg-source/Essentials FRLG"
 MANIFEST = ROOT / "data/regions/kanto-source.json"
@@ -28,16 +35,115 @@ class CeruleanNorthContract(unittest.TestCase):
         cls.ids = {int(i) for i in cls.manifest["maps"]}
 
     def test_01_legacy_map_ids_cannot_shift(self):
-        prior = self.ids - {53, 54, 55}
+        prior = self.ids - {43,44,45,46,47,48,53,54,55}
         self.assertEqual(len(prior), 142)
-        self.assertEqual(len(self.ids), 145)
+        self.assertEqual(len(self.ids), 151)
         old_order = stable_source_order(prior)
         upgraded = stable_source_order(self.ids)
         self.assertEqual(upgraded[:142], old_order)
-        self.assertEqual(upgraded[-3:], [53, 54, 55])
+        self.assertEqual(upgraded[142:145], [53, 54, 55])
+        self.assertEqual(upgraded[145:], [43,44,45,46,47,48])
         self.assertEqual(self.manifest["maps"]["53"], "ROUTE_24")
         self.assertEqual(self.manifest["maps"]["54"], "ROUTE_25")
         self.assertEqual(self.manifest["maps"]["55"], "BILL_COTTAGE")
+
+    def test_cerulean_interiors_append_without_shifting_145_existing_slots(self):
+        extra = {43, 44, 45, 46, 47, 48}
+        before = stable_source_order(self.ids - extra)
+        expanded = stable_source_order(self.ids)
+        self.assertEqual(expanded[:145], before)
+        self.assertEqual(expanded[145:], sorted(extra))
+        existing = {sid: 300+i for i, sid in enumerate(before)}
+        occupied = set(existing.values()) | {700, 800}
+        upgraded = allocate_kanto_ids(self.ids, occupied, existing)
+        self.assertEqual({sid: upgraded[sid] for sid in existing}, existing)
+        self.assertEqual([upgraded[sid] for sid in sorted(extra)], list(range(801, 807)))
+
+    def test_optional_cerulean_callbacks_are_local_and_source_anchored(self):
+        runtime = RUNTIME.read_text("utf-8")
+        builder = BUILDER.read_text("utf-8")
+        for source in ('(44,1): "cerulean_badge_guide"', '(46,2): "cerulean_jynx_trade"',
+                       '(46,5): "cerulean_wall_map"', '(47,4): "cerulean_wall_map"'):
+            self.assertIn(source, builder)
+        self.assertIn('!progress["pilot_cerulean_jynx_trade"]', runtime)
+        self.assertIn('pbStartTrade(index, received, "Zynx", "Dontae", 0)', runtime)
+        self.assertIn('KantoWallMap.png', runtime)
+        self.assertNotIn('pbChoosePokemonForTrade(1, 2', runtime)
+
+    def test_authored_wall_atlas_is_deterministic_valid_and_complete(self):
+        image = render_wall_atlas()
+        self.assertEqual(image, render_wall_atlas())
+        self.assertEqual(image[:8], b"\x89PNG\r\n\x1a\n")
+        self.assertEqual(struct.unpack(">II", image[16:24]), (480, 320))
+        self.assertIn(PROVENANCE, image)
+        self.assertEqual(len({name for name, *_ in PLACES}), 11)
+        pos, data = 8, b""
+        while pos < len(image):
+            size = struct.unpack(">I", image[pos:pos+4])[0]
+            kind = image[pos+4:pos+8]
+            chunk = image[pos+8:pos+8+size]
+            crc = struct.unpack(">I", image[pos+8+size:pos+12+size])[0]
+            self.assertEqual(crc, zlib.crc32(kind+chunk) & 0xffffffff)
+            if kind == b"IDAT":
+                data += chunk
+            pos += 12+size
+        self.assertEqual(pos, len(image))
+        raw = zlib.decompress(data)
+        self.assertEqual(len(raw), 320*(1+480*3))
+        self.assertGreater(len(set(raw)), 8)
+
+    def test_native_message_fixture_restores_underlying_method_with_prepend(self):
+        ruby = shutil.which("ruby")
+        if not ruby:
+            self.skipTest("Ruby runtime unavailable")
+        native = ROOT / "scripts/regions/KantoNativeCheck.rb"
+        code = """
+module LocaleWrapper
+  def pbMessage(message,*args,&block)
+    super(message,*args,&block)
+  end
+end
+Object.prepend(LocaleWrapper)
+Object.send(:define_method,:pbMessage) { |*args| args[1].is_a?(Array) ? 0 : nil }
+load ARGV.fetch(0)
+module Probe
+  def self.choose
+    pbMessage("choose",["yes","no"])
+  end
+end
+raise "initial fixture broken" unless Probe.choose == 0
+KantoNativeCheck.with_native_message_fixture(proc { |*args| 1 }) do
+  raise "scoped fixture broken" unless Probe.choose == 1
+end
+raise "restore broken" unless Probe.choose == 0
+begin
+  KantoNativeCheck.with_native_message_fixture(proc { |*args| 1 }) { raise "test exception" }
+rescue RuntimeError => e
+  raise unless e.message == "test exception"
+end
+raise "restore after exception broken" unless Probe.choose == 0
+puts "KANTO_K02C_MESSAGE_PREPEND_RESTORE_OK"
+"""
+        run = subprocess.run([ruby, "-e", code, str(native)], capture_output=True, text=True)
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        self.assertIn("KANTO_K02C_MESSAGE_PREPEND_RESTORE_OK", run.stdout)
+
+    def test_furniture_allowlist_rejects_foreign_scripts_and_coordinates(self):
+        def obj(**attrs):
+            return RubyObject("fixture", {"@" + k: v for k, v in attrs.items()})
+        for (source, eid), (name, x, y) in CERULEAN_FURNITURE.items():
+            event = obj(name=name, x=x, y=y, pages=[obj(
+                condition=obj(self_switch_valid=False), trigger=0,
+                graphic=obj(character_name=b"", tile_id=0),
+                list=[obj(code=101, indent=0, parameters=[b"Furniture"]),
+                      obj(code=0, indent=0, parameters=[])])])
+            self.assertIsNotNone(source_cerulean_furniture(event, source, eid))
+            self.assertIsNone(source_cerulean_furniture(event, source, 999))
+            event.attrs["@x"] += 1
+            self.assertIsNone(source_cerulean_furniture(event, source, eid))
+            event.attrs["@x"] -= 1
+            event.attrs["@pages"][0].attrs["@list"][0].attrs["@code"] = 355
+            self.assertIsNone(source_cerulean_furniture(event, source, eid))
 
     def test_02_source_trainer_bindings_are_local_and_unique(self):
         self.assertEqual(len(TRAINERS[53]), 6)
@@ -72,7 +178,7 @@ class CeruleanNorthContract(unittest.TestCase):
 
     def test_04_android_ready_gate_accepts_only_verified_old_and_new_registry(self):
         source = (ROOT / "scripts/battle_polish/RegionStart.rb").read_text("utf-8")
-        self.assertIn('["142", "145"].include?(fields[1])', source)
+        self.assertIn('["142", "145", "151"].include?(fields[1])', source)
         self.assertIn('pairs.length == expected_count', source)
         self.assertIn('maps.values.uniq.length == expected_count', source)
         self.assertIn('["53", "54", "55"].all?', source)

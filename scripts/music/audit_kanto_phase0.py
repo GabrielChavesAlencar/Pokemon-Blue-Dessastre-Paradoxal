@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "data/regions/kanto-source.json"
 RUNTIME = ROOT / "scripts/music/BlueMusic.rb"
 PLANNED = ROOT / "docs/KANTO_PLANO_APLICAR_MUSICAS.md"
-TOTAL_MAPS = 145
+TOTAL_MAPS = 151
 PREVIEW_MAPS = 35
 
 # Strictly real names from the pinned source: never use these FRLG source
@@ -176,7 +176,7 @@ def inspect(root: Path = ROOT, game: Path | None = None,
     maps = source["maps"]
     preview = set(source["preview_only"])
     if len(maps) != TOTAL_MAPS or len(preview) != PREVIEW_MAPS:
-        raise ValueError("Regressão: Kanto deveria ter 145 mapas e 35 previews")
+        raise ValueError("Regressão: Kanto deveria ter 151 mapas e 35 previews")
     if not preview.issubset({int(k) for k in maps}):
         raise ValueError("Preview aponta para mapa inexistente")
     plugin = (root / "scripts/music/BlueMusic.rb").read_text(encoding="utf-8")
