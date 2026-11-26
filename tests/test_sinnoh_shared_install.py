@@ -12,6 +12,8 @@ sys.path[:0] = [str(ROOT), str(ROOT / "scripts/regions")]
 
 import sinnoh_shared as shared
 import prepare_sinnoh_shared as candidate
+from stage_sinnoh_shared_qa import QA_DIR, stage as stage_qa
+from scripts.android.package import REGION_START_PLUGIN, REGION_TRAVEL_PLUGIN
 from scripts.android.update_client import _preserve_shared_sinnoh
 from server.ruby_marshal import RubyData, RubyObject
 from stage import serialize
@@ -131,6 +133,45 @@ class SinnohSharedInstallerTests(unittest.TestCase):
             shared.preserve_map_pbs(rel,original,original.replace(b"PIDGEY",b"STARLY"),{442})
         with self.assertRaisesRegex(ValueError,"duplicados"):
             shared.preserve_map_pbs(rel,original,original+b"[1,0]\n",{442})
+
+    def test_staging_copies_the_windows_root_and_uses_a_qa_save_namespace(self):
+        proof = self.prepare()
+        proof.update(profile="BLUE_SINNOH_SHARED_CANDIDATE_V1",runtime_install_enabled=False,
+                     map_symbols={"SINNOH_PLAYER_BEDROOM":442,"SINNOH_TWINLEAF_TOWN":443,
+                                  **{f"SINNOH_MAP_{mid}":mid for mid in range(444,586)}})
+        proof["approvals"] = dict.fromkeys((*self.approvals,"joiplay_travel","android_distribution"),False)
+        folder = self.project / candidate.CANDIDATE
+        self.put(folder/"candidate.json",json.dumps(proof).encode())
+        for rel, data in self.files.items():
+            self.put(folder/"world"/rel,data)
+        for rel in ("Game.exe","Game.ini","Data/Scripts.rxdata","Data/System.rxdata"):
+            self.put(self.game/rel,b"staged fixture")
+        self.put(self.game/"mkxp.json",b'{"dataPathApp":"BlueStory"}')
+        for rel in (REGION_START_PLUGIN,REGION_TRAVEL_PLUGIN,
+                    "Plugins/ZZZZ Blue Story and Presentation/TitleKanto.rb"):
+            self.put(self.game/rel,b"# regional source\n")
+            self.put(self.project/"scripts/battle_polish"/Path(rel).name,b"# regional source\n")
+        staged = stage_qa(self.project)
+        qa = self.project / QA_DIR / "game"
+        self.assertEqual(staged["maps"],144)
+        self.assertEqual(shared.installed(qa,qa=True)["profile"],shared.QA_PROFILE)
+        self.assertTrue(json.loads((qa/"mkxp.json").read_bytes())["dataPathApp"].startswith("BlueStorySinnohSharedQA-"))
+        self.assertEqual((self.game/"mkxp.json").read_bytes(),b'{"dataPathApp":"BlueStory"}')
+        self.assertFalse((qa/"Saves/Game.rxdata").exists())
+
+    def test_story_preserves_each_foreign_connection_index_as_installed(self):
+        local = [442,b"E",0,443,b"W",0]
+        native = [[1,b"N",0,2,b"S",1],local]
+        pbs = b"1,N,0,2,S,2\n442,E,0,443,W,0\n"
+        original = {shared.CONNECTIONS:serialize(native),shared.PBS_CONNECTIONS:pbs}
+        ids = {442,443,444}
+        scope = candidate.story_connection_scope(original,ids)
+        added = [443,b"S",0,444,b"N",0]
+        expanded = {shared.CONNECTIONS:serialize([local,added]),
+                    shared.PBS_CONNECTIONS:scope[shared.PBS_CONNECTIONS]+b"443,S,0,444,N,0\n"}
+        merged = candidate.restore_foreign_connections(original,scope,expanded,ids)
+        self.assertEqual(shared.read_marshal(merged[shared.CONNECTIONS],"TEST_SCOPE"),native+[added])
+        self.assertEqual(merged[shared.PBS_CONNECTIONS],pbs+b"443,S,0,444,N,0\n")
 
     def test_agent_cannot_be_placed_in_a_later_town(self):
         infos = shared.read_marshal(self.files[shared.MAP_INFOS], "TEST_INFOS")

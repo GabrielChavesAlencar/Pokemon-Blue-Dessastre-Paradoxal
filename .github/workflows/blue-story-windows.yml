@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - scripts/windows/**
+      - data/regions/sinnoh-shared-mapids.json
       - scripts/regions/install_sinnoh_experimental_windows.py
       - scripts/regions/sinnoh_source_download.py
       - scripts/regions/sinnoh_f12d3_secretpotion_audit.py
@@ -49,6 +50,7 @@ on:
   pull_request:
     paths:
       - scripts/windows/**
+      - data/regions/sinnoh-shared-mapids.json
       - scripts/install_game.py
       - scripts/regions/sinnoh_shared.py
       - scripts/regions/prepare_sinnoh_shared.py

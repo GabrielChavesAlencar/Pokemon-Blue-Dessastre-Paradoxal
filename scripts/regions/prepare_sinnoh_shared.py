@@ -23,6 +23,34 @@ from sinnoh_f10b7_field_audit import cell_shape, directional_component, directio
 from stage import serialize
 
 CANDIDATE = ".blue-work/sinnoh-shared-candidate"
+MAP_RESERVATION = "data/regions/sinnoh-shared-mapids.json"
+
+
+def story_connection_scope(files, ids):
+    native = read_marshal(files[shared.CONNECTIONS],"SINNOH_SHARED_STORY_CONNECTIONS")
+    regional = [row for row in native if row[0] in ids or row[3] in ids]
+    expected = [list(row) for row in shared.parse_connections(files[shared.PBS_CONNECTIONS])
+                if row[0] in ids or row[3] in ids]
+    if [[a,ad.decode("ascii"),ao,b,bd.decode("ascii"),bo] for a,ad,ao,b,bd,bo in regional] != expected:
+        raise ValueError("Conexões de Sinnoh divergentes antes de aplicar a história.")
+    pbs = "".join(",".join(map(str,row))+"\n" for row in expected).encode("ascii")
+    return {**files, shared.CONNECTIONS:serialize(regional), shared.PBS_CONNECTIONS:pbs}
+
+
+def restore_foreign_connections(base, scope, expanded, ids):
+    original = read_marshal(base[shared.CONNECTIONS],"SINNOH_SHARED_BASE_CONNECTIONS")
+    before = read_marshal(scope[shared.CONNECTIONS],"SINNOH_SHARED_STORY_BEFORE")
+    after = read_marshal(expanded[shared.CONNECTIONS],"SINNOH_SHARED_STORY_AFTER")
+    new_rows = after[len(before):]
+    before_pbs, after_pbs = scope[shared.PBS_CONNECTIONS], expanded[shared.PBS_CONNECTIONS]
+    if (after[:len(before)] != before or not after_pbs.startswith(before_pbs) or
+            any(row[0] not in ids or row[3] not in ids for row in new_rows)):
+        raise ValueError("A história de Sinnoh alterou conexões existentes ou externas.")
+    if not new_rows and after_pbs == before_pbs:
+        return {**expanded,shared.CONNECTIONS:base[shared.CONNECTIONS],
+                shared.PBS_CONNECTIONS:base[shared.PBS_CONNECTIONS]}
+    return {**expanded,shared.CONNECTIONS:serialize(original+new_rows),
+            shared.PBS_CONNECTIONS:base[shared.PBS_CONNECTIONS]+after_pbs[len(before_pbs):]}
 
 
 def shared_handlers(project, handlers):
@@ -189,6 +217,11 @@ def prepare(project, game):
         raise ValueError("Reserva de Sinnoh incompleta. Ausentes: " + str(sorted(reserved-actual)) +
                          ". Extras: " + str(sorted(actual-reserved)) +
                          ". Campanha: " + json.dumps(report["campaign"],ensure_ascii=False))
+    expected = json.loads((project/MAP_RESERVATION).read_text("utf-8"))
+    if report["mapids"] != expected:
+        changed = sorted(symbol for symbol in report["mapids"].keys() | expected.keys()
+                         if report["mapids"].get(symbol) != expected.get(symbol))
+        raise ValueError("MapIDs de Sinnoh mudaram sem migração: " + ", ".join(changed[:12]))
     files, review, proof = prepare_world(game, outputs, report)
     folder.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="sinnoh-shared-", dir=folder.parent) as tmp:

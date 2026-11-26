@@ -1019,6 +1019,12 @@ def build_files(base:Path,project:Path=ROOT,*,shared_runtime=False):
                 f12c_report={"status":"BLOCKED","reason":"audit_failed:"+type(exc).__name__,"runtime_install_enabled":False,"native_verified":False}
             print("SINNOH_F12C_INSTALLER_PREFLIGHT_REPORT "+json.dumps(f12c_report,sort_keys=True),flush=True)
         if f12c4_report.get("runtime_install_enabled"):
+            if shared_runtime:
+                from prepare_sinnoh_shared import restore_foreign_connections, story_connection_scope
+                original_connections = maps
+                story_ids = set(mapping.values())
+                story_scope = story_connection_scope(maps,story_ids)
+                maps = story_scope
             f12d_previous_maps=maps
             maps,f12d_report,f12d_plugin=f12d_runtime.append(maps,mapping,components,base,project,sources["maps"])
             print("SINNOH_F12D_RUNTIME_REPORT "+json.dumps(f12d_report,sort_keys=True),flush=True)
@@ -1029,6 +1035,8 @@ def build_files(base:Path,project:Path=ROOT,*,shared_runtime=False):
                     f12d_integrated_previous_maps=maps
                     maps=candidate["maps"];f12d_integrated_plugin=candidate["plugin"]
                 print("SINNOH_F12D_INTEGRATED_INSTALLER_PREFLIGHT_REPORT "+json.dumps(f12d_integrated_report,sort_keys=True),flush=True)
+            if shared_runtime:
+                maps = restore_foreign_connections(original_connections,story_scope,maps,story_ids)
         gym_symbols=set(mapping)-f08c_expansion.ALL
         if gym_symbols:
             masks=private_visual.movement_masks(maps,mapping,extra_symbols=city_expansion.CITIES|route_expansion.ROUTES|natural_expansion.NATURAL|interior_expansion.INTERIORS|f08c_expansion.EXTERIORS|gym_symbols)

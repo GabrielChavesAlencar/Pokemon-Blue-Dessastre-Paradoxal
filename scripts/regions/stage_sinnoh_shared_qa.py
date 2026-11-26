@@ -13,7 +13,7 @@ import tempfile
 import zlib
 
 from prepare_sinnoh_shared import CANDIDATE, ROOT, shared
-from install_sinnoh_experimental_windows import scan_source
+from install_sinnoh_experimental_windows import safe_path, scan_source
 from install_sinnoh_qa_copy import jsonc
 from scripts.android.package import compiled_region, REGION_START_PLUGIN, REGION_TRAVEL_PLUGIN
 from scripts.launch_game import Marshal, RubyString, dump
@@ -87,7 +87,7 @@ def stage(project, *, base_game=None, compile_native=False):
             raise ValueError("Caminho indireto reservado para QA de Sinnoh.")
     if target.exists():
         raise ValueError("Já existe uma cópia de QA. Preserve seus testes antes de preparar outra.")
-    proof = json.loads(shared.safe_file(candidate,"candidate.json").read_bytes())
+    proof = json.loads(safe_path(candidate/"candidate.json").read_bytes())
     if proof.get("profile") != "BLUE_SINNOH_SHARED_CANDIDATE_V1" or proof.get("runtime_install_enabled") is not False:
         raise ValueError("O staging aceita somente um candidato de Sinnoh.")
     proof["profile"] = shared.QA_PROFILE
@@ -103,10 +103,10 @@ def stage(project, *, base_game=None, compile_native=False):
         root = Path(tmp) / "qa"
         game = root / "game"
         for rel, path in snapshot.items():
-            dest = shared.safe_file(game,rel)
+            dest = safe_path(game/rel)
             dest.parent.mkdir(parents=True,exist_ok=True)
             shutil.copy2(path,dest)
-        config = jsonc(shared.safe_file(game,"mkxp.json").read_text("utf-8-sig"))
+        config = jsonc(safe_path(game/"mkxp.json").read_text("utf-8-sig"))
         if any("save" in key.casefold() or "userdata" in key.casefold() for key in config):
             raise ValueError("A configuração base de saves impede isolar a cópia de QA.")
         config.update(dataPathApp="BlueStorySinnohSharedQA-"+token,
@@ -116,6 +116,7 @@ def stage(project, *, base_game=None, compile_native=False):
         proof_bytes = (json.dumps(proof,ensure_ascii=False,sort_keys=True)+"\n").encode("utf-8")
         shared.atomic(manifest,proof_bytes)
         shared.install_overlay(root,game,candidate/"world",manifest,qa=True)
+        print("SINNOH_SHARED_WINDOWS_144_MAPS_INSTALLED_QA",flush=True)
         result = {"status":"STAGED_SHARED_QA", "maps":len(proof["map_ids"]),
                   "overlay_sha256":shared.sha(proof_bytes),
                   "base_mapinfos_sha256":proof["base"][shared.MAP_INFOS],
