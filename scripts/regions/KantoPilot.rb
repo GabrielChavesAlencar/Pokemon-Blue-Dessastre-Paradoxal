@@ -965,7 +965,8 @@ module BlueKantoPilot
     return false unless cerulean_house_open? && $game_map &&
       $game_map.map_id == kanto_map_id(39)
     return true if progress["pilot_cerulean_dig_awarded"]
-    return false unless defined?(GameData::Item) && GameData::Item.exists?(:TM28)
+    return false unless $bag && defined?(GameData::Item) && GameData::Item.exists?(:TM28)
+    return false unless GameData::Item.get(:TM28).move == :DIG
     return false unless progress.fetch("pilot_wins", []).include?(CERULEAN_ROCKET_KEY) ||
       battle(:BLUE_KANTO_ROCKET, "Grunt", CERULEAN_ROCKET_KEY, 6)
     unless $bag.add(:TM28, 1)
