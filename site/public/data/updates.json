@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2ef546b565a5d69913736a1fd12ec3ce9c05e296",
+      "date": "2026-11-26T10:26:42-03:00",
+      "title": "Merge PR #345: K00 Windows RXDATA migration regression proof",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "9735cd515fbd2286c043a29fa7c920a8bb31ece8",
+      "date": "2026-11-26T10:19:18-03:00",
+      "title": "Fix K00 fixture: serialize native events and retain JSON receipt",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "7b1026905de9e4068f4be8e597b9c544b5c52b09",
+      "date": "2026-11-26T10:14:16-03:00",
+      "title": "QA K00: verify real RXDATA migration, rollback and map ownership in isolated Windows CI",
+      "category": "Melhorias"
+    },
+    {
       "sha": "ae5f3a1a869b5e808bf51848ef5e63db076e860d",
       "date": "2026-11-26T09:58:22-03:00",
       "title": "Merge PR #344: restore Cerulean Gary encounter",
