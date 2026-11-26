@@ -8,7 +8,7 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
-from audit import ROOT, KANTO, inventory, json_file, load, stable_source_order
+from audit import ROOT, KANTO, inventory, json_file, load, stable_source_order, allocate_kanto_ids
 from stage import stage
 from server.ruby_marshal import text
 
@@ -83,16 +83,18 @@ def run():
     output = ROOT / ".blue-work/kanto-k02c-geometry"
     receipt = ROOT / ".blue-work/kanto-k02c-source.json"
     catalog = json_file(KANTO)
-    prior = set(map(int, catalog["maps"]))
-    if len(prior) != 145 or prior.intersection(map(int, ADDITIONS)):
-        raise ValueError("K02-C requires the published 145-map baseline")
-    expanded = dict(catalog, maps={**catalog["maps"], **ADDITIONS})
-    wanted = set(map(int, expanded["maps"]))
+    wanted = set(map(int, catalog["maps"]))
+    prior = wanted - set(map(int, ADDITIONS))
+    if len(prior) != 145 or len(wanted) != 151 or any(catalog["maps"].get(k) != v for k,v in ADDITIONS.items()):
+        raise ValueError("K02-C requires exact 151-map catalogue")
+    expanded = catalog
     if stable_source_order(wanted)[:145] != stable_source_order(prior):
         raise ValueError("K02-C changed published allocation order")
-    existing = {int(k): v for k, v in json_file(pilot / "Kanto pilot.json")["maps"].items()}
-    if set(existing) != prior or len(set(existing.values())) != 145:
-        raise ValueError("K02-C invalid baseline pilot mapping")
+    active = {int(k): v for k, v in json_file(pilot / "Kanto pilot.json")["maps"].items()}
+    base_infos, base_files = inventory(ROOT / "game")
+    existing = allocate_kanto_ids(prior, base_infos.keys() | base_files.keys())
+    if set(active) != wanted or len(set(active.values())) != 151 or any(active[k] != v for k,v in existing.items()):
+        raise ValueError("K02-C invalid expanded pilot or changed baseline IDs")
     _, before_files = inventory(pilot)
     before_hashes = {mid: sha(before_files[mid]) for mid in existing.values()}
     registry_before = {name: sha(pilot / "Data" / name)
@@ -118,9 +120,9 @@ def run():
     for sid in ("39", *ADDITIONS):
         for event in evidence[sid]["events"]:
             print("KANTO_K02C_SOURCE_EVENT:" + json.dumps({"source": sid, **event}, ensure_ascii=True), flush=True)
-    plan = stage(ROOT, source, pilot, output, existing=existing, manifest=expanded)
+    plan = stage(ROOT, source, pilot, output, existing=active, manifest=expanded)
     mapping = {row["source_id"]: row["proposed_id"] for row in plan["maps"]}
-    if len(mapping) != 151 or any(mapping[k] != v for k, v in existing.items()):
+    if mapping != active or any(mapping[k] != v for k, v in existing.items()):
         raise ValueError("K02-C migration changed existing map IDs")
     source_infos, source_files = inventory(source)
     geometry = []
@@ -130,7 +132,7 @@ def run():
         new = load(output / "Data" / f"Map{dst:03d}.rxdata").attrs
         if (old["@data"] != new["@data"] or
                 (old["@width"], old["@height"]) != (new["@width"], new["@height"]) or
-                new["@events"]):
+                new["@events"] or not load(before_files[dst]).attrs["@events"]):
             raise ValueError(f"K02-C geometry changed or foreign events imported: {sid}")
         geometry.append({"source": sid, "destination": dst,
                          "dimensions": [new["@width"], new["@height"]],
