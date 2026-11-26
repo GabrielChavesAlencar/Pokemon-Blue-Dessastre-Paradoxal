@@ -265,6 +265,26 @@ module KantoNativeCheck
     row
   end
 
+  # Essentials' native title/continue lifecycle unloads registered save
+  # values before loading another slot. Game.load alone skips values
+  # marked loaded; successive CI loads must not reuse the prior party.
+  def self.reload_native_slot(path)
+    saved = SaveData.read_from_file(path)
+    require!(saved.is_a?(Hash), "K01-A expected native hash save")
+    player = saved[:player]
+    global = saved[:pokemon_global]
+    serialized = {"path"=>File.basename(path),
+      "keys"=>saved.keys.map(&:to_s),
+      "party"=>(player.respond_to?(:party) ? player.party.map { |p| p.species.to_s } : nil),
+      "starter"=>(global.respond_to?(:blue_regions) && global.blue_regions.is_a?(Hash) ?
+                   global.blue_regions["pilot_starter"] : nil)}
+    File.open("Data/blue-kanto-k01a-state-trace.txt","a") { |file| file.puts(serialized.inspect) }
+    require!(SaveData.respond_to?(:mark_values_as_unloaded), "Native SaveData unload API unavailable")
+    SaveData.mark_values_as_unloaded
+    Game.load(saved)
+    serialized
+  end
+
   def self.starter_opening_proof(lab)
     state = BlueKantoPilot.progress
     require!(state["pilot_profile_pending"] && !BlueKantoPilot.starter &&
@@ -306,8 +326,9 @@ module KantoNativeCheck
     # Restore Bulbasaur last because the existing full-campaign proof uses it.
     [cases[1],cases[2],cases[0]].each do |id,species|
       require!(File.binread(baseline_file) == baseline_bytes, "K01-A baseline file unexpectedly rewritten")
-      saved = SaveData.read_from_file(baseline_file)
-      Game.load(saved)
+      serialized = reload_native_slot(baseline_file)
+      require!(serialized["party"] == [] && !serialized["starter"],
+               "K01-A baseline serialized party/flag mismatch: #{serialized.inspect}")
       actual = opening_snapshot("unchosen_reload_#{species}")
       require!(actual["map_id"] == lab, "K01-A baseline map mismatch: expected #{lab}, got #{actual.inspect}")
       require!(actual["party"].empty?, "K01-A baseline party mismatch: #{actual.inspect}")
@@ -342,7 +363,9 @@ module KantoNativeCheck
       slot = "K01 A Native #{species}"
       require!(Game.save(slot), "K01-A selected starter save failed")
       opening_snapshot("selected_before_reload_#{species}")
-      Game.load(SaveData.read_from_file(SaveData.get_full_path(slot)))
+      serialized = reload_native_slot(SaveData.get_full_path(slot))
+      require!(serialized["party"] == [species.to_s] && serialized["starter"] == species.to_s,
+               "K01-A selected serialized party/flag mismatch: #{serialized.inspect}")
       opening_snapshot("selected_after_reload_#{species}")
       require!($game_map.map_id == lab && $player.party.length == 1 &&
                $player.party.first.species == species && BlueKantoPilot.starter == species &&
@@ -359,7 +382,7 @@ module KantoNativeCheck
                "all_balls_hidden"=>true,"duplicate_rejected"=>true,"save_reload"=>true}
     end
     {"status"=>"PASS","mode"=>"native_party_bag_event_pages_save_reload",
-     "manual_gameplay"=>false,"profile_ui_executed"=>false,"profile_handler_executed"=>true,
+     "manual_gameplay"=>false,"profile_ui_executed"=>false,"profile_handler_executed"=>true,"registered_save_values_unloaded"=>true,
      "lab_map_id"=>lab,"variants"=>rows}
   ensure
     Object.send(:define_method,:pbConfirmMessage) { |*args| true }
@@ -1185,8 +1208,7 @@ module KantoNativeCheck
     slot = "Kanto Native Verification"
     require!(Game.save(slot), "Pilot save failed")
     save_file = SaveData.get_full_path(slot)
-    saved = SaveData.read_from_file(save_file)
-    Game.load(saved)
+    reload_native_slot(save_file)
     require!(BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO") == ["BOULDER","CASCADE","THUNDER","RAINBOW","SOUL","MARSH","VOLCANO","EARTH"],
              "Pilot badges did not survive reload")
     require!(BlueKantoPilot.progress["pilot_wins"].include?("KANTO_028_007"),

@@ -224,6 +224,7 @@ jobs:
               $openingProof="$pilot/Data/blue-kanto-k01a-starter-proof.txt"
               if(-not (Test-Path $openingProof)){throw 'K01-A native starter proof missing'}
               Get-Content $openingProof
+              Write-Host 'KANTO_K01A_THREE_STARTERS_SAVE_RELOAD_OK'
               Get-Content "$pilot/Data/blue-kanto-proof.txt"
               exit 0
             }
