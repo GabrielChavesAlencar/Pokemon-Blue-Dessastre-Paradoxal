@@ -783,6 +783,11 @@ def inspect(game: Path) -> dict:
         (24, 19): 'BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER, "Charlie", "KANTO_024_019")',
         (24, 20): 'BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER, "Sammy", "KANTO_024_020")',
     }
+    if 43 in mapping:
+        anchors.update({(43,1): "BlueKantoPilot.cerulean_bike_exchange",
+                        (48,1): "BlueKantoPilot.cerulean_house_owner",
+                        **{(39,eid): "BlueKantoPilot.cerulean_rocket" for eid in (26,37,38)},
+                        **{(39,eid): "BlueKantoPilot.cerulean_police" for eid in (13,25)}})
     for source_id, entries in TRAINERS.items():
         for event_id, spec in entries.items():
             kind, name = spec[:2]
