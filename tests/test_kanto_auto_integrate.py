@@ -20,7 +20,7 @@ class KantoAutoIntegrationTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="kanto-auto-")
         self.addCleanup(self.temp.cleanup)
-        self.project = Path(self.temp.name)
+        self.project = Path(self.temp.name).resolve()
         self.game = self.project / "game"
         (self.game / "PBS").mkdir(parents=True)
         (self.game / "Data").mkdir()
