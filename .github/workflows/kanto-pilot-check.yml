@@ -235,6 +235,12 @@ jobs:
               if(-not (Test-Path $parcelProof)){throw 'K01-B native Pallet/Oak proof missing'}
               Write-Host ("KANTO_K01B_NATIVE_PALLET_OAK_REPORT:" + (Get-Content $parcelProof -Raw).Trim())
               Write-Host 'KANTO_K01B_PALLET_OAK_PARCEL_SAVE_RELOAD_OK'
+              $route2Trace="$pilot/Data/blue-kanto-k01c-route2-trace.txt"
+              $route2Proof="$pilot/Data/blue-kanto-k01c-route2-proof.txt"
+              if(-not (Test-Path $route2Trace) -or -not (Test-Path $route2Proof)){throw 'K01-C native Route2 proof missing'}
+              Get-Content $route2Trace | ForEach-Object { Write-Host "KANTO_K01C_ROUTE2_GATE_STATE:$_" }
+              Write-Host ("KANTO_K01C_NATIVE_ROUTE2_REPORT:" + (Get-Content $route2Proof -Raw).Trim())
+              Write-Host 'KANTO_K01C_ROUTE2_GATE_SAVE_RELOAD_OK'
               Get-Content "$pilot/Data/blue-kanto-proof.txt"
               exit 0
             }
@@ -250,7 +256,27 @@ jobs:
           if(Test-Path $gateTrace){Get-Content $gateTrace}
           $parcelTrace="$pilot/Data/blue-kanto-k01b-route-trace.txt"
           if(Test-Path $parcelTrace){Get-Content $parcelTrace}
+          $route2Trace="$pilot/Data/blue-kanto-k01c-route2-trace.txt"
+          if(Test-Path $route2Trace){Get-Content $route2Trace | ForEach-Object { Write-Host "KANTO_K01C_ROUTE2_GATE_STATE:$_" }}
           throw 'Kanto native proof missing'
+      - name: Preservar diagnóstico de Viridian Rota 2 K01-C
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k01c-route2-trace.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k01c-native-route2-trace
+          path: .blue-work/kanto-pilot/Data/blue-kanto-k01c-route2-trace.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preservar recibo nativo Viridian Rota 2 K01-C
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k01c-route2-proof.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k01c-native-route2-proof
+          path: .blue-work/kanto-pilot/Data/blue-kanto-k01c-route2-proof.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
       - name: Preservar trajetos e interação por balcão K01-B
         if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k01b-route-trace.txt') != ''
         uses: actions/upload-artifact@v4

@@ -299,7 +299,7 @@ module KantoNativeCheck
   # connections. Exclude Oak's active touch tiles when testing a bypass.
   # Never mistake a collision path or a controlled callback for a real
   # keyboard-driven event-interpreter playthrough.
-  def self.opening_component(map_id, anchor, blocked = [])
+  def self.opening_component(map_id, anchor, blocked = [], enforce_route2 = false)
     $map_factory.setup(map_id)
     $game_map.events.each_value { |event| event.refresh }
     require!(anchor[0].between?(0,$game_map.width-1) &&
@@ -317,6 +317,7 @@ module KantoNativeCheck
         next if seen.key?([nx,ny]) || blocked.include?([nx,ny])
         $game_player.moveto(x,y)
         next unless $game_player.passable?(x,y,dir)
+        next if enforce_route2 && BlueKantoPilot.route2_exit_blocked?($game_player,dir)
         seen[[nx,ny]] = seen[[x,y]]+1
         queue << [nx,ny]
       end
@@ -421,6 +422,80 @@ module KantoNativeCheck
   ensure
     $map_factory.setup(lab)
     $game_player.moveto(6,12)
+  end
+
+  # K01-C: verify the existing interior Viridian gate with real directional
+  # movement, and compare all reachable north seam cells with/without the
+  # runtime guard. No new walls, routes or story flags are installed.
+  def self.route2_trace(row)
+    File.open("Data/blue-kanto-k01c-route2-trace.txt","a") { |file| file.puts(row.inspect) }
+    puts "KANTO_K01C_ROUTE2_GATE_STATE:#{row.inspect}"
+  end
+
+  def self.route2_gate_proof(city,anchor,stage,expected_open)
+    route = BlueKantoPilot.kanto_map_id(18)
+    previous_map = $game_map.map_id
+    previous_xy = [$game_player.x,$game_player.y]
+    $map_factory.setup(city)
+    line = BlueKantoPilot.viridian_route2_line
+    house = $game_map.events[2]
+    require!(house && line == [city,house.y-1,house.x-6,house.x-1] &&
+             line[3]-line[2] == 5, "K01-C Viridian interior line mismatch")
+    require!(BlueKantoPilot.forest_unlocked? == expected_open, "K01-C unexpected quest gate state #{stage}")
+    _,y,first,last = line
+    physical = opening_component(city,anchor)
+    guarded = opening_component(city,anchor,[],true)
+    physical_crossings = opening_crossings(city,physical,route)
+    guarded_crossings = opening_crossings(city,guarded,route)
+    steps = []
+    (first...last).each do |x|
+      from = [x,y+1]
+      next unless physical.key?(from)
+      $map_factory.setup(city)
+      $game_player.moveto(*from)
+      next unless $game_player.passable?(x,y+1,8)
+      predicate = BlueKantoPilot.route2_exit_blocked?($game_player,8)
+      $game_player.move_generic(8,false)
+      after = [$game_player.x,$game_player.y]
+      steps << {"from"=>from,"to"=>after,"guard"=>predicate,
+                "reachable_with_guard"=>guarded.key?(from)}
+    end
+    row = {"stage"=>stage,"city"=>city,"route2"=>route,"anchor"=>anchor,
+      "line"=>line,"received"=>!!BlueKantoPilot.progress["pilot_oak_parcel_received"],
+      "delivered"=>!!BlueKantoPilot.progress["pilot_oak_parcel_delivered"],
+      "expected_open"=>expected_open,"physical_component"=>physical.length,
+      "guarded_component"=>guarded.length,"physical_seams"=>physical_crossings,
+      "guarded_seams"=>guarded_crossings,"native_steps"=>steps,
+      "manual_gameplay"=>false}
+    route2_trace(row)
+    require!(!physical_crossings.empty?, "K01-C no native north connection even ignoring gate")
+    require!(!steps.empty?, "K01-C no native passable interior line cells")
+    require!(steps.all? { |step| step["guard"] == !expected_open &&
+      step["to"] == (expected_open ? [step["from"][0],y] : step["from"]) },
+      "K01-C actual Game_Player movement contradicts gate #{stage}")
+    if expected_open
+      require!(!guarded_crossings.empty?, "K01-C Route2 remains inaccessible after Oak")
+      # Prove an independent southbound return from the actual landing.
+      back = nil
+      guarded_crossings.each do |pair|
+        component = opening_component(route,pair[1],[],true)
+        reverse = opening_crossings(route,component,city)
+        next if reverse.empty?
+        back = [pair,reverse]
+        break
+      end
+      row["return_witness"] = back
+      route2_trace(row)
+      require!(back, "K01-C no return from Route2 to Viridian")
+    else
+      require!(guarded_crossings.empty?, "K01-C reachable bypass before Oak #{stage}")
+    end
+    row
+  ensure
+    if previous_map && previous_xy
+      $map_factory.setup(previous_map)
+      $game_player.moveto(*previous_xy)
+    end
   end
 
   def self.starter_opening_proof(lab)
@@ -659,6 +734,8 @@ module KantoNativeCheck
       break if route_witness
     end
     require!(route_witness, "K01-B no continuous native route from Pallet to Mart")
+    route2_anchor = route_witness[1][1]
+    route2_states = [route2_gate_proof(city_id,route2_anchor,"before_parcel",false)]
     # Stage 03: the Pallet -> Viridian -> Pallet Oak parcel loop is local to
     # Kanto, delivered once, and never creates an invalid FRLG item in Decades.
     mart_visits = []
@@ -694,6 +771,7 @@ module KantoNativeCheck
     require!(!BlueKantoPilot.progress["pilot_oak_parcel_delivered"],
              "Oak's parcel delivered without returning to the laboratory")
     require!(!BlueKantoPilot.forest_unlocked?, "Forest opened before parcel delivery")
+    route2_states << route2_gate_proof(city_id,route2_anchor,"parcel_received_only",false)
     BlueKantoPilot.viridian_mart
     require!(mart_visits.empty?,
              "Viridian Mart opened before Oak received the parcel")
@@ -744,6 +822,7 @@ module KantoNativeCheck
     require!(BlueKantoPilot.progress["pilot_oak_parcel_delivered"] == true,
              "Oak did not accept the parcel upon return")
     require!(BlueKantoPilot.forest_unlocked?, "Forest remained blocked after parcel delivery")
+    route2_states << route2_gate_proof(city_id,route2_anchor,"parcel_delivered",true)
     require!($bag.quantity(:POKEBALL) == starting_balls + 5,
              "Oak must award exactly five Poke Balls, not the starter event")
     require!($player.has_pokedex, "Oak parcel delivery did not unlock the Pokedex") if $player.respond_to?(:has_pokedex)
@@ -1514,6 +1593,15 @@ module KantoNativeCheck
              "Oak parcel quest flags did not persist through save/reload")
     require!($player.has_pokedex && $bag.quantity(:POKEBALL) == starting_balls+5,
              "K01-B Pokédex or parcel reward changed on final reload")
+    # Recheck the same installed line after the genuine final campaign
+    # reload, without altering any legacy badge or parcel flags.
+    route2_states << route2_gate_proof(city_id,route2_anchor,"after_save_reload",true)
+    route2_report = {"status"=>"PASS","manual_gameplay"=>false,
+      "mode"=>"native_directional_collision_and_guarded_movement",
+      "states"=>route2_states,"save_reload"=>true}
+    File.write("Data/blue-kanto-k01c-route2-proof.txt",route2_report.inspect)
+    puts "KANTO_K01C_NATIVE_ROUTE2_REPORT:#{route2_report.inspect}"
+    puts "KANTO_K01C_ROUTE2_GATE_SAVE_RELOAD_OK"
     parcel_report["save_reload"] = true
     File.write("Data/blue-kanto-k01b-parcel-proof.txt",parcel_report.inspect)
     puts "KANTO_K01B_NATIVE_PALLET_OAK_REPORT:#{parcel_report.inspect}"
