@@ -14,9 +14,12 @@ finally:
     sys.path.remove(str(ROOT / "scripts/regions"))
 
 
+ATLAS = ["PBS/town_map.txt", "Graphics/UI/Town Map/mapRegion0.png"]
+
+
 class KantoSourceBootstrapTests(unittest.TestCase):
     def test_selected_members_allow_only_pinned_frlg_game_assets(self):
-        names = ["Essentials FRLG/" + p for p in ensure_source.REQUIRED]
+        names = ["Essentials FRLG/" + p for p in (*ensure_source.REQUIRED, *ATLAS)]
         names.extend(f"Essentials FRLG/Graphics/Characters/person_{i:03}.png" for i in range(200))
         names += [
             "Essentials FRLG/Game.exe",  # forbidden
@@ -24,7 +27,8 @@ class KantoSourceBootstrapTests(unittest.TestCase):
             "unrelated/Game.exe",  # forbidden
         ]
         selected = ensure_source.selected_members("\n".join(names))
-        self.assertEqual(len(selected), len(ensure_source.REQUIRED) + 200)
+        self.assertEqual(len(selected), len(ensure_source.REQUIRED) + len(ATLAS) + 200)
+        self.assertTrue(all("Essentials FRLG/" + p in selected for p in ATLAS))
         self.assertNotIn("Essentials FRLG/Game.exe", selected)
         self.assertNotIn("Essentials FRLG/Scripts/backdoor.rb", selected)
         self.assertTrue(all(item.startswith("Essentials FRLG/") for item in selected))
@@ -36,7 +40,7 @@ class KantoSourceBootstrapTests(unittest.TestCase):
             ensure_source.selected_members("\n".join(names))
 
     def test_archive_path_traversal_is_rejected(self):
-        names = ["Essentials FRLG/" + p for p in ensure_source.REQUIRED]
+        names = ["Essentials FRLG/" + p for p in (*ensure_source.REQUIRED, *ATLAS)]
         names.extend(f"Essentials FRLG/Graphics/Characters/person_{i:03}.png" for i in range(200))
         names.append("Essentials FRLG/../../game/Game.rxdata")
         with self.assertRaisesRegex(RuntimeError, "inseguro"):
@@ -64,7 +68,7 @@ class KantoSourceBootstrapTests(unittest.TestCase):
             root = Path(temp)
             folder = root / ensure_source.RELATIVE_SOURCE
             folder.mkdir(parents=True)
-            for file in ensure_source.REQUIRED:
+            for file in (*ensure_source.REQUIRED, *ATLAS):
                 path = folder / file
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(b"original source data")
@@ -73,6 +77,33 @@ class KantoSourceBootstrapTests(unittest.TestCase):
                 self.assertEqual(ensure_source.prepare(root), folder)
             self.assertEqual((folder / "Data/Map042.rxdata").read_bytes(),
                              b"original source data")
+
+    def test_atlas_backfill_preserves_existing_source_and_refuses_conflict(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source, extracted = root / "cached", root / "new"
+            source.mkdir()
+            marker = source / "Map039.rxdata"
+            marker.write_bytes(b"local map")
+            for name in ATLAS:
+                path = extracted / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(b"original atlas data")
+            members = ["Essentials FRLG/" + name for name in ATLAS]
+            ensure_source.add_atlas_files(source, extracted, members)
+            self.assertTrue(ensure_source.atlas_ready(source))
+            self.assertEqual(marker.read_bytes(), b"local map")
+            ensure_source.add_atlas_files(source, extracted, members)
+            (source / ATLAS[0]).write_bytes(b"local edit")
+            with self.assertRaisesRegex(RuntimeError, "diverge"):
+                ensure_source.add_atlas_files(source, extracted, members)
+            self.assertEqual((source / ATLAS[0]).read_bytes(), b"local edit")
+
+    def test_atlas_is_a_required_extraction_dependency(self):
+        names = ["Essentials FRLG/" + p for p in ensure_source.REQUIRED]
+        names.extend(f"Essentials FRLG/Graphics/Characters/person_{i:03}.png" for i in range(200))
+        with self.assertRaisesRegex(RuntimeError, "atlas"):
+            ensure_source.selected_members("\n".join(names))
 
     def test_bat_uses_portable_python_from_story_installer(self):
         bat = (ROOT / "KANTO_JOGAR_EXPERIMENTAL.bat").read_text("utf-8")

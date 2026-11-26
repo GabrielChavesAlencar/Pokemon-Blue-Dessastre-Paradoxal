@@ -1658,15 +1658,21 @@ def cerulean_voucher_event_witness(source):
 def install_cerulean_wall_map(source, target):
     """Copy only the original Kanto atlas image; no Decades atlas overwrite."""
     candidates = []
-    for pbs in sorted((source / "PBS").glob("town_map*.txt")):
+    atlas_pbs = [path for path in sorted((source / "PBS").glob("*.txt"))
+                 if re.fullmatch(r"(?:town_map|townmap)(?:_[^/]+)?\.txt", path.name, re.I)]
+    for pbs in atlas_pbs:
         for key, rows in read_blocks(pbs).items():
             fields = {k.strip(): v.split("#", 1)[0].strip() for row in rows
                       for k, sep, v in [row.partition("=")] if sep}
             if fields.get("Name", "").casefold() in ("kanto", "kanto region"):
                 candidates.append((key, fields.get("Filename", "")))
     if len(candidates) != 1:
-        raise ValueError(f"K02-C expected one source Kanto atlas, got {candidates!r}")
+        raise ValueError(f"K02-C expected one source Kanto atlas, got {candidates!r}; "
+                         f"PBS files={[path.name for path in atlas_pbs]!r}")
     region, filename = candidates[0]
+    filename = filename.strip('"')
+    if filename and not Path(filename).suffix:
+        filename += ".png"
     if not re.fullmatch(r"[\w .()\-]+\.png", filename, re.I):
         raise ValueError("K02-C invalid original Kanto atlas filename")
     graphics = source / "Graphics"

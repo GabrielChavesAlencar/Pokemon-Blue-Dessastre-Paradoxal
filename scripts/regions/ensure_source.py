@@ -37,6 +37,8 @@ ALLOWED = (
     re.compile(r"^Essentials FRLG/PBS/(?:encounters|trainers|map_connections|map_metadata)\.txt$"),
     re.compile(r"^Essentials FRLG/Graphics/(?:Characters|Tilesets|Autotiles)/[^/]+\.png$"),
 )
+ATLAS_PBS = re.compile(r"^Essentials FRLG/PBS/(?:town_map|townmap)(?:_[^/]+)?\.txt$", re.I)
+ATLAS_ART = re.compile(r"^Essentials FRLG/Graphics/(?:UI/Town Map(?:/Regions)?|Pictures)/[^/]+\.png$", re.I)
 REQUIRED = (
     "Data/MapInfos.rxdata", "Data/Tilesets.rxdata", "Data/System.rxdata",
     "Data/Map005.rxdata", "Data/Map032.rxdata", "Data/Map036.rxdata",
@@ -49,6 +51,49 @@ REQUIRED = (
 
 def complete(source: Path) -> bool:
     return source.is_dir() and all((source / name).is_file() for name in REQUIRED)
+
+
+def atlas_member(name: str) -> bool:
+    return bool(ATLAS_PBS.fullmatch(name) or ATLAS_ART.fullmatch(name))
+
+
+def atlas_ready(source: Path) -> bool:
+    if not source.is_dir():
+        return False
+    files = ["Essentials FRLG/" + path.relative_to(source).as_posix()
+             for path in source.rglob("*") if path.is_file() and not path.is_symlink()]
+    return any(ATLAS_PBS.fullmatch(name) for name in files) and any(
+        ATLAS_ART.fullmatch(name) for name in files)
+
+
+def add_atlas_files(source: Path, extracted: Path, names: list[str]) -> None:
+    """Populate only missing atlas files from verified archive; never overwrite."""
+    pending = []
+    for name in names:
+        relative = Path(name).relative_to("Essentials FRLG")
+        incoming = extracted / relative
+        target = source / relative
+        if (incoming.is_symlink() or not incoming.is_file() or
+                not incoming.resolve().is_relative_to(extracted.resolve()) or
+                target.is_symlink() or not target.resolve().is_relative_to(source.resolve())):
+            raise RuntimeError("Caminho de atlas inseguro: " + name)
+        if target.exists():
+            if not target.is_file() or sha256(target) != sha256(incoming):
+                raise RuntimeError("Atlas local diverge da fonte fixada; preservado: " + name)
+        else:
+            pending.append((incoming, target))
+    created = []
+    try:
+        for incoming, target in pending:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            with target.open("xb") as output:
+                created.append(target)
+                with incoming.open("rb") as data:
+                    shutil.copyfileobj(data, output)
+    except BaseException:
+        for target in reversed(created):
+            target.unlink(missing_ok=True)
+        raise
 
 
 def sha256(path: Path) -> str:
@@ -105,7 +150,7 @@ def selected_members(listing: str) -> list[str]:
             raise RuntimeError("Entrada duplicada no pacote FRLG: " + item)
         if item.startswith("/") or ".." in item.split("/") or "\x00" in item:
             raise RuntimeError("Caminho inseguro no pacote FRLG.")
-        if any(pattern.fullmatch(item) for pattern in ALLOWED):
+        if any(pattern.fullmatch(item) for pattern in ALLOWED) or atlas_member(item):
             seen.add(item)
             names.append(item)
     if len(names) < 200:
@@ -113,6 +158,11 @@ def selected_members(listing: str) -> list[str]:
     for name in REQUIRED:
         if "Essentials FRLG/" + name not in seen:
             raise RuntimeError("Falta arquivo obrigatório na fonte FRLG: " + name)
+    if not any(ATLAS_PBS.fullmatch(name) for name in names) or not any(
+            ATLAS_ART.fullmatch(name) for name in names):
+        raise RuntimeError("Fonte FRLG sem PBS ou imagem de atlas; candidatos: " +
+                           repr([name for name in listing.splitlines()
+                                 if "town" in name.lower() or "region" in name.lower()][:60]))
     return names
 
 
@@ -133,10 +183,11 @@ def prepare(root: Path = ROOT, url: str = SOURCE_URL) -> Path:
         raise RuntimeError("Hash da fonte FRLG inválido no manifesto.")
     source = (root / RELATIVE_SOURCE).resolve()
     archive = (root / RELATIVE_ARCHIVE).resolve()
-    if complete(source):
+    cached = complete(source)
+    if cached and atlas_ready(source):
         print("[OK] Fonte editável FRLG já preparada para o teste de Kanto.", flush=True)
         return source
-    if source.exists():
+    if source.exists() and not cached:
         raise RuntimeError("Fonte FRLG já existe mas está incompleta. Não vou sobrescrever alterações locais.")
 
     errors = []
@@ -160,6 +211,9 @@ def prepare(root: Path = ROOT, url: str = SOURCE_URL) -> Path:
     listing = subprocess.run([tar, "-tf", str(archive)], text=True,
                              encoding="utf-8", errors="replace", capture_output=True, check=True)
     names = selected_members(listing.stdout)
+    if cached:
+        names = [name for name in names if atlas_member(name)]
+    print("KANTO_K02C_ATLAS_ARCHIVE_MEMBERS:" + repr([name for name in names if atlas_member(name)]), flush=True)
     source.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix=".frlg-stage-", dir=source.parent) as temporary:
         stage = Path(temporary)
@@ -168,14 +222,17 @@ def prepare(root: Path = ROOT, url: str = SOURCE_URL) -> Path:
         subprocess.run([tar, "-xf", str(archive), "-C", str(stage), "-T", str(members)],
                        check=True, capture_output=True)
         extracted = stage / "Essentials FRLG"
-        if not complete(extracted):
+        if (not cached and not complete(extracted)) or not atlas_ready(extracted):
             raise RuntimeError("A extração da fonte FRLG não contém todos os arquivos exigidos.")
         for entry in extracted.rglob("*"):
             if entry.is_symlink() or not entry.resolve().is_relative_to(extracted.resolve()):
                 raise RuntimeError("A extração encontrou um caminho externo ou link simbólico.")
-        if source.exists():
-            raise RuntimeError("A fonte FRLG apareceu durante a preparação. Não vou sobrescrevê-la.")
-        extracted.rename(source)
+        if cached:
+            add_atlas_files(source, extracted, names)
+        else:
+            if source.exists():
+                raise RuntimeError("A fonte FRLG apareceu durante a preparação. Não vou sobrescrevê-la.")
+            extracted.rename(source)
     print("[OK] Fonte FRLG preparada sem modificar o jogo ou os saves do Decades.", flush=True)
     return source
 
