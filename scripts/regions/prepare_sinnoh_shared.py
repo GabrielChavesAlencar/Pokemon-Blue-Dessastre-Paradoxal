@@ -125,6 +125,8 @@ def prepare_world(game, outputs, report):
                         if not isinstance(raw,bytes):
                             continue
                         for module,method in re.findall(rb"\b(BlueSinnoh\w+)\.(\w+[?!]?)",raw):
+                            if method == b"respond_to?" and module in handlers:
+                                continue
                             if method not in handlers.get(module,()):
                                 missing.add(f"{mid}:{module.decode()}.{method.decode()}")
     if missing:
