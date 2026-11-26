@@ -123,16 +123,20 @@ Dir.mktmpdir("kanto-cut-tree-") do |dir|
     check(!tree.instance_variable_get(:@blue_kanto_cut_animating),
           "Cut animation flag did not reset")
 
-    # Player scaling is scoped to the isolated pilot and uses the current
-    # 60% cap (30 rendered px max), never the obsolete 75% expectation.
+    # Native 32px frames must retain full scale; tall frames alone are capped.
+    # Keep the CutTree guard regression independent of the former 60% bug.
     pilot_player = Game_Player.new
     def pilot_player.pattern; 0; end
     def pilot_player.direction; 2; end
     $game_player = pilot_player
     pilot_sprite = Sprite_Character.new(pilot_player)
     pilot_sprite.update
-    check(pilot_sprite.zoom_x == 0.60 && pilot_sprite.zoom_y == 0.60,
-          "pilot player should use the current 60% scaling cap")
+    check(pilot_sprite.zoom_x == 1.0 && pilot_sprite.zoom_y == 1.0,
+          "native 32px pilot player must not shrink")
+    pilot_sprite.instance_variable_set(:@ch, 80)
+    pilot_sprite.update
+    check(pilot_sprite.zoom_x == 0.5 && pilot_sprite.zoom_y == 0.5,
+          "oversized pilot player must be capped at 40px")
 
     # Main Decades never has the isolated pilot marker.
     File.delete("Kanto pilot.json")
