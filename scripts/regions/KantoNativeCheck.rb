@@ -498,6 +498,107 @@ module KantoNativeCheck
     end
   end
 
+  # K01-D follows actual compiled transfer events and PBS connections.
+  # The same Route 2 map may have separate north/south components.
+  # Each recursive leg begins at the preceding real landing, never a QA warp.
+  FOREST_TRAINERS = {16=>"Rick",17=>"Doug",18=>"Anthony",19=>"Charlie",20=>"Sammy"}.freeze
+
+  def self.forest_trace(label,row)
+    File.open("Data/blue-kanto-k01d-forest-trace.txt","a") { |file| file.puts("#{label}:#{row.inspect}") }
+    puts "#{label}:#{row.inspect}"
+  end
+
+  def self.forest_leg(map_id,anchor,destination)
+    component = opening_component(map_id,anchor)
+    $map_factory.setup(map_id)
+    candidates = $game_map.events.values.flat_map do |event|
+      next [] unless [1,2].include?(event.trigger) && north_event_reachable?(component,event)
+      event.list.filter_map do |op|
+        next unless op.code == 201 && op.parameters[0] == 0 && op.parameters[1] == destination
+        {"kind"=>"touch_transfer","from_map"=>map_id,"from_xy"=>[event.x,event.y],
+         "event_id"=>event.id,"to_map"=>destination,"to_xy"=>op.parameters[2,2],
+         "component_size"=>component.length}
+      end
+    end
+    connected = File.readlines("PBS/map_connections_kanto.txt").any? do |line|
+      fields = line.split("#",2)[0].to_s.strip.split(",").map(&:strip)
+      fields.length == 6 && [fields[0].to_i,fields[3].to_i].sort == [map_id,destination].sort
+    end
+    if connected
+      opening_crossings(map_id,component,destination).each do |left,right|
+        candidates << {"kind"=>"native_seam","from_map"=>map_id,"from_xy"=>left,
+          "to_map"=>destination,"to_xy"=>right,"component_size"=>component.length}
+      end
+    end
+    forest_trace("KANTO_K01D_NATIVE_LEG",{"map"=>map_id,"anchor"=>anchor,
+      "destination"=>destination,"component_size"=>component.length,"candidates"=>candidates})
+    candidates
+  end
+
+  def self.forest_chain(maps,anchor,dead = {})
+    return [] if maps.length == 1
+    key = [maps,anchor]
+    return nil if dead[key]
+    forest_leg(maps[0],anchor,maps[1]).each do |leg|
+      tail = forest_chain(maps[1..-1],leg["to_xy"],dead)
+      return [leg]+tail if tail
+    end
+    dead[key] = true
+    nil
+  end
+
+  def self.forest_opening_proof(city,route2_state)
+    previous_map = $game_map.map_id
+    previous_xy = [$game_player.x,$game_player.y]
+    route,south,forest,north,pewter = [18,19,24,20,25].map { |source| BlueKantoPilot.kanto_map_id(source) }
+    sequence = [route,south,forest,north,route,pewter]
+    outward = nil
+    route2_state["guarded_seams"].each do |left,right|
+      chain = forest_chain(sequence,right)
+      if chain
+        outward = [{"kind"=>"native_seam","from_map"=>city,"from_xy"=>left,
+                    "to_map"=>route,"to_xy"=>right}]+chain
+        break
+      end
+    end
+    require!(outward, "K01-D no continuous Route2 / Forest / Pewter corridor")
+    back = forest_chain(sequence.reverse+[city],outward.last["to_xy"])
+    require!(back, "K01-D no independent return from Pewter through Forest to Viridian")
+    forest_arrival = outward.find { |leg| leg["to_map"] == forest }["to_xy"]
+    component = opening_component(forest,forest_arrival)
+    $map_factory.setup(forest)
+    trainers = FOREST_TRAINERS.map do |id,name|
+      event = $game_map.events[id]
+      key = "KANTO_024_%03d" % id
+      require!(event && event.trigger == 2 && event.name.match?(/Sight\(\d+\)/i),
+               "K01-D missing original trainer sight #{id}/#{name}")
+      north_callback!(event,'BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER, "'+name+'", "'+key+'")')
+      north_callback!(event,'BlueKantoPilot.sync_trainer_event("'+key+'", "'+name+'", '+id.to_s+')')
+      require!(event.list.any? { |op| op.code == 355 && op.parameters[0].to_s == "pbNoticePlayer(get_self)" },
+               "K01-D trainer notice callback missing #{name}")
+      require!(north_event_reachable?(component,event), "K01-D trainer not reachable from Forest entrance #{name}")
+      profile = GameData::Trainer.get(:BLUE_KANTO_BUGCATCHER,name)
+      require!(profile && !profile.pokemon.empty?, "K01-D no compiled trainer roster #{name}")
+      {"id"=>id,"name"=>name,"key"=>key,"position"=>[event.x,event.y],
+       "sight"=>event.name,"roster"=>profile.pokemon.map { |p| [p[:species].to_s,p[:level]] }}
+    end
+    encounter = GameData::Encounter.get(forest)
+    require!(encounter && encounter.types[:LandDay] && !encounter.types[:LandDay].empty?,
+             "K01-D missing compiled Forest wild encounter table")
+    report = {"status"=>"PASS","manual_gameplay"=>false,
+      "mode"=>"native_directional_collision_and_compiled_event_callbacks",
+      "map_ids"=>sequence,"outbound"=>outward,"return"=>back,
+      "forest_component"=>component.length,"trainers"=>trainers,
+      "wild_land_day"=>encounter.types[:LandDay]}
+    forest_trace("KANTO_K01D_FOREST_ACCESS",report)
+    report
+  ensure
+    if previous_map && previous_xy
+      $map_factory.setup(previous_map)
+      $game_player.moveto(*previous_xy)
+    end
+  end
+
   def self.starter_opening_proof(lab)
     state = BlueKantoPilot.progress
     require!(state["pilot_profile_pending"] && !BlueKantoPilot.starter &&
@@ -823,6 +924,7 @@ module KantoNativeCheck
              "Oak did not accept the parcel upon return")
     require!(BlueKantoPilot.forest_unlocked?, "Forest remained blocked after parcel delivery")
     route2_states << route2_gate_proof(city_id,route2_anchor,"parcel_delivered",true)
+    forest_report = forest_opening_proof(city_id,route2_states.last)
     require!($bag.quantity(:POKEBALL) == starting_balls + 5,
              "Oak must award exactly five Poke Balls, not the starter event")
     require!($player.has_pokedex, "Oak parcel delivery did not unlock the Pokedex") if $player.respond_to?(:has_pokedex)
@@ -857,6 +959,8 @@ module KantoNativeCheck
              "Route 1 wild table missing")
     brock = GameData::Trainer.get(:BLUE_KANTO_LEADER, "Brock")
     require!(brock.pokemon.map { |pokemon| pokemon[:species] } == [:GEODUDE, :ONIX], "Brock roster differs")
+    # Existing native battle probes now run on the actual Forest map.
+    $map_factory.setup(BlueKantoPilot.kanto_map_id(24))
     # Two NPC events may have the same on-screen name; their win flags must
     # remain independent. A lost battle may be retried, but not counted as a win.
     BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER, "Rick", "KANTO_024_016")
@@ -986,6 +1090,26 @@ module KantoNativeCheck
     require!($game_self_switches[[forest_id, 16, "A"]] &&
              $game_map.events[16].trigger == 0,
              "Trainer must stop auto-challenging after victory")
+
+    # Keep the original Rick and legacy Sammy probes, then finish the
+    # remaining source trainers using the real compiled identities.
+    require!(BlueKantoPilot.sync_trainer_event("KANTO_024_017","Doug",17),
+             "K01-D Doug retry did not sync native event")
+    [[18,"Anthony"],[19,"Charlie"]].each do |eid,name|
+      key = "KANTO_024_%03d" % eid
+      BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER,name,key)
+      require!(BlueKantoPilot.sync_trainer_event(key,name,eid), "K01-D trainer victory sync failed #{name}")
+    end
+    require!(BlueKantoPilot.sync_trainer_event("KANTO_024_020","Sammy",20),
+             "K01-D legacy Sammy victory not recognized")
+    $game_map.refresh
+    require!(FOREST_TRAINERS.keys.all? { |eid|
+      $game_self_switches[[forest_id,eid,"A"]] && $game_map.events[eid].trigger == 0 },
+      "K01-D defeated Forest trainers still auto-challenge")
+    forest_report["controlled_battle_results"] = true
+    forest_report["doug_loss_retry"] = true
+    forest_report["sammy_legacy_name_preserved"] = true
+    forest_report["defeated_event_pages"] = 5
 
     # Phase 09 core: City/Center/Gym now have only whitelisted gameplay
     # events. Route 7 and the entire department store remain geometry-only.
@@ -1596,6 +1720,13 @@ module KantoNativeCheck
     # Recheck the same installed line after the genuine final campaign
     # reload, without altering any legacy badge or parcel flags.
     route2_states << route2_gate_proof(city_id,route2_anchor,"after_save_reload",true)
+    require!(FOREST_TRAINERS.keys.all? { |eid| $game_self_switches[[forest_id,eid,"A"]] } &&
+             %w[KANTO_024_016 KANTO_024_017 KANTO_024_018 KANTO_024_019 Sammy].all? { |key| BlueKantoPilot.progress["pilot_wins"].include?(key) },
+             "K01-D Forest trainer victory or event switches lost on reload")
+    forest_report["save_reload"] = true
+    File.write("Data/blue-kanto-k01d-forest-proof.txt",forest_report.inspect)
+    puts "KANTO_K01D_NATIVE_FOREST_REPORT:#{forest_report.inspect}"
+    puts "KANTO_K01D_FOREST_CORRIDOR_TRAINERS_SAVE_RELOAD_OK"
     route2_report = {"status"=>"PASS","manual_gameplay"=>false,
       "mode"=>"native_directional_collision_and_guarded_movement",
       "states"=>route2_states,"save_reload"=>true}
