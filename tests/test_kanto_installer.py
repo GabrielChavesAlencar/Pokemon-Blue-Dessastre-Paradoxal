@@ -94,6 +94,30 @@ class KantoInstallerTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             allocate_kanto_ids({5, 7, 53}, {300, 302, 999}, existing)
 
+    def test_legacy_drift_is_recoverable_but_foreign_map_is_rejected(self):
+        from server.ruby_marshal import RubyObject
+        from stage import serialize
+        with tempfile.TemporaryDirectory() as folder:
+            root, game, src, files = self.with_game(folder)
+            pilot = root / "pilot"
+            (pilot / "Data").mkdir(parents=True)
+            rel = Path("Data/Map300.rxdata")
+            old = RubyObject("RPG::Map", {"@width": 20, "@height": 20, "@tileset_id": 1})
+            new = RubyObject("RPG::Map", {"@width": 20, "@height": 20, "@tileset_id": 2})
+            (game / rel).write_bytes(serialize(old))
+            (pilot / rel).write_bytes(serialize(new))
+            tile = RubyObject("RPG::Tileset", {"@tileset_name": b"FRLG_Preview_Pallet"})
+            foreign = RubyObject("RPG::Tileset", {"@tileset_name": b"Hoenn"})
+            (game / "Data/Tilesets.rxdata").write_bytes(serialize([None, tile]))
+            (pilot / "Data/Tilesets.rxdata").write_bytes(serialize([None, foreign, tile]))
+            proof = {"maps": {"5": 300}, "installed_sha256": {rel.as_posix(): "a" * 64}}
+            installer.check_migration_target(game, pilot, rel, pilot / rel, proof)
+            (game / "Data/Tilesets.rxdata").write_bytes(serialize([None, foreign]))
+            with self.assertRaisesRegex(ValueError, "Foreign tileset"):
+                installer.check_migration_target(game, pilot, rel, pilot / rel, proof)
+            (game / rel).unlink()
+            installer.check_migration_target(game, pilot, rel, pilot / rel, proof)
+
     def test_migration_rolls_back_when_final_verification_fails(self):
         with tempfile.TemporaryDirectory() as folder:
             root, game, src, files = self.with_game(folder)
