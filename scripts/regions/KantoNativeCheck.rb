@@ -754,6 +754,174 @@ module KantoNativeCheck
     end
   end
 
+  # K02-A: graph of the installed Mt. Moon corridor; each leg begins at
+  # the actual preceding transfer/seam landing. No teleport is a route leg.
+  def self.moon_trace(label,row)
+    File.open("Data/blue-kanto-k02a-moon-trace.txt","a") { |file| file.puts("#{label}:#{row.inspect}") }
+    puts "#{label}:#{row.inspect}"
+  end
+
+  def self.moon_path(start,anchor,target,allowed)
+    queue = [[start,anchor,[]]]
+    seen = {[start,anchor]=>true}
+    cursor = 0
+    connections = File.readlines("PBS/map_connections_kanto.txt").filter_map do |line|
+      fields = line.split("#",2)[0].to_s.strip.split(",").map(&:strip)
+      [fields[0].to_i,fields[3].to_i] if fields.length == 6
+    end
+    while cursor < queue.length
+      map,point,legs = queue[cursor]
+      cursor += 1
+      return legs if map == target
+      comp = opening_component(map,point)
+      $map_factory.setup(map)
+      candidates = $game_map.events.values.flat_map do |ev|
+        next [] unless [1,2].include?(ev.trigger) && north_event_reachable?(comp,ev)
+        ev.list.filter_map do |op|
+          next unless op.code == 201 && op.parameters[0] == 0 && allowed.include?(op.parameters[1])
+          {"kind"=>"touch_transfer","from_map"=>map,"from_xy"=>[ev.x,ev.y],
+           "event_id"=>ev.id,"to_map"=>op.parameters[1],"to_xy"=>op.parameters[2,2],
+           "component_size"=>comp.length}
+        end
+      end
+      connections.each do |a,b|
+        other = a == map ? b : (b == map ? a : nil)
+        next unless allowed.include?(other)
+        opening_crossings(map,comp,other).each do |left,right|
+          candidates << {"kind"=>"native_seam","from_map"=>map,"from_xy"=>left,
+            "to_map"=>other,"to_xy"=>right,"component_size"=>comp.length}
+        end
+      end
+      candidates.each do |leg|
+        key = [leg["to_map"],leg["to_xy"]]
+        next if seen[key]
+        seen[key] = true
+        queue << [*key,legs+[leg]]
+      end
+      moon_trace("KANTO_K02A_NATIVE_LEG",{"map"=>map,"anchor"=>point,
+        "component_size"=>comp.length,"candidates"=>candidates})
+    end
+    nil
+  end
+
+  def self.moon_fossil_proof(pewter_report,losses_remaining)
+    previous_map = $game_map.map_id
+    previous_xy = [$game_player.x,$game_player.y]
+    route,moon,cerulean,lab = [32,38,39,203].map { |id| BlueKantoPilot.kanto_map_id(id) }
+    allowed = [32,33,34,35,36,37,38,39].map { |id| BlueKantoPilot.kanto_map_id(id) }
+    anchor = pewter_report["east_seams"].first[1]
+    outward = moon_path(route,anchor,moon,allowed)
+    require!(outward && !outward.empty?, "K02-A no continuous Route3 to Mt Moon B2F")
+    arrival = outward.last["to_xy"]
+    comp = opening_component(moon,arrival)
+    $map_factory.setup(moon)
+    miguel = $game_map.events[19]
+    north_callback!(miguel,'BlueKantoPilot.battle(:BLUE_KANTO_SUPERNERD, "Miguel", "KANTO_038_019")')
+    require!(north_event_reachable?(comp,miguel), "K02-A Miguel not reachable from B2F arrival")
+    props = {}
+    [:HELIXFOSSIL,:DOMEFOSSIL].each do |item|
+      label = item == :HELIXFOSSIL ? "Kanto Helix Fossil" : "Kanto Dome Fossil"
+      ev = $game_map.events.values.find { |e| e.name == label }
+      props[item] = ev.id if ev
+      moon_trace("KANTO_K02A_FOSSIL_ANCHOR",{"item"=>item.to_s,"event_id"=>ev&.id,
+        "position"=>ev ? [ev.x,ev.y] : nil,
+        "character"=>ev&.character_name,"trigger"=>ev&.trigger,
+        "reachable"=>ev ? opening_action_witness(comp,ev) : nil,
+        "catalogued"=>GameData::Item.exists?(item)})
+    end
+    require!(props.length == 2 && BlueKantoPilot.moon_fossil_props?,
+             "K02-A missing one or both visible source fossil events")
+    props.each do |item,id|
+      ev = $game_map.events[id]
+      north_callback!(ev,"BlueKantoPilot.choose_moon_fossil(:#{item})")
+      require!(opening_action_witness(comp,ev) && !$game_self_switches[[moon,id,"A"]],
+               "K02-A fossil not reachable or already hidden #{item}")
+      require!(GameData::Item.exists?(item), "K02-A fossil item missing from native catalogue #{item}")
+    end
+    onward = moon_path(moon,arrival,cerulean,allowed)
+    require!(onward && !onward.empty?, "K02-A no continuous cave to Cerulean path")
+    $map_factory.setup(moon)
+    $game_player.moveto(*arrival)
+    baseline = "K02 A Native Fossil Baseline"
+    require!(Game.save(baseline), "K02-A baseline save failed")
+    baseline_path = SaveData.get_full_path(baseline)
+    baseline_bytes = File.binread(baseline_path)
+    variants = []
+    [:HELIXFOSSIL,:DOMEFOSSIL].each do |item|
+      require!(File.binread(baseline_path) == baseline_bytes, "K02-A baseline rewritten")
+      reload_native_slot(baseline_path)
+      require!($game_map.map_id == moon && !BlueKantoPilot.progress["pilot_mt_moon_fossil"],
+               "K02-A baseline not restored")
+      before = props.keys.to_h { |id| [id,$bag.quantity(id)] }
+      other = (props.keys-[item]).first
+      require!(!BlueKantoPilot.choose_moon_fossil(item), "K02-A fossil granted before Miguel")
+      losses_remaining["Miguel"] = 1
+      require!(!BlueKantoPilot.battle(:BLUE_KANTO_SUPERNERD,"Miguel","KANTO_038_019") &&
+               !BlueKantoPilot.sync_trainer_event("KANTO_038_019","Miguel",19),
+               "K02-A Miguel loss recorded as victory")
+      require!(!BlueKantoPilot.choose_moon_fossil(item), "K02-A fossil granted after loss")
+      require!(BlueKantoPilot.battle(:BLUE_KANTO_SUPERNERD,"Miguel","KANTO_038_019") &&
+               BlueKantoPilot.sync_trainer_event("KANTO_038_019","Miguel",19),
+               "K02-A Miguel retry failed")
+      Object.send(:define_method,:pbConfirmMessage) { |*args| false }
+      require!(!BlueKantoPilot.choose_moon_fossil(item) &&
+               !BlueKantoPilot.progress["pilot_mt_moon_fossil"],
+               "K02-A cancelled fossil committed choice")
+      Object.send(:define_method,:pbConfirmMessage) { |*args| true }
+      require!(BlueKantoPilot.choose_moon_fossil(item), "K02-A native fossil grant failed")
+      $game_map.refresh
+      require!($bag.quantity(item) == before[item]+1 && $bag.quantity(other) == before[other] &&
+               BlueKantoPilot.progress["pilot_mt_moon_fossil"] == item.to_s &&
+               props.values.all? { |id| $game_self_switches[[moon,id,"A"]] },
+               "K02-A exclusive item/switch state invalid")
+      require!(!BlueKantoPilot.choose_moon_fossil(other), "K02-A second fossil accepted")
+      slot = "K02 A Native #{item}"
+      require!(Game.save(slot), "K02-A selected save failed")
+      reload_native_slot(SaveData.get_full_path(slot))
+      require!($bag.quantity(item) == before[item]+1 &&
+               BlueKantoPilot.progress["pilot_mt_moon_fossil"] == item.to_s &&
+               props.values.all? { |id| $game_self_switches[[moon,id,"A"]] },
+               "K02-A selected fossil lost on reload")
+      require!(!BlueKantoPilot.revive_cinnabar_fossil, "K02-A revival allowed outside lab")
+      # An isolated late-game lab fixture, not a claimed maritime trip.
+      $map_factory.setup(lab)
+      require!(BlueKantoPilot.in_cinnabar_lab?, "K02-A real lab map unavailable")
+      $game_player.moveto(1,1)
+      species = BlueKantoPilot::MOON_FOSSILS.fetch(item)
+      party_size = $player.party.length
+      Object.send(:define_method,:pbConfirmMessage) { |*args| false }
+      require!(!BlueKantoPilot.revive_cinnabar_fossil && $bag.quantity(item) == before[item]+1,
+               "K02-A cancelled revival consumed fossil")
+      Object.send(:define_method,:pbConfirmMessage) { |*args| true }
+      require!(BlueKantoPilot.revive_cinnabar_fossil &&
+               $bag.quantity(item) == before[item] && $player.party.length == party_size+1 &&
+               $player.party.last.species == species && $player.party.last.level == 5,
+               "K02-A native revival did not consume exactly one fossil and grant correct Pokemon")
+      require!(!BlueKantoPilot.revive_cinnabar_fossil, "K02-A repeated revival without fossil")
+      revived_slot = "K02 A Native Revived #{item}"
+      require!(Game.save(revived_slot), "K02-A revived save failed")
+      reload_native_slot(SaveData.get_full_path(revived_slot))
+      require!($player.party.last.species == species && $bag.quantity(item) == before[item] &&
+               BlueKantoPilot.progress["pilot_mt_moon_fossil"] == item.to_s,
+               "K02-A revival lost on reload")
+      row = {"item"=>item.to_s,"species"=>species.to_s,"level"=>5,"miguel_loss_retry"=>true,
+        "cancel_no_change"=>true,"exclusive"=>true,"switches_persisted"=>true,
+        "revival_consumed_one"=>true,"revival_save_reload"=>true}
+      moon_trace("KANTO_K02A_FOSSIL_TRANSACTION",row)
+      variants << row
+    end
+    reload_native_slot(baseline_path)
+    {"status"=>"PASS","manual_gameplay"=>false,"mode"=>"native_collision_and_fossil_transactions",
+     "outbound"=>outward,"onward"=>onward,"props"=>props,"variants"=>variants,
+     "cinnabar_lab_fixture"=>lab,"maritime_trip_tested"=>false,"baseline_restored"=>true}
+  ensure
+    Object.send(:define_method,:pbConfirmMessage) { |*args| true }
+    if previous_map && previous_xy
+      $map_factory.setup(previous_map)
+      $game_player.moveto(*previous_xy)
+    end
+  end
+
   def self.starter_opening_proof(lab)
     state = BlueKantoPilot.progress
     require!(state["pilot_profile_pending"] && !BlueKantoPilot.starter &&
@@ -1141,6 +1309,7 @@ module KantoNativeCheck
     require!(battle_calls.none? { |row| row[1] == "Sammy" }, "Legacy trainer win replayed")
 
     pewter_report = pewter_opening_proof(forest_report,battle_calls,losses_remaining)
+    moon_report = moon_fossil_proof(pewter_report,losses_remaining)
 
     # Phase 07: Misty must have a real compiled trainer profile and a
     # distinct Cascade milestone. The battle result is stubbed ONLY in CI.
@@ -1900,6 +2069,9 @@ module KantoNativeCheck
     File.write("Data/blue-kanto-k01b-parcel-proof.txt",parcel_report.inspect)
     puts "KANTO_K01B_NATIVE_PALLET_OAK_REPORT:#{parcel_report.inspect}"
     puts "KANTO_K01B_PALLET_OAK_PARCEL_SAVE_RELOAD_OK"
+    File.write("Data/blue-kanto-k02a-moon-proof.txt",moon_report.inspect)
+    puts "KANTO_K02A_NATIVE_MOON_REPORT:#{moon_report.inspect}"
+    puts "KANTO_K02A_MOON_FOSSILS_REVIVAL_SAVE_RELOAD_OK"
     walk_verified = walk_rows.count { |row| row[4] == "native_step_verified" }
     File.write("Data/blue-kanto-proof.txt",
                "Kanto 145 maps: Cerulean north, Nugget Bridge, Bill, Victory Road, eight badge guards, Elite Four/Blue, unique Hall of Fame and Decades/Johto eligibility; save/reload (battles simulated); " +

@@ -253,6 +253,12 @@ jobs:
               Get-Content $pewterTrace
               Write-Host ("KANTO_K01E_NATIVE_PEWTER_REPORT:" + (Get-Content $pewterProof -Raw).Trim())
               Write-Host 'KANTO_K01E_BROCK_ROUTE3_SHOES_SAVE_RELOAD_OK'
+              $moonTrace="$pilot/Data/blue-kanto-k02a-moon-trace.txt"
+              $moonProof="$pilot/Data/blue-kanto-k02a-moon-proof.txt"
+              if(-not (Test-Path $moonTrace) -or -not (Test-Path $moonProof)){throw 'K02-A native Moon proof missing'}
+              Get-Content $moonTrace
+              Write-Host ("KANTO_K02A_NATIVE_MOON_REPORT:" + (Get-Content $moonProof -Raw).Trim())
+              Write-Host 'KANTO_K02A_MOON_FOSSILS_REVIVAL_SAVE_RELOAD_OK'
               Get-Content "$pilot/Data/blue-kanto-proof.txt"
               exit 0
             }
@@ -274,7 +280,27 @@ jobs:
           if(Test-Path $forestTrace){Get-Content $forestTrace}
           $pewterTrace="$pilot/Data/blue-kanto-k01e-pewter-trace.txt"
           if(Test-Path $pewterTrace){Get-Content $pewterTrace}
+          $moonTrace="$pilot/Data/blue-kanto-k02a-moon-trace.txt"
+          if(Test-Path $moonTrace){Get-Content $moonTrace}
           throw 'Kanto native proof missing'
+      - name: Preservar diagnóstico Mt Moon K02-A
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k02a-moon-trace.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k02a-native-moon-trace
+          path: .blue-work/kanto-pilot/Data/blue-kanto-k02a-moon-trace.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preservar recibo nativo Mt Moon K02-A
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k02a-moon-proof.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k02a-native-moon-proof
+          path: .blue-work/kanto-pilot/Data/blue-kanto-k02a-moon-proof.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
       - name: Preservar diagnóstico Pewter K01-E
         if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k01e-pewter-trace.txt') != ''
         uses: actions/upload-artifact@v4
