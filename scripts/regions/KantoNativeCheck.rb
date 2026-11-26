@@ -250,6 +250,82 @@ module KantoNativeCheck
     report
   end
 
+  # K01-A: real native event pages, save files and bag/party in the disposable
+  # pilot. Only the confirmation dialogue is controlled; no user save is read.
+  def self.starter_opening_proof(lab)
+    state = BlueKantoPilot.progress
+    require!(state["pilot_profile_pending"] && !BlueKantoPilot.starter &&
+             $player.party.empty?, "K01-A new-game starter state invalid")
+    require!($game_map.map_id == lab, "K01-A not in the laboratory")
+    cases = [[18,:BULBASAUR],[19,:SQUIRTLE],[20,:CHARMANDER]]
+    cases.each do |id,species|
+      event = $game_map.events[id]
+      north_callback!(event,"BlueKantoPilot.choose_starter_ball(:#{species})")
+      require!(event.trigger == 0 && !event.character_name.to_s.empty? &&
+               !$game_self_switches[[lab,id,"A"]], "K01-A missing visible starter #{species}")
+    end
+    # A separate native baseline lets us test every choice with the actual
+    # Pokémon, Bag, self switches and Game.save/Game.load, not a fake party.
+    baseline = "K01 A Native Unchosen"
+    require!(Game.save(baseline), "K01-A initial CI save failed")
+    baseline_file = SaveData.get_full_path(baseline)
+    potion_before = $bag.quantity(:POTION)
+    ball_before = $bag.quantity(:POKEBALL)
+    rows = []
+    # Restore Bulbasaur last because the existing full-campaign proof uses it.
+    [cases[1],cases[2],cases[0]].each do |id,species|
+      Game.load(SaveData.read_from_file(baseline_file))
+      require!($game_map.map_id == lab && $player.party.empty? && !BlueKantoPilot.starter,
+               "K01-A baseline reload retained another starter")
+      Object.send(:define_method,:pbConfirmMessage) { |*args| false }
+      BlueKantoPilot.choose_starter_ball(species)
+      require!($player.party.empty? && !BlueKantoPilot.starter &&
+               $bag.quantity(:POTION) == potion_before &&
+               cases.none? { |eid,_| $game_self_switches[[lab,eid,"A"]] },
+               "K01-A cancelled choice changed party, rewards or switches")
+      Object.send(:define_method,:pbConfirmMessage) { |*args| true }
+      BlueKantoPilot.choose_starter_ball(:PIKACHU)
+      require!($player.party.empty? && !BlueKantoPilot.starter,
+               "K01-A invalid starter accepted")
+      BlueKantoPilot.choose_starter_ball(species)
+      require!($player.party.length == 1 && $player.party.first.species == species &&
+               $player.party.first.level == 5 && BlueKantoPilot.starter == species,
+               "K01-A wrong native starter #{species}")
+      cases.each do |eid,other|
+        ev = $game_map.events[eid]
+        require!($game_self_switches[[lab,eid,"A"]] && ev.character_name.to_s.empty?,
+                 "K01-A Poké Ball #{eid} remains visible after selection")
+        BlueKantoPilot.choose_starter_ball(other)
+      end
+      require!($player.party.length == 1 && $player.party.first.species == species &&
+               $bag.quantity(:POTION) == potion_before+2 &&
+               $bag.quantity(:POKEBALL) == ball_before &&
+               !BlueKantoPilot.forest_unlocked?,
+               "K01-A repeated starter or early parcel reward")
+      slot = "K01 A Native #{species}"
+      require!(Game.save(slot), "K01-A selected starter save failed")
+      Game.load(SaveData.read_from_file(SaveData.get_full_path(slot)))
+      require!($game_map.map_id == lab && $player.party.length == 1 &&
+               $player.party.first.species == species && BlueKantoPilot.starter == species &&
+               $bag.quantity(:POTION) == potion_before+2 &&
+               $bag.quantity(:POKEBALL) == ball_before &&
+               cases.all? { |eid,_| $game_self_switches[[lab,eid,"A"]] },
+               "K01-A selected starter/save switches did not survive reload")
+      cases.each { |eid,_| $game_map.events[eid].refresh }
+      require!(cases.all? { |eid,_| $game_map.events[eid].character_name.to_s.empty? },
+               "K01-A Poké Balls reappeared after reload")
+      rows << {"species"=>species.to_s,"event_id"=>id,"level"=>5,
+               "cancel_no_change"=>true,"invalid_choice_rejected"=>true,
+               "party_count"=>1,"potion_delta"=>2,"pokeball_delta"=>0,
+               "all_balls_hidden"=>true,"duplicate_rejected"=>true,"save_reload"=>true}
+    end
+    {"status"=>"PASS","mode"=>"native_party_bag_event_pages_save_reload",
+     "manual_gameplay"=>false,"profile_ui_executed"=>false,
+     "lab_map_id"=>lab,"variants"=>rows}
+  ensure
+    Object.send(:define_method,:pbConfirmMessage) { |*args| true }
+  end
+
   def self.run
     SaveData.initialize_bootup_values
     Game.start_new
@@ -333,8 +409,8 @@ module KantoNativeCheck
         !!data
       end
     end
-    BlueKantoPilot.choose_starter_ball(:BULBASAUR)
-    require!($player.party.first&.species == :BULBASAUR, "Starter was not given")
+    opening_report = starter_opening_proof(lab)
+    require!($player.party.first&.species == :BULBASAUR, "Starter proof did not leave Bulbasaur for campaign")
     require!(!BlueKantoPilot.forest_unlocked?, "Forest opened before Oak's parcel")
     require!(Game_Player.ancestors.include?(BlueKantoPilot::Route2ExitGuard),
              "Viridian Route 2 outdoor boundary hook was not installed")
@@ -1119,6 +1195,14 @@ module KantoNativeCheck
     north_report["victory_keys"] = north_keys.length
     north_report["native_trainer_encounters"] = north_keys.length
     north_report["misty_loss_retry"] = true
+    # The final campaign reload must retain the chosen starter as well.
+    require!(BlueKantoPilot.starter == :BULBASAUR &&
+             [18,19,20].all? { |eid| $game_self_switches[[lab,eid,"A"]] },
+             "K01-A starter flags lost in later campaign")
+    opening_report["later_campaign_reload"] = true
+    File.write("Data/blue-kanto-k01a-starter-proof.txt", opening_report.inspect)
+    puts "KANTO_K01A_NATIVE_STARTER_REPORT:#{opening_report.inspect}"
+    puts "KANTO_K01A_THREE_STARTERS_SAVE_RELOAD_OK"
     File.write("Data/blue-kanto-k00-cerulean-proof.txt", north_report.inspect)
     puts "KANTO_K00_CERULEAN_NATIVE_REPORT:#{north_report.inspect}"
     puts "KANTO_K00_CERULEAN_NATIVE_STORY_OK"
