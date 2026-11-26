@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ae5f3a1a869b5e808bf51848ef5e63db076e860d",
+      "date": "2026-11-26T09:58:22-03:00",
+      "title": "Merge PR #344: restore Cerulean Gary encounter",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "075610019a44ce75d481a8c6354e0c1dce57135c",
+      "date": "2026-11-26T09:51:06-03:00",
+      "title": "Fix K00 Cerulean Gary visibility and movement encounter for existing saves",
+      "category": "Melhorias"
+    },
+    {
       "sha": "0bb75cf4971abe943c962e6bb8efb49945d0ecfa",
       "date": "2026-11-26T09:31:29-03:00",
       "title": "Merge PR #343: retain required Kanto Android patch baselines",
