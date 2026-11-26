@@ -272,12 +272,22 @@ module KantoNativeCheck
     saved = SaveData.read_from_file(path)
     require!(saved.is_a?(Hash), "K01-A expected native hash save")
     player = saved[:player]
-    global = saved[:pokemon_global]
-    serialized = {"path"=>File.basename(path),
-      "keys"=>saved.keys.map(&:to_s),
-      "party"=>(player.respond_to?(:party) ? player.party.map { |p| p.species.to_s } : nil),
-      "starter"=>(global.respond_to?(:blue_regions) && global.blue_regions.is_a?(Hash) ?
-                   global.blue_regions["pilot_starter"] : nil)}
+    # The real Blue save registers PokemonGlobalMetadata as :global_metadata
+    # (verified by native run 45842567107), not :pokemon_global.
+    global = saved[:global_metadata]
+    require!(player.respond_to?(:party) && global.respond_to?(:blue_regions) &&
+             global.blue_regions.is_a?(Hash), "K01-A missing serialized player/regional metadata")
+    region = global.blue_regions
+    bag = saved[:bag]
+    require!(bag.respond_to?(:quantity) && saved[:self_switches],
+             "K01-A missing serialized Bag/self switches")
+    serialized = {"label"=>"serialized","path"=>File.basename(path),
+      "party"=>player.party.map { |p| p.species.to_s },
+      "starter"=>region["pilot_starter"],"region"=>region["current"],
+      "profile_pending"=>region["pilot_profile_pending"],
+      "potions"=>bag.quantity(:POTION),"pokeballs"=>bag.quantity(:POKEBALL),
+      "metadata_key"=>"global_metadata"}
+    puts "KANTO_K01A_SAVE_STATE:#{serialized.inspect}"
     File.open("Data/blue-kanto-k01a-state-trace.txt","a") { |file| file.puts(serialized.inspect) }
     require!(SaveData.respond_to?(:mark_values_as_unloaded), "Native SaveData unload API unavailable")
     SaveData.mark_values_as_unloaded
@@ -327,14 +337,18 @@ module KantoNativeCheck
     [cases[1],cases[2],cases[0]].each do |id,species|
       require!(File.binread(baseline_file) == baseline_bytes, "K01-A baseline file unexpectedly rewritten")
       serialized = reload_native_slot(baseline_file)
-      require!(serialized["party"] == [] && !serialized["starter"],
-               "K01-A baseline serialized party/flag mismatch: #{serialized.inspect}")
+      require!(serialized["party"] == [] && !serialized["starter"] &&
+               serialized["region"] == "KANTO" && !serialized["profile_pending"] &&
+               serialized["potions"] == potion_before && serialized["pokeballs"] == ball_before,
+               "K01-A baseline serialized party/flag/reward mismatch: #{serialized.inspect}")
       actual = opening_snapshot("unchosen_reload_#{species}")
       require!(actual["map_id"] == lab, "K01-A baseline map mismatch: expected #{lab}, got #{actual.inspect}")
       require!(actual["party"].empty?, "K01-A baseline party mismatch: #{actual.inspect}")
       require!(!actual["starter"], "K01-A baseline starter flag mismatch: #{actual.inspect}")
-      require!(actual["region"] == before["region"] && !actual["profile_pending"],
-               "K01-A baseline regional/profile state mismatch: #{actual.inspect}")
+      require!(actual["region"] == before["region"] && !actual["profile_pending"] &&
+               actual["potions"] == potion_before && actual["pokeballs"] == ball_before &&
+               cases.none? { |eid,_| $game_self_switches[[lab,eid,"A"]] },
+               "K01-A baseline regional/profile/reward/switch state mismatch: #{actual.inspect}")
       Object.send(:define_method,:pbConfirmMessage) { |*args| false }
       BlueKantoPilot.choose_starter_ball(species)
       require!($player.party.empty? && !BlueKantoPilot.starter &&
@@ -364,8 +378,10 @@ module KantoNativeCheck
       require!(Game.save(slot), "K01-A selected starter save failed")
       opening_snapshot("selected_before_reload_#{species}")
       serialized = reload_native_slot(SaveData.get_full_path(slot))
-      require!(serialized["party"] == [species.to_s] && serialized["starter"] == species.to_s,
-               "K01-A selected serialized party/flag mismatch: #{serialized.inspect}")
+      require!(serialized["party"] == [species.to_s] && serialized["starter"] == species.to_s &&
+               serialized["region"] == "KANTO" && !serialized["profile_pending"] &&
+               serialized["potions"] == potion_before+2 && serialized["pokeballs"] == ball_before,
+               "K01-A selected serialized party/flag/reward mismatch: #{serialized.inspect}")
       opening_snapshot("selected_after_reload_#{species}")
       require!($game_map.map_id == lab && $player.party.length == 1 &&
                $player.party.first.species == species && BlueKantoPilot.starter == species &&

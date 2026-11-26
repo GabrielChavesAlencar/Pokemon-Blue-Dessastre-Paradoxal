@@ -223,7 +223,10 @@ jobs:
               Get-Content $northProof
               $openingProof="$pilot/Data/blue-kanto-k01a-starter-proof.txt"
               if(-not (Test-Path $openingProof)){throw 'K01-A native starter proof missing'}
-              Get-Content $openingProof
+              $openingTrace="$pilot/Data/blue-kanto-k01a-state-trace.txt"
+              if(-not (Test-Path $openingTrace)){throw 'K01-A save-state trace missing'}
+              Get-Content $openingTrace | ForEach-Object { Write-Host "KANTO_K01A_SAVE_STATE:$_" }
+              Write-Host ("KANTO_K01A_NATIVE_STARTER_REPORT:" + (Get-Content $openingProof -Raw).Trim())
               Write-Host 'KANTO_K01A_THREE_STARTERS_SAVE_RELOAD_OK'
               Get-Content "$pilot/Data/blue-kanto-proof.txt"
               exit 0
@@ -232,6 +235,10 @@ jobs:
             if($process.ExitCode -ne 0 -and -not (Select-String -Path .blue-work/kanto-native-out.txt -Pattern 'Successfully compiled all game data' -Quiet)){break}
           }
           Get-Content .blue-work/kanto-native-out.txt,.blue-work/kanto-native-err.txt,"$pilot/Data/blue-kanto-error.txt","$pilot/errorlog.txt" -ErrorAction SilentlyContinue | Select-Object -Last 100
+          $openingTrace="$pilot/Data/blue-kanto-k01a-state-trace.txt"
+          if(Test-Path $openingTrace){
+            Get-Content $openingTrace | ForEach-Object { Write-Host "KANTO_K01A_SAVE_STATE:$_" }
+          }
           throw 'Kanto native proof missing'
       - name: Preservar estados K01-A de save e reload
         if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k01a-state-trace.txt') != ''
