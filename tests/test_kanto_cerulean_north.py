@@ -28,26 +28,27 @@ class CeruleanNorthContract(unittest.TestCase):
         cls.ids = {int(i) for i in cls.manifest["maps"]}
 
     def test_01_legacy_map_ids_cannot_shift(self):
-        prior = self.ids - {53, 54, 55}
+        prior = self.ids - {43,44,45,46,47,48,53,54,55}
         self.assertEqual(len(prior), 142)
-        self.assertEqual(len(self.ids), 145)
+        self.assertEqual(len(self.ids), 151)
         old_order = stable_source_order(prior)
         upgraded = stable_source_order(self.ids)
         self.assertEqual(upgraded[:142], old_order)
-        self.assertEqual(upgraded[-3:], [53, 54, 55])
+        self.assertEqual(upgraded[142:145], [53, 54, 55])
+        self.assertEqual(upgraded[145:], [43,44,45,46,47,48])
         self.assertEqual(self.manifest["maps"]["53"], "ROUTE_24")
         self.assertEqual(self.manifest["maps"]["54"], "ROUTE_25")
         self.assertEqual(self.manifest["maps"]["55"], "BILL_COTTAGE")
 
     def test_cerulean_interiors_append_without_shifting_145_existing_slots(self):
         extra = {43, 44, 45, 46, 47, 48}
-        before = stable_source_order(self.ids)
-        expanded = stable_source_order(self.ids | extra)
+        before = stable_source_order(self.ids - extra)
+        expanded = stable_source_order(self.ids)
         self.assertEqual(expanded[:145], before)
         self.assertEqual(expanded[145:], sorted(extra))
         existing = {sid: 300+i for i, sid in enumerate(before)}
         occupied = set(existing.values()) | {700, 800}
-        upgraded = allocate_kanto_ids(self.ids | extra, occupied, existing)
+        upgraded = allocate_kanto_ids(self.ids, occupied, existing)
         self.assertEqual({sid: upgraded[sid] for sid in existing}, existing)
         self.assertEqual([upgraded[sid] for sid in sorted(extra)], list(range(801, 807)))
 
@@ -84,7 +85,7 @@ class CeruleanNorthContract(unittest.TestCase):
 
     def test_04_android_ready_gate_accepts_only_verified_old_and_new_registry(self):
         source = (ROOT / "scripts/battle_polish/RegionStart.rb").read_text("utf-8")
-        self.assertIn('["142", "145"].include?(fields[1])', source)
+        self.assertIn('["142", "145", "151"].include?(fields[1])', source)
         self.assertIn('pairs.length == expected_count', source)
         self.assertIn('maps.values.uniq.length == expected_count', source)
         self.assertIn('["53", "54", "55"].all?', source)
