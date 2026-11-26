@@ -7,3 +7,9 @@ Para preparar o pacote, a revisão precisa fornecer os 144 mapas, a lista estáv
 O overlay deve ser montado contra a edição compartilhada já integrada. Ele pode acrescentar mapas, tilesets, conexões internas e arquivos regionais com nomes exclusivos. Arquivos de save, `Game.ini`, `mkxp.json` e `Data/Scripts.rxdata` pertencentes ao piloto ficam fora do pacote. O atualizador Android rejeita uma versão que remova os mapas de Sinnoh de um jogo já integrado.
 
 Os 144 mapas da cópia experimental e os resultados de compilação do PR #338 ainda não formam esse pacote revisado. A viagem compartilhada e a abertura no JoiPlay precisam ser comprovadas no conteúdo integrado antes da distribuição.
+
+## Menu e transporte regional
+
+No menu Novo Jogo, Sinnoh usa o mesmo processo e save das demais regiões. Quando o overlay está pronto, o nome é apenas `Sinnoh`; caso contrário, `Sinnoh (instalação necessária)` informa o bloqueio e retorna à seleção sem abrir o piloto. A opção `Testar Sinnoh` continua sendo exclusivamente de QA.
+
+O ponto de chegada e o agente devem estar no mapa exterior original `Twinleaf Town`, confirmado pelo MapInfos e pela geometria; não se admite um NPC em Sandgem Town ou numa rota como substituto. As viagens usam `BlueRegionTravel`, com a mesma política de Decades, Kanto, Johto e Hoenn, sem exigir a Liga para sair da região. O pacote precisa ser gerado e verificado em uma base compartilhada de teste antes de registrar as aprovações de distribuição. Não confundir aprovação em fixtures com o teste real de ida/volta no Game.exe e JoiPlay.
