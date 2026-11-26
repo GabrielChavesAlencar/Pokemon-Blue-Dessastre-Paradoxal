@@ -50,6 +50,10 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'JoiPlay Cerulean trainer identity regression failed'}
           python tests/test_kanto_cerulean_north.py
           if($LASTEXITCODE -ne 0){throw 'Kanto Cerulean north source/MapID audit failed'}
+          python tests/test_kanto_installer.py
+          if($LASTEXITCODE -ne 0){throw 'K02-C migration ownership contract failed'}
+          python tests/test_kanto_auto_integrate.py
+          if($LASTEXITCODE -ne 0){throw 'K02-C automatic migration contract failed'}
           python tests/test_kanto_release_pagination.py
           if($LASTEXITCODE -ne 0){throw 'Kanto release selector regression tests failed'}
           python scripts/regions/audit_vermilion.py --output .blue-work/kanto-phase-08-audit.json
