@@ -33,7 +33,7 @@ class SinnohSharedInstallerTests(unittest.TestCase):
         world = RubyObject("RPG::Map", {"@width":4,"@height":4,"@tileset_id":2,"@events":{},"@data":map_data})
         self.base = {shared.MAP_INFOS:serialize({1:b"Decades"}),shared.TILESETS:serialize([None,tileset]),
                      shared.CONNECTIONS:serialize([]),shared.PBS_CONNECTIONS:b"# Existing regions\n"}
-        self.files = {shared.MAP_INFOS:serialize({1:b"Decades", **dict.fromkeys(range(442,586), b"Example")}),
+        self.files = {shared.MAP_INFOS:serialize({1:b"Decades", **dict.fromkeys(range(442,586), b"Example"), 443:RubyObject("RPG::MapInfo", {"@name": b"Twinleaf Town"})}),
                       shared.TILESETS:serialize([None,tileset,tileset]),
                       shared.CONNECTIONS:serialize([[442,b"E",0,443,b"W",0]]),
                       shared.PBS_CONNECTIONS:self.base[shared.PBS_CONNECTIONS]+b"442,E,0,443,W,0\n",
@@ -71,6 +71,16 @@ class SinnohSharedInstallerTests(unittest.TestCase):
         self.assertEqual(shared.installed(self.game,android=True)['arrival'],[443,1,1])
         self.assertEqual((self.game / 'Data/Map001.rxdata').read_bytes(),b'original Decades map')
         self.assertEqual((self.game / 'mkxp.json').read_bytes(),b'shared save settings')
+        self.assertEqual((self.game / 'Saves/Game.rxdata').read_bytes(),b'existing save')
+
+    def test_agent_cannot_be_placed_in_a_later_town(self):
+        infos = shared.read_marshal(self.files[shared.MAP_INFOS], "TEST_INFOS")
+        infos[443].attrs["@name"] = b"Sandgem Town"
+        self.files[shared.MAP_INFOS] = serialize(infos)
+        self.prepare()
+        with self.assertRaisesRegex(ValueError, 'Twinleaf Town'):
+            shared.integrate(self.project,self.game)
+        self.assertFalse((self.game / shared.START).exists())
         self.assertEqual((self.game / 'Saves/Game.rxdata').read_bytes(),b'existing save')
 
     def test_mismatched_base_or_pilot_config_cannot_be_installed(self):
