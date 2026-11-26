@@ -2,6 +2,30 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c99ec19174f31c2871b25c7ab52f8fe5112bf13e",
+      "date": "2026-11-26T11:01:04-03:00",
+      "title": "Merge PR #347: K00-C native Cerulean story and collision proof",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "18489f0ceecde76118767217d7ea75a956979722",
+      "date": "2026-11-26T10:51:41-03:00",
+      "title": "QA Cerulean: source-grounded center landing and synchronized native collision witnesses",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "52bcea9d6e9095efb19f518c560bab1166d7ec37",
+      "date": "2026-11-26T10:44:40-03:00",
+      "title": "QA Cerulean: verify Misty active event and persist native receipt",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "90c7bcd72e94ae7f11ae5835e51c37d2fd1affab",
+      "date": "2026-11-26T10:43:52-03:00",
+      "title": "QA K00-C: native Cerulean story, bidirectional collision seams and save reload",
+      "category": "Melhorias"
+    },
+    {
       "sha": "583128102d3f76d7ca88dda2461a02151928adff",
       "date": "2026-11-26T10:41:13-03:00",
       "title": "Merge PR #346: K00 Android published delta recovery proof",
