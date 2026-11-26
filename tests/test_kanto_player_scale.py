@@ -1,4 +1,4 @@
-"""Kanto standalone protagonist: adaptive smaller sprite without changing NPCs or Decades."""
+"""Kanto pilot and integrated protagonist: adaptive smaller sprite without regional leakage."""
 from __future__ import annotations
 
 import shutil
@@ -86,7 +86,41 @@ BlueKantoPilot.const_set(:PILOT_OVERWORLD_SCALE, false)
 new_sprite.update
 check(new_sprite.zoom_x == 1.0 && new_sprite.zoom_y == 1.0, "Decades wrongly scaled")
 
+# Integrated install: the pilot marker is absent. Switch the current
+# region on the same sprite to prove the shared runtime does not leak.
+File.delete("Kanto pilot.json")
+Dir.mkdir("Data")
+File.write("Data/blue-kanto-install.json", "{}")
+BlueKantoPilot.send(:remove_const, :INTEGRATED_KANTO)
+BlueKantoPilot.const_set(:INTEGRATED_KANTO, true)
+$PokemonGlobal = Struct.new(:blue_regions).new({"current"=>"DECADES"})
+new_sprite.instance_variable_set(:@ch, 48)
+new_sprite.update
+check(new_sprite.zoom_x == 1.0 && new_sprite.zoom_y == 1.0, "integrated Decades scaled")
+$PokemonGlobal.blue_regions["current"] = "KANTO"
+new_sprite.update
+check(new_sprite.zoom_x == 0.60 && new_sprite.zoom_y == 0.60, "integrated Kanto not scaled")
+new_sprite.instance_variable_set(:@ch, 80)
+new_sprite.update
+check(new_sprite.zoom_x == 0.375 && new_sprite.zoom_y == 0.375, "integrated tall avatar not capped")
+npc.update
+check(npc.zoom_x == 1.0 && npc.zoom_y == 1.0, "integrated NPC scaled")
+%w[JOHTO HOENN SINNOH DECADES].each do |region|
+  $PokemonGlobal.blue_regions["current"] = region
+  new_sprite.update
+  check(new_sprite.zoom_x == 1.0 && new_sprite.zoom_y == 1.0, "#{region} inherited Kanto zoom")
+  $PokemonGlobal.blue_regions["current"] = "KANTO"
+  new_sprite.update
+  check(new_sprite.zoom_x == 0.375 && new_sprite.zoom_y == 0.375, "Kanto reentry scale lost")
+end
+$game_player = Game_Player.new
+new_sprite.update
+check(new_sprite.zoom_x == 1.0 && new_sprite.zoom_y == 1.0, "old integrated player remained scaled")
+$PokemonGlobal = nil
+Sprite_Character.new($game_player).update
 puts "PASS: Kanto player at max 60% and 30px; NPCs, pivots, and Decades unchanged"
+puts "KANTO_K02B_INTEGRATED_SCALE_OK"
+
 """
 
 
@@ -113,6 +147,7 @@ class KantoOverworldPlayerScaleTests(unittest.TestCase):
             )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("PASS: Kanto player at max 60% and 30px", result.stdout)
+        self.assertIn("KANTO_K02B_INTEGRATED_SCALE_OK", result.stdout)
 
 
 if __name__ == "__main__":
