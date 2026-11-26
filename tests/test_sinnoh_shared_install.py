@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT), str(ROOT / "scripts/regions")]
 
 import sinnoh_shared as shared
+import prepare_sinnoh_shared as candidate
 from scripts.android.update_client import _preserve_shared_sinnoh
 from server.ruby_marshal import RubyData, RubyObject
 from stage import serialize
@@ -72,6 +73,33 @@ class SinnohSharedInstallerTests(unittest.TestCase):
         self.assertEqual((self.game / 'Data/Map001.rxdata').read_bytes(),b'original Decades map')
         self.assertEqual((self.game / 'mkxp.json').read_bytes(),b'shared save settings')
         self.assertEqual((self.game / 'Saves/Game.rxdata').read_bytes(),b'existing save')
+
+    def test_shared_candidate_uses_144_maps_without_pilot_or_approval(self):
+        outputs = dict(self.files)
+        outputs["Game.ini"] = b"isolated title"
+        outputs["Data/Scripts.rxdata"] = b"isolated scripts"
+        outputs["PBS/encounters.txt"] = b"candidate encounters"
+        report = {"maps_prepared":144,
+                  "mapids":{"SINNOH_TWINLEAF_TOWN":443,"SINNOH_PLAYER_BEDROOM":442,
+                            **{f"MAP_{mid}":mid for mid in range(444,586)}},
+                  "start":[442,1,1],"private_visual_import":{"maps":{
+                      "SINNOH_TWINLEAF_TOWN":{"source_id":194,"target_id":443}}}}
+        from sinnoh_private_visual import SEEDS
+        with patch.dict(SEEDS, {"SINNOH_TWINLEAF_TOWN":(1,1)}):
+            world, review, proof = candidate.prepare_world(self.game,outputs,report)
+        self.assertEqual(len(proof["map_ids"]),144)
+        self.assertEqual(proof["arrival"][0],443)
+        self.assertEqual(proof["agent"][0],443)
+        self.assertNotIn("Game.ini",world)
+        self.assertNotIn("Data/Scripts.rxdata",world)
+        self.assertNotIn(shared.PLUGIN,world)
+        self.assertIn("PBS/encounters.txt",review)
+        self.assertFalse(any(proof["approvals"].values()))
+        self.assertFalse(proof["runtime_install_enabled"])
+        self.assertFalse((self.game / "Data/Map442.rxdata").exists())
+        self.assertEqual((self.game / "Saves/Game.rxdata").read_bytes(),b"existing save")
+        with self.assertRaises(ValueError):
+            shared.validate_manifest(proof)
 
     def test_agent_cannot_be_placed_in_a_later_town(self):
         infos = shared.read_marshal(self.files[shared.MAP_INFOS], "TEST_INFOS")
