@@ -11,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts/regions"))
-from audit import stable_source_order, load
+from audit import stable_source_order, allocate_kanto_ids, load
 from pilot import TRAINERS
 
 SOURCE = ROOT / ".blue-work/frlg-source/Essentials FRLG"
@@ -38,6 +38,18 @@ class CeruleanNorthContract(unittest.TestCase):
         self.assertEqual(self.manifest["maps"]["53"], "ROUTE_24")
         self.assertEqual(self.manifest["maps"]["54"], "ROUTE_25")
         self.assertEqual(self.manifest["maps"]["55"], "BILL_COTTAGE")
+
+    def test_cerulean_interiors_append_without_shifting_145_existing_slots(self):
+        extra = {43, 44, 45, 46, 47, 48}
+        before = stable_source_order(self.ids)
+        expanded = stable_source_order(self.ids | extra)
+        self.assertEqual(expanded[:145], before)
+        self.assertEqual(expanded[145:], sorted(extra))
+        existing = {sid: 300+i for i, sid in enumerate(before)}
+        occupied = set(existing.values()) | {700, 800}
+        upgraded = allocate_kanto_ids(self.ids | extra, occupied, existing)
+        self.assertEqual({sid: upgraded[sid] for sid in existing}, existing)
+        self.assertEqual([upgraded[sid] for sid in sorted(extra)], list(range(801, 807)))
 
     def test_02_source_trainer_bindings_are_local_and_unique(self):
         self.assertEqual(len(TRAINERS[53]), 6)
