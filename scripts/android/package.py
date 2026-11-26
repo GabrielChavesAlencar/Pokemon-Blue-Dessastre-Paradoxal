@@ -202,6 +202,8 @@ def build(game,output,revision,channel='decades',*,sinnoh_qa=False):
         verify_sinnoh(lambda rel: sinnoh_shared.safe_file(game,rel).read_bytes(),qa=sinnoh_qa)
     if sinnoh_qa:
         verify_johto_qa(lambda rel: sinnoh_shared.safe_file(game,rel).read_bytes())
+    elif any((game/rel).exists() or (game/rel).is_symlink() for rel in (JOHTO_QA_PROOF,JOHTO_QA_READY)):
+        raise ValueError("A base contém a prévia privada de Johto. Use uma base de distribuição aprovada.")
     marker=game/'Data/blue-android-compiled.txt'
     if not marker.is_file():raise ValueError('The native compiler did not produce its completion marker. No Android download can be published.')
     if marker.read_text()!=fingerprint(game):raise ValueError('The native compiler completion marker is stale for the current plugins. No Android download can be published.')

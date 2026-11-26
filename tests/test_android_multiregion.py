@@ -90,6 +90,8 @@ class MultiRegionPackagingTests(unittest.TestCase):
             self._write(mobile.JOHTO_QA_READY,b"BLUE_JOHTO_PRIVATE_PREVIEW_V1,100,674,6,7,600,10,26,600,10,25")
             mobile.verify_johto_qa(read)
             compile_check.assert_called_once_with(b"fixture compiled plugins","Boot.rb",b"fixture")
+            with patch.object(mobile,"verify_regions"), self.assertRaisesRegex(ValueError,"prévia privada de Johto"):
+                mobile.build(self.game,self.output,self.revision,"multiregion")
             (self.game/"Data/Map699.rxdata").unlink()
             with self.assertRaises(FileNotFoundError):
                 mobile.verify_johto_qa(read)
