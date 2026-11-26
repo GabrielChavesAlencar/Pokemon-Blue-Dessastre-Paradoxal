@@ -13,6 +13,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts/regions"))
 from audit import stable_source_order, allocate_kanto_ids, load
 from pilot import TRAINERS
+from kanto_overworld import CERULEAN_FURNITURE, source_cerulean_furniture
+from server.ruby_marshal import RubyObject
 
 SOURCE = ROOT / ".blue-work/frlg-source/Essentials FRLG"
 MANIFEST = ROOT / "data/regions/kanto-source.json"
@@ -62,6 +64,23 @@ class CeruleanNorthContract(unittest.TestCase):
         self.assertIn('pbStartTrade(index, received, "Zynx", "Dontae", 0)', runtime)
         self.assertIn('KantoWallMap.png', runtime)
         self.assertNotIn('pbChoosePokemonForTrade(1, 2', runtime)
+
+    def test_furniture_allowlist_rejects_foreign_scripts_and_coordinates(self):
+        def obj(**attrs):
+            return RubyObject("fixture", {"@" + k: v for k, v in attrs.items()})
+        for (source, eid), (name, x, y) in CERULEAN_FURNITURE.items():
+            event = obj(name=name, x=x, y=y, pages=[obj(
+                condition=obj(self_switch_valid=False), trigger=0,
+                graphic=obj(character_name=b"", tile_id=0),
+                list=[obj(code=101, indent=0, parameters=[b"Furniture"]),
+                      obj(code=0, indent=0, parameters=[])])])
+            self.assertIsNotNone(source_cerulean_furniture(event, source, eid))
+            self.assertIsNone(source_cerulean_furniture(event, source, 999))
+            event.attrs["@x"] += 1
+            self.assertIsNone(source_cerulean_furniture(event, source, eid))
+            event.attrs["@x"] -= 1
+            event.attrs["@pages"][0].attrs["@list"][0].attrs["@code"] = 355
+            self.assertIsNone(source_cerulean_furniture(event, source, eid))
 
     def test_02_source_trainer_bindings_are_local_and_unique(self):
         self.assertEqual(len(TRAINERS[53]), 6)

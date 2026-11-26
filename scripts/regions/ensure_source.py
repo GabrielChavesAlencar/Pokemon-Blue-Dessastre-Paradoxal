@@ -38,7 +38,7 @@ ALLOWED = (
     re.compile(r"^Essentials FRLG/Graphics/(?:Characters|Tilesets|Autotiles)/[^/]+\.png$"),
 )
 ATLAS_PBS = re.compile(r"^Essentials FRLG/PBS/(?:town_map|townmap)(?:_[^/]+)?\.txt$", re.I)
-ATLAS_ART = re.compile(r"^Essentials FRLG/Graphics/(?:UI/Town Map(?:/Regions)?|Pictures)/[^/]+\.png$", re.I)
+ATLAS_ART = re.compile(r"^Essentials FRLG/Graphics/UI/Town Map/Kanto\.png$")
 REQUIRED = (
     "Data/MapInfos.rxdata", "Data/Tilesets.rxdata", "Data/System.rxdata",
     "Data/Map005.rxdata", "Data/Map032.rxdata", "Data/Map036.rxdata",

@@ -193,12 +193,29 @@ module KantoNativeCheck
       require!(BlueKantoPilot.cerulean_trade_selected(index),"K02-C native trade failed")
       received = $player.party[index]
       require!(received.species == :JYNX && received.level == 17 && received.name == "Zynx" &&
-               received.nature_id == :MILD && received.iv[:SPECIAL_DEFENSE] == 25 &&
+               received.nature_id == :MILD && received.ability_index == 0 &&
+               received.owner.name == "Dontae" && received.obtain_method == 2 &&
+               {HP:18,ATTACK:17,DEFENSE:18,SPECIAL_ATTACK:22,SPECIAL_DEFENSE:25,SPEED:21}.all? { |stat,iv| received.iv[stat] == iv } &&
                !BlueKantoPilot.cerulean_trade_selected(index),"K02-C original trade attributes or repeat guard failed")
     ensure
       Object.send(:define_method,:pbFadeOutInWithMusic,original_fade)
       $player.party.replace(party_before)
       $stats.trade_count = original_trade_count
+    end
+    $map_factory.setup(mapping[44])
+    original_message = Object.instance_method(:pbMessage)
+    choices = []
+    begin
+      Object.send(:define_method,:pbMessage) do |*args|
+        if args[1].is_a?(Array)
+          choices << args[1].dup
+          choices.length == 1 ? 0 : 8
+        end
+      end
+      require!(BlueKantoPilot.cerulean_badge_guide && choices.length == 2 &&
+               choices.all? { |row| row.length == 9 }, "K02-C badge guide menu did not run")
+    ensure
+      Object.send(:define_method,:pbMessage,original_message)
     end
     atlas = Bitmap.new(BlueKantoPilot::KANTO_WALL_MAP)
     require!(atlas.width > 0 && atlas.height > 0,"K02-C original atlas invalid")
@@ -259,7 +276,7 @@ module KantoNativeCheck
      "tm28"=>$bag.quantity(:TM28),"rocket_retry"=>true,"voucher_fixture"=>true,
      "native_bike_handlers"=>true,"regional_bag_staging"=>true,"required_actor_sprites"=>true,
      "native_trade_transaction"=>true,"trade_animation_tested"=>false,"atlas_bitmap_loaded"=>true,
-     "atlas_manual_ui_tested"=>false,"badge_guide_callback"=>true}
+     "atlas_manual_ui_tested"=>false,"badge_guide_callback"=>true,"badge_guide_menu_controlled"=>true}
   end
 
   def self.north_story(battle_calls, losses_remaining)

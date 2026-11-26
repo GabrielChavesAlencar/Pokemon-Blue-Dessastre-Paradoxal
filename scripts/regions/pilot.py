@@ -19,7 +19,7 @@ from export_kanto import LOCATION_NAMES
 from pbs import catalogue, read_blocks
 from kanto_overworld import (MissingActorGraphic, safely_adapt_source_field_event,
                              source_item_ball, source_npc_dialogue, source_sign_dialogue,
-                             source_obstacle)
+                             source_obstacle, CERULEAN_FURNITURE, source_cerulean_furniture)
 from kanto_npc_locale import install_npc_locale, npc_literals
 from kanto_locale_audit import write_audit
 from server.ruby_marshal import RubyObject, dumps_simple, text
@@ -1066,17 +1066,18 @@ def install_events(source, target, mapping):
                                                    0, actor(event) if (original,event_id) in ((44,1),(46,2)) else b"")
                     continue
                 # Original furniture is read-only text, not a donor script.
-                furniture = {44:{5},46:{6,7,8},47:{5,6,7},48:{6,7,8,9,10,11,12}}
-                if event_id in furniture.get(original, set()):
-                    page = event.attrs["@pages"][0].attrs
-                    ops = page["@list"]
-                    if any(op.attrs["@code"] not in (0,101,401) for op in ops):
-                        raise ValueError(f"Unexpected Cerulean furniture script {original}/{event_id}")
-                    literals = npc_literals([op for op in ops if op.attrs["@code"] in (101,401)])
+                if (original, event_id) in CERULEAN_FURNITURE:
+                    ops = source_cerulean_furniture(event, original, event_id)
+                    literals = npc_literals(ops) if ops else []
                     if not literals:
-                        raise ValueError(f"Missing Cerulean furniture dialogue {original}/{event_id}")
+                        raise ValueError(f"Missing or unsafe Cerulean furniture dialogue {original}/{event_id}")
                     npc_dialogues.append([original,event_id,literals])
                     selected[event_id] = new_event(event, npc_dialogue_calls(original,event_id,literals), 0, b"")
+                    field_inventory.append({
+                        "source_map": original, "map": destination, "event": event_id,
+                        "x": event.attrs["@x"], "y": event.attrs["@y"],
+                        "source_name": text(event.attrs["@name"]), "kind": "furniture_dialogue",
+                    })
                     continue
             if original in LEAGUE_BARRIER_GATES and event_id in LEAGUE_BARRIER_GATES[original]:
                 required = LEAGUE_BARRIER_GATES[original][event_id]
@@ -1685,6 +1686,8 @@ def install_cerulean_wall_map(source, target):
     if not found or any(path.read_bytes() != found[0].read_bytes() for path in found):
         raise ValueError("K02-C missing or ambiguous original Kanto atlas art")
     image = found[0].read_bytes()
+    if hashlib.sha256(image).hexdigest() != "d896124bf9f711cf408484e1e4f51056a6f42d72e007b13ab041123bff75dbd5":
+        raise ValueError("K02-C original Kanto atlas SHA-256 differs")
     if not image.startswith(b"\x89PNG\r\n\x1a\n") or len(image) < 24:
         raise ValueError("K02-C invalid Kanto atlas PNG")
     destination = target / "Plugins/ZZZZZ Blue Kanto Pilot/KantoWallMap.png"

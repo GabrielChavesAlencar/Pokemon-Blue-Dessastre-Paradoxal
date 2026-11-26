@@ -20,6 +20,7 @@ from pilot import (PILOT_META, TRAINERS, CINNABAR_EVENTS, CINNABAR_GYM_DOORS,
                    LEAGUE_EVENT_WHITELIST, LEAGUE_NEXT_ROOMS,
                    LEAGUE_TRAINER_SPECS, KANTO_MOONSTONE_CALLBACK)
 from server.ruby_marshal import text
+from kanto_overworld import CERULEAN_FURNITURE
 
 
 def reachable(edges: dict[int, set[int]], start: int) -> set[int]:
@@ -119,8 +120,9 @@ def inspect(game: Path) -> dict:
         if any(not text(message).strip() for message in messages):
             raise ValueError("Blank Kanto runtime NPC dialogue")
         native_dialogues[key] = messages
-    known = {"item", "npc_dialogue", "sign_dialogue", "rock_smash", "strength", "cut"}
+    known = {"item", "npc_dialogue", "sign_dialogue", "furniture_dialogue", "rock_smash", "strength", "cut"}
     seen = set()
+    furniture_seen = set()
     for row in field_report["imported"]:
         source, destination, event_id = row["source_map"], row["map"], row["event"]
         if source not in mapping or source in preview_only or mapping[source] != destination:
@@ -136,7 +138,19 @@ def inspect(game: Path) -> dict:
         page = event.attrs["@pages"][0].attrs
         commands = [text(op.attrs["@parameters"][0]) for op in page["@list"]
                     if op.attrs["@code"] == 355 and op.attrs["@parameters"]]
-        if row["kind"] in ("npc_dialogue", "sign_dialogue") and (source, event_id) in native_dialogues:
+        if row["kind"] == "furniture_dialogue":
+            key = (source, event_id)
+            expected = CERULEAN_FURNITURE.get(key)
+            if (expected != (row["source_name"], row["x"], row["y"]) or
+                    text(event.attrs["@name"]) != row["source_name"] or
+                    key not in native_dialogues or len(event.attrs["@pages"]) != 1 or
+                    page["@graphic"].attrs["@character_name"] or
+                    page["@graphic"].attrs["@tile_id"] != 0 or
+                    any(op.attrs["@code"] not in (0,355) or op.attrs.get("@indent",0) != 0
+                        for op in page["@list"])):
+                raise ValueError(f"Unapproved Cerulean furniture dialogue {key}")
+            furniture_seen.add(key)
+        if row["kind"] in ("npc_dialogue", "sign_dialogue", "furniture_dialogue") and (source, event_id) in native_dialogues:
             messages = native_dialogues[(source, event_id)]
             expected_calls = [
                 f"BlueKantoPilot.npc_dialogue({source}, {event_id}, {index})"
@@ -162,10 +176,14 @@ def inspect(game: Path) -> dict:
                             op.attrs["@parameters"][1] == b"pbCut"
                             for op in page["@list"] if len(op.attrs["@parameters"]) > 1)):
                 raise ValueError("CutTree does not use native badge-gated Cut")
+    if 43 in mapping and furniture_seen != set(CERULEAN_FURNITURE):
+        raise ValueError("K02-C missing original furniture dialogue")
     source_npcs = {(r["source_map"], r["event"])
-                   for r in field_report["imported"] if r["kind"] in ("npc_dialogue", "sign_dialogue")}
+                   for r in field_report["imported"] if r["kind"] in ("npc_dialogue", "sign_dialogue", "furniture_dialogue")}
     if not native_dialogues.keys() <= source_npcs:
-        raise ValueError("Kanto dialogue bridge contains an unapproved source event")
+        raise ValueError(f"Kanto dialogue bridge contains an unapproved source event: {sorted(native_dialogues.keys() - source_npcs)}")
+    if 43 in mapping:
+        print("KANTO_K02C_FURNITURE_STRUCTURAL_OK:" + json.dumps(sorted(furniture_seen)), flush=True)
     # Missing PNGs for *optional* field NPCs must be recorded and omitted,
     # not silently imported as invisible blockers or crash the game builder.
     for row in field_report.get("missing_graphics", []):
@@ -786,6 +804,10 @@ def inspect(game: Path) -> dict:
     if 43 in mapping:
         anchors.update({(43,1): "BlueKantoPilot.cerulean_bike_exchange",
                         (48,1): "BlueKantoPilot.cerulean_house_owner",
+                        (44,1): "BlueKantoPilot.cerulean_badge_guide",
+                        (46,2): "BlueKantoPilot.cerulean_jynx_trade",
+                        (46,5): "BlueKantoPilot.cerulean_wall_map",
+                        (47,4): "BlueKantoPilot.cerulean_wall_map",
                         **{(39,eid): "BlueKantoPilot.cerulean_rocket" for eid in (26,37,38)},
                         **{(39,eid): "BlueKantoPilot.cerulean_police" for eid in (13,25)}})
     for source_id, entries in TRAINERS.items():

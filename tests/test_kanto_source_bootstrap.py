@@ -14,7 +14,7 @@ finally:
     sys.path.remove(str(ROOT / "scripts/regions"))
 
 
-ATLAS = ["PBS/town_map.txt", "Graphics/UI/Town Map/mapRegion0.png"]
+ATLAS = ["PBS/town_map.txt", "Graphics/UI/Town Map/Kanto.png"]
 
 
 class KantoSourceBootstrapTests(unittest.TestCase):
