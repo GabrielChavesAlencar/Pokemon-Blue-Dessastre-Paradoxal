@@ -68,6 +68,7 @@ TRAINERS.update({
     "LASS,Reli": ("LASS", "Reli", 0),
     "CAMPER,Ethan": ("CAMPER", "Ethan", 0),
     "TEAMROCKET_M,Grunt,5": ("ROCKET", "Grunt", 5),
+    "TEAMROCKET_M,Grunt,6": ("ROCKET", "Grunt", 6),
     "CAMPER,Shane": ("CAMPER", "Shane", 0),
     **{f"HIKER,{name}": ("HIKER", name, 0)
        for name in ("Franklin", "Wayne", "Nob")},
