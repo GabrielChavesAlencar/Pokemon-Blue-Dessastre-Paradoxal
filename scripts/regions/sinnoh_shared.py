@@ -81,6 +81,11 @@ def verify_files(data, read, *, android=False, installed=False):
     tiles = read_marshal(read(TILESETS), "SINNOH_SHARED_TILESETS")
     if not isinstance(infos, dict) or not set(data["map_ids"]) <= set(infos):
         raise ValueError("MapInfos não inclui todos os mapas de Sinnoh.")
+    # The original audited source identifies Twinleaf Town by name.
+    # Reject manifests that put the travel agent on a route or later city.
+    town = infos[data["arrival"][0]]
+    if getattr(town, "name", None) != "RPG::MapInfo" or town.attrs.get("@name") != b"Twinleaf Town":
+        raise ValueError("A chegada e o Agente Regional de Sinnoh devem ficar em Twinleaf Town.")
     points = {data[key][0] for key in ("start", "arrival", "agent")}
     worlds = {}
     for rel, digest in data["files"].items():
