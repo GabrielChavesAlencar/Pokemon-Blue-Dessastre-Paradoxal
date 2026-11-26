@@ -357,11 +357,40 @@ module KantoNativeCheck
     [rows.first,dir,candidates]
   end
 
+  def self.opening_trace(label,row)
+    File.open("Data/blue-kanto-k01b-route-trace.txt","a") { |file| file.puts("#{label}:#{row.inspect}") }
+    puts "#{label}:#{row.inspect}"
+  end
+
   def self.opening_crossings(a,component,b)
     row,dir,pairs = opening_seams(a,b)
     result = pairs.select { |left,right| component.key?(left) && north_edge_cell(a,left,dir) }
-    puts "KANTO_K01B_NATIVE_SEAM:#{[row,component.length,result].inspect}"
+    opening_trace("KANTO_K01B_NATIVE_SEAM",[row,component.length,result])
     result
+  end
+
+  # An action-button NPC can be reached from one adjacent tile, OR from
+  # two tiles away when the actual middle tile has the native Counter flag.
+  # A two-tile distance alone is not a witness, and walls do not count.
+  def self.opening_action_witness(component,event)
+    return nil unless event && event.trigger == 0
+    directions = {2=>[0,1],4=>[-1,0],6=>[1,0],8=>[0,-1]}
+    directions.each do |direction,(dx,dy)|
+      adjacent = [event.x-dx,event.y-dy]
+      if component.key?(adjacent)
+        return {"event_id"=>event.id,"event_xy"=>[event.x,event.y],
+          "standing"=>adjacent,"direction"=>direction,"mode"=>"adjacent"}
+      end
+      standing = [event.x-2*dx,event.y-2*dy]
+      next unless component.key?(standing) &&
+        adjacent[0].between?(0,$game_map.width-1) &&
+        adjacent[1].between?(0,$game_map.height-1) &&
+        $game_map.counter?(adjacent[0],adjacent[1])
+      return {"event_id"=>event.id,"event_xy"=>[event.x,event.y],
+        "standing"=>standing,"direction"=>direction,"mode"=>"native_counter",
+        "counter_xy"=>adjacent}
+    end
+    nil
   end
 
   def self.pallet_opening_gate_proof(lab)
@@ -640,7 +669,13 @@ module KantoNativeCheck
     mart_comp = opening_component(mart_id,route_witness[3])
     clerk = $game_map.events.values.find { |ev| ev.trigger == 0 &&
       ev.list.any? { |op| op.code == 355 && op.parameters[0].to_s == "BlueKantoPilot.viridian_mart" } }
-    require!(north_event_reachable?(mart_comp,clerk), "K01-B Mart clerk not reachable")
+    clerk_witness = opening_action_witness(mart_comp,clerk)
+    opening_trace("KANTO_K01B_MART_ACCESS",{"map_id"=>mart_id,"arrival"=>route_witness[3],
+      "component_size"=>mart_comp.length,"clerk"=>(clerk ? [clerk.id,clerk.x,clerk.y] : nil),
+      "witness"=>clerk_witness})
+    require!(clerk_witness, "K01-B Mart clerk not reachable by action or native counter")
+    $game_player.moveto(*clerk_witness["standing"])
+    $game_player.direction = clerk_witness["direction"] if $game_player.respond_to?(:direction=)
     intro_id = $game_map.events.values.find { |ev| ev.name == "Kanto Oak Parcel Intro" }&.id
     require!(intro_id, "Viridian Mart automatic parcel scene is missing")
     $game_self_switches[[mart_id, intro_id, "A"]] = true
@@ -686,7 +721,11 @@ module KantoNativeCheck
     lab_comp = opening_component(lab,return_witness[3])
     oak = $game_map.events[15]
     north_callback!(oak,"BlueKantoPilot.choose_starter")
-    require!(north_event_reachable?(lab_comp,oak), "K01-B Oak unreachable from lab door")
+    oak_witness = opening_action_witness(lab_comp,oak)
+    opening_trace("KANTO_K01B_OAK_ACCESS",{"map_id"=>lab,"arrival"=>return_witness[3],
+      "component_size"=>lab_comp.length,"witness"=>oak_witness})
+    require!(oak_witness, "K01-B Oak unreachable by action or native counter")
+    $game_player.moveto(*oak_witness["standing"])
     # Test failure transaction with controlled Bag rejection, then remove
     # the singleton override before the genuine grant and native save.
     bag = $bag
@@ -721,6 +760,7 @@ module KantoNativeCheck
       "mode"=>"native_directional_collision_and_controlled_callbacks",
       "gate"=>pallet_gate_report,"map_ids"=>[pallet,route1_id,city_id,mart_id,lab],
       "outbound"=>route_witness,"return"=>return_witness,
+      "mart_action_witness"=>clerk_witness,"oak_action_witness"=>oak_witness,
       "premature_reward_rejected"=>true,"mart_locked_before_delivery"=>true,
       "bag_rejection_controlled"=>true,"retry_success"=>true,"pokedex"=>true,
       "pokeball_delta"=>5,"duplicate_reward_rejected"=>true,"mart_unlocked"=>true,
