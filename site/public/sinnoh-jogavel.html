@@ -15,6 +15,7 @@ h2{font-size:1.4rem;margin:28px 0 12px}p{line-height:1.7}
 .metric{padding:16px;background:#1d324d;border:1px solid #456483;border-radius:14px}
 .metric strong{display:block;font-size:2rem;font-variant-numeric:tabular-nums}
 .barblock{background:#1c2f47;padding:22px;border:1px solid #466280;border-radius:16px;margin:14px 0}
+.barblock>summary{cursor:pointer}.barblock>summary strong::before{content:"▸ "}.barblock[open]>summary strong::before{content:"▾ "}
 .barhead{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}
 .barhead strong{font-size:1.15rem} .barhead span{color:#bdd5ea;font-variant-numeric:tabular-nums}
 progress{height:20px;width:100%;border:none;border-radius:15px;overflow:hidden;background:#091727}
@@ -38,11 +39,16 @@ code{overflow-wrap:anywhere}a:focus-visible{outline:2px solid #9bdcfe;outline-of
 <a href="/">Voltar ao portal</a> · <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal">Ver repositório</a>
 </div></header>
 <main class="wrap">
+<section class="warning" aria-labelledby="titulo-integracao">
+<h2 id="titulo-integracao">Sinnoh no mundo do Blue-Story</h2>
+<p>O candidato a integrar Sinnoh ao mesmo jogo e save de Decades, Kanto, Johto e Hoenn tem 144 mapas em QA. A montagem usa o quarto do protagonista no Novo Jogo e o Agente Regional de Twinleaf para as viagens.</p>
+<p>A versão pública aguarda a validação da campanha, os testes no JoiPlay e a aprovação dos direitos de distribuição. <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/pull/339">Acompanhar a integração no GitHub</a>.</p>
+</section>
 <section aria-labelledby="titulo-barra"><h2 id="titulo-barra">Barra J01–J08: piloto jogável</h2>
-<div class="barblock"><div class="barhead"><strong>Implementação das fases do piloto</strong><span id="engineeringLabel">Verificando…</span></div>
+<details class="barblock"><summary class="barhead"><strong>Implementação das fases do piloto</strong><span id="engineeringLabel">Verificando…</span></summary>
 <progress id="engineering" max="8" value="0" aria-label="Fases de implementação prontas"></progress>
 <p class="muted">A fase J01 representa um verificador executável, não um mapa instalado. As demais dependem de recursos e testes reais.</p>
-</div><div class="barblock"><div class="barhead"><strong>Etapas comprovadas no jogo real</strong><span id="nativeLabel">0 de 8 (0%)</span></div>
+</details><div class="barblock"><div class="barhead"><strong>Etapas comprovadas no jogo real</strong><span id="nativeLabel">0 de 8 (0%)</span></div>
 <progress id="native" max="8" value="0" aria-label="Etapas comprovadas em Game.exe ou JoiPlay"></progress>
 <p class="muted">Sem Game.exe, mapas nativos, save de QA ou Android testados, esta barra não avança.</p>
 </div></section>

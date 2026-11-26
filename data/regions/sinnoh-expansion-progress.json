@@ -4,6 +4,17 @@
   "reference": "Platinum",
   "status": "F01_F02_F03_F04_F05_F06_F07_MERGED_F08C_MERGED_F09D_MERGED_F10A_MERGED_F10B_MERGED_ZERO_RECOVERED_F10B2_REAL_ONE_RECOVERED_F10B3_REAL_TWO_RECOVERED_F10B4_REAL_FIVE_RECOVERED_F10B5_REAL_FIVE_PRESERVED_F10B6_REAL_SIX_RECOVERED_F10B7_PENDING_CI_F10B8_PREPARED",
   "catalog": "data/regions/sinnoh-expansion-destinations.json",
+  "shared_world_qa": {
+    "base_revision": "ccb0c9eea46eec4c66641e2095128ed08203ee2f",
+    "pull_request": 339,
+    "maps_prepared": 144,
+    "map_id_range": [451, 594],
+    "reservation": "data/regions/sinnoh-shared-mapids.json",
+    "public_release": false,
+    "distribution_approved": false,
+    "joiplay_native_verified": false,
+    "campaign_complete": false
+  },
   "prepared_pilot": {
     "maps": 131,
     "routes": [

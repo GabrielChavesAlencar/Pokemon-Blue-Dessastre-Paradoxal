@@ -1,9 +1,15 @@
 # Sinnoh — acompanhamento de progresso
 
 **Projeto:** Pokémon Blue: Dessastre Paradoxal  
-**Última atualização:** 17/11/2026  
+**Última atualização:** 26/11/2026<br>
 **Fonte de verdade:** [data/regions/sinnoh-progress.json](../data/regions/sinnoh-progress.json).  
 **Critério:** esta página separa entregáveis de código/documentação de fases que já rodam no jogo. **Barra cheia de preparação NÃO significa Sinnoh jogável.**
+
+## Integração no Blue-Story
+
+A montagem de QA sobre a `main` `ccb0c9ee` gerou 144 mapas de Sinnoh. A reserva 451–594 é compatível com a instalação limpa de Kanto 151 e com a migração de instalações existentes. O Novo Jogo usa o quarto do protagonista e o transporte entre regiões passa pelo Agente Regional em Twinleaf Town. [Reserva dos MapIDs](../data/regions/sinnoh-shared-mapids.json) · [PR #339](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/pull/339).
+
+O F12D2 de Pastoria está na montagem. Windworks ainda depende de acesso de QA e a sequência de Cynthia, Psyduck e os lagos permanece em validação. A publicação continua condicionada à campanha dentro do escopo aprovado, ao teste de viagens e atualização no JoiPlay e à aprovação dos direitos dos recursos. [Acompanhamento da expansão](../data/regions/sinnoh-expansion-progress.json).
 
 ## Barra E — novas entregas diretas pelo ChatGPT na main
 
