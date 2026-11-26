@@ -500,14 +500,14 @@ module BlueKantoTitle
     ordered
   end
 
-  # Main Decades New Game: verified Kanto and Hoenn installations share the
-  # native game and save profile. Unverified pilots remain isolated.
+  # Main New Game uses the shared world for integrated regions.
+  # Sinnoh QA remains accessible only via the explicit Testar Sinnoh command.
   START_REGIONS = [
     ["Decades", :decades],
     ["Kanto", :kanto],
     ["Johto (piloto experimental)", :johto],
     ["Hoenn (piloto experimental)", :hoenn],
-    ["Sinnoh (piloto experimental)", :sinnoh],
+    ["Sinnoh (instalação necessária)", :sinnoh],
     ["Unova (indisponível)", :unavailable],
     ["Kalos (indisponível)", :unavailable],
     ["Alola (indisponível)", :unavailable],
@@ -593,7 +593,7 @@ module BlueKantoTitle
            BlueRegionStart.sinnoh_spawn && BlueRegionStart.request_initial("SINNOH")
           return :integrated
         end
-        return :launched if launch_sinnoh
+        pbMessage(_INTL("Sinnoh ainda não foi integrada ao jogo principal. Atualize pelo Blue-Story.exe. Para explorar a cópia de testes, use Testar Sinnoh no menu principal. Nenhum save foi alterado."))
       when :cancel then return :cancel
       when :unavailable
         pbMessage(_INTL("Essa região ainda não tem uma campanha jogável instalada. Nenhum save foi alterado."))
