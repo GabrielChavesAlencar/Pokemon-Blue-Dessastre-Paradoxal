@@ -12,6 +12,11 @@ on:
       - 'scripts/regions/hoenn_qa_phase1.py'
       - 'tests/test_hoenn_qa_phase1.py'
       - 'scripts/android/verify_kanto_cerulean.py'
+      - 'data/regions/kanto-source.json'
+      - 'data/kanto-music-rules.json'
+      - 'scripts/regions/pilot.py'
+      - 'scripts/regions/install_kanto.py'
+      - 'scripts/battle_polish/RegionStart.rb'
       - '.github/workflows/android-multiregion.yml'
   push:
     branches: [main]
@@ -43,6 +48,8 @@ on:
       - 'scripts/regions/hoenn_qa_phase1.py'
       - 'scripts/regions/install_hoenn.py'
       - 'scripts/regions/install_kanto.py'
+      - 'data/regions/kanto-source.json'
+      - 'data/kanto-music-rules.json'
       - '.github/workflows/android-multiregion.yml'
 permissions:
   contents: write
