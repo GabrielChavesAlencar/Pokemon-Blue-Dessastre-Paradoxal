@@ -12,6 +12,11 @@ on:
       - 'scripts/regions/hoenn_qa_phase1.py'
       - 'tests/test_hoenn_qa_phase1.py'
       - 'scripts/android/verify_kanto_cerulean.py'
+      - 'scripts/android/update_client.py'
+      - 'scripts/android/select_previous_multiregion_releases.py'
+      - 'scripts/android/publish_updates.py'
+      - 'tests/test_android_updates.py'
+      - 'tests/test_multiregion_release_pagination.py'
       - 'data/regions/kanto-source.json'
       - 'data/kanto-music-rules.json'
       - 'scripts/regions/pilot.py'
@@ -162,6 +167,8 @@ jobs:
           $knownBaselines=@{
             'android-multiregion-hotfix-2-5d0cc84'='5d0cc84fa309039699e625daec18766d52948c1e'
             'android-multiregion-hotfix-30-ba020a5'='ba020a57052e2952de308dbb4166aad760b1e72c'
+            'android-multiregion-hotfix-31-e7200ef'='e7200ef8003c2d84eb1c6931b403c9faaa0d15b6'
+            'android-multiregion-82-e23ff33'='e23ff33a67ed6cea6ca652f0d2150ae5d1de206d'
           }
           foreach($knownTag in $knownBaselines.Keys){
             if($selected -notcontains $knownTag){throw "Baseline obrigatoria ausente: $knownTag"}
@@ -226,3 +233,7 @@ jobs:
           $assets+=@(Get-ChildItem dist -File -Filter 'Blue-Android-Decades-Kanto-Hoenn*.patch.zip' | ForEach-Object { $_.FullName })
           gh release create $tag $assets --target '${{ github.sha }}' --title 'Pokemon Blue - Decades + Kanto + Hoenn (Android experimental)' --notes-file dist/android-multiregion-notes.txt --prerelease
           if($LASTEXITCODE -ne 0){throw 'Falha ao publicar pacote multirregional no GitHub.'}
+          # Retain the affected release manifest/assets for migration, but mark
+          # the bad download visibly after the verified replacement is online.
+          gh release edit android-multiregion-hotfix-31-e7200ef --title 'RETIRADO DE USO - Android hotfix 31 (142 mapas, use a release integrada mais recente)' --notes "Pacote legado incorreto com 142 mapas; NAO INSTALAR. Mantido apenas para gerar patches de recuperacao. Atualize para $tag pela via incremental."
+          if($LASTEXITCODE -ne 0){throw 'Nao foi possivel marcar o hotfix legado como retirado de uso.'}

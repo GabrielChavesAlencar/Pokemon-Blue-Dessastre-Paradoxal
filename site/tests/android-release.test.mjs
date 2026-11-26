@@ -130,3 +130,17 @@ test('asset conjunto na segunda página da API também é localizado',async()=>{
   const fetcher=async path=>({ok:true,json:async()=>path.includes('page=2')?[release]:first});
   assert.equal((await combinedAndroidRelease(fetcher)).tag,tag);
 });
+
+
+test('pacote retirado de uso nunca é oferecido como download combinado',async()=>{
+  const name='Blue-Android-Decades-Kanto-Hoenn.zip';
+  const row=(tag,date)=>({tag_name:tag,target_commitish:sha,published_at:date,
+    assets:[{name,state:'uploaded',size:1000,browser_download_url:'https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/releases/download/'+tag+'/'+name}]});
+  const good=row('android-multiregion-82-e23ff33','2026-11-26T15:00:00Z');
+  const withdrawn=row('android-multiregion-hotfix-31-e7200ef','2026-11-26T19:30:00Z');
+  const corrected=row('android-multiregion-127-abcdef0','2026-11-26T20:00:00Z');
+  const fake=items=>async()=>({ok:true,json:async()=>items});
+  assert.equal((await combinedAndroidRelease(fake([withdrawn,good]))).tag,good.tag_name);
+  assert.equal((await combinedAndroidRelease(fake([withdrawn]))).state,'pending');
+  assert.equal((await combinedAndroidRelease(fake([good,corrected,withdrawn]))).tag,corrected.tag_name);
+});
