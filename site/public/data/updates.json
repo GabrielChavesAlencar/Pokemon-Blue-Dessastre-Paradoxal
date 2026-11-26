@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "83b88b066d6b542e2b6e9bc0b1a5b03ee450ecb2",
+      "date": "2026-11-26T20:52:44-03:00",
+      "title": "Merge pull request #361 from GabrielChavesAlencar/fix/kanto-player-scale-native-1605",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "7a6a3a093a3cc4863e8e18d41394ccd6b7296a71",
+      "date": "2026-11-26T20:44:32-03:00",
+      "title": "test(kanto): align CutTree regression with native player scale contract",
+      "category": "Testes"
+    },
+    {
+      "sha": "07cb93c5f655000f36121b0e32a26e945a41c612",
+      "date": "2026-11-26T20:37:29-03:00",
+      "title": "fix(kanto): preserve native player scale and cap oversized charsets",
+      "category": "Correções"
+    },
+    {
       "sha": "afd9bab6b4aeba0248574853f54268b50fa33366",
       "date": "2026-11-26T17:20:27-03:00",
       "title": "QA K02-D: native Gary movement, Bill return and Misty access (#359)",
