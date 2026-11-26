@@ -36,12 +36,16 @@ def shared_handlers(project, handlers):
                       b"BlueSinnohSharedEvents.active?", part)
         part = re.sub(rb"defined\?\(BlueKantoTitle\)\s*&&\s*BlueKantoTitle\.sinnoh_experimental_barry_compiled\?",
                       b"BlueSinnohSharedEvents.ready?", part)
+        part = re.sub(rb"!defined\?\(BlueKantoTitle\)\s*\|\|\s*!BlueKantoTitle\.sinnoh_experimental_barry_compiled\?",
+                      b"!BlueSinnohSharedEvents.ready?", part)
         part = part.replace(b"def self.install!\n    return unless BlueSinnohSharedEvents.active?\n",
                             b"def self.install!\n")
         part = part.replace(b"return unless BlueSinnohSharedEvents.active? && defined?(TilemapRenderer)",
                             b"return unless defined?(TilemapRenderer)")
         if b"BlueSinnohExperimental" in part or b"BlueSinnohQAStart" in part or b"sinnoh_experimental_barry_compiled?" in part:
-            raise ValueError("Private QA gate in a shared Sinnoh handler")
+            module = re.search(rb"(?m)^module (\w+)",part)
+            raise ValueError("Private QA gate in shared Sinnoh handler " +
+                             (module[1].decode("ascii") if module else "without a module"))
         code.append(part)
     code.append(b"BlueSinnohSharedEvents.bind!\n")
     return {shared.PLUGIN:b"\n".join(code),

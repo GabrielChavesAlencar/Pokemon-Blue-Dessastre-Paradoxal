@@ -117,6 +117,13 @@ class SinnohSharedInstallerTests(unittest.TestCase):
         self.assertNotIn((1,1),(arrival,agent))
         self.assertIs(world.attrs["@events"][1],portal)
 
+    def test_shared_windworks_checks_shared_catalog_instead_of_private_barry_probe(self):
+        template = (ROOT/"scripts/regions/SinnohF12B5.rb").read_bytes()
+        payload = candidate.shared_handlers(ROOT,[template])[shared.PLUGIN]
+        windworks = payload.split(b"module BlueSinnohF12B5",1)[1]
+        self.assertIn(b"return false if @busy || !BlueSinnohSharedEvents.ready?",windworks)
+        self.assertNotIn(b"BlueSinnohExperimental",windworks)
+
     def test_map_pbs_preserves_other_regions_and_rejects_duplicate_ids(self):
         rel = "PBS/encounters.txt"
         original = self.base[rel]
