@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sys
 from collections import deque
 from pathlib import Path
 
@@ -183,7 +184,7 @@ def inspect(game: Path) -> dict:
     if not native_dialogues.keys() <= source_npcs:
         raise ValueError(f"Kanto dialogue bridge contains an unapproved source event: {sorted(native_dialogues.keys() - source_npcs)}")
     if 43 in mapping:
-        print("KANTO_K02C_FURNITURE_STRUCTURAL_OK:" + json.dumps(sorted(furniture_seen)), flush=True)
+        print("KANTO_K02C_FURNITURE_STRUCTURAL_OK:" + json.dumps(sorted(furniture_seen)), file=sys.stderr, flush=True)
     # Missing PNGs for *optional* field NPCs must be recorded and omitted,
     # not silently imported as invisible blockers or crash the game builder.
     for row in field_report.get("missing_graphics", []):

@@ -197,6 +197,18 @@ module KantoNativeCheck
                received.owner.name == "Dontae" && received.obtain_method == 2 &&
                {HP:18,ATTACK:17,DEFENSE:18,SPECIAL_ATTACK:22,SPECIAL_DEFENSE:25,SPEED:21}.all? { |stat,iv| received.iv[stat] == iv } &&
                !BlueKantoPilot.cerulean_trade_selected(index),"K02-C original trade attributes or repeat guard failed")
+      # Read the actual native slot before restoring the campaign fixture.
+      # Keep the normal final campaign reload proof for the local trade flag.
+      $game_player.moveto(4,7)
+      trade_slot = "K02 C Native Jynx"
+      require!(Game.save(trade_slot),"K02-C native trade save failed")
+      saved_trade = SaveData.read_from_file(SaveData.get_full_path(trade_slot))
+      saved_jynx = saved_trade[:player].party[index]
+      require!(saved_jynx.species == :JYNX && saved_jynx.level == received.level &&
+               saved_jynx.name == received.name && saved_jynx.nature_id == received.nature_id &&
+               saved_jynx.iv == received.iv && saved_jynx.owner.name == "Dontae" &&
+               saved_trade[:global_metadata].blue_regions["pilot_cerulean_jynx_trade"],
+               "K02-C Jynx or exchange flag not serialized")
     ensure
       Object.send(:define_method,:pbFadeOutInWithMusic,original_fade)
       $player.party.replace(party_before)
@@ -275,7 +287,7 @@ module KantoNativeCheck
     {"manual_gameplay"=>false,"witnesses"=>witnesses,"bicycle"=>1,"voucher"=>0,
      "tm28"=>$bag.quantity(:TM28),"rocket_retry"=>true,"voucher_fixture"=>true,
      "native_bike_handlers"=>true,"regional_bag_staging"=>true,"required_actor_sprites"=>true,
-     "native_trade_transaction"=>true,"trade_animation_tested"=>false,"atlas_bitmap_loaded"=>true,
+     "native_trade_transaction"=>true,"trade_native_slot_read"=>true,"trade_animation_tested"=>false,"atlas_bitmap_loaded"=>true,
      "atlas_manual_ui_tested"=>false,"badge_guide_callback"=>true,"badge_guide_menu_controlled"=>true}
   end
 
