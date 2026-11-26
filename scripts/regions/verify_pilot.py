@@ -844,6 +844,20 @@ def inspect(game: Path) -> dict:
         name = {216:"LORELEI",217:"BRUNO",218:"AGATHA",219:"LANCE",220:"CHAMPION"}[source]
         return f'BlueKantoPilot.league_advance("{name}", {mapping[target]}, {x}, {y})'
 
+    # Validate the actual native anchors used by the runtime recovery hook.
+    city_events = maps[mapping[39]].attrs["@events"]
+    for eid, x in ((15, 22), (32, 23), (34, 24)):
+        attrs = city_events[eid].attrs
+        if (attrs["@x"], attrs["@y"]) != (x, 6):
+            raise ValueError("Cerulean Gary lane no longer matches the source")
+    lab_actor = maps[mapping[6]].attrs["@events"][14]
+    lab_graphics = [
+        page.attrs["@graphic"].attrs["@character_name"]
+        for page in lab_actor.attrs["@pages"]
+    ]
+    if not any(lab_graphics):
+        raise ValueError("Cerulean Gary cannot reuse the imported Oak Lab actor")
+
     found = set()
     warps = 0
     for source, dest in mapping.items():

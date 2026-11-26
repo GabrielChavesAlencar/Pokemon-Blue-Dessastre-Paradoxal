@@ -23,6 +23,7 @@ EDGES = (("39", "53"), ("39", "54"), ("53", "54"))
 EXPECTED_KANTO_MAPS = 145
 EXPECTED_MUSIC_MAPS = 77
 JOURNEY = "Plugins/ZZZZ Blue Story and Presentation/Journey.rb"
+KANTO_RUNTIME = "Plugins/ZZZZZ Blue Kanto Pilot/KantoPilot.rb"
 
 
 def assert_delivery(path: Path, channel: str) -> dict:
@@ -81,7 +82,8 @@ def assert_delivery(path: Path, channel: str) -> dict:
             raise ValueError("Kanto trainers PBS missing")
         pbs = archive.read(trainer_pbs).decode("utf-8-sig")
         for section in ("[BLUE_KANTO_SWIMMER,Luis,0]",
-                        "[BLUE_KANTO_PICNICKER,Diana,0]"):
+                        "[BLUE_KANTO_PICNICKER,Diana,0]",
+                        *(f"[BLUE_KANTO_RIVAL,Blue,{version}]" for version in (31, 32, 33))):
             if section not in pbs:
                 raise ValueError(f"Native trainer is missing from Kanto PBS: {section}")
         if root + JOURNEY not in files:
@@ -91,6 +93,13 @@ def assert_delivery(path: Path, channel: str) -> dict:
             raise ValueError("Luis name-collision guard missing from Android source")
         cache = archive.read(root + "Data/PluginScripts.rxdata")
         compiled_region(cache, "Journey.rb", source)
+        if root + KANTO_RUNTIME not in files:
+            raise ValueError("Cerulean Gary runtime missing from Android ZIP")
+        rival = archive.read(root + KANTO_RUNTIME)
+        if (b"def self.cerulean_rival_crossing?" not in rival or
+                b"Game_Event.prepend(BlueKantoPilot::CeruleanRivalActor)" not in rival):
+            raise ValueError("Cerulean Gary movement/actor fix missing")
+        compiled_region(cache, "KantoPilot.rb", rival)
         if channel == "multiregion":
             # The former inline PowerShell python -c lost embedded quoting
             # on Windows and failed with SyntaxError after native compilation.
@@ -114,7 +123,7 @@ def assert_delivery(path: Path, channel: str) -> dict:
     return {"channel": channel, "kanto_maps": EXPECTED_KANTO_MAPS,
             "cerulean_sources": list(SOURCE_MAP_IDS),
             "music_maps": EXPECTED_MUSIC_MAPS,
-            "compiled_journey": True}
+            "compiled_journey": True, "compiled_cerulean_gary": True}
 
 
 def main() -> None:

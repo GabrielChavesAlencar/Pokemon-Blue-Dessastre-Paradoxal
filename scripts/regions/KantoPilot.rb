@@ -713,12 +713,68 @@ module BlueKantoPilot
     progress.fetch("pilot_wins", []).include?(event_key)
   end
 
+  CERULEAN_RIVAL_KEY = "KANTO_CERULEAN_RIVAL".freeze
+  CERULEAN_RIVAL_LANES = [22, 23, 24].freeze
+  CERULEAN_RIVAL_ROW = 6
+  CERULEAN_RIVAL_ACTOR = 32
+
+  def self.cerulean_rival_map?(map_id)
+    return false unless kanto_current?
+    id = (@cerulean_rival_map_id ||= kanto_map_id(39))
+    id && map_id == id
+  end
+
+  def self.cerulean_rival_pending?
+    RIVAL_VERSIONS.key?(starter) &&
+      !progress["pilot_cerulean_rival"] &&
+      !progress.fetch("pilot_wins", []).include?(CERULEAN_RIVAL_KEY)
+  end
+
+  # The old import emitted three transparent Event Touch markers. A player
+  # could pass their line without any visible Gary or a native event start.
+  # Use the already-audited Map039 line in the player movement path as well.
+  # This repairs old RXDATA and loaded saves without rewriting any map.
+  def self.cerulean_rival_crossing?(player, direction)
+    return false unless player && $game_map &&
+      cerulean_rival_map?($game_map.map_id) && cerulean_rival_pending?
+    return false if player.respond_to?(:move_route_forcing) && player.move_route_forcing
+    dx = {4=>-1, 6=>1}.fetch(direction, 0)
+    dy = {2=>1, 8=>-1}.fetch(direction, 0)
+    return false if dx == 0 && dy == 0
+    # Also recover a save made on the trigger row before this patch.
+    (player.y + dy == CERULEAN_RIVAL_ROW &&
+      CERULEAN_RIVAL_LANES.include?(player.x + dx)) ||
+      (player.y == CERULEAN_RIVAL_ROW &&
+        CERULEAN_RIVAL_LANES.include?(player.x))
+  end
+
+  # Reuse Gary's actual, already-imported Oak Lab charset. Do not invent a
+  # donor sprite filename or introduce a second character/foreign switch.
+  # Native RXDATA lookup is read-only, and the source ID is remapped.
+  def self.cerulean_rival_graphic
+    return @cerulean_rival_graphic if @cerulean_rival_graphic
+    lab_id = kanto_map_id(6)
+    return nil unless lab_id
+    lab = load_data(sprintf("Data/Map%03d.rxdata", lab_id))
+    actor = lab.events[14]
+    return nil unless actor
+    name = actor.pages.map { |page| page.graphic.character_name }.find do |value|
+      value.is_a?(String) && !value.empty?
+    end
+    @cerulean_rival_graphic = name if name
+  rescue StandardError
+    nil
+  end
+
   # FRLG Map039 has three northbound touch tiles, not one event on Route24.
   # The separate key prevents Oak Lab's first Gary battle from suppressing
   # this encounter, and persists across all three entrance lanes.
   def self.cerulean_rival
-    return false unless kanto_current? && starter
-    key = "KANTO_CERULEAN_RIVAL"
+    return false unless kanto_current? && RIVAL_VERSIONS.key?(starter)
+    key = CERULEAN_RIVAL_KEY
+    # A persisted exact win is proof even if an older scene stopped before
+    # setting its completion flag. A generic legacy "Blue" win is not.
+    progress["pilot_cerulean_rival"] = true if progress.fetch("pilot_wins", []).include?(key)
     unless progress["pilot_cerulean_rival"]
       version = RIVAL_VERSIONS.fetch(starter) + 20
       pbMessage(t("Gary: Hey! Let's see the Pokémon you've caught since Pallet!",
@@ -864,7 +920,8 @@ module BlueKantoPilot
     key = event_key || "#{type}:#{name}"
     # Both Silph Co. and Viridian have a boss named Giovanni. A legacy
     # Silph name-only victory must never mark the *gym* Giovanni as beaten.
-    if wins.include?(key) || (type != :BLUE_KANTO_LEADER_GIOVANNI && wins.include?(name))
+    if wins.include?(key) || (key != CERULEAN_RIVAL_KEY &&
+        type != :BLUE_KANTO_LEADER_GIOVANNI && wins.include?(name))
       # Older saves may have Miguel defeated but still use his first page.
       # Both paths must offer the missing one-time prize.
       if key == "KANTO_038_019" && !progress["pilot_mt_moon_fossil"]
@@ -1907,8 +1964,32 @@ GameData::MapMetadata.prepend(BlueKantoPilot::ViridianMapLabel) if defined?(Game
 
 # The Kanto-only markers ensure this global movement hook is inert on
 # Decades, Johto, Hoenn and Sinnoh, even when those maps share a level cap.
+# The center of the three existing source-grounded lane markers renders
+# Gary until his Cerulean battle is won. Native event/page state is retained;
+# even an old false-positive self-switch cannot conceal this pending actor.
+module BlueKantoPilot::CeruleanRivalActor
+  def character_name
+    if @id == BlueKantoPilot::CERULEAN_RIVAL_ACTOR
+      map_id = @map_id || (@map && @map.respond_to?(:map_id) && @map.map_id)
+      if BlueKantoPilot.cerulean_rival_map?(map_id)
+        return "" unless BlueKantoPilot.cerulean_rival_pending?
+        return BlueKantoPilot.cerulean_rival_graphic || super
+      end
+    end
+    super
+  end
+end
+Game_Event.prepend(BlueKantoPilot::CeruleanRivalActor) if defined?(Game_Event)
+
 module BlueKantoPilot::Route2ExitGuard
   def move_generic(dir, turn_enabled = true)
+    if BlueKantoPilot.cerulean_rival_crossing?(self, dir)
+      turn_generic(dir, true) if turn_enabled
+      # Do not continue the old movement after a battle/blackout. Victory
+      # clears the encounter; the next ordinary movement proceeds normally.
+      BlueKantoPilot.cerulean_rival
+      return
+    end
     if BlueKantoPilot.pewter_route3_blocked?(self, dir)
       turn_generic(dir, true) if turn_enabled
       key = $game_map.map_id
