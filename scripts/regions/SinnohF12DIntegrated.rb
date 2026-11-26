@@ -482,16 +482,15 @@ module BlueSinnohF12DIntegrated
     raise "Sinnoh F12D3: terreno Rock incompatível" unless rock_reference_valid?
     raise "Sinnoh F12D3: item regional invalido" unless T.compiled_item_valid?
     raise "Sinnoh F12D lagos: equipes invalidas" unless SPECS.values.all? { |spec| BlueSinnohF10B.valid_team?(spec) }
-    raise "Sinnoh F12D: hooks ausentes" unless Game_Event.ancestors.include?(BarrierPages) && Game_Player.ancestors.include?(ProgressionMovement)
+    raise "Sinnoh F12D: hooks ausentes" unless Game_Map.ancestors.include?(BarrierMapSetup) &&
+      Scene_Map.ancestors.include?(BarrierMapLoad) && Game_Player.ancestors.include?(ProgressionMovement)
     movement=Game_Player.instance_method(:move_generic)
-    refresh=Game_Event.instance_method(:refresh)
     # Kanto's guard delegates movement on foreign maps to the next method.
     # In the shared game it can be loaded after Sinnoh.
     if defined?(BlueKantoPilot::Route2ExitGuard) && movement.owner==BlueKantoPilot::Route2ExitGuard
       movement=movement.super_method
     end
-    raise "Sinnoh F12D: hooks sobrescritos (#{movement&.owner}, #{refresh.owner})" unless
-      movement&.owner==ProgressionMovement && refresh.owner==BarrierPages
+    raise "Sinnoh F12D: hook de movimento sobrescrito (#{movement&.owner})" unless movement&.owner==ProgressionMovement
     # Both native probes have already run at the beginning of the private
     # compile verification. Repeat them here for the complete proof.
     verify_native_movement!
@@ -519,7 +518,10 @@ module BlueSinnohF12DIntegrated
       existed ? s[T::LEDGER]=old : s.delete(T::LEDGER)
       return false
     end
-    $game_map.need_refresh=true if $game_map && $game_map.respond_to?(:need_refresh=)
+    if $game_map
+      sync_barrier_switches($game_map.map_id,s)
+      $game_map.need_refresh=true
+    end
     true
   end
   def self.interact(key)
@@ -571,15 +573,38 @@ module BlueSinnohF12DIntegrated
     BlueSinnohPilot.profile_error("f12d_integrated",error)
     false
   end
-  module BarrierPages
-    def refresh(*args)
-      if defined?($game_self_switches) && $game_self_switches &&
-        BlueSinnohF12DIntegrated::LOCATIONS.any? { |key,loc| key.start_with?("PSYDUCK_") && loc[0]==@map_id && loc[3]==@id }
-        s=BlueSinnohF12DIntegrated.state
-        key=[@map_id,@id,"A"];value=!!(s && BlueSinnohF12DIntegrated::T.cleared?(s))
-        $game_self_switches[key]=value if $game_self_switches[key]!=value
+  def self.sync_barrier_switches(map_id,save_state=nil)
+    return false unless $game_self_switches
+    event_ids=LOCATIONS.filter_map { |key,loc| loc[3] if key.start_with?("PSYDUCK_") && loc[0]==map_id }
+    return false if event_ids.empty?
+    s=save_state || state
+    cleared=!!(s && T.cleared?(s))
+    changed=false
+    event_ids.each do |event_id|
+      key=[map_id,event_id,"A"]
+      next if $game_self_switches[key]==cleared
+      $game_self_switches[key]=cleared
+      changed=true
+    end
+    changed
+  end
+  # Event Indicators aliases Game_Event#refresh. Synchronize at the map
+  # boundaries so that event refresh continues through its original chain.
+  module BarrierMapSetup
+    def setup(map_id,*args)
+      BlueSinnohF12DIntegrated.sync_barrier_switches(map_id)
+      super
+    end
+  end
+  module BarrierMapLoad
+    def createSpritesets(*args)
+      maps=$map_factory && $map_factory.respond_to?(:maps) ? $map_factory.maps : [$game_map]
+      maps.compact.each do |map|
+        next unless BlueSinnohF12DIntegrated.sync_barrier_switches(map.map_id)
+        map.need_refresh=true
+        map.events.each_value { |event| event.refresh }
       end
-      super(*args)
+      super
     end
   end
   def self.movement_allowed?(s,current,facing)
@@ -632,8 +657,9 @@ module BlueSinnohF12DIntegrated
     end
   end
   def self.bind_pages!
-    return false unless defined?(Game_Event) && defined?(Game_Player)
-    Game_Event.prepend(BarrierPages) unless Game_Event.ancestors.include?(BarrierPages)
+    return false unless defined?(Game_Map) && defined?(Scene_Map) && defined?(Game_Player)
+    Game_Map.prepend(BarrierMapSetup) unless Game_Map.ancestors.include?(BarrierMapSetup)
+    Scene_Map.prepend(BarrierMapLoad) unless Scene_Map.ancestors.include?(BarrierMapLoad)
     Game_Player.prepend(ProgressionMovement) unless Game_Player.ancestors.include?(ProgressionMovement)
     if LOCATIONS.key?("SURF_HM03")
       return false unless defined?(BlueRegionalPolicy)

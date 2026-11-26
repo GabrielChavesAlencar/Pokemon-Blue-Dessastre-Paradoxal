@@ -70,7 +70,7 @@ def compile_boot_script(source, token):
         handler.verify_compiled! if handler.respond_to?(:verify_compiled!)
       end
       File.binwrite("{NATIVE_RECEIPT}", "{token}")
-    rescue StandardError, ScriptError => error
+    rescue StandardError, ScriptError, SystemStackError => error
       warn [error.class, error.message, *Array(error.backtrace).first(12)].join("\\n")
       exit! 1
     end
@@ -126,7 +126,7 @@ def verify_native_start(game, manifest, token):
       raise "Agente de Twinleaf ausente, deslocado ou duplicado" unless agents.length == 1 &&
         [$game_map.map_id,agents[0].x,agents[0].y] == agent
       File.binwrite("{START_RECEIPT}", "{token}")
-    rescue StandardError, ScriptError => error
+    rescue StandardError, ScriptError, SystemStackError => error
       warn [error.class, error.message, *Array(error.backtrace).first(12)].join("\\n")
       exit! 1
     end

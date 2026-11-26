@@ -3680,6 +3680,58 @@ raise "restore error" unless original==[$game_variables,$game_switches,$game_sel
         run=subprocess.run([shutil.which("ruby"),"-"],input=fixture,capture_output=True,text=True,encoding="utf-8",timeout=30)
         self.assertEqual(run.returncode,0,run.stderr)
 
+    def test_f12d_barrier_pages_keep_event_indicators_refresh_chain(self):
+        if not shutil.which("ruby"):self.skipTest("Ruby unavailable")
+        template=(ROOT/"scripts/regions/SinnohF12DIntegrated.rb").read_text("utf-8")
+        template=template.replace("__LOCATIONS__",'{ "PSYDUCK_1"=>[482,57,25,301] }')
+        for key in ("__SPECS__","__SURF_ROUTES__","__SURF_DRY_PORTALS__"):
+            template=template.replace(key,"{}")
+        for key in ("__EDIT_CELLS__","__CHASE_LANES__","__CELESTIC_LANES__","__NORTH_ROCK_EDGES__"):
+            template=template.replace(key,"[]")
+        fixture=(ROOT/"scripts/regions/SinnohF12D3Transaction.rb").read_text("utf-8")+"\n"+template+'''
+class Game_Event
+  attr_reader :calls
+  def refresh
+    @calls=(@calls || 0)+1
+  end
+end
+class Game_Map
+  attr_reader :map_id, :events, :switch_when_built
+  attr_accessor :need_refresh
+  def setup(id)
+    @map_id=id
+    @switch_when_built=$game_self_switches[[id,301,"A"]]
+    @events={301=>Game_Event.new}
+  end
+end
+class Scene_Map
+  def createSpritesets; :scene; end
+end
+class Game_Player; end
+module BlueSinnohF12DIntegrated
+  def self.state; $barrier_state; end
+end
+raise unless BlueSinnohF12DIntegrated.bind_pages!
+class Game_Event
+  alias event_indicator_e_refresh refresh
+  def refresh; event_indicator_e_refresh; end
+end
+$game_self_switches=Hash.new(false)
+$game_map=Game_Map.new
+$barrier_state={"current"=>"SINNOH","sinnoh_f12d_quest"=>%w[PASTORIA ROUTE_213 VALOR_BATTLE],
+  "sinnoh_f12d3_quest"=>%w[SECRETPOTION_RECEIVED]}
+$game_self_switches[[482,301,"A"]]=true
+$game_map.setup(482)
+raise "wrong page at load" if $game_map.switch_when_built
+$barrier_state["sinnoh_f12d3_quest"] << "PSYDUCK_CLEARED"
+raise unless Scene_Map.new.createSpritesets==:scene
+raise unless $game_self_switches[[482,301,"A"]] && $game_map.need_refresh && $game_map.events[301].calls==1
+Scene_Map.new.createSpritesets
+raise unless $game_map.events[301].calls==1
+'''
+        run=subprocess.run([shutil.which("ruby"),"-"],input=fixture,capture_output=True,text=True,encoding="utf-8",timeout=30)
+        self.assertEqual(run.returncode,0,run.stderr)
+
     def test_f12d_surf_pickup_candidate_uses_native_regional_receipt(self):
         source=(ROOT/"scripts/regions/SinnohF12DIntegrated.rb").read_text("utf-8")
         self.assertIn('BlueRegions.record_sinnoh_hm(next_s,"SURF",:HM03,next_bag,true)',source)
