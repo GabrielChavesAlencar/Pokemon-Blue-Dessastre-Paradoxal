@@ -272,6 +272,10 @@ jobs:
               Get-Content $moonTrace
               Write-Host ("KANTO_K02A_NATIVE_MOON_REPORT:" + (Get-Content $moonProof -Raw).Trim())
               Write-Host 'KANTO_K02A_MOON_FOSSILS_REVIVAL_SAVE_RELOAD_OK'
+              $interiorProof="$pilot/Data/blue-kanto-k02c-native-proof.txt"
+              if(-not (Test-Path $interiorProof)){throw 'K02-C native interior proof missing'}
+              Write-Host ("KANTO_K02C_NATIVE_INTERIORS_REPORT:" + (Get-Content $interiorProof -Raw).Trim())
+              Write-Host 'KANTO_K02C_INTERIORS_BIKE_ROCKET_SAVE_RELOAD_OK'
               Get-Content "$pilot/Data/blue-kanto-proof.txt"
               exit 0
             }
@@ -413,6 +417,13 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
+      - name: Preservar recibo nativo Cerulean K02-C
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k02c-native-proof.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k02c-native-proof
+          path: .blue-work/kanto-pilot/Data/blue-kanto-k02c-native-proof.txt
+          if-no-files-found: error
       - name: Preservar recibo nativo Cerulean K00-C
         if: always()
         uses: actions/upload-artifact@v4
@@ -477,8 +488,17 @@ jobs:
       - name: K00 - provar migracao 142 a 145 em copia descartavel com RXDATA real
         shell: powershell
         run: |
+          python scripts/regions/qa_k00_migration.py --from-142
+          if($LASTEXITCODE -ne 0){throw 'K00 legacy 142 migration proof failed'}
           python scripts/regions/qa_k00_migration.py
-          if($LASTEXITCODE -ne 0){throw 'K00 migration proof failed'}
+          if($LASTEXITCODE -ne 0){throw 'K02-C real 145 to 151 migration proof failed'}
+      - name: Preservar recibo K02-C da migracao
+        if: always() && hashFiles('.blue-work/k02c-migration-proof.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k02c-migration-proof
+          path: .blue-work/k02c-migration-proof.json
+          if-no-files-found: error
       - name: Preservar recibo K00 da migracao
         if: always() && hashFiles('.blue-work/k00-migration-proof.json') != ''
         uses: actions/upload-artifact@v4
