@@ -825,6 +825,7 @@ module BlueKantoPilot
     end
     # No foreign switches 87 or event scripts are executed.
     progress["pilot_bill_helped"] = true
+    sync_cerulean_quest_pages(kanto_map_id(39))
     map_id = $game_map.map_id
     [3, 4, 8].each do |event_id|
       next unless $game_map.events[event_id]
@@ -2091,26 +2092,53 @@ module BlueKantoPilot::CeruleanRivalActor
 end
 Game_Event.prepend(BlueKantoPilot::CeruleanRivalActor) if defined?(Game_Event)
 
-# Derive local police/Rocket pages from the saved quest flags on map load,
-# including saves that helped Bill before these interiors were installed.
-module BlueKantoPilot::CeruleanQuestPages
-  def refresh
-    map_id = @map_id || (@map && @map.respond_to?(:map_id) && @map.map_id)
-    if $game_self_switches && $PokemonGlobal &&
-       BlueKantoPilot.kanto_current? && BlueKantoPilot.kanto_map_id(43) &&
-       map_id == BlueKantoPilot.kanto_map_id(39)
-      if [13,25].include?(@id)
-        $game_self_switches[[map_id,@id,"A"]] = BlueKantoPilot.cerulean_house_open?
-      elsif [26,37,38].include?(@id)
-        $game_self_switches[[map_id,@id,"A"]] =
-          !!BlueKantoPilot.progress["pilot_cerulean_dig_awarded"]
-      end
+# Synchronize self-switches at map boundaries, never by prepending
+# Game_Event#refresh. Event Indicators aliases that method; aliasing a
+# prepended refresh calls super back into the alias and overflows the stack.
+module BlueKantoPilot
+  def self.sync_cerulean_quest_pages(map_id)
+    return false unless $game_self_switches && $PokemonGlobal &&
+      kanto_current? && kanto_map_id(43) && map_id == kanto_map_id(39)
+    desired = {13=>cerulean_house_open?,25=>cerulean_house_open?}
+    [26,37,38].each { |id| desired[id] = !!progress["pilot_cerulean_dig_awarded"] }
+    changed = false
+    desired.each do |id, value|
+      key = [map_id,id,"A"]
+      next if !!$game_self_switches[key] == value
+      $game_self_switches[key] = value
+      changed = true
+    end
+    changed
+  end
+
+  # A save may restore an existing map without calling setup again.
+  # Refresh through the engine's existing chain only after flags change.
+  def self.sync_loaded_cerulean_map(map)
+    return unless map && sync_cerulean_quest_pages(map.map_id)
+    map.need_refresh = true
+    map.events.each_value { |event| event.refresh }
+  end
+end
+
+module BlueKantoPilot::CeruleanQuestMapSetup
+  def setup(map_id, *args)
+    BlueKantoPilot.sync_cerulean_quest_pages(map_id)
+    super
+  end
+end
+Game_Map.prepend(BlueKantoPilot::CeruleanQuestMapSetup) if defined?(Game_Map)
+
+module BlueKantoPilot::CeruleanQuestMapLoad
+  def createSpritesets(*args)
+    if $map_factory && $map_factory.respond_to?(:maps)
+      $map_factory.maps.each { |map| BlueKantoPilot.sync_loaded_cerulean_map(map) }
+    else
+      BlueKantoPilot.sync_loaded_cerulean_map($game_map)
     end
     super
   end
 end
-Game_Event.prepend(BlueKantoPilot::CeruleanQuestPages) if defined?(Game_Event)
-
+Scene_Map.prepend(BlueKantoPilot::CeruleanQuestMapLoad) if defined?(Scene_Map)
 
 module BlueKantoPilot::Route2ExitGuard
   def move_generic(dir, turn_enabled = true)
