@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8b155f8377b525b9a0156f03648f9c4fd9de140a",
+      "date": "2026-11-26T12:29:05-03:00",
+      "title": "Merge PR #351: native Viridian Route 2 gate proof",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "4f23cfc65334b37180cd91d23ce06cc842454d76",
+      "date": "2026-11-26T12:22:30-03:00",
+      "title": "QA K01-C: native Viridian Route2 gate movement and bypass analysis",
+      "category": "Melhorias"
+    },
+    {
       "sha": "96394873cbec069544f7cd38dfe5ecdb8ea20653",
       "date": "2026-11-26T12:21:40-03:00",
       "title": "Merge PR #350: native Pallet and Oak parcel progression proof",
