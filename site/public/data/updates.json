@@ -2,6 +2,456 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e7200ef8003c2d84eb1c6931b403c9faaa0d15b6",
+      "date": "2026-11-26T16:27:08-03:00",
+      "title": "Kanto K02-C: Cerulean interiors, native transactions and authored atlas (#356)",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "96ddec47064d82ea2cf938ffa3aa9823707aeb54",
+      "date": "2026-11-26T16:20:00-03:00",
+      "title": "Kanto K02-C: synchronize portable audit bundle with authored atlas dependency",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "f6962329791a3e530a683c699f40102a05fba34e",
+      "date": "2026-11-26T16:10:29-03:00",
+      "title": "Kanto K02-C: distribute original Blue wall schematic instead of donor atlas",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "91733e8e9f1b73cb042ce5008a2eee3856c3d572",
+      "date": "2026-11-26T15:51:46-03:00",
+      "title": "test(kanto): restore underlying message fixture safely under locale prepend",
+      "category": "Testes"
+    },
+    {
+      "sha": "e8273cc59c07476bb1ae102049d7bc92e24d9052",
+      "date": "2026-11-26T15:42:04-03:00",
+      "title": "test(kanto): verify serialized Jynx and preserve structural JSON output",
+      "category": "Testes"
+    },
+    {
+      "sha": "19588039a8698f5abd858ce0b737f222bb7df712",
+      "date": "2026-11-26T15:41:02-03:00",
+      "title": "fix(kanto): keep map registry independent from furniture receipt",
+      "category": "Correções"
+    },
+    {
+      "sha": "0a46b8799ff263d29a931183a1235c305da0c72c",
+      "date": "2026-11-26T15:40:42-03:00",
+      "title": "fix(kanto): authorize only witnessed furniture dialogue across builder, locale and verifier",
+      "category": "Correções"
+    },
+    {
+      "sha": "96190f29de216f45ca31112d5401e0f3bfd5ed57",
+      "date": "2026-11-26T15:35:58-03:00",
+      "title": "fix(kanto): extract pinned atlas dependencies in shared source bootstrap",
+      "category": "Correções"
+    },
+    {
+      "sha": "ead7d7e629406a5de902066ccc56c9be9d392264",
+      "date": "2026-11-26T15:27:31-03:00",
+      "title": "test(kanto): compare native Nature identifier in Cerulean trade proof",
+      "category": "Testes"
+    },
+    {
+      "sha": "3ce1e8cd4e9a53551ebfd80ded00b434beed6fe2",
+      "date": "2026-11-26T15:27:03-03:00",
+      "title": "feat(kanto): adapt Cerulean optional trade, badge guide and original wall atlas",
+      "category": "Novidades"
+    },
+    {
+      "sha": "423c6b481707a03b2c40e4e8bea3f4007837ed18",
+      "date": "2026-11-26T15:16:56-03:00",
+      "title": "fix(kanto): match native item defaults and validate Cerulean dependencies",
+      "category": "Correções"
+    },
+    {
+      "sha": "61901c02b69628c220274a000d7a6a7f2042c870",
+      "date": "2026-11-26T15:07:01-03:00",
+      "title": "fix(kanto): reconstruct missing voucher only from original shop event evidence",
+      "category": "Correções"
+    },
+    {
+      "sha": "2e4abf42b2e6442be35d4e391d97d48b24aa5ae8",
+      "date": "2026-11-26T15:01:27-03:00",
+      "title": "fix(unova): sync portable Kanto item-overlay installer and pilot builder",
+      "category": "Novidades"
+    },
+    {
+      "sha": "b6f7c2cbfcb71a7913067007db984405bc613ed5",
+      "date": "2026-11-26T15:01:11-03:00",
+      "title": "test(android): reject ZIP missing the compiled Cerulean bicycle",
+      "category": "Testes"
+    },
+    {
+      "sha": "0f543caabc283d3ce1cddc3a15027f5e0a3c570b",
+      "date": "2026-11-26T15:01:08-03:00",
+      "title": "fix(android): require compiled native bicycle and voucher, not just runtime callbacks",
+      "category": "Correções"
+    },
+    {
+      "sha": "e76bb8201bdf70b7e3dc9bed99ae86b2417dc937",
+      "date": "2026-11-26T15:00:55-03:00",
+      "title": "test(kanto): report exact compiled bike, voucher and TM28 identities before transaction checks",
+      "category": "Testes"
+    },
+    {
+      "sha": "f1fe70f48ce122c418d296fe70c13555af077ca2",
+      "date": "2026-11-26T15:00:43-03:00",
+      "title": "test(kanto): verify missing native item overlay, base preservation and repeat installation",
+      "category": "Testes"
+    },
+    {
+      "sha": "2c326c1baeed63ac8c1ce653959b9370421dec06",
+      "date": "2026-11-26T15:00:15-03:00",
+      "title": "fix(installer): include generated regional key item PBS in transactional Kanto installation",
+      "category": "Correções"
+    },
+    {
+      "sha": "d9e45adff2c264ed3e0c7c340eaa9a0758a2d093",
+      "date": "2026-11-26T15:00:12-03:00",
+      "title": "fix(kanto): restore missing bicycle and voucher from pinned native PBS without replacing base items",
+      "category": "Correções"
+    },
+    {
+      "sha": "4976d7d999df1245a3cacdbe28fa0cf77838c3c9",
+      "date": "2026-11-26T14:59:44-03:00",
+      "title": "fix(test): supply native translation stub and emit successful Event Indicators regression receipt",
+      "category": "Correções"
+    },
+    {
+      "sha": "95ef9ea9243687ced16601bafb9b583748f92842",
+      "date": "2026-11-26T14:54:10-03:00",
+      "title": "test(kanto): reproduce Event Indicators late refresh alias and verify regional map-load quest flags",
+      "category": "Testes"
+    },
+    {
+      "sha": "59d8c4de11d37f94f791be0d3a6d09c19a35c121",
+      "date": "2026-11-26T14:53:56-03:00",
+      "title": "fix(tests): require synchronized portal counts and original Cerulean Grunt roster",
+      "category": "Correções"
+    },
+    {
+      "sha": "8083635aea92a94f355430787cda274fe9d12e29",
+      "date": "2026-11-26T14:53:53-03:00",
+      "title": "fix(kanto): synchronize Cerulean quest pages at map boundaries instead of recursive event refresh hook",
+      "category": "Correções"
+    },
+    {
+      "sha": "6fda6a2e5a7bbe3a05b330e911a4ebeb265241cf",
+      "date": "2026-11-26T14:48:03-03:00",
+      "title": "fix(portal): update release assertions for 151 maps and verify six Cerulean interiors and original Grunt roster",
+      "category": "Correções"
+    },
+    {
+      "sha": "d592611050003faf3498204cd1896482ffcd1772",
+      "date": "2026-11-26T14:46:05-03:00",
+      "title": "test(kanto): retain release guard regressions and reject missing interiors or stale portal",
+      "category": "Testes"
+    },
+    {
+      "sha": "1724df44c2bd7aabc03a6a274c6f63098bb12808",
+      "date": "2026-11-26T14:46:01-03:00",
+      "title": "fix(kanto): require 151 slots and exact append-only ordering in release preflight",
+      "category": "Correções"
+    },
+    {
+      "sha": "5795974734c685fe62869e0e4550d59fe39db7f4",
+      "date": "2026-11-26T14:45:51-03:00",
+      "title": "fix(portal): synchronize 151-map Kanto catalogue and Grunt 6 from native CI export",
+      "category": "Correções"
+    },
+    {
+      "sha": "94bee44283af4ffd90dc8b7e3312554abadf4135",
+      "date": "2026-11-26T14:24:15-03:00",
+      "title": "fix(unova): synchronize portable dependency bundle after K02-C event adapter updates",
+      "category": "Novidades"
+    },
+    {
+      "sha": "261653b21081ddf13e65a1f161398dca0f224f52",
+      "date": "2026-11-26T14:24:01-03:00",
+      "title": "fix(kanto): preserve exact music regressions, validate Dig item and include Android build gates",
+      "category": "Correções"
+    },
+    {
+      "sha": "c2275431f88c3c8fd7f0ce578213015d9236d516",
+      "date": "2026-11-26T14:23:57-03:00",
+      "title": "fix(kanto): preserve exact music regressions, validate Dig item and include Android build gates",
+      "category": "Correções"
+    },
+    {
+      "sha": "83ccbf75036b56985174e6d4d46fbdca1cbc6da6",
+      "date": "2026-11-26T14:23:54-03:00",
+      "title": "fix(kanto): preserve exact music regressions, validate Dig item and include Android build gates",
+      "category": "Correções"
+    },
+    {
+      "sha": "d736fbd713d4a9cc515309457c0300cc7f523be1",
+      "date": "2026-11-26T14:23:51-03:00",
+      "title": "fix(kanto): preserve exact music regressions, validate Dig item and include Android build gates",
+      "category": "Correções"
+    },
+    {
+      "sha": "0159ab632cbf6874a4f400e8e39520995b792963",
+      "date": "2026-11-26T14:23:48-03:00",
+      "title": "fix(kanto): preserve exact music regressions, validate Dig item and include Android build gates",
+      "category": "Correções"
+    },
+    {
+      "sha": "578cbff397fb20db8f65a2e0ddbb8736e99b744c",
+      "date": "2026-11-26T14:23:24-03:00",
+      "title": "ci(kanto): require full native Cerulean and both historical migration proofs",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "7edc9731cf6279967a5af7af536900ad374bd36e",
+      "date": "2026-11-26T14:23:22-03:00",
+      "title": "ci(kanto): require full native Cerulean and both historical migration proofs",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "6a06ee1dba19bad4772d3e397ba530c0c365f8a6",
+      "date": "2026-11-26T14:23:08-03:00",
+      "title": "test(kanto): require native interior collision witnesses, voucher exchange, Rocket retry and save reload",
+      "category": "Testes"
+    },
+    {
+      "sha": "2a76ab72abe8ea082033d449e4d9e0df1557178d",
+      "date": "2026-11-26T14:22:32-03:00",
+      "title": "feat(kanto): verify compiled Cerulean delivery and real predecessor migration",
+      "category": "Novidades"
+    },
+    {
+      "sha": "c9d5dd59c6fbd74e17e0ad86e590261bb3adec46",
+      "date": "2026-11-26T14:22:29-03:00",
+      "title": "feat(kanto): verify compiled Cerulean delivery and real predecessor migration",
+      "category": "Novidades"
+    },
+    {
+      "sha": "2766ebf6222c75c58f725971e616550f57b78978",
+      "date": "2026-11-26T14:22:26-03:00",
+      "title": "feat(kanto): verify compiled Cerulean delivery and real predecessor migration",
+      "category": "Novidades"
+    },
+    {
+      "sha": "c0f29e75488dd3d0c49c0b42e977f3fcba17889f",
+      "date": "2026-11-26T14:22:14-03:00",
+      "title": "test(kanto): extend existing contracts for 151-map catalogue without dropping legacy checks",
+      "category": "Testes"
+    },
+    {
+      "sha": "e6b90eccd1fabdd839e4fdf95f520ada6efc6f15",
+      "date": "2026-11-26T14:22:11-03:00",
+      "title": "test(kanto): extend existing contracts for 151-map catalogue without dropping legacy checks",
+      "category": "Testes"
+    },
+    {
+      "sha": "502c0d47c7b6633d17b0b3338e9e0ff8a44d0ea7",
+      "date": "2026-11-26T14:22:09-03:00",
+      "title": "test(kanto): extend existing contracts for 151-map catalogue without dropping legacy checks",
+      "category": "Testes"
+    },
+    {
+      "sha": "726066fe3f8755d856f64d2d1f95ee2beb9f617a",
+      "date": "2026-11-26T14:22:05-03:00",
+      "title": "test(kanto): extend existing contracts for 151-map catalogue without dropping legacy checks",
+      "category": "Testes"
+    },
+    {
+      "sha": "0311935f589f6f911bb90d0264b9d83ecbac72f0",
+      "date": "2026-11-26T14:22:03-03:00",
+      "title": "test(kanto): extend existing contracts for 151-map catalogue without dropping legacy checks",
+      "category": "Testes"
+    },
+    {
+      "sha": "a26cf3cc2d0a6b70d4f0059611bf6eb968957aab",
+      "date": "2026-11-26T14:22:00-03:00",
+      "title": "test(kanto): extend existing contracts for 151-map catalogue without dropping legacy checks",
+      "category": "Testes"
+    },
+    {
+      "sha": "63205ba41e3dc50060bb56e5cc02b9f492736b0f",
+      "date": "2026-11-26T14:21:57-03:00",
+      "title": "test(kanto): extend existing contracts for 151-map catalogue without dropping legacy checks",
+      "category": "Testes"
+    },
+    {
+      "sha": "5d1bb8f6b24d1e6da052324b76f551095357aae5",
+      "date": "2026-11-26T14:21:55-03:00",
+      "title": "test(kanto): extend existing contracts for 151-map catalogue without dropping legacy checks",
+      "category": "Testes"
+    },
+    {
+      "sha": "8b5aa11d8cf89d370a372a436f341803b9c4d4dd",
+      "date": "2026-11-26T14:21:52-03:00",
+      "title": "test(kanto): extend existing contracts for 151-map catalogue without dropping legacy checks",
+      "category": "Testes"
+    },
+    {
+      "sha": "29e030606b2658b6d54c1903db9996d2e9422e7f",
+      "date": "2026-11-26T14:21:49-03:00",
+      "title": "test(kanto): extend existing contracts for 151-map catalogue without dropping legacy checks",
+      "category": "Testes"
+    },
+    {
+      "sha": "c900e4e5d8c1712010f8d43a08c7888644a6d015",
+      "date": "2026-11-26T14:21:25-03:00",
+      "title": "feat(kanto): activate 151-map Cerulean catalogue and preserve music/geometry contracts",
+      "category": "Novidades"
+    },
+    {
+      "sha": "7b9e12f6a64c6f21bbddc8054e88d9821bc10425",
+      "date": "2026-11-26T14:21:22-03:00",
+      "title": "feat(kanto): activate 151-map Cerulean catalogue and preserve music/geometry contracts",
+      "category": "Novidades"
+    },
+    {
+      "sha": "223879986085dc9b7b3272712233ee7d43ca3741",
+      "date": "2026-11-26T14:21:19-03:00",
+      "title": "feat(kanto): activate 151-map Cerulean catalogue and preserve music/geometry contracts",
+      "category": "Novidades"
+    },
+    {
+      "sha": "09b76bd7b03d3603d5eba29529adb043b98dc5dc",
+      "date": "2026-11-26T14:21:16-03:00",
+      "title": "feat(kanto): activate 151-map Cerulean catalogue and preserve music/geometry contracts",
+      "category": "Novidades"
+    },
+    {
+      "sha": "67f1a1b5c4214f72ad4d65e914e000b7888bb20b",
+      "date": "2026-11-26T14:21:13-03:00",
+      "title": "feat(kanto): activate 151-map Cerulean catalogue and preserve music/geometry contracts",
+      "category": "Novidades"
+    },
+    {
+      "sha": "b477a52b056b1a5e24b7a03262d3ece318e521be",
+      "date": "2026-11-26T14:21:11-03:00",
+      "title": "feat(kanto): activate 151-map Cerulean catalogue and preserve music/geometry contracts",
+      "category": "Novidades"
+    },
+    {
+      "sha": "20a12c276879a447b40fb43d7591432a51e15c77",
+      "date": "2026-11-26T14:21:08-03:00",
+      "title": "feat(kanto): activate 151-map Cerulean catalogue and preserve music/geometry contracts",
+      "category": "Novidades"
+    },
+    {
+      "sha": "485e8ea65cd6363d7b52be1af4331e54d52bc5a8",
+      "date": "2026-11-26T14:20:29-03:00",
+      "title": "feat(kanto): prepare K02-C compiled trainer, map names and verified ready gates",
+      "category": "Novidades"
+    },
+    {
+      "sha": "d1961c50c78d2794544c609bea96ff66525efcaf",
+      "date": "2026-11-26T14:20:27-03:00",
+      "title": "feat(kanto): prepare K02-C compiled trainer, map names and verified ready gates",
+      "category": "Novidades"
+    },
+    {
+      "sha": "42747218c89415b69742b956b74b2b018ce52173",
+      "date": "2026-11-26T14:20:23-03:00",
+      "title": "feat(kanto): prepare K02-C compiled trainer, map names and verified ready gates",
+      "category": "Novidades"
+    },
+    {
+      "sha": "037e8c41f9e73ce21457204b7a90c4e379f9ff31",
+      "date": "2026-11-26T14:20:20-03:00",
+      "title": "feat(kanto): prepare K02-C compiled trainer, map names and verified ready gates",
+      "category": "Novidades"
+    },
+    {
+      "sha": "a857e4aa945f8cfd11c9243a0defdd48daaa74b3",
+      "date": "2026-11-26T14:20:10-03:00",
+      "title": "feat(kanto): author original Cerulean door guards, police pages, Rocket and bike vendor events",
+      "category": "Novidades"
+    },
+    {
+      "sha": "88b64912eecf94185fc6380b22b5fc863d65fdd4",
+      "date": "2026-11-26T14:19:59-03:00",
+      "title": "feat(kanto): implement Bill-gated Cerulean police, transactional bike exchange and unique Rocket reward",
+      "category": "Novidades"
+    },
+    {
+      "sha": "4a9553b71ebb2ca91d19e476ad82fac1c6c79d3f",
+      "date": "2026-11-26T14:06:04-03:00",
+      "title": "fix(unova): synchronize bundled Kanto installer with migration ownership contract",
+      "category": "Novidades"
+    },
+    {
+      "sha": "432f3d54686b7d776a7ef28b7d75e0232fe0bad8",
+      "date": "2026-11-26T14:05:45-03:00",
+      "title": "test(kanto): normalize Windows temporary root before comparing installer paths",
+      "category": "Testes"
+    },
+    {
+      "sha": "0fd6422d3ac9feadd245fef5bdd800d5f2dfb113",
+      "date": "2026-11-26T14:01:47-03:00",
+      "title": "ci(kanto): run safe installer migration tests before source fixture",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "9a6fbbef1e5e35290de9da19010230794e25aabb",
+      "date": "2026-11-26T14:01:37-03:00",
+      "title": "ci(kanto): emit individually searchable original event receipts",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "5a00c4aac23c169596c90256712b80c1dc2966b5",
+      "date": "2026-11-26T14:01:34-03:00",
+      "title": "test(kanto): migrate 145-map installs only when 151-map catalogue is activated",
+      "category": "Testes"
+    },
+    {
+      "sha": "44e8bfc9dd67bc244525fec84cf3c5734e73b7e9",
+      "date": "2026-11-26T14:01:25-03:00",
+      "title": "test(kanto): reject wrong 145-map predecessor despite matching count",
+      "category": "Testes"
+    },
+    {
+      "sha": "e5a24f81287b967a5f8a5ff088a4b0bc75201b7e",
+      "date": "2026-11-26T14:01:22-03:00",
+      "title": "feat(kanto): route future known 145 to 151 migration through transactional importer",
+      "category": "Novidades"
+    },
+    {
+      "sha": "19154cb4b1692ed49fae0b19d36dd57b68f93abf",
+      "date": "2026-11-26T14:01:12-03:00",
+      "title": "feat(kanto): restrict future 151-map migration to exact 142/145 published predecessors",
+      "category": "Novidades"
+    },
+    {
+      "sha": "eebe7f9d2a218ea0c4f5e0114052e31ff575b58f",
+      "date": "2026-11-26T14:00:55-03:00",
+      "title": "ci(kanto): require original six-map geometry and 145-map preservation evidence",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "10d0f4cf433c1711da5db2dc0c18eaa943cd7a36",
+      "date": "2026-11-26T14:00:52-03:00",
+      "title": "test(kanto): ensure all 145 map IDs remain stable when appending 043–048",
+      "category": "Testes"
+    },
+    {
+      "sha": "674bd59bb932c000109b9cc95ef0a49793dbe3c0",
+      "date": "2026-11-26T14:00:42-03:00",
+      "title": "feat(kanto): stage six source interiors in isolated 151-map migration fixture and audit original event pages",
+      "category": "Novidades"
+    },
+    {
+      "sha": "bbfc6c90ce524e2430d8a19587e6b1f14f7db70a",
+      "date": "2026-11-26T14:00:24-03:00",
+      "title": "feat(kanto): allow explicit catalog for isolated geometry migration fixture",
+      "category": "Novidades"
+    },
+    {
+      "sha": "b86e3d13ce90bd6da5bea41c5a18becef23af1a8",
+      "date": "2026-11-26T14:00:21-03:00",
+      "title": "fix(kanto): freeze all 145 published source slots before Cerulean interior expansion",
+      "category": "Correções"
+    },
+    {
       "sha": "e23ff33a67ed6cea6ca652f0d2150ae5d1de206d",
       "date": "2026-11-26T13:48:41-03:00",
       "title": "Kanto K02-B: escala integrada, áudio nativo e recuperação de fonte Hoenn (#355)",
