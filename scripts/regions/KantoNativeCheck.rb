@@ -348,6 +348,118 @@ module KantoNativeCheck
      "trade"=>trade_report,"furniture_callbacks"=>furniture_report,"atlas"=>atlas_report}
   end
 
+  # K02-D: native movement and independent reverse path, not manual gameplay.
+  def self.k02d_trace(label,row)
+    File.open("Data/blue-kanto-k02d-trace.txt","a") { |file| file.puts("#{label}:#{row.inspect}") }
+    puts "#{label}:#{row.inspect}"
+  end
+
+  def self.k02d_gary_movement(city,battle_calls,losses_remaining)
+    $map_factory.setup(city)
+    state = BlueKantoPilot.progress
+    require!(BlueKantoPilot.cerulean_rival_pending?, "K02-D Gary not pending")
+    lanes = BlueKantoPilot::CERULEAN_RIVAL_LANES
+    row = BlueKantoPilot::CERULEAN_RIVAL_ROW
+    require!(lanes == [22,23,24] && row == 6, "K02-D authored Gary line differs")
+    version = BlueKantoPilot::RIVAL_VERSIONS.fetch(BlueKantoPilot.starter)+20
+    expected = [:BLUE_KANTO_RIVAL,"Blue",version]
+    initial_calls = battle_calls.length
+    inserted_legacy = !state["pilot_wins"].include?("Blue")
+    state["pilot_wins"] << "Blue" if inserted_legacy
+    [15,32,34].each { |id| $game_self_switches[[city,id,"A"]] = true }
+    $game_map.events.each_value { |event| event.refresh }
+    require!(!$game_map.events[32].character_name.to_s.empty?, "K02-D stale page hid pending Gary")
+    trace = lanes.map do |x|
+      $game_player.moveto(x,row+1)
+      require!(BlueKantoPilot.cerulean_rival_crossing?($game_player,8), "K02-D lane not guarded")
+      losses_remaining["Blue"] = 1
+      calls = battle_calls.length
+      $game_player.move_generic(8,false)
+      after = [$game_player.x,$game_player.y]
+      evidence = {"lane"=>x,"from"=>[x,row+1],"after"=>after,"battle"=>battle_calls.last,
+        "calls"=>battle_calls.length-calls,"won"=>!!state["pilot_cerulean_rival"]}
+      k02d_trace("KANTO_K02D_GARY_MOVEMENT",evidence)
+      require!(after == [x,row+1] && battle_calls.length == calls+1 &&
+        battle_calls.last == expected && !state["pilot_cerulean_rival"] &&
+        !state["pilot_wins"].include?("KANTO_CERULEAN_RIVAL"), "K02-D loss bypassed lane #{x}")
+      evidence
+    end
+    $game_player.moveto(23,row)
+    require!(BlueKantoPilot.cerulean_rival_crossing?($game_player,8), "K02-D legacy row guard absent")
+    $game_player.move_generic(8,false)
+    require!(state["pilot_cerulean_rival"] && state["pilot_wins"].include?("KANTO_CERULEAN_RIVAL") &&
+      battle_calls[initial_calls..-1] == [expected]*4 && [$game_player.x,$game_player.y] == [23,row],
+      "K02-D retry/unique victory failed")
+    require!([15,32,34].all? { |id| $game_self_switches[[city,id,"A"]] }, "K02-D lane switches missing")
+    $game_map.events.each_value { |event| event.refresh }
+    require!($game_map.events[32].character_name.to_s.empty?, "K02-D Gary not hidden after win")
+    candidates = lanes.product([8,2]).select do |x,dir|
+      $game_player.moveto(x,row)
+      $game_player.passable?(x,row,dir) && !BlueKantoPilot.cerulean_rival_crossing?($game_player,dir)
+    end
+    require!(!candidates.empty?, "K02-D no post-victory passable lane step")
+    x,dir = candidates.first
+    $game_player.moveto(x,row)
+    calls = battle_calls.length
+    $game_player.move_generic(dir,false)
+    after = [$game_player.x,$game_player.y]
+    require!(after == [x,row+(dir==8 ? -1 : 1)] && battle_calls.length == calls,
+      "K02-D post-win movement replayed encounter or failed")
+    evidence = {"legacy_row_retry"=>true,"post_win_step"=>[[x,row],after],
+      "battle_version"=>version,"no_replay"=>true,"losses"=>trace,"victory_calls"=>1}
+    k02d_trace("KANTO_K02D_GARY_MOVEMENT",evidence)
+    state["pilot_wins"].delete("Blue") if inserted_legacy
+    evidence
+  end
+
+  def self.k02d_return_path(city,bridge,route,landing,city_anchor)
+    component = opening_component(route,landing)
+    first = opening_crossings(route,component,bridge)
+    require!(!first.empty?, "K02-D no return seam from Bill to bridge")
+    first.each do |route_seam|
+      b = opening_component(bridge,route_seam[1])
+      opening_crossings(bridge,b,city).each do |bridge_seam|
+        c = opening_component(city,bridge_seam[1])
+        next unless c.key?(city_anchor)
+        result = {"bill_exit"=>landing,"route25_to_24"=>route_seam,
+          "route24_to_city"=>bridge_seam,"city_center_landing"=>city_anchor,
+          "components"=>[component.length,b.length,c.length]}
+        k02d_trace("KANTO_K02D_RETURN_PATH",result)
+        return result
+      end
+    end
+    raise "K02-D independent return from Bill to Cerulean Center landing missing"
+  end
+
+  def self.k02d_gym_access(city,gym,city_landing)
+    c = opening_component(city,city_landing)
+    door = $game_map.events.values.find { |ev| ev.trigger == 1 &&
+      Array(ev.list).any? { |op| op.code == 201 && op.parameters[0] == 0 && op.parameters[1] == gym } }
+    require!(door && north_event_reachable?(c,door), "K02-D gym entrance unreachable from Center")
+    door_id = door.id
+    landing = north_transfer!(door,gym)
+    g = opening_component(gym,landing)
+    trainers = [1,11,16].map do |id|
+      ev = $game_map.events[id]
+      require!(ev && north_event_reachable?(g,ev), "K02-D gym trainer #{id} inaccessible")
+      {"id"=>id,"position"=>[ev.x,ev.y],"trigger"=>ev.trigger,
+       "action_witness"=>opening_action_witness(g,ev)}
+    end
+    exit_event = $game_map.events.values.find { |ev|
+      Array(ev.list).any? { |op| op.code == 201 && op.parameters[0] == 0 && op.parameters[1] == city } &&
+      north_event_reachable?(g,ev) }
+    require!(exit_event, "K02-D gym return transfer inaccessible")
+    exit_id = exit_event.id
+    back = north_transfer!(exit_event,city)
+    reverse = opening_component(city,back)
+    require!(reverse.key?(city_landing), "K02-D gym exit disconnected from Center")
+    result = {"city"=>city,"gym"=>gym,"entrance"=>door_id,"landing"=>landing,
+      "trainers"=>trainers,"return_event"=>exit_id,"return_landing"=>back,
+      "city_component"=>c.length,"gym_component"=>g.length,"return_component"=>reverse.length}
+    k02d_trace("KANTO_K02D_GYM_ACCESS",result)
+    result
+  end
+
   def self.north_story(battle_calls, losses_remaining)
     city,gym,bridge,route,cottage = [39,42,53,54,55].map { |id| BlueKantoPilot.kanto_map_id(id) }
     require!([city,gym,bridge,route,cottage].all?, "K00-C missing installed source IDs")
@@ -370,11 +482,8 @@ module KantoNativeCheck
     $map_factory.setup(city)
     require!(!BlueKantoPilot.cerulean_rival_graphic.to_s.empty?, "Gary graphic missing")
     require!(!$game_map.events[32].character_name.to_s.empty?, "Gary invisible before battle")
-    losses_remaining["Blue"] = 1
-    require!(!BlueKantoPilot.cerulean_rival && !state["pilot_cerulean_rival"], "Gary false win")
-    require!(BlueKantoPilot.cerulean_rival && state["pilot_cerulean_rival"], "Gary retry failed")
-    require!($game_map.events[32].character_name.to_s.empty?, "Gary not hidden after win")
-    require!(battle_calls.count { |row| row == [:BLUE_KANTO_RIVAL,"Blue",31] } == 2, "Gary team/retry mismatch")
+    gary_movement = k02d_gary_movement(city,battle_calls,losses_remaining)
+    require!(battle_calls.count { |row| row == [:BLUE_KANTO_RIVAL,"Blue",31] } == 4, "Gary team/retry mismatch")
     $map_factory.setup(bridge)
     nugget_before = $bag.quantity(:NUGGET)
     require!(!BlueKantoPilot.nugget_bridge_rocket, "Rocket accepted before five trainers")
@@ -467,7 +576,10 @@ module KantoNativeCheck
     require!(c.key?(return_landing) || c.keys.any? { |x,y|
       (x-return_landing[0]).abs+(y-return_landing[1]).abs <= 1 },
       "Cottage return landing disconnected")
+    return_path = k02d_return_path(city,bridge,route,return_landing,city_landing)
+    gym_access = k02d_gym_access(city,gym,city_landing)
     report = {"mode"=>"native_collision_and_scripted_battle_results",
+      "k02d_gary_movement"=>gary_movement,"k02d_return_path"=>return_path,"k02d_gym_access"=>gym_access,
       "manual_gameplay"=>false,"map_ids"=>[city,gym,bridge,route,cottage],
       "city_center_landing"=>city_landing,"collision_components"=>[a.length,b.length,c.length,d.length],
       "bidirectional_seams"=>[seam1,seam2],"bill_landing"=>landing,
@@ -2356,6 +2468,17 @@ module KantoNativeCheck
     north_report["victory_keys"] = north_keys.length
     north_report["native_trainer_encounters"] = north_keys.length
     north_report["misty_loss_retry"] = true
+    require!(BlueKantoPilot.progress["pilot_cerulean_rival"] &&
+      BlueRegions.local_achievements(BlueKantoPilot.progress,"KANTO").count("CASCADE")==1,
+      "K02-D Gary or Cascade state lost on reload")
+    k02d_report = {"status"=>"PASS","manual_gameplay"=>false,
+      "controlled_battle_results"=>true,"gary"=>north_report["k02d_gary_movement"],
+      "return"=>north_report["k02d_return_path"],"gym"=>north_report["k02d_gym_access"],
+      "misty_loss_retry"=>true,"cascade_unique"=>true,"bill_ticket_unique"=>true,
+      "save_reload"=>true,"native_trainer_encounters"=>north_keys.length}
+    File.write("Data/blue-kanto-k02d-proof.txt",k02d_report.inspect)
+    puts "KANTO_K02D_NATIVE_CERULEAN_REPORT:#{k02d_report.inspect}"
+    puts "KANTO_K02D_GARY_BILL_MISTY_SAVE_RELOAD_OK"
     # The final campaign reload must retain the chosen starter as well.
     require!(BlueKantoPilot.starter == :BULBASAUR &&
              [18,19,20].all? { |eid| $game_self_switches[[lab,eid,"A"]] },

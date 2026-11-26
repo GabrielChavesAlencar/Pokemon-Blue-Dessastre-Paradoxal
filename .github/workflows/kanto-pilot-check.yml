@@ -265,6 +265,12 @@ jobs:
               if(-not (Test-Path $interiorProof)){throw 'K02-C native interior proof missing'}
               Write-Host ("KANTO_K02C_NATIVE_INTERIORS_REPORT:" + (Get-Content $interiorProof -Raw).Trim())
               Write-Host 'KANTO_K02C_INTERIORS_BIKE_ROCKET_SAVE_RELOAD_OK'
+              $ceruleanTrace="$pilot/Data/blue-kanto-k02d-trace.txt"
+              $ceruleanProof="$pilot/Data/blue-kanto-k02d-proof.txt"
+              if(-not (Test-Path $ceruleanTrace) -or -not (Test-Path $ceruleanProof)){throw 'K02-D native Cerulean proof missing'}
+              Get-Content $ceruleanTrace
+              Write-Host ("KANTO_K02D_NATIVE_CERULEAN_REPORT:" + (Get-Content $ceruleanProof -Raw).Trim())
+              Write-Host 'KANTO_K02D_GARY_BILL_MISTY_SAVE_RELOAD_OK'
               Get-Content "$pilot/Data/blue-kanto-proof.txt"
               exit 0
             }
@@ -288,7 +294,19 @@ jobs:
           if(Test-Path $pewterTrace){Get-Content $pewterTrace}
           $moonTrace="$pilot/Data/blue-kanto-k02a-moon-trace.txt"
           if(Test-Path $moonTrace){Get-Content $moonTrace}
+          $ceruleanTrace="$pilot/Data/blue-kanto-k02d-trace.txt"
+          if(Test-Path $ceruleanTrace){Get-Content $ceruleanTrace}
           throw 'Kanto native proof missing'
+      - name: Preservar recibos K02-D Cerulean
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k02d-trace.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k02d-native-cerulean
+          path: |
+            .blue-work/kanto-pilot/Data/blue-kanto-k02d-trace.txt
+            .blue-work/kanto-pilot/Data/blue-kanto-k02d-proof.txt
+          include-hidden-files: true
+          if-no-files-found: error
       - name: Preservar diagnóstico Mt Moon K02-A
         if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k02a-moon-trace.txt') != ''
         uses: actions/upload-artifact@v4
