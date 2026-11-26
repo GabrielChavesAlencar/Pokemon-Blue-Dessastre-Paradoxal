@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6e9d28d710a4de9f9d3ba5048f4fd544a774f353",
+      "date": "2026-11-26T11:24:28-03:00",
+      "title": "Merge PR #348: Kanto native S.S. Ticket and legacy permit migration",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "768335ffb0a949412320cae87af744796b70c1a6",
+      "date": "2026-11-26T11:17:59-03:00",
+      "title": "CI: require actual integrated Android ZIP before Kanto ticket merge; publish only main",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "c65a8666fc651ee20c05dad6f84b73d5ce98ac8f",
+      "date": "2026-11-26T11:10:24-03:00",
+      "title": "Kanto K00: native regional S.S. Ticket and compatible digital permit upgrade",
+      "category": "Melhorias"
+    },
+    {
       "sha": "c99ec19174f31c2871b25c7ab52f8fe5112bf13e",
       "date": "2026-11-26T11:01:04-03:00",
       "title": "Merge PR #347: K00-C native Cerulean story and collision proof",
