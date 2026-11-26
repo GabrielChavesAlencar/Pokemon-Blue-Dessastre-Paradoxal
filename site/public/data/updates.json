@@ -2,6 +2,42 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0f0400c8ec230d3e634b7733e819bbd558240aa6",
+      "date": "2026-11-26T13:22:03-03:00",
+      "title": "Kanto K02-A: validate native Mt. Moon, fossils and Cinnabar revival (#354)",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "b37bd775a608aabac9f26109b50d8907d2549053",
+      "date": "2026-11-26T13:14:14-03:00",
+      "title": "fix(kanto-qa): verify native ledge jumps and Route4 Cerulean seam",
+      "category": "Correções"
+    },
+    {
+      "sha": "d5e424badd4728a6a396099de356d0d6442befec",
+      "date": "2026-11-26T13:06:09-03:00",
+      "title": "fix(kanto-qa): prove original Moon exit after each persistent fossil choice",
+      "category": "Correções"
+    },
+    {
+      "sha": "e02f5f9c3e3d8b7440625ec1586706274db9d8ce",
+      "date": "2026-11-26T13:02:23-03:00",
+      "title": "fix(kanto-qa): search all cave landings for reachable Miguel and both fossils",
+      "category": "Correções"
+    },
+    {
+      "sha": "35cd9f3b6da44d044e6c89b025a83b33ac193e5c",
+      "date": "2026-11-26T12:57:42-03:00",
+      "title": "fix(kanto-qa): exclude structural Map035 and reject nil corridor neighbors",
+      "category": "Correções"
+    },
+    {
+      "sha": "2b18253817af4d580fc20cb528bf4a6abe5c03e8",
+      "date": "2026-11-26T12:54:40-03:00",
+      "title": "QA K02-A: native Mt Moon corridor and exclusive fossil revival transactions",
+      "category": "Melhorias"
+    },
+    {
       "sha": "2a11a47c156f7286ddd5d7710ab0241405140c3d",
       "date": "2026-11-26T12:53:26-03:00",
       "title": "Merge PR #353: native Pewter Brock and Running Shoes proof",
