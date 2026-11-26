@@ -24,7 +24,7 @@ SCRIPTS = "Data/Scripts.rxdata"
 NATIVE_RECEIPT = "Data/blue-sinnoh-shared-native-compile.txt"
 
 
-def compile_windows(game, token):
+def compile_windows(game, token, map_ids):
     scripts = shared.safe_file(game,SCRIPTS)
     original = scripts.read_bytes()
     rows = Marshal(original).read()
@@ -54,9 +54,12 @@ def compile_windows(game, token):
     exit
 ''')
     entry[2] = RubyString(zlib.compress(source.encode("utf-8")))
-    tiles = shared.safe_file(game,shared.TILESETS)
-    connections = shared.safe_file(game,shared.CONNECTIONS)
-    protected = {path:path.read_bytes() for path in (tiles,connections)}
+    regional_data = [shared.MAP_INFOS,shared.TILESETS,shared.CONNECTIONS]
+    regional_data.extend(f"Data/Map{mid:03d}.rxdata" for mid in map_ids)
+    protected = {}
+    for relative in regional_data:
+        path = shared.safe_file(game,relative)
+        protected[path] = path.read_bytes()
     shared.atomic(scripts,b"\x04\x08" + dump(rows))
     try:
         result = subprocess.run([str(game/"Game.exe")],cwd=game,
@@ -67,10 +70,11 @@ def compile_windows(game, token):
                              result.stdout[-4000:].decode("utf-8",errors="replace"))
     finally:
         shared.atomic(scripts,original)
-        # Essentials may serialize a fresh editor tileset index during compile.
-        # Preserve both native indexes built and verified against this base.
+        # Essentials may regenerate editor indexes and serialized map events.
+        # Keep the verified authored Sinnoh events and the regional indexes.
         for path, content in protected.items():
-            shared.atomic(path,content)
+            if not path.is_file() or path.read_bytes() != content:
+                shared.atomic(path,content)
     cache = shared.safe_file(game,CACHE).read_bytes()
     for path in (shared.PLUGIN, REGION_START_PLUGIN, REGION_TRAVEL_PLUGIN):
         compiled_region(cache,Path(path).name,shared.safe_file(game,path).read_bytes())
@@ -123,7 +127,7 @@ def stage(project, *, base_game=None, compile_native=False):
                   "commit_sha":os.environ.get("GITHUB_SHA"),
                   "windows_travel":False, "joiplay_travel":False}
         if compile_native:
-            result["plugin_cache_sha256"] = compile_windows(game,result["overlay_sha256"])
+            result["plugin_cache_sha256"] = compile_windows(game,result["overlay_sha256"],proof["map_ids"])
             result["compiler"] = "Windows Game.exe"
         shared.installed(game,qa=True)
         shared.atomic(root/"stage.json",(json.dumps(result,indent=2)+"\n").encode("utf-8"))
