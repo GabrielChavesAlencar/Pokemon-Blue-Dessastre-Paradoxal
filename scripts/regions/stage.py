@@ -54,7 +54,7 @@ def serialize(value, extra_classes=()):
     return result
 
 
-def stage(project, source, game, output):
+def stage(project, source, game, output, existing=None):
     """Publish a complete preview directory by rename, or leave no output at all."""
     allowed = (project / ".blue-work").resolve()
     output = output.resolve()
@@ -62,7 +62,7 @@ def stage(project, source, game, output):
         raise ValueError("Staging requires a new folder inside .blue-work")
     if source.resolve().is_relative_to(output) or game.resolve().is_relative_to(output):
         raise ValueError("Staging cannot replace the source or the installed game")
-    plan = map_plan(source, game, json_file(KANTO))
+    plan = map_plan(source, game, json_file(KANTO), existing=existing)
     source_infos, files = inventory(source)
     dest_infos, dest_files = inventory(game)
     source_tiles = load(source / "Data/Tilesets.rxdata")
@@ -85,13 +85,16 @@ def stage(project, source, game, output):
             raise ValueError(f"Invalid PNG: {path}")
         relative = Path("Graphics", folder, filename)
         if (game / relative).exists():
-            raise ValueError(f"Preview graphic clashes with installed project: {relative}")
+            if not existing or (game / relative).is_symlink() or (game / relative).read_bytes() != raw:
+                raise ValueError(f"Preview graphic clashes with installed project: {relative}")
         blobs[relative] = raw
         return filename[:-4].encode("utf-8")
 
     for row in plan["maps"]:
         src_id, dst_id = row["source_id"], row["proposed_id"]
-        assert dst_id not in dest_infos and dst_id not in dest_files
+        prior = (existing or {}).get(src_id)
+        if prior != dst_id and (dst_id in dest_infos or dst_id in dest_files):
+            raise ValueError(f"Map ID collision: {dst_id}")
         m = load(files[src_id])
         old_tile = m.attrs["@tileset_id"]
         if old_tile not in new_tiles:
@@ -112,7 +115,8 @@ def stage(project, source, game, output):
         info = source_infos[src_id]
         info.attrs["@name"] = b"[Kanto preview] " + info.attrs["@name"]
         info.attrs["@parent_id"] = row["parent"] or 0
-        info.attrs["@order"] = max((x.attrs["@order"] for x in dest_infos.values()), default=0) + 1
+        info.attrs["@order"] = (dest_infos[dst_id].attrs["@order"] if prior == dst_id
+                                else max((x.attrs["@order"] for x in dest_infos.values()), default=0) + 1)
         dest_infos[dst_id] = info
         row["staged_tileset"] = new_tiles[old_tile]
     blobs[Path("Data/MapInfos.rxdata")] = serialize(dest_infos)

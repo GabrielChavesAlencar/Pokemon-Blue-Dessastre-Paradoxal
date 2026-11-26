@@ -1610,7 +1610,7 @@ def install_runtime(target, mapping, game):
                  "Economy.rb", "Locale.rb", "KantoDex.rb", "DexControls.rb"):
         shutil.copyfile(ROOT / "scripts/battle_polish" / name, presentation / name)
     plugin = target / "Plugins/ZZZZZ Blue Kanto Pilot"
-    plugin.mkdir()
+    plugin.mkdir(exist_ok=True)
     shutil.copyfile(ROOT / "scripts/regions/KantoPilot.rb", plugin / "KantoPilot.rb")
     (plugin / "meta.txt").write_text(
         "Name = Blue Kanto Pilot\nVersion = 1.0\nEssentials = 21.1\n"
@@ -1744,7 +1744,7 @@ def install_runtime(target, mapping, game):
     (data / "blue-kanto-music.txt").write_bytes(compiled)
 
 
-def build(source, game, output):
+def build(source, game, output, existing=None):
     output = output.resolve()
     work = (ROOT / ".blue-work").resolve()
     if not output.is_relative_to(work) or output == work or output.exists():
@@ -1758,7 +1758,7 @@ def build(source, game, output):
     output.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix=".kanto-build-", dir=output.parent) as tmp:
         preview, target = Path(tmp) / "preview", Path(tmp) / "game"
-        plan = stage(ROOT, source, game, preview)
+        plan = stage(ROOT, source, game, preview, existing=existing)
         mapping = {row["source_id"]: row["proposed_id"] for row in plan["maps"]}
         target.mkdir()
         copy_game(game, target)

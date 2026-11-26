@@ -84,6 +84,65 @@ class KantoInstallerTest(unittest.TestCase):
                 installer.repair_portraits(game, True)
             self.assertFalse((graphics / "BLUE_KANTO_CAMPER.png").exists())
 
+    def test_migration_allocation_preserves_existing_ids_and_other_regions(self):
+        from audit import allocate_kanto_ids
+        existing = {5: 300, 7: 302}
+        mapping = allocate_kanto_ids({5, 7, 53, 54, 55}, {300, 302, 700}, existing)
+        self.assertEqual(mapping, {5: 300, 7: 302, 53: 701, 54: 702, 55: 703})
+        with self.assertRaises(ValueError):
+            allocate_kanto_ids({5, 7}, {300}, existing)
+        with self.assertRaises(ValueError):
+            allocate_kanto_ids({5, 7, 53}, {300, 302, 999}, existing)
+
+    def test_legacy_drift_is_recoverable_but_foreign_map_is_rejected(self):
+        from server.ruby_marshal import RubyObject
+        from stage import serialize
+        with tempfile.TemporaryDirectory() as folder:
+            root, game, src, files = self.with_game(folder)
+            pilot = root / "pilot"
+            (pilot / "Data").mkdir(parents=True)
+            rel = Path("Data/Map300.rxdata")
+            old = RubyObject("RPG::Map", {"@width": 20, "@height": 20, "@tileset_id": 1})
+            new = RubyObject("RPG::Map", {"@width": 20, "@height": 20, "@tileset_id": 2})
+            (game / rel).write_bytes(serialize(old))
+            (pilot / rel).write_bytes(serialize(new))
+            tile = RubyObject("RPG::Tileset", {"@tileset_name": b"FRLG_Preview_Pallet"})
+            foreign = RubyObject("RPG::Tileset", {"@tileset_name": b"Hoenn"})
+            (game / "Data/Tilesets.rxdata").write_bytes(serialize([None, tile]))
+            (pilot / "Data/Tilesets.rxdata").write_bytes(serialize([None, foreign, tile]))
+            proof = {"maps": {"5": 300}, "installed_sha256": {rel.as_posix(): "a" * 64}}
+            installer.check_migration_target(game, pilot, rel, pilot / rel, proof)
+            (game / "Data/Tilesets.rxdata").write_bytes(serialize([None, foreign]))
+            with self.assertRaisesRegex(ValueError, "Foreign tileset"):
+                installer.check_migration_target(game, pilot, rel, pilot / rel, proof)
+            (game / rel).unlink()
+            installer.check_migration_target(game, pilot, rel, pilot / rel, proof)
+
+    def test_migration_rolls_back_when_final_verification_fails(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root, game, src, files = self.with_game(folder)
+            old_map = game / "Data/Map300.rxdata"
+            old_map.write_bytes(b"old map")
+            (game / installer.MARKER).write_bytes(b"BLUE_KANTO_START_V1,KANTO,300,25,7\n")
+            (game / installer.READY_GATE).write_bytes(b"old gate")
+            proof_path = game / "Data/blue-kanto-install.json"
+            proof_path.write_bytes(b"old proof")
+            proof = {"maps": {"5": 300}, "installed_sha256": {
+                "Data/Map300.rxdata": installer.digest(old_map)}}
+            base_hashes = {n: installer.digest(game / "Data" / n) for n in installer.DATA_NAMES}
+            with mock.patch.object(installer, "ROOT", root), mock.patch.object(
+                    installer, "legacy_proof", return_value=proof), mock.patch.object(
+                    installer, "manifest", return_value=(files, {5: 300, 7: 301}, base_hashes)), mock.patch.object(
+                    installer, "verify_installed", side_effect=ValueError("final verification failed")):
+                with self.assertRaisesRegex(ValueError, "final verification failed"):
+                    installer.apply_install(game, src, True, migration=proof)
+            self.assertEqual(old_map.read_bytes(), b"old map")
+            self.assertFalse((game / "Data/Map301.rxdata").exists())
+            self.assertEqual((game / "Data/MapInfos.rxdata").read_bytes(), b"original maps")
+            self.assertEqual((game / installer.READY_GATE).read_bytes(), b"old gate")
+            self.assertEqual(proof_path.read_bytes(), b"old proof")
+            self.assertEqual((game / "saves/old.rxdata").read_bytes(), b"precious save")
+
     def test_dry_run_never_writes_into_game(self):
         with tempfile.TemporaryDirectory() as folder:
             root, game, src, files = self.with_game(folder)

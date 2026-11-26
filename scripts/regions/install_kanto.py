@@ -12,7 +12,9 @@ import shutil
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
-from audit import ROOT, KANTO, json_file
+from audit import ROOT, KANTO, json_file, inventory, allocate_kanto_ids, load
+from export_kanto import LOCATION_NAMES
+from server.ruby_marshal import RubyObject, text
 from pilot import OUTPUT, SOURCE, PILOT_META, TYPES, build, pilot_is_current, revised_path
 from verify_pilot import inspect
 
@@ -71,7 +73,69 @@ def atomic(path, data):
             os.unlink(temp)
 
 
-def manifest(pilot, game):
+def recorded_hashes(proof):
+    return {k.replace(chr(92), "/"): v for k, v in proof["installed_sha256"].items()}
+
+
+def recorded_digest(value):
+    return isinstance(value, str) and len(value) == 64 and all(
+        c in "0123456789abcdef" for c in value.lower())
+
+
+def legacy_map_identity(game, pilot, relative):
+    """A changed map must still be the same FRLG location, not another region.
+
+    Both maps are parsed as data, never executed. A missing file can be restored
+    at a proven registry slot; a changed map must retain its dimensions and
+    imported tileset identity. Old bytes are backed up by apply_install.
+    """
+    target = game / relative
+    if not target.exists():
+        return
+    old, new = load(target), load(pilot / relative)
+    if any(not isinstance(obj, RubyObject) or obj.name != "RPG::Map"
+           for obj in (old, new)):
+        raise ValueError("Invalid Kanto map structure: " + str(relative))
+    if any(old.attrs.get(k) != new.attrs.get(k) for k in ("@width", "@height")):
+        raise ValueError("Kanto map dimensions changed: " + str(relative))
+    def tile_identity(root, obj):
+        tiles = load(root / "Data/Tilesets.rxdata")
+        idx = obj.attrs.get("@tileset_id")
+        if type(idx) is not int or not 0 < idx < len(tiles):
+            raise ValueError("Invalid Kanto tileset: " + str(relative))
+        tile = tiles[idx]
+        if not isinstance(tile, RubyObject) or tile.name != "RPG::Tileset":
+            raise ValueError("Invalid Kanto tileset: " + str(relative))
+        graphic = text(tile.attrs["@tileset_name"])
+        if not graphic.startswith("FRLG_Preview_"):
+            raise ValueError("Foreign tileset in Kanto slot: " + str(relative))
+        return graphic
+    if tile_identity(game, old) != tile_identity(pilot, new):
+        raise ValueError("Kanto tileset identity changed: " + str(relative))
+
+
+def check_migration_target(game, pilot, relative, source, proof):
+    target = game / relative
+    recorded = recorded_hashes(proof).get(relative.as_posix())
+    if target.exists() and (digest(target) == digest(source) or recorded == digest(target)):
+        return
+    old_maps = {Path("Data") / f"Map{mid:03d}.rxdata" for mid in proof["maps"].values()}
+    if relative in old_maps and recorded_digest(recorded):
+        legacy_map_identity(game, pilot, relative)
+        return
+    if not target.exists():
+        return
+    # These are generated regional resources only, not user art or saves.
+    generated = {Path("PBS") / name for name in PBS_NAMES}
+    generated.update(Path("Data") / name for name in KANTO_RUNTIME_DATA)
+    generated.update((KANTO_LOCALE, Path("Data/blue-kanto-music.txt"),
+                      PLUGIN / "KantoPilot.rb", PLUGIN / "meta.txt"))
+    if relative in generated and recorded_digest(recorded):
+        return
+    raise ValueError("Arquivo existente alterado ou sem prova Kanto: " + str(relative))
+
+
+def manifest(pilot, game, migration=None):
     if not pilot_is_current(pilot):
         raise ValueError("Piloto antigo ou ausente; reconstrua a copia.")
     proof = inspect(pilot)
@@ -86,6 +150,12 @@ def manifest(pilot, game):
         if digest(game / "Data" / name) != expected[name]:
             raise ValueError("Base alterada depois de preparar o piloto: " + name)
     mapping = {int(k): int(v) for k, v in info["maps"].items()}
+    if migration is not None:
+        old = {int(k): v for k, v in migration["maps"].items()}
+        infos, occupied_files = inventory(game)
+        wanted = {int(k) for k in json_file(KANTO)["maps"]}
+        if mapping != allocate_kanto_ids(wanted, infos.keys() | occupied_files.keys(), old):
+            raise ValueError("Migration changed existing MapIDs or new allocation")
     files = {Path("Data") / name: pilot / "Data" / name for name in DATA_NAMES}
     for dest in mapping.values():
         file = Path("Data") / ("Map%03d.rxdata" % dest)
@@ -141,8 +211,15 @@ def manifest(pilot, game):
         if not source.is_file():
             raise ValueError("Arquivo de origem ausente: " + str(relative))
         if relative.parts[:2] != ("Data", "MapInfos.rxdata") and relative.parts[:2] != ("Data", "Tilesets.rxdata"):
-            if (game / relative).exists():
-                raise ValueError("Destino ocupado, recusado: " + str(relative))
+            target = game / relative
+            if target.is_symlink() or not target.resolve().is_relative_to(game.resolve()):
+                raise ValueError("Destino inseguro: " + str(relative))
+            if target.exists():
+                if migration is None:
+                    raise ValueError("Destino ocupado, recusado: " + str(relative))
+                if not target.is_file():
+                    raise ValueError("Destino nao e arquivo: " + str(relative))
+                check_migration_target(game, pilot, relative, source, migration)
     if not any(k.parts[:2] == ("Graphics", "Tilesets") for k in files):
         raise ValueError("Tilesets da origem nao encontrados.")
     return files, mapping, expected
@@ -212,10 +289,15 @@ def repair_portraits(game, commit=False):
     return plan
 
 
-def apply_install(game, pilot, commit=False):
-    if (game / MARKER).exists():
+def apply_install(game, pilot, commit=False, migration=None):
+    if (game / MARKER).exists() and migration is None:
         raise ValueError("Kanto ja instalado: recusar IDs duplicados.")
-    files, mapping, original_hashes = manifest(pilot, game)
+    if migration is None:
+        files, mapping, original_hashes = manifest(pilot, game)
+    else:
+        if legacy_proof(game) != migration:
+            raise ValueError("Kanto manifest changed during migration")
+        files, mapping, original_hashes = manifest(pilot, game, migration=migration)
     plan = {"status": "dry_run", "maps": len(mapping), "files": len(files),
             "start": [mapping[7], 25, 7], "map_ids": mapping}
     if not commit:
@@ -229,9 +311,25 @@ def apply_install(game, pilot, commit=False):
     originals = {}
     for relative in list(files) + extra:
         target = game / relative
+        if migration is not None and (target.is_symlink() or
+                not target.resolve().is_relative_to(game.resolve()) or
+                (target.exists() and not target.is_file())):
+            raise ValueError("Unsafe migration target: " + str(relative))
         originals[relative] = target.read_bytes() if target.is_file() else None
         if originals[relative] is not None:
             atomic(backup / relative, originals[relative])
+    if migration is not None:
+        for name in DATA_NAMES:
+            if digest(game / "Data" / name) != original_hashes[name]:
+                raise ValueError("Shared map registry changed during migration")
+        for relative in list(files) + extra:
+            target = game / relative
+            current = target.read_bytes() if target.is_file() else None
+            if current != originals[relative]:
+                raise ValueError("Installation changed during migration: " + str(relative))
+            if (relative in files and relative.as_posix() not in
+                    {"Data/MapInfos.rxdata", "Data/Tilesets.rxdata"}):
+                check_migration_target(game, pilot, relative, files[relative], migration)
     info = {"schema": 1, "maps": mapping, "base_data_sha256": original_hashes,
             "installed_sha256": {str(k): digest(v) for k, v in files.items()},
             "source": "Essentials FRLG 21.1"}
@@ -251,6 +349,16 @@ def apply_install(game, pilot, commit=False):
         # The marker is deliberately committed LAST. No menu until ready.
         start = "BLUE_KANTO_START_V1,KANTO,%d,25,7\n" % mapping[7]
         atomic(game / MARKER, start.encode("ascii"))
+        if migration is not None:
+            # Keep the final installed verification inside the rollback boundary.
+            verify_installed(game)
+            plan["recovered_legacy_maps"] = [
+                str(rel) for rel in files if rel.as_posix() in {
+                    f"Data/Map{mid:03d}.rxdata" for mid in migration["maps"].values()
+                } and (originals[rel] is None or
+                       hashlib.sha256(originals[rel]).hexdigest() !=
+                       recorded_hashes(migration).get(rel.as_posix()))
+            ]
     except BaseException:
         for relative, old in reversed(list(originals.items())):
             target = game / relative
@@ -259,9 +367,62 @@ def apply_install(game, pilot, commit=False):
             else:
                 atomic(target, old)
         raise
-    plan["status"] = "installed"
+    plan["status"] = "migrated" if migration is not None else "installed"
     plan["backup"] = str(backup)
     return plan
+
+
+def legacy_proof(game):
+    """Only the published 142-map registry is eligible for the 145-map migration."""
+    path = game / "Data/blue-kanto-install.json"
+    marker = game / MARKER
+    if any(p.is_symlink() or not p.is_file() for p in (path, marker)):
+        raise ValueError("Missing legacy Kanto proof")
+    proof = json_file(path)
+    mapping = proof.get("maps")
+    wanted = {str(k) for k in json_file(KANTO)["maps"]}
+    if (proof.get("schema") != 1 or proof.get("source") != "Essentials FRLG 21.1" or
+            len(wanted) != 145 or not isinstance(mapping, dict) or
+            len(mapping) != 142 or set(mapping) != wanted - {"53", "54", "55"} or
+            any(type(v) is not int or not 0 < v < 1000 for v in mapping.values()) or
+            len(set(mapping.values())) != 142 or
+            marker.read_text(encoding="ascii").strip() !=
+            f"BLUE_KANTO_START_V1,KANTO,{mapping.get('7')},25,7"):
+        raise ValueError("Unknown legacy Kanto mapping; refusing migration")
+    hashes = proof.get("installed_sha256")
+    if not isinstance(hashes, dict):
+        raise ValueError("Missing legacy Kanto checksums")
+    hashes = recorded_hashes(proof)
+    infos, files = inventory(game)
+    source_names = json_file(KANTO)["maps"]
+    for source_id, map_id in mapping.items():
+        rel = f"Data/Map{map_id:03d}.rxdata"
+        target = game / rel
+        info = infos.get(map_id)
+        if (not recorded_digest(hashes.get(rel)) or not isinstance(info, RubyObject) or
+                info.name != "RPG::MapInfo" or target.is_symlink() or
+                not target.resolve().is_relative_to(game.resolve()) or
+                (target.exists() and not target.is_file())):
+            raise ValueError("Legacy Kanto map ownership not proven: " + rel)
+        if map_id not in files or hashes[rel] != digest(files[map_id]):
+            expected_name = LOCATION_NAMES[source_names[source_id]]
+            if text(info.attrs.get("@name", b"")) != expected_name:
+                raise ValueError("Legacy Kanto map registry name differs: " + rel)
+            print("[KANTO MIGRATION] " + ("missing" if map_id not in files else "checksum drift") +
+                  ": " + rel + "; source reconstruction and backup required.", flush=True)
+    gate = game / READY_GATE
+    if gate.is_symlink() or (gate.exists() and gate.read_bytes() !=
+            ready_gate_bytes({int(k): v for k, v in mapping.items()})):
+        raise ValueError("Legacy Kanto ready marker conflicts with mapping")
+    return proof
+
+
+def migrate_existing(game, source, pilot, commit=False):
+    proof = legacy_proof(game)
+    mapping = {int(k): v for k, v in proof["maps"].items()}
+    pilot = revised_path(pilot) if pilot.exists() else pilot
+    build(source, game, pilot, existing=mapping)
+    return apply_install(game, pilot, commit, migration=proof)
 
 
 def verify_installed(game):
@@ -379,6 +540,8 @@ def sync_runtime(game, commit=False):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--apply", action="store_true")
+    parser.add_argument("--migrate-existing", action="store_true",
+                        help="Migrate the verified 142-map Kanto to 145 without reassigning IDs")
     parser.add_argument("--verify-installed", action="store_true",
                         help="Check main Kanto mapping/resources without changing files")
     parser.add_argument("--sync-runtime", action="store_true",
@@ -395,6 +558,10 @@ def main():
         parser.error("Destino fora de game/ e .blue-work")
     if not pilot.is_relative_to(work):
         parser.error("Piloto fora de .blue-work")
+    if args.migrate_existing:
+        print(json.dumps(migrate_existing(game, args.source.resolve(), pilot, args.apply),
+                         ensure_ascii=False, indent=2))
+        return
     if args.verify_installed:
         print(json.dumps(verify_installed(game), ensure_ascii=False, indent=2))
         return

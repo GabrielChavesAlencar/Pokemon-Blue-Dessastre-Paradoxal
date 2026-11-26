@@ -2,6 +2,42 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "98b07acb1f899bdfa7d541369632f1649843cd6e",
+      "date": "2026-11-25T23:45:05-03:00",
+      "title": "Merge PR #341: recover legacy Kanto map drift during Windows migration",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "febad2b148ae8109fdac1b5a9f726a13b857a63b",
+      "date": "2026-11-25T23:37:34-03:00",
+      "title": "Recover verified legacy Kanto map checksum drift or missing files during migration",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "e47e26d6d2ff70f2d9a44765db75927c1f31dc6d",
+      "date": "2026-11-25T23:26:17-03:00",
+      "title": "Merge PR #340: safe Kanto 142-to-145 Windows installer migration",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "f4ac47f39425bd83f72a11f2d67d60568a22af65",
+      "date": "2026-11-25T23:15:29-03:00",
+      "title": "Refresh standalone Unova BAT embedded Kanto installer and pilot sources",
+      "category": "Novidades"
+    },
+    {
+      "sha": "aa07b574f8afcca4494831cd8198e543f89fb4ea",
+      "date": "2026-11-25T23:08:53-03:00",
+      "title": "Keep migration verification inside rollback and test failure recovery",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "3597f212924b0bbc4d11b67b2f93de03c1dca1b6",
+      "date": "2026-11-25T23:08:20-03:00",
+      "title": "Fix Windows Kanto upgrade: migrate verified 142-map installs to 145 without changing MapIDs",
+      "category": "Melhorias"
+    },
+    {
       "sha": "a1bd21f00825567bc24e3c9538f1df67ebd33b21",
       "date": "2026-11-25T14:06:21-03:00",
       "title": "Merge PR #337: Sinnoh Rock cost attribution",
