@@ -228,6 +228,13 @@ jobs:
               Get-Content $openingTrace | ForEach-Object { Write-Host "KANTO_K01A_SAVE_STATE:$_" }
               Write-Host ("KANTO_K01A_NATIVE_STARTER_REPORT:" + (Get-Content $openingProof -Raw).Trim())
               Write-Host 'KANTO_K01A_THREE_STARTERS_SAVE_RELOAD_OK'
+              $parcelTrace="$pilot/Data/blue-kanto-k01b-route-trace.txt"
+              if(-not (Test-Path $parcelTrace)){throw 'K01-B native route trace missing'}
+              Get-Content $parcelTrace
+              $parcelProof="$pilot/Data/blue-kanto-k01b-parcel-proof.txt"
+              if(-not (Test-Path $parcelProof)){throw 'K01-B native Pallet/Oak proof missing'}
+              Write-Host ("KANTO_K01B_NATIVE_PALLET_OAK_REPORT:" + (Get-Content $parcelProof -Raw).Trim())
+              Write-Host 'KANTO_K01B_PALLET_OAK_PARCEL_SAVE_RELOAD_OK'
               Get-Content "$pilot/Data/blue-kanto-proof.txt"
               exit 0
             }
@@ -239,7 +246,38 @@ jobs:
           if(Test-Path $openingTrace){
             Get-Content $openingTrace | ForEach-Object { Write-Host "KANTO_K01A_SAVE_STATE:$_" }
           }
+          $gateTrace="$pilot/Data/blue-kanto-k01b-gate-trace.txt"
+          if(Test-Path $gateTrace){Get-Content $gateTrace}
+          $parcelTrace="$pilot/Data/blue-kanto-k01b-route-trace.txt"
+          if(Test-Path $parcelTrace){Get-Content $parcelTrace}
           throw 'Kanto native proof missing'
+      - name: Preservar trajetos e interação por balcão K01-B
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k01b-route-trace.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k01b-native-route-trace
+          path: .blue-work/kanto-pilot/Data/blue-kanto-k01b-route-trace.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preservar diagnóstico de saída de Pallet K01-B
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k01b-gate-trace.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k01b-native-gate-trace
+          path: .blue-work/kanto-pilot/Data/blue-kanto-k01b-gate-trace.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preservar recibo nativo Pallet Oak K01-B
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k01b-parcel-proof.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k01b-native-parcel-proof
+          path: .blue-work/kanto-pilot/Data/blue-kanto-k01b-parcel-proof.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
       - name: Preservar estados K01-A de save e reload
         if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k01a-state-trace.txt') != ''
         uses: actions/upload-artifact@v4
