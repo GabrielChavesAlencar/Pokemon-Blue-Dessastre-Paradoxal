@@ -19,7 +19,7 @@ from pilot import OUTPUT, SOURCE, PILOT_META, TYPES, build, pilot_is_current, re
 from verify_pilot import inspect
 
 PBS_NAMES = ("encounters_kanto.txt", "trainers_kanto.txt", "trainer_types_kanto.txt",
-             "map_metadata_kanto.txt", "map_connections_kanto.txt")
+             "map_metadata_kanto.txt", "map_connections_kanto.txt", "items_kanto.txt")
 DATA_NAMES = ("MapInfos.rxdata", "Tilesets.rxdata")
 PLUGIN = Path("Plugins/ZZZZZ Blue Kanto Pilot")
 MARKER = Path("Data/blue-kanto-start.txt")
