@@ -79,7 +79,7 @@ class MultiRegionPackagingTests(unittest.TestCase):
              patch.object(mobile,"compiled_mobile",return_value="b"*64), \
              patch.object(mobile,"verify_archive") as verify:
             result=mobile.build(self.game,self.output,self.revision,"multiregion")
-            verify.assert_called_once_with(self.output,self.revision,"b"*64,"multiregion")
+        verify.assert_called_once_with(self.output,self.revision,"b"*64,"multiregion",sinnoh_qa=False)
         self.assertGreater(result["bytes"],0)
         with zipfile.ZipFile(self.output) as archive:
             root="Pokemon-Blue-Android/"

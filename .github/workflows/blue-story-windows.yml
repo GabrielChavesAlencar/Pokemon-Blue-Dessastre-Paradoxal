@@ -173,7 +173,12 @@ jobs:
       - name: Preparar jogo principal em runner descartavel
         run: python scripts/install_game.py --apply
       - name: Gerar 144 mapas contra o jogo principal (sem ativar)
-        run: python -u scripts/regions/prepare_sinnoh_shared.py
+        shell: pwsh
+        run: |
+          python -u scripts/regions/prepare_sinnoh_shared.py *> .blue-work/sinnoh-shared-generation.log
+          $code = $LASTEXITCODE
+          Get-Content .blue-work/sinnoh-shared-generation.log -Tail 25 | ForEach-Object { $_.Substring(0,[Math]::Min(900,$_.Length)) }
+          exit $code
       - name: Confirmar candidato e ausência de ativação
         shell: pwsh
         run: |

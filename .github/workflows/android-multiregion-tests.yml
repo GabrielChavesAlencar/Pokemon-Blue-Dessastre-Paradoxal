@@ -48,7 +48,9 @@ jobs:
       - name: Reproduzir Novo Jogo no runtime JoiPlay sem JSON
         run: |
           ruby -c scripts/battle_polish/RegionStart.rb
+          ruby -c scripts/regions/SinnohSharedEvents.rb
           ruby tests/region_start_android_no_json_runtime.rb scripts/battle_polish/RegionStart.rb
+          ruby tests/sinnoh_shared_events_runtime.rb
       - name: Testar site de downloads e verificação real de release
         run: |
           npm run build --prefix site

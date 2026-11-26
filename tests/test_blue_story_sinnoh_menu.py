@@ -136,7 +136,7 @@ class BlueStorySinnohMenuTests(unittest.TestCase):
         self.assertNotIn('experimental.WaitForExit()',self.csharp)
     def test_19_release_is_not_published_on_pr(self):
         self.assertIn("pull_request:",self.pipeline)
-        self.assertIn("if: github.event_name != 'pull_request'",self.pipeline)
+        self.assertIn("if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'",self.pipeline)
     def test_20_menu_retains_regular_game_option(self):
         self.assertIn('campaign.Click+=delegate { selection.TrySetResult("campaign"); };',self.csharp)
         self.assertIn('if(!Hub && !JohtoReady())',self.csharp)

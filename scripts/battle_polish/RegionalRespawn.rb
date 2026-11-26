@@ -2,7 +2,7 @@
 # All battles still use Essentials' pbStartOver (healing, transfer, gameover).
 # Only a stale Pokemon Center from ANOTHER region is replaced.
 module BlueRegionalRespawn
-  REGIONS = %w[DECADES KANTO JOHTO HOENN].freeze
+  REGIONS = %w[DECADES KANTO JOHTO HOENN SINNOH].freeze
   KANTO_CENTER_SOURCE = 11  # FRLG Viridian City, first real Pokemon Center
   HOENN_CENTER_SOURCE = 13  # Oldale Town, first real Pokemon Center
 
@@ -81,16 +81,22 @@ module BlueRegionalRespawn
     when "KANTO" then kanto_maps.value?(map_id)
     when "HOENN" then hoenn_maps.value?(map_id)
     when "JOHTO" then johto_map_ids.include?(map_id)
+    when "SINNOH" then sinnoh_map_ids.include?(map_id)
     when "DECADES"
       # A legacy Decades checkpoint is native only when it is not in
       # any registered imported region.
       return false if kanto_maps.value?(map_id) || hoenn_maps.value?(map_id) ||
-                      johto_map_ids.include?(map_id)
+                      johto_map_ids.include?(map_id) || sinnoh_map_ids.include?(map_id)
       # A verified installed Decades game has native MapInfos entries.
       info = defined?($data_mapinfos) && $data_mapinfos && $data_mapinfos[map_id]
       !!info
     else false
     end
+  end
+
+  def self.sinnoh_map_ids
+    return [] unless defined?(BlueSinnohSharedEvents)
+    BlueSinnohSharedEvents.map_ids || []
   end
 
   def self.healing_spot(map_id)
@@ -149,6 +155,12 @@ module BlueRegionalRespawn
       return point if valid?(point)
       defined?(BlueRegionStart) && BlueRegionStart.respond_to?(:johto_town_point) ?
         BlueRegionStart.johto_town_point : nil
+    when "SINNOH"
+      sandgem = map_id_named(/\ASandgem Town\z/i)
+      point = healing_spot(sandgem) if sinnoh_map_ids.include?(sandgem)
+      return point if valid?(point) && region_map?(region, point[0])
+      points = BlueRegionStart.sinnoh_shared_points if defined?(BlueRegionStart)
+      points && points[1]
     end
   end
 

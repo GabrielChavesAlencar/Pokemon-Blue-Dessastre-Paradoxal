@@ -68,9 +68,9 @@ def verify_regions(game):
     return kp, hp
 
 
-def verify_sinnoh(read):
+def verify_sinnoh(read, *, qa=False):
     proof = json.loads(read(sinnoh_shared.RECEIPT))
-    sinnoh_shared.verify_files(proof, read, android=True, installed=True)
+    sinnoh_shared.verify_files(proof, read, android=not qa, installed=True, qa=qa)
     compiled = read("Data/PluginScripts.rxdata")
     for rel in (sinnoh_shared.PLUGIN, REGION_START_PLUGIN, REGION_TRAVEL_PLUGIN):
         compiled_region(compiled, Path(rel).name, read(rel))
@@ -84,7 +84,7 @@ def compiled_mobile(cache,source):
                 return hashlib.sha256(expected).hexdigest()
     raise ValueError('Compiled Mobile.rb differs from the Android source. Recompile before publishing.')
 
-def verify_archive(output,revision,source_sha=None,channel='decades'):
+def verify_archive(output,revision,source_sha=None,channel='decades',*,sinnoh_qa=False):
     with zipfile.ZipFile(output) as archive:
         base='Pokemon-Blue-Android/'
         info=dict(line.split(': ',1) for line in archive.read(base+'Data/blue-mobile-build.txt').decode('utf8').splitlines() if ': ' in line)
@@ -106,10 +106,14 @@ def verify_archive(output,revision,source_sha=None,channel='decades'):
             cache=archive.read(base+'Data/PluginScripts.rxdata')
             for name in (KANTO_PLUGIN,HOENN_PLUGIN,REGION_START_PLUGIN):
                 compiled_region(cache,Path(name).name,archive.read(base+name))
+        if (base+sinnoh_shared.QA_MARKER in archive.namelist()) != sinnoh_qa:
+            raise ValueError('O perfil Android QA de Sinnoh não é um pacote de distribuição.')
         if any(base+name in archive.namelist() for name in (sinnoh_shared.RECEIPT, sinnoh_shared.START, sinnoh_shared.PLUGIN)):
             if channel != 'multiregion':
                 raise ValueError('Sinnoh requires the shared Android channel.')
-            verify_sinnoh(lambda rel: archive.read(base+rel))
+            verify_sinnoh(lambda rel: archive.read(base+rel),qa=sinnoh_qa)
+        elif sinnoh_qa:
+            raise ValueError('Pacote Android QA sem arquivos de Sinnoh.')
     return {'revision':revision,'mobileSha256':actual}
 
 def fingerprint(game):
@@ -154,14 +158,22 @@ def allowed(path):
         return (name.endswith(('.dat','.rxdata')) and not name.startswith(('blue-mp','blue-route-captures','blue-campaign-reference','blue-')))
     return len(parts)==1 and name in ('game.exe','game.ini','mkxp.json','preload.rb','rgss104e.dll','x64-msvcrt-ruby310.dll','zlib1.dll','soundfont.sf2','credits.txt')
 
-def build(game,output,revision,channel='decades'):
+def build(game,output,revision,channel='decades',*,sinnoh_qa=False):
     if channel not in ('decades','multiregion'):raise ValueError('Unknown Android History build channel.')
+    game,output = game.resolve(),output.resolve()
+    qa_marker = game/sinnoh_shared.QA_MARKER
+    if (qa_marker.exists() or qa_marker.is_symlink()) != sinnoh_qa:
+        raise ValueError('A cópia de QA de Sinnoh exige empacotamento QA explícito.')
+    if sinnoh_qa and (channel != 'multiregion' or
+                      game.parts[-3:] != ('.blue-work','sinnoh-shared-qa','game') or
+                      output != game.parent/'Blue-Android-Sinnoh-QA.zip'):
+        raise ValueError('O ZIP QA de Sinnoh deve permanecer na cópia descartável.')
     if channel=='multiregion':verify_regions(game)
     has_sinnoh = any((game/name).exists() or (game/name).is_symlink() for name in
         (sinnoh_shared.RECEIPT, sinnoh_shared.START, sinnoh_shared.PLUGIN))
     if has_sinnoh:
         if channel != 'multiregion':raise ValueError('Sinnoh exige o canal compartilhado no Android.')
-        verify_sinnoh(lambda rel: sinnoh_shared.safe_file(game.resolve(),rel).read_bytes())
+        verify_sinnoh(lambda rel: sinnoh_shared.safe_file(game,rel).read_bytes(),qa=sinnoh_qa)
     marker=game/'Data/blue-android-compiled.txt'
     if not marker.is_file():raise ValueError('The native compiler did not produce its completion marker. No Android download can be published.')
     if marker.read_text()!=fingerprint(game):raise ValueError('The native compiler completion marker is stale for the current plugins. No Android download can be published.')
@@ -180,6 +192,8 @@ def build(game,output,revision,channel='decades'):
         if has_sinnoh:
             for name in (sinnoh_shared.RECEIPT,sinnoh_shared.START):
                 plans[name]=game/name
+        if sinnoh_qa:
+            plans[sinnoh_shared.QA_MARKER]=qa_marker
     output.parent.mkdir(parents=True,exist_ok=True)
     build_utc=datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00","Z")
     build_info=('Compatibility: 2\nRevision: '+revision+'\nBuild-UTC: '+build_utc+
@@ -209,6 +223,8 @@ def build(game,output,revision,channel='decades'):
                 'Nao instale sobre os arquivos de outro canal sem backup dos saves.\n')
         if has_sinnoh:
             readme += 'SINNOH: selecione Novo Jogo ou use o Agente de Transporte Regional no mesmo save.\n'
+        if sinnoh_qa:
+            readme = 'Copia local de QA de Sinnoh. Use apenas saves de teste.\n' + readme
         archive.writestr('Pokemon-Blue-Android/LEIA-ME-ANDROID.txt', readme)
         # Inventory is checked by the release publisher and the Android updater.
         extras={
@@ -222,14 +238,24 @@ def build(game,output,revision,channel='decades'):
                                                                'LEIA-ME-ANDROID.txt': readme.encode('utf8')}))
         archive.writestr('Pokemon-Blue-Android/ATUALIZAR-ANDROID.py',
                          (ROOT/'scripts/android/update_client.py').read_bytes())
-    verify_archive(output,revision,mobile_sha,channel)
+    verify_archive(output,revision,mobile_sha,channel,sinnoh_qa=sinnoh_qa)
     with output.open('rb') as stream:digest=hashlib.file_digest(stream,'sha256').hexdigest()
     output.with_suffix('.zip.sha256').write_text(digest+'  '+output.name+'\n','ascii')
     return {'revision':revision,'mobileSha256':mobile_sha,'files':len(plans)+3,'bytes':output.stat().st_size,'sha256':digest}
 if __name__=='__main__':
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--game-dir',type=Path,default=ROOT/'game');parser.add_argument('--request-compile',action='store_true');parser.add_argument('--verify',action='store_true');parser.add_argument('--revision',default='local');parser.add_argument('--channel',choices=('decades','multiregion'),default='decades');parser.add_argument('--output',type=Path,default=ROOT/'dist/Blue-Android-JoiPlay.zip');a=parser.parse_args()
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--game-dir',type=Path,default=ROOT/'game')
+    parser.add_argument('--request-compile',action='store_true')
+    parser.add_argument('--verify',action='store_true')
+    parser.add_argument('--revision',default='local')
+    parser.add_argument('--channel',choices=('decades','multiregion'),default='decades')
+    parser.add_argument('--output',type=Path)
+    parser.add_argument('--sinnoh-qa',action='store_true')
+    a=parser.parse_args()
+    output = a.output or (a.game_dir.parent/'Blue-Android-Sinnoh-QA.zip' if a.sinnoh_qa else
+                          ROOT/'dist/Blue-Android-JoiPlay.zip')
     if a.request_compile:request_compile(a.game_dir);print('Native Android compilation requested.')
     elif a.verify:
         source_sha=hashlib.sha256((ROOT/'scripts/battle_lab/Mobile.rb').read_bytes().replace(b'\r\n',b'\n')).hexdigest()
-        print(json.dumps(verify_archive(a.output,a.revision,source_sha,channel=a.channel)))
-    else:print(json.dumps(build(a.game_dir,a.output,a.revision,a.channel)))
+        print(json.dumps(verify_archive(output,a.revision,source_sha,channel=a.channel,sinnoh_qa=a.sinnoh_qa)))
+    else:print(json.dumps(build(a.game_dir,output,a.revision,a.channel,sinnoh_qa=a.sinnoh_qa)))

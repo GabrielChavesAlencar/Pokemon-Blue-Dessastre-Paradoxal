@@ -577,6 +577,8 @@ def main(argv=None):
                         help="Explicit fallback: download full ZIP but replace only changed files, no backup.")
     args = parser.parse_args(argv)
     root = args.game_dir.expanduser().resolve()
+    if (root / "Data/blue-sinnoh-shared-qa.txt").is_file():
+        raise ValueError("A cópia de QA de Sinnoh não recebe atualizações do canal público.")
     info = read_installed(root)
     release, manifest = remote_update(info)
     verify_forward_revision(info["revision"], manifest["revision"])

@@ -74,9 +74,9 @@ def compile_windows(game, token):
     return shared.sha(cache)
 
 
-def stage(project, *, compile_native=False):
+def stage(project, *, base_game=None, compile_native=False):
     project = project.resolve()
-    base = project / "game"
+    base = base_game.resolve() if base_game else project / "game"
     candidate = project / CANDIDATE
     target = project / QA_DIR
     for path in (target.parent,candidate,target):
@@ -122,6 +122,8 @@ def stage(project, *, compile_native=False):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--project",type=Path,default=ROOT)
+    parser.add_argument("--base-game",type=Path,help="Read-only base used by the candidate")
     parser.add_argument("--compile",action="store_true")
     args = parser.parse_args()
-    print("SINNOH_SHARED_QA_STAGE",json.dumps(stage(args.project,compile_native=args.compile)),flush=True)
+    print("SINNOH_SHARED_QA_STAGE",json.dumps(stage(args.project,base_game=args.base_game,
+                                                   compile_native=args.compile)),flush=True)

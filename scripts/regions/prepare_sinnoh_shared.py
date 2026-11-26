@@ -149,8 +149,6 @@ def prepare_world(game, outputs, report):
 
 def prepare(project, game):
     project, game = project.resolve(), game.resolve()
-    if game != project / "game":
-        raise ValueError("Use the managed shared game/ as read-only base")
     shared.assert_no_legacy_sinnoh_shared(game)
     folder = project / CANDIDATE
     if folder.exists() or folder.is_symlink() or folder.parent.is_symlink():
@@ -159,6 +157,8 @@ def prepare(project, game):
     from install_sinnoh_experimental_windows import build_files
     ensure_sources(project)
     outputs, report = build_files(game, project, shared_runtime=True)
+    if sorted(report["mapids"].values()) != list(shared.SHARED_IDS):
+        raise ValueError("O gerador divergiu da reserva estável de 445 a 588 de Sinnoh.")
     files, review, proof = prepare_world(game, outputs, report)
     folder.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="sinnoh-shared-", dir=folder.parent) as tmp:
@@ -174,8 +174,9 @@ def prepare(project, game):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--project", type=Path, default=ROOT)
+    parser.add_argument("--base-game", type=Path, help="Existing shared game to read without changes")
     args = parser.parse_args()
-    result = prepare(args.project,args.project/"game")
+    result = prepare(args.project,args.base_game or args.project/"game")
     print("SINNOH_SHARED_WORLD_CANDIDATE", json.dumps({
         "map_count":len(result["map_ids"]), "start":result["start"],
         "arrival":result["arrival"], "agent":result["agent"],

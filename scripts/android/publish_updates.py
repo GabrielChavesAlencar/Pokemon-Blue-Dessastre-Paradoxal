@@ -50,6 +50,13 @@ def from_archive(path: Path, channel: str):
                     meta != {"sha256": sha256_bytes(archive.read(root + name)),
                              "size": archive.getinfo(root + name).file_size}):
                 raise ValueError("Source ZIP file differs from hash manifest: " + name)
+        if "Data/blue-sinnoh-shared-qa.txt" in marker["files"]:
+            raise ValueError("A cópia Android QA de Sinnoh não pode ser publicada.")
+        if {"Data/blue-sinnoh-shared.json","Data/blue-sinnoh-shared.txt"} & marker["files"].keys():
+            if channel != "multiregion":
+                raise ValueError("Sinnoh exige o canal Android multirregional.")
+            from scripts.android.package import verify_sinnoh
+            verify_sinnoh(lambda name: archive.read(root+name))
     return marker, root
 
 

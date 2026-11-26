@@ -134,9 +134,13 @@ def regular(path:Path):
     if not path.is_file():fail("FILE_MISSING:"+str(path))
     return path
 
-def select_ids(base:Path,infos:dict,minimum=442,maximum=517):
+def select_ids(base:Path,infos:dict,minimum=442,maximum=517,*,reserved=()):
     """Local collision-free IDs are QA ONLY, not a global R07 reservation."""
     occupied=native_map_ids(base)|set(infos)
+    if occupied.intersection(reserved):
+        fail("SHARED_SINNOH_MAPID_COLLISION")
+    if reserved:
+        occupied.update(set(range(442,600))-set(reserved))
     free=[i for i in range(minimum,maximum+1) if i not in occupied]
     if len(free)<9:fail("NOT_ENOUGH_FREE_SINNOH_QA_IDS_442_517")
     selected=free[:9]
@@ -809,7 +813,11 @@ def build_files(base:Path,project:Path=ROOT,*,shared_runtime=False):
     infos=read_marshal((base/"Data/MapInfos.rxdata").read_bytes(),"LOCAL_INFOS")
     tiles=read_marshal((base/"Data/Tilesets.rxdata").read_bytes(),"LOCAL_TILESETS")
     j11c.validate_baseline(infos,tiles)
-    ids,mapping,occupied=select_ids(base,infos)
+    if shared_runtime:
+        from sinnoh_shared import SHARED_IDS
+        ids,mapping,occupied=select_ids(base,infos,reserved=SHARED_IDS)
+    else:
+        ids,mapping,occupied=select_ids(base,infos)
     src_barry,barry_files=build_barry(base,root=project)
     if src_barry.get("status")!="VALIDATED_NATIVE_PBS_DRAFT_NOT_COMPILED":
         fail("BARRY_PBS_SOURCE_INVALID")
