@@ -50,4 +50,6 @@ jobs:
           ruby -c scripts/battle_polish/RegionStart.rb
           ruby tests/region_start_android_no_json_runtime.rb scripts/battle_polish/RegionStart.rb
       - name: Testar site de downloads e verificação real de release
-        run: npm test --prefix site
+        run: |
+          npm run build --prefix site
+          npm test --prefix site

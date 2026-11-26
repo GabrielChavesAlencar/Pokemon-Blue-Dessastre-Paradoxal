@@ -32,11 +32,13 @@ ID_RANGE = range(442, 600)
 
 
 def validate_manifest(data, *, android=False):
+    if not isinstance(data, dict):
+        raise ValueError("Manifesto compartilhado de Sinnoh inválido.")
     approvals = ("map_ids", "asset_rights", "connected_world", "windows_travel")
     if android:
         approvals += ("joiplay_travel", "android_distribution")
     status = data.get("approvals", {})
-    if data.get("schema") != 1 or data.get("profile") != "BLUE_SINNOH_SHARED_V1" or not all(
+    if not isinstance(status, dict) or data.get("schema") != 1 or data.get("profile") != "BLUE_SINNOH_SHARED_V1" or not all(
             status.get(key) is True for key in approvals):
         raise ValueError("Sinnoh precisa de um pacote compartilhado revisado para esta plataforma.")
     ids = data.get("map_ids", [])
@@ -52,11 +54,13 @@ def validate_manifest(data, *, android=False):
     if spawn[0] != npc[0] or not 1 <= abs(spawn[1]-npc[1])+abs(spawn[2]-npc[2]) <= 4:
         raise ValueError("O agente regional deve ficar junto à chegada de Sinnoh.")
     hashes = data.get("files", {})
+    base = data.get("base", {})
+    if not isinstance(hashes, dict) or not isinstance(base, dict):
+        raise ValueError("Inventário compartilhado de Sinnoh inválido.")
     files = set(hashes)
     required = INSTALL_FILES | {f"Data/Map{mid:03d}.rxdata" for mid in ids}
     if not required <= files or any(not ASSET.fullmatch(rel) for rel in files-required):
         raise ValueError("O pacote Sinnoh contém um arquivo fora do overlay regional.")
-    base = data.get("base", {})
     if set(base) != SHARED_FILES or any(not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest)
             for digest in [*hashes.values(), *base.values()]):
         raise ValueError("Hashes do pacote Sinnoh incompletos.")

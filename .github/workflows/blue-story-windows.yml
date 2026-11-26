@@ -49,6 +49,9 @@ on:
   pull_request:
     paths:
       - scripts/windows/**
+      - scripts/install_game.py
+      - scripts/regions/sinnoh_shared.py
+      - tests/test_sinnoh_shared_install.py
       - scripts/regions/install_sinnoh_experimental_windows.py
       - scripts/regions/sinnoh_source_download.py
       - scripts/regions/sinnoh_f12d3_secretpotion_audit.py
@@ -107,6 +110,8 @@ jobs:
         run: python -m unittest discover -s tests -p test_blue_story_github_cli.py -v
       - name: Testar escolha do piloto Sinnoh no Blue-Story e isolamento de saves
         run: python -m unittest discover -s tests -p test_blue_story_sinnoh_menu.py -v
+      - name: Testar Sinnoh no instalador compartilhado sem tocar nos saves
+        run: python -m unittest discover -s tests -p test_sinnoh_shared_install.py -v
       - name: Validar inventario F03 e bloqueios de MapIDs
         run: python -m unittest discover -s tests -p test_sinnoh_expansion_f03.py -v
       - name: Revalidar preparador J12-E em fixtures Windows

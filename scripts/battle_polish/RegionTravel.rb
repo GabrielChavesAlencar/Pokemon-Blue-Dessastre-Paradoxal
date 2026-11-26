@@ -68,6 +68,11 @@ module BlueRegionTravel
     $game_switches[finale["switch"]] == true && $player.badges[finale["badge"]] == true
   end
 
+  def self.sinnoh_points
+    return nil unless defined?(BlueRegionStart) && BlueRegionStart.respond_to?(:sinnoh_shared_points)
+    BlueRegionStart.sinnoh_shared_points
+  end
+
   def self.source_valid?(state)
     return false unless state && BlueRegions.known?(state["current"])
     # No League or badge requirement: only an actually merged region may
@@ -78,7 +83,7 @@ module BlueRegionTravel
     when "KANTO" then installed?
     when "JOHTO" then !!johto_installed?
     when "HOENN" then !!hoenn_installed?
-    when "SINNOH" then !!BlueRegionStart.sinnoh_shared_points
+    when "SINNOH" then !!sinnoh_points
     else false
     end
   end
@@ -172,7 +177,7 @@ module BlueRegionTravel
       return nil unless johto_installed?
       BlueRegionStart.johto_town_point
     elsif key == "SINNOH"
-      BlueRegionStart.sinnoh_shared_points&.[](1)
+      sinnoh_points&.[](1)
     elsif key == "DECADES"
       # Previous releases mistakenly saved System.rxdata's native INTRO as
       # decades_first_arrival. Ignore it, even for an old Kanto save: visiting
@@ -446,7 +451,7 @@ module BlueRegionTravel
       point = hoenn_town_point
       !!point && $game_map.map_id == point[0]
     when "SINNOH"
-      point = BlueRegionStart.sinnoh_shared_points&.last
+      point = sinnoh_points&.last
       !!point && $game_map.map_id == point[0]
     else false
     end
@@ -715,7 +720,7 @@ module BlueRegionTravel
 
   SINNOH_AGENT_NAME = "Agente Regional Sinnoh".freeze
   def self.attach_sinnoh_agent(map)
-    point = BlueRegionStart.sinnoh_shared_points&.last
+    point = sinnoh_points&.last
     return unless point && map.map_id == point[0] && map.events.is_a?(Hash)
     x, y = point[1,2]
     return unless map.valid?(x,y) && map.passable?(x,y,2)
@@ -756,7 +761,7 @@ module BlueRegionTravel
          when "HOENN"
            hoenn_installed? ? BlueRegionStart.hoenn_town_point&.first : nil
          when "SINNOH"
-           BlueRegionStart.sinnoh_shared_points&.last&.first
+           sinnoh_points&.last&.first
          end
     # MapInfos may not yet be ready during startup: don't freeze the
     # fallback Decades ID before the native registry has loaded.
