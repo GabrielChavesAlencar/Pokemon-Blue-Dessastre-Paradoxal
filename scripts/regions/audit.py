@@ -173,7 +173,23 @@ def check_decades(game, registry):
                                   if badge != ending["badge"] and badges[badge] == {source}]}
 
 
-def map_plan(source, game, manifest):
+def allocate_kanto_ids(wanted, occupied, existing=None):
+    """Retain every installed source/destination pair; allocate only new IDs."""
+    existing = dict(existing or {})
+    if (not existing.keys() <= set(wanted) or
+            len(set(existing.values())) != len(existing) or
+            any(type(n) is not int or not 0 < n < 1000 or n not in occupied
+                for n in existing.values())):
+        raise ValueError("Invalid existing Kanto mapping")
+    free = iter(range(max(300, max(occupied, default=0) + 1), 1000))
+    ids = {n: existing[n] if n in existing else next(free, None)
+           for n in stable_source_order(wanted)}
+    if None in ids.values():
+        raise ValueError("No free map IDs in the supported 1–999 range.")
+    return ids
+
+
+def map_plan(source, game, manifest, existing=None):
     infos, files = inventory(source)
     dest_infos, dest_files = inventory(game)
     source_system = load(source / "Data/System.rxdata").attrs
@@ -182,10 +198,9 @@ def map_plan(source, game, manifest):
     if not wanted.keys() <= (infos.keys() & files.keys()):
         raise ValueError("Source is missing one or more pilot maps.")
     # Three digits is the supported project tooling range, not a claimed engine maximum.
-    free = iter(n for n in range(max(300, max(dest_infos.keys() | dest_files.keys(), default=0) + 1), 1000) if n not in dest_infos and n not in dest_files)
-    ids = {n: next(free, None) for n in stable_source_order(wanted)}
-    if None in ids.values():
-        raise ValueError("No free map IDs in the supported 1–999 range.")
+    if existing and not set(existing.values()) <= (dest_infos.keys() & dest_files.keys()):
+        raise ValueError("Existing Kanto map missing from registry or disk")
+    ids = allocate_kanto_ids(wanted, dest_infos.keys() | dest_files.keys(), existing)
     tilesets = load(source / "Data/Tilesets.rxdata")
     metadata = (source / "PBS/map_metadata.txt").read_text(encoding="utf-8-sig")
     metadata_rows = {int(n): block for n, block in re.findall(r"(?ms)^\[(\d+)\]([^\[]*)", metadata)}

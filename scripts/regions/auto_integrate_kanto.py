@@ -169,7 +169,28 @@ def integrate(project: Path = ROOT, game: Path | None = None,
         try:
             invoke(KANTO_IMPORTER, "--game", str(game), "--verify-installed")
         except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError) as err:
-            reason = _failure("Verificacao de Kanto existente", err)
+            # Only the known shipped 142-map proof may enter the migration.
+            # The importer independently checks exact ownership and hashes.
+            try:
+                legacy = json.loads((game / KANTO_MANIFEST).read_text(encoding="utf-8"))
+                candidate = (legacy.get("schema") == 1 and
+                             legacy.get("source") == "Essentials FRLG 21.1" and
+                             isinstance(legacy.get("maps"), dict) and
+                             len(legacy["maps"]) == 142 and (game / KANTO_MARKER).is_file())
+            except (OSError, ValueError, TypeError, AttributeError):
+                candidate = False
+            if candidate:
+                try:
+                    invoke(KANTO_SOURCE_BOOTSTRAP)
+                    invoke(KANTO_IMPORTER, "--game", str(game), "--migrate-existing", "--apply")
+                    invoke(KANTO_IMPORTER, "--game", str(game), "--verify-installed")
+                    recompiling = ensure_rival_compilation(project, game)
+                    return _persist(project, {"status": "integrated", "changed": True,
+                                              "source": "verified_142_to_145_migration",
+                                              "rival_compile_requested": recompiling})
+                except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError) as migration_error:
+                    err = migration_error
+            reason = _failure("Verificacao de Kanto existente / migracao segura", err)
             print("[KANTO AUTO]", reason, flush=True)
             print("[KANTO AUTO] Nao sobrescrevi mapas nem saves. O instalador "
                   "nao fara migracao de MapIDs automaticamente.", flush=True)
