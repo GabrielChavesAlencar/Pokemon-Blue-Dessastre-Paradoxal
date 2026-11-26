@@ -140,8 +140,8 @@ def inspect(game: Path) -> dict:
                     if op.attrs["@code"] == 355 and op.attrs["@parameters"]]
         if row["kind"] == "furniture_dialogue":
             key = (source, event_id)
-            expected = CERULEAN_FURNITURE.get(key)
-            if (expected != (row["source_name"], row["x"], row["y"]) or
+            expected_furniture = CERULEAN_FURNITURE.get(key)
+            if (expected_furniture != (row["source_name"], row["x"], row["y"]) or
                     text(event.attrs["@name"]) != row["source_name"] or
                     key not in native_dialogues or len(event.attrs["@pages"]) != 1 or
                     page["@graphic"].attrs["@character_name"] or
