@@ -482,6 +482,7 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile
         # after the outer method returns: native post-hooks may inspect them.
         # Never prepend Compiler.main (the installed plugins alias that method).
         guarded=guarded.replace("      Compiler.main", """      if blue_sinnoh_compile_only
+        BlueSinnohF12DIntegrated.verify_compile_inputs!(blue_sinnoh_request, blue_sinnoh_native_sources.keys, __QA_EXPERIMENT_SOURCE__)
         blue_sinnoh_core_compiled = false
         blue_sinnoh_restore = proc do
           blue_sinnoh_native_sources.each do |path, original|
@@ -519,6 +520,7 @@ def patch_bootstrap(raw:bytes,token:str,map_ids=(),connected=False,story_profile
       else
         Compiler.main
       end""",1)
+        guarded=guarded.replace("__QA_EXPERIMENT_SOURCE__",json.dumps(f"{EXPERIMENT_PLUGIN}/SinnohExperimentalStart.rb"))
         verify=verify.replace("    if __QA_SCOPE__","    if blue_sinnoh_compile_only",1)
         verify=verify.replace("        GameData::Trainer.load","        raise \"Sinnoh F12D: compile request changed\" unless File.binread(\"Data/sinnoh-experimental-compile-request.txt\").strip==blue_sinnoh_request\n        puts \"SINNOH_F12D_NATIVE_STAGE VERIFY_ENTERED\"\n        GameData::Item.load\n        raise \"Sinnoh F12D: invalid compiled SecretPotion\" unless BlueSinnohF12D3Transaction.compiled_item_valid?\n        puts \"SINNOH_F12D_NATIVE_ITEM_COMPILED_OK\"\n        BlueSinnohF12DIntegrated.verify_native_movement!\n        puts \"SINNOH_F12D_NATIVE_MOVEMENT_PROBE_OK\"\n        BlueSinnohF12DIntegrated.verify_native_transaction!\n        puts \"SINNOH_F12D_NATIVE_TRANSACTION_PROBE_OK\"\n        GameData::Trainer.load",1)
         # Keep all previous encounter/trainer/terrain/hook checks, not just
@@ -1066,7 +1068,14 @@ def build_files(base:Path,project:Path=ROOT):
     # may restore only these exact preverified bytes, never accept a new hash.
     # This is inside the isolated QA copy, never the user's main installation.
     final["Data/sinnoh-experimental-tilesets-pristine.bin"]=final["Data/Tilesets.rxdata"]
-    proof=sha(("SinnohExperimental:"+token+sha(final["Data/MapInfos.rxdata"])).encode())
+    file_hashes={path:sha(content) for path,content in final.items()}
+    if f12d_integrated_report.get("runtime_install_enabled"):
+        # Bind the private compile receipt to its maps, connections, PBS,
+        # generated plugin and base instead of just the map index.
+        identity={"profile":token,"base_mapinfos_sha256":base_hash,"files":file_hashes}
+        proof=sha(json.dumps(identity,sort_keys=True,separators=(",",":")).encode("ascii"))
+    else:
+        proof=sha(("SinnohExperimental:"+token+file_hashes["Data/MapInfos.rxdata"]).encode())
     final["Data/sinnoh-experimental-compile-request.txt"]=proof.encode("ascii")
     # These hashes do not claim human rights approval, or native gameplay acceptance.
     report={"schema":1,"region":"SINNOH","mode":MODE,
@@ -1113,8 +1122,8 @@ def build_files(base:Path,project:Path=ROOT):
         "visual_native_reviewed":False,
         "human_positions_reviewed":False,"native_collision_verified":False,
         "compile_token":proof,
-        "file_sha256":{path:sha(content) for path,content in final.items()},
-        "base_mapinfos_sha256":sha((base/"Data/MapInfos.rxdata").read_bytes())}
+        "file_sha256":{**file_hashes,"Data/sinnoh-experimental-compile-request.txt":sha(proof.encode("ascii"))},
+        "base_mapinfos_sha256":base_hash}
     final["sinnoh-experimental-qa.json"]=(json.dumps(report,indent=2,sort_keys=True,ensure_ascii=False)+"\n").encode()
     return final,report
 

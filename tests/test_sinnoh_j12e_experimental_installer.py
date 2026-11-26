@@ -1707,7 +1707,8 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                             self.assertEqual(story["valor_rock_reference_cells"],204)
                             self.assertIn(story["valor_rock_threshold_cells"],(0,1))
                             self.assertEqual(story["lake_payloads"],list(integrated.ORDER[:len(story["lake_payloads"])]))
-                            self.assertTrue(all(story["lake_sequence_checks"][k]["walk_from_predecessor_proved"] for k in story["lake_payloads"]))
+                            if story["lake_payloads"]:
+                                self.assertTrue(integrated.complete_lake_sequence(story["lake_sequence_checks"]))
                             self.assertIn("CYNTHIA",story["locations"])
                             self.assertTrue(payload and plugin)
                         else:
@@ -3610,7 +3611,7 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
             template=source.replace("__LOCATIONS__","{}").replace("__SPECS__","{}")
             for key in ("__EDIT_CELLS__","__CHASE_LANES__","__CELESTIC_LANES__"):
                 template=template.replace(key,"[]")
-            template=template.replace("__SURF_ROUTES__",'{529=>[[0,0,"walk"],[1,0,"surf"],[2,0,"surf"],[3,0,"walk"]]}').replace("__NORTH_ROCK_EDGES__","[]")
+            template=template.replace("__SURF_ROUTES__",'{529=>[[0,0,"walk"],[1,0,"surf"],[2,0,"surf"],[3,0,"walk"]]}').replace("__NORTH_ROCK_EDGES__","[]").replace("__SURF_DRY_PORTALS__","{}")
             code=(ROOT/"scripts/regions/SinnohF12D3Transaction.rb").read_text("utf-8")+"\n"+template
             fixture=code+'''
 m=BlueSinnohF12DIntegrated
@@ -3638,7 +3639,7 @@ raise "foreign map" if m.surf_step_allowed?(:allowed,nil,[],true,b,[511,2,0])
     def test_f12d_surf_compile_context_restores_native_globals_on_failure(self):
         if not shutil.which("ruby"):self.skipTest("Ruby unavailable")
         template=(ROOT/"scripts/regions/SinnohF12DIntegrated.rb").read_text("utf-8")
-        for key in ("__LOCATIONS__","__SPECS__","__SURF_ROUTES__","__NORTH_ROCK_EDGES__"):
+        for key in ("__LOCATIONS__","__SPECS__","__SURF_ROUTES__","__SURF_DRY_PORTALS__","__NORTH_ROCK_EDGES__"):
             template=template.replace(key,"{}")
         for key in ("__EDIT_CELLS__","__CHASE_LANES__","__CELESTIC_LANES__"):
             template=template.replace(key,"[]")
@@ -3726,6 +3727,52 @@ raise "restore error" unless original==[$game_variables,$game_switches,$game_sel
         self.assertEqual(integrated.unique_empty_lake_alignment([3,4],[0,1],build,lambda r:True),(None,3))
         self.assertEqual(integrated.unique_empty_lake_alignment([3],[0],build,lambda r:False),(None,0))
         self.assertEqual(integrated.unique_empty_lake_alignment([], [0],build,lambda r:True),(None,0))
+
+    def test_f12d_accepts_a_serialized_lake_sequence_that_requires_surf(self):
+        import sinnoh_f12d_integrated as integrated
+
+        mid=500
+        mapping={"SINNOH_ROUTE_201":mid}
+        tiles=copy.deepcopy(self.tiles)
+        tiles[1].attrs.update({"@passages":j11c.table1([0,0,15]),
+            "@terrain_tags":j11c.table1([0,0,5]),"@priorities":j11c.table1([0,0,0])})
+        world=read_marshal(self.empty["Data/Map442.rxdata"],"SYNTHETIC_LAKE")
+        world.attrs.update({"@width":5,"@height":2,"@tileset_id":1,"@events":{}})
+        def map_bytes(second_row):
+            cells=[1,2,1,1,1]+second_row+[0]*20
+            world.attrs["@data"]=RubyData("Table",struct.pack("<5I30H",3,5,2,3,30,*cells))
+            return serialize(world)
+
+        path="Data/Map500.rxdata"
+        data={path:map_bytes([0]*5),"Data/Tilesets.rxdata":serialize(tiles),
+            "PBS/map_connections.txt":b"","Data/map_connections.dat":serialize([])}
+        seed=(mid,0,0)
+        locations={key:{"map_id":mid,"stand":[x,0]} for x,key in enumerate(integrated.ORDER,2)}
+        routes={mid:[[0,0,"walk"],[1,0,"surf"],[2,0,"walk"]]}
+        geometry={"maps":{"test":{"map_id":mid,"start":[0,0],"goal":[2,0],"water_steps":1,
+            "surf_candidate":True,"path_sha256":integrated.witness_hash([[0,0],[1,0],[2,0]]),
+            "path_geometry_sha256":integrated.witness_hash([
+                (((0,),(0,)),(0,)),(((15,),(5,)),(0,)),(((0,),(0,)),(0,))])}}}
+
+        def recover(blobs,proof=geometry,paths=routes):
+            with patch.object(integrated.tp,"build",return_value=[]):
+                return integrated.recover_lake_seams(blobs,mapping,{},ROOT,{"edge_candidates":[]},
+                    seed,locations,(),{},proof,paths)[2]
+
+        report=recover(data)
+        self.assertEqual(report["reason"],"complete_original_sequence_fixture_proved")
+        self.assertTrue(report["serialized_legs"]["VALOR"]["return"])
+        self.assertFalse(report["serialized_legs"]["VALOR"]["dry_forward"])
+        self.assertEqual(recover(data,{},{})["reason"],"complete_original_sequence_not_proved")
+        bypass={**data,path:map_bytes([1]*5)}
+        self.assertEqual(recover(bypass)["reason"],"serialized_original_sequence_not_proved")
+        occupied,_=integrated.add_event(data,mid,(1,0),"OCCUPIED_WATER","")
+        self.assertEqual(recover(occupied)["reason"],"complete_original_sequence_not_proved")
+
+        changed_tiles=copy.deepcopy(tiles)
+        changed_tiles[1].attrs["@terrain_tags"]=j11c.table1([0,0,6])
+        with self.assertRaisesRegex(ValueError,"F12D_SURF_WITNESS_TERRAIN"):
+            recover({**data,"Data/Tilesets.rxdata":serialize(changed_tiles)})
 
     def test_f12d_conditional_surf_uses_actual_shores_not_portal_endpoints(self):
         import sinnoh_f12d_integrated as i
@@ -3943,7 +3990,7 @@ raise "restore error" unless original==[$game_variables,$game_switches,$game_sel
         self.assertIsNone(i.lake_contract("VALOR",types,species,{("GALACTIC_ADMIN","Saturn",15001)}))
         self.assertIsNone(i.lake_contract("VERITY",types,{"GOLBAT"},set()))
         if shutil.which("ruby"):
-            code=(ROOT/"scripts/regions/SinnohF12D3Transaction.rb").read_text("utf-8")+"\n"+(ROOT/"scripts/regions/SinnohF12DIntegrated.rb").read_text("utf-8").replace("__LOCATIONS__","{}").replace("__SPECS__","{}").replace("__EDIT_CELLS__","[[473,1,1]]").replace("__CHASE_LANES__","[[472,1,0,473,1,31]]").replace("__CELESTIC_LANES__","[[473,0,14,458,3,4]]").replace("__SURF_ROUTES__","{}").replace("__NORTH_ROCK_EDGES__","[]")
+            code=(ROOT/"scripts/regions/SinnohF12D3Transaction.rb").read_text("utf-8")+"\n"+(ROOT/"scripts/regions/SinnohF12DIntegrated.rb").read_text("utf-8").replace("__LOCATIONS__","{}").replace("__SPECS__","{}").replace("__EDIT_CELLS__","[[473,1,1]]").replace("__CHASE_LANES__","[[472,1,0,473,1,31]]").replace("__CELESTIC_LANES__","[[473,0,14,458,3,4]]").replace("__SURF_ROUTES__","{}").replace("__NORTH_ROCK_EDGES__","[]").replace("__SURF_DRY_PORTALS__","{}")
             fixture=code+'''\ns={"current"=>"SINNOH","sinnoh_f12d_quest"=>%w[PASTORIA ROUTE_213 VALOR_BATTLE],"sinnoh_f12d3_quest"=>%w[SECRETPOTION_RECEIVED PSYDUCK_CLEARED]}\nm=BlueSinnohF12DIntegrated\nraise unless m.lake_allowed?(s,"VALOR",["MINE"])\nraise if m.lake_allowed?(s,"VERITY",["MINE"])\nraise if m.lake_allowed?(s,"VALOR",[])\ns[m::LAKE_LEDGER]=%w[VALOR VERITY]\nraise if m.lake_allowed?(s,"ACUITY",["MINE"])\nraise unless m.lake_allowed?(s,"ACUITY",["MINE","ICICLE"])\ns=Marshal.load(Marshal.dump(s))\nraise unless m.lake_allowed?(s,"ACUITY",["MINE","ICICLE"])\nraise if m.movement_allowed?(nil,[473,2,1],[473,1,1])\nraise if m.movement_allowed?(nil,[472,1,0],[473,1,31])\nraise if m.movement_allowed?(nil,[473,0,14],[458,3,4])\nraise unless m.movement_allowed?(s,[473,0,14],[458,3,4])\nraise unless m.movement_allowed?(nil,[473,2,1],[473,2,2])\n'''
             # Pass the full fixture via stdin; Windows process command-line
             # length is not a supported transport for a growing Ruby module.

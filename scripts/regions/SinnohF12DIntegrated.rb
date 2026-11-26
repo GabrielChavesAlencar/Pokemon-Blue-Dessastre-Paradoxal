@@ -6,6 +6,7 @@ module BlueSinnohF12DIntegrated
   CHASE_LANES=__CHASE_LANES__.freeze
   CELESTIC_LANES=__CELESTIC_LANES__.freeze
   SURF_ROUTES=__SURF_ROUTES__.freeze
+  SURF_DRY_PORTALS=__SURF_DRY_PORTALS__.freeze
   NORTH_ROCK_EDGES=__NORTH_ROCK_EDGES__.freeze
   LAKE_ORDER=%w[VALOR VERITY ACUITY].freeze
   LAKE_LEDGER="sinnoh_f12d_lakes".freeze
@@ -391,11 +392,16 @@ module BlueSinnohF12DIntegrated
         {map_id:mid,map:raw,passages:ts.passages,priorities:ts.priorities,terrain_tags:ts.terrain_tags,events:{}}.each do |k,v|
           $game_map.instance_variable_set(:"@#{k}",v)
         end
-        # The static witness excluded every event coordinate; recheck it
-        # on the actual compiled private map before probing collision.
-        occupied=raw.events.values.map { |event| [event.x,event.y] }
+        # Recheck route occupancy on the actual compiled private map. A
+        # certified transfer may stand at a dry endpoint beyond the shore.
+        route_cells=route.map { |x,y,_| [x,y] }
+        occupied=raw.events.values.filter_map do |event|
+          [event.x,event.y,event.id,event.name] if route_cells.include?([event.x,event.y])
+        end
+        unless occupied.sort==SURF_DRY_PORTALS.fetch(mid,[]).sort
+          raise "Sinnoh Surf occupied path #{mid}"
+        end
         route.each do |x,y,mode|
-          raise "Sinnoh Surf occupied path #{mid}" if occupied.include?([x,y])
           tag=$game_map.terrain_tag(x,y)
           raise "Sinnoh Surf changed terrain #{mid}" unless tag && (mode=="surf" ? tag.can_surf_freely : !tag.can_surf)
         end
@@ -458,6 +464,17 @@ module BlueSinnohF12DIntegrated
       true
     ensure
       $game_map,$map_factory,$game_player,$DEBUG,$game_switches,$game_variables,$game_self_switches,$game_temp,$PokemonGlobal,$stats=*prev
+    end
+  end
+  def self.verify_compile_inputs!(token,map_files,plugin)
+    manifest=BlueSinnohQA.parse_json(File.binread("sinnoh-experimental-qa.json"))
+    hashes=manifest.fetch("file_sha256")
+    raise "Sinnoh F12D: compile manifest token mismatch" unless manifest.fetch("compile_token")==token
+    pbs=hashes.keys.grep(%r{\APBS/[a-zA-Z0-9_]+\.txt\z})
+    (map_files + pbs + [plugin]).uniq.each do |path|
+      unless File.file?(path) && !File.symlink?(path) && BlueSinnohQA.sha256_file(path)==hashes.fetch(path)
+        raise "Sinnoh F12D: changed compile input #{path}"
+      end
     end
   end
   def self.verify_compiled!
