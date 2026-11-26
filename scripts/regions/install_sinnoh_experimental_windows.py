@@ -929,7 +929,8 @@ def build_files(base:Path,project:Path=ROOT,*,shared_runtime=False):
         maps,mapping,components,natural_report=natural_expansion.append(maps,mapping,components,sources["maps"],occupied,project)
         maps,mapping,components,interior_report=interior_expansion.append(maps,mapping,components,sources["maps"],occupied,project)
         previous_maps=maps
-        intermediate_maps,_=connection_expansion.append(maps,mapping,components,sources["maps"],project)
+        if not shared_runtime:
+            intermediate_maps,_=connection_expansion.append(maps,mapping,components,sources["maps"],project)
         maps,connection_report=connection_expansion.append(maps,mapping,components,sources["maps"],project,refine=True)
         refined_maps=maps
         maps,mapping,components,f08c_report=f08c_expansion.append(maps,mapping,components,sources["maps"],occupied,connection_report,project)
@@ -944,20 +945,22 @@ def build_files(base:Path,project:Path=ROOT,*,shared_runtime=False):
         maps["PBS/encounters.txt"],encounter_coverage,f09d_report,encounter_expected=f09d_relative.append(
             maps["PBS/encounters.txt"],encounter_coverage,base,mapping,masks,sources["maps"],f09c_report,project)
         pre_f10b_maps=maps
-        f10b2_maps,_,_=f10b_trainers.append(maps,mapping,masks,components,sources["maps"],base,project,overworlds=sources.get("overworlds"),revision=2)
-        f10b3_maps,_,_=f10b_trainers.append(maps,mapping,masks,components,sources["maps"],base,project,overworlds=sources.get("overworlds"),revision=3)
-        f10b4_maps,_,_=f10b_trainers.append(maps,mapping,masks,components,sources["maps"],base,project,overworlds=sources.get("overworlds"),revision=4)
-        f10b5_maps,_,_=f10b_trainers.append(maps,mapping,masks,components,sources["maps"],base,project,overworlds=sources.get("overworlds"),revision=5)
-        maps,f10b_report,f10b_plugin=f10b_trainers.append(maps,mapping,masks,components,sources["maps"],base,project,overworlds=sources.get("overworlds"),revision=6)
-        f10b6_maps=maps
-        f10b7_report=f10b7_field_audit.audit(maps,mapping,components,sources["maps"],project)
-        print("SINNOH_F10B7_FIELD_GATE_REPORT "+json.dumps(f10b7_report,sort_keys=True),flush=True)
+        if not shared_runtime:
+            f10b2_maps,_,_=f10b_trainers.append(maps,mapping,masks,components,sources["maps"],base,project,overworlds=sources.get("overworlds"),revision=2)
+            f10b3_maps,_,_=f10b_trainers.append(maps,mapping,masks,components,sources["maps"],base,project,overworlds=sources.get("overworlds"),revision=3)
+            f10b4_maps,_,_=f10b_trainers.append(maps,mapping,masks,components,sources["maps"],base,project,overworlds=sources.get("overworlds"),revision=4)
+            f10b5_maps,_,_=f10b_trainers.append(maps,mapping,masks,components,sources["maps"],base,project,overworlds=sources.get("overworlds"),revision=5)
+            maps,f10b_report,f10b_plugin=f10b_trainers.append(maps,mapping,masks,components,sources["maps"],base,project,overworlds=sources.get("overworlds"),revision=6)
+            f10b6_maps=maps
+            f10b7_report=f10b7_field_audit.audit(maps,mapping,components,sources["maps"],project)
+            print("SINNOH_F10B7_FIELD_GATE_REPORT "+json.dumps(f10b7_report,sort_keys=True),flush=True)
         maps,f10b_report,f10b_plugin=f10b_trainers.append(pre_f10b_maps,mapping,masks,components,sources["maps"],base,project,overworlds=sources.get("overworlds"),revision=8)
         movement=private_visual.movement_plugin(masks,mapping["SINNOH_ROUTE_202"])
-        teleport_entries=qa_teleport.build(maps,mapping,components,project)
-        teleport=qa_teleport.plugin(teleport_entries,project)
         f10b8_maps=maps
-        f10c1_maps,_,_=f10c_npcs.build(maps,mapping,masks,components,sources["maps"],base,project,revision=1)
+        if not shared_runtime:
+            teleport_entries=qa_teleport.build(maps,mapping,components,project)
+            teleport=qa_teleport.plugin(teleport_entries,project)
+            f10c1_maps,_,_=f10c_npcs.build(maps,mapping,masks,components,sources["maps"],base,project,revision=1)
         maps,f10c_report,f10c_plugin=f10c_npcs.build(maps,mapping,masks,components,sources["maps"],base,project,revision=2)
         f10c2_maps=maps
         print("SINNOH_F10C_NPC_REPORT "+json.dumps(f10c_report,sort_keys=True),flush=True)
@@ -991,7 +994,8 @@ def build_files(base:Path,project:Path=ROOT,*,shared_runtime=False):
         print("SINNOH_F11H_GYM_REPORT "+json.dumps(f11h_report,sort_keys=True),flush=True)
         f12b3_report=f12b3_windworks.preflight(maps,mapping,sources["maps"],project)
         print("SINNOH_F12B3_WINDWORKS_INSTALLER_PREFLIGHT "+json.dumps(f12b3_report,sort_keys=True),flush=True)
-        maps,mapping,components,f12b4_report=f12b4_windworks.append(maps,mapping,components,sources["maps"],occupied,project)
+        maps,mapping,components,f12b4_report=f12b4_windworks.append(
+            maps,mapping,components,sources["maps"],occupied,project,shared_world=shared_runtime)
         print("SINNOH_F12B4_WINDWORKS_ACCESS_REPORT "+json.dumps(f12b4_report,sort_keys=True),flush=True)
         f12b4_maps=maps
         if f12b4_report.get("runtime_install_enabled"):
@@ -1029,15 +1033,32 @@ def build_files(base:Path,project:Path=ROOT,*,shared_runtime=False):
         if gym_symbols:
             masks=private_visual.movement_masks(maps,mapping,extra_symbols=city_expansion.CITIES|route_expansion.ROUTES|natural_expansion.NATURAL|interior_expansion.INTERIORS|f08c_expansion.EXTERIORS|gym_symbols)
             movement=private_visual.movement_plugin(masks,mapping["SINNOH_ROUTE_202"])
-        teleport_mapping={k:v for k,v in mapping.items() if k not in f12c_preview.SYMBOLS}
-        teleport_entries=qa_teleport.build(maps,teleport_mapping,components,project)
-        teleport=qa_teleport.plugin(teleport_entries,project)
+        if not shared_runtime:
+            teleport_mapping={k:v for k,v in mapping.items() if k not in f12c_preview.SYMBOLS}
+            teleport_entries=qa_teleport.build(maps,teleport_mapping,components,project)
+            teleport=qa_teleport.plugin(teleport_entries,project)
         story["grass_guard"]=True
         story["visual_only_connections_omitted"]=2
         ids=list(mapping.values())
     if "overworlds" in sources:
         print("SINNOH QA: sprites DPPt locais; creditos PurpleZaffre",flush=True)
         maps=private_visual.apply_sprites(maps,sources["overworlds"])
+    if shared_runtime:
+        from prepare_sinnoh_shared import shared_handlers
+        handlers = (movement, forest_code, f10b_plugin, f10c_plugin, f11a_plugin, f11b_plugin,
+                    f11c_plugin, f11d_plugin, f11e_plugin, f11f_plugin, f11g_plugin, f11h_plugin,
+                    f12b5_plugin, f12c4_plugin, f12d_plugin, f12d_integrated_plugin)
+        files = {**maps, **barry_files, **shared_handlers(project,handlers),
+                 "Graphics/Characters/SNQA_NPC.png":sprite_png("NPC"),
+                 "Graphics/Characters/SNQA_BALL.png":sprite_png("BALL")}
+        return files, {"mapids":mapping,"maps_prepared":len(mapping),
+                       "start":[mapping["SINNOH_PLAYER_BEDROOM"],*start],
+                       "private_visual_import":{"maps":imported},
+                       "campaign":{stage:{key:report[key] for key in ("status","reason") if key in report}
+                                   for stage,report in
+                                   (("windworks",f12b4_report),("mars",f12b5_report),
+                                    ("eterna_preflight",f12c_report),("f12c4",f12c4_report),("f12d",f12d_report),
+                                    ("f12d_integrated",f12d_integrated_report))}}
     platinum_player=private_visual.has_platinum_player(base)
     platinum_dawn=private_visual.has_platinum_player(base,10)
     token=secrets.token_hex(6)
@@ -1083,12 +1104,6 @@ def build_files(base:Path,project:Path=ROOT,*,shared_runtime=False):
     else:
         proof=sha(("SinnohExperimental:"+token+file_hashes["Data/MapInfos.rxdata"]).encode())
     final["Data/sinnoh-experimental-compile-request.txt"]=proof.encode("ascii")
-    if shared_runtime:
-        from prepare_sinnoh_shared import shared_handlers
-        handlers = (movement, forest_code, f10b_plugin, f10c_plugin, f11a_plugin, f11b_plugin,
-                    f11c_plugin, f11d_plugin, f11e_plugin, f11f_plugin, f11g_plugin, f11h_plugin,
-                    f12b5_plugin, f12c4_plugin, f12d_plugin, f12d_integrated_plugin)
-        final.update(shared_handlers(project, handlers))
     # These hashes do not claim human rights approval, or native gameplay acceptance.
     report={"schema":1,"region":"SINNOH","mode":MODE,
         "maps_prepared":len(mapping),"static_events_placed":len(events)+story.get("extra_event_count",0)+len(route_trainers)+len(connection_report.get("portals",[]))+len(f08c_report.get("portals",[]))+f10b_report.get("new_trainers",0)+f10c_report.get("new_npcs",0)+f11a_report.get("gym_leaders_added",0)+f11a_report.get("new_portals",0)+f11b_report.get("gym_leaders_added",0)+f11b_report.get("new_portals",0)+f11c_report.get("gym_leaders_added",0)+f11c_report.get("new_portals",0)+f11d_report.get("gym_leaders_added",0)+f11d_report.get("new_portals",0)+f11e_report.get("gym_leaders_added",0)+f11e_report.get("new_portals",0)+f11f_report.get("gym_leaders_added",0)+f11f_report.get("new_portals",0)+f11g_report.get("gym_leaders_added",0)+f11g_report.get("new_portals",0)+f11h_report.get("gym_leaders_added",0)+f11h_report.get("new_portals",0)+f12b5_report.get("new_events",0)+f12c4_report.get("new_events",0)+f12d_report.get("new_events",0)+f12d_integrated_report.get("new_events",0),

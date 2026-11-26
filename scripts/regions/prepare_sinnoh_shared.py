@@ -101,11 +101,30 @@ def prepare_world(game, outputs, report):
     # proven Twinleaf name; do not rename the existing shared MapInfos entries.
     infos[town_id].attrs["@name"] = b"Twinleaf Town"
     files[shared.MAP_INFOS] = serialize(infos)
+    runtime = outputs.get(shared.PLUGIN,b"")
+    handlers = {}
+    parts = re.split(rb"(?m)^module (BlueSinnoh\w+)\s*$",runtime)
+    for module, code in zip(parts[1::2],parts[2::2]):
+        handlers.setdefault(module,set()).update(re.findall(rb"(?m)^  def self\.(\w+[?!]?)",code))
+    missing = set()
     for mid in ids:
         world = read_marshal(files[f"Data/Map{mid:03d}.rxdata"], "SHARED_CANDIDATE_MAP")
         tid = world.attrs.get("@tileset_id")
         if type(tid) is not int or not 0 < tid < len(tiles) or not tiles[tid]:
             raise ValueError(f"Invalid tileset for map {mid}")
+        for event in world.attrs["@events"].values():
+            for page in event.attrs.get("@pages", []):
+                for command in page.attrs.get("@list", []):
+                    if command.attrs.get("@code") not in (111,355,655):
+                        continue
+                    for raw in command.attrs.get("@parameters", []):
+                        if not isinstance(raw,bytes):
+                            continue
+                        for module,method in re.findall(rb"\b(BlueSinnoh\w+)\.(\w+[?!]?)",raw):
+                            if method not in handlers.get(module,()):
+                                missing.add(f"{mid}:{module.decode()}.{method.decode()}")
+    if missing:
+        raise ValueError("Eventos Sinnoh sem handler no pacote: " + ", ".join(sorted(missing)[:12]))
     town = read_marshal(files[f"Data/Map{town_id:03d}.rxdata"], "SHARED_CANDIDATE_TOWN")
     # Use the donor-verified grassless component seed, not an invented map ID.
     from sinnoh_private_visual import SEEDS
@@ -136,6 +155,7 @@ def prepare_world(game, outputs, report):
         files[shared.PBS_CONNECTIONS][len(shared.safe_file(game,shared.PBS_CONNECTIONS).read_bytes()):])]
     unhandled = sorted(p for p in outputs if p not in files and p not in review)
     proof.update(schema=1, profile="BLUE_SINNOH_SHARED_CANDIDATE_V1",
+                 campaign=report.get("campaign",{}),
                  files={p:shared.sha(raw) for p,raw in files.items()},
                  review_files={p:shared.sha(raw) for p,raw in review.items()},
                  excluded_outputs=unhandled,
@@ -157,8 +177,12 @@ def prepare(project, game):
     from install_sinnoh_experimental_windows import build_files
     ensure_sources(project)
     outputs, report = build_files(game, project, shared_runtime=True)
-    if sorted(report["mapids"].values()) != list(shared.SHARED_IDS):
-        raise ValueError("O gerador divergiu da reserva estável de 445 a 588 de Sinnoh.")
+    actual = set(report["mapids"].values())
+    reserved = set(shared.SHARED_IDS)
+    if actual != reserved:
+        raise ValueError("Reserva de Sinnoh incompleta. Ausentes: " + str(sorted(reserved-actual)) +
+                         ". Extras: " + str(sorted(actual-reserved)) +
+                         ". Campanha: " + json.dumps(report["campaign"],ensure_ascii=False))
     files, review, proof = prepare_world(game, outputs, report)
     folder.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="sinnoh-shared-", dir=folder.parent) as tmp:

@@ -231,6 +231,11 @@ def _preserve_shared_sinnoh(old, new):
         return
     required = {marker, "Data/blue-sinnoh-shared.json"}
     required.update(f"Data/Map{mid:03d}.rxdata" for mid in range(442, 600) if f"Data/Map{mid:03d}.rxdata" in old)
+    required.update(name for name in old if
+                    name.startswith("Plugins/ZZZZZ Blue Sinnoh Shared/") or
+                    (name.startswith(("Graphics/","Audio/")) and
+                     name.rsplit("/",1)[-1].startswith(("SNQA_","SNSH_"))) or
+                    (name.startswith("PBS/") and "_sinnoh" in name))
     if not required <= set(new):
         raise ValueError("A atualização removeria Sinnoh de um save compartilhado.")
 

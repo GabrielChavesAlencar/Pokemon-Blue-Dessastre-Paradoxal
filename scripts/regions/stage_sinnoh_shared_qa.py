@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
 import secrets
 import shutil
@@ -54,7 +55,8 @@ def compile_windows(game, token):
 ''')
     entry[2] = RubyString(zlib.compress(source.encode("utf-8")))
     tiles = shared.safe_file(game,shared.TILESETS)
-    protected_tiles = tiles.read_bytes()
+    connections = shared.safe_file(game,shared.CONNECTIONS)
+    protected = {path:path.read_bytes() for path in (tiles,connections)}
     shared.atomic(scripts,b"\x04\x08" + dump(rows))
     try:
         result = subprocess.run([str(game/"Game.exe")],cwd=game,
@@ -66,8 +68,9 @@ def compile_windows(game, token):
     finally:
         shared.atomic(scripts,original)
         # Essentials may serialize a fresh editor tileset index during compile.
-        # The imported map IDs use the previously verified append-only index.
-        shared.atomic(tiles,protected_tiles)
+        # Preserve both native indexes built and verified against this base.
+        for path, content in protected.items():
+            shared.atomic(path,content)
     cache = shared.safe_file(game,CACHE).read_bytes()
     for path in (shared.PLUGIN, REGION_START_PLUGIN, REGION_TRAVEL_PLUGIN):
         compiled_region(cache,Path(path).name,shared.safe_file(game,path).read_bytes())
@@ -89,6 +92,11 @@ def stage(project, *, base_game=None, compile_native=False):
         raise ValueError("O staging aceita somente um candidato de Sinnoh.")
     proof["profile"] = shared.QA_PROFILE
     shared.validate_manifest(proof,qa=True)
+    for rel in (REGION_START_PLUGIN,REGION_TRAVEL_PLUGIN,
+                "Plugins/ZZZZ Blue Story and Presentation/TitleKanto.rb"):
+        expected = (project/"scripts/battle_polish"/Path(rel).name).read_text("utf-8")
+        if shared.safe_file(base,rel).read_text("utf-8") != expected:
+            raise ValueError("A base de QA precisa do script atualizado: " + rel)
     snapshot = scan_source(base)
     token = secrets.token_hex(12)
     with tempfile.TemporaryDirectory(prefix="sinnoh-shared-qa-",dir=target.parent) as tmp:
@@ -109,7 +117,10 @@ def stage(project, *, base_game=None, compile_native=False):
         shared.atomic(manifest,proof_bytes)
         shared.install_overlay(root,game,candidate/"world",manifest,qa=True)
         result = {"status":"STAGED_SHARED_QA", "maps":len(proof["map_ids"]),
-                  "overlay_sha256":shared.sha(proof_bytes), "windows_travel":False, "joiplay_travel":False}
+                  "overlay_sha256":shared.sha(proof_bytes),
+                  "base_mapinfos_sha256":proof["base"][shared.MAP_INFOS],
+                  "commit_sha":os.environ.get("GITHUB_SHA"),
+                  "windows_travel":False, "joiplay_travel":False}
         if compile_native:
             result["plugin_cache_sha256"] = compile_windows(game,result["overlay_sha256"])
             result["compiler"] = "Windows Game.exe"

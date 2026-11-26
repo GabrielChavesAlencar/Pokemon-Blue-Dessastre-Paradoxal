@@ -28,7 +28,7 @@ def component(points,seed):
 def shared_edge(a,b,aw,bw):
     return sorted(pv.edge_axis(a,aw,"W",0)&pv.edge_axis(b,bw,"E",57))
 
-def append(blobs,mapping,components,path,occupied,root=ROOT):
+def append(blobs,mapping,components,path,occupied,root=ROOT,*,shared_world=False):
     def blocked(reason,**details):
         return blobs,mapping,components,{"status":"WINDWORKS_ACCESS_BLOCKED","reason":reason,"runtime_install_enabled":False,
             "new_maps":0,"new_portals":0,"new_seams":0,"native_bindings":0,"items_granted":0,"native_verified":False,**details}
@@ -88,8 +88,16 @@ def append(blobs,mapping,components,path,occupied,root=ROOT):
     original=pv.parse_connections(blobs["PBS/map_connections.txt"])
     compiled=conn.read_marshal(blobs["Data/map_connections.dat"],"F12B4_CONNECTIONS")
     expected=[[r[0],r[1].encode("ascii"),r[2],r[3],r[4].encode("ascii"),r[5]] for r in original]
-    if compiled!=expected:return blocked("compiled_pbs_connections_mismatch",**detail)
-    if any(m==mid for r in original for m in (r[0],r[3])):return blocked("existing_map_id_collision",**detail)
+    if shared_world:
+        regional = set(mapping.values())
+        pbs_local = [row for row in expected if row[0] in regional or row[3] in regional]
+        native_local = [row for row in compiled if row[0] in regional or row[3] in regional]
+        mismatch = native_local != pbs_local
+    else:
+        mismatch = compiled != expected
+    if mismatch:return blocked("compiled_pbs_connections_mismatch",**detail)
+    if any(mid in (row[0],row[3]) for row in (*original,*compiled)):
+        return blocked("existing_map_id_collision",**detail)
     if any((m,d)==(ids[ROUTE],"E") for r in original for m,d in ((r[0],r[1]),(r[3],r[4]))):
         seam_reason="existing_route_side_in_use"
     record=None
