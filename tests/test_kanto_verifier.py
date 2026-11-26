@@ -56,8 +56,8 @@ class KantoPilotAuditTests(unittest.TestCase):
     def test_portal_matches_audited_kanto_rosters(self):
         root = REGIONS.parents[1]
         data = json.loads((root / "site/public/data/kanto.json").read_text("utf-8"))
-        self.assertIn(len(data["locations"]), (145,151))
-        self.assertIn(len(data["trainers"]), (161,162))
+        self.assertEqual(len(data["locations"]), 151)
+        self.assertEqual(len(data["trainers"]), 162)
         leaders = {row["name"]: row for row in data["trainers"] if row["leader"]}
         self.assertIn("Blaine", leaders)
         self.assertIn("Giovanni", leaders)
@@ -65,9 +65,11 @@ class KantoPilotAuditTests(unittest.TestCase):
             [(pkmn["species"], pkmn["level"]) for pkmn in leaders["Blaine"]["variants"][0]["team"]],
             [("GROWLITHE", 42), ("PONYTA", 40), ("RAPIDASH", 42), ("ARCANINE", 47)],
         )
-        # Portal sync commits separately after the pilot passes CI on main.
-        # Both generations are valid during a pull-request pre-merge check.
-        self.assertEqual(len(data["trainers"]), 161)
+        # The synchronized portal must now include the original Cerulean Grunt.
+        grunt = next(t for t in data["trainers"] if t["id"] == "kanto-rocket-cerulean-house")
+        self.assertEqual(grunt["location"], "kanto-cerulean-city")
+        self.assertEqual([(p["species"],p["level"]) for p in grunt["variants"][0]["team"]],
+                         [("MACHOP",17),("DROWZEE",17)])
         giovanni_leader = leaders["Giovanni"]
         self.assertEqual(giovanni_leader["id"], "kanto-giovanni-viridian")
         self.assertEqual(giovanni_leader["location"], "kanto-viridian-gym")
