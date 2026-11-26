@@ -2,6 +2,48 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e23ff33a67ed6cea6ca652f0d2150ae5d1de206d",
+      "date": "2026-11-26T13:48:41-03:00",
+      "title": "Kanto K02-B: escala integrada, áudio nativo e recuperação de fonte Hoenn (#355)",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "416eee9ba8c07b245dbaaaf157a23528180b8043",
+      "date": "2026-11-26T13:29:48-03:00",
+      "title": "ci(android): gate integration on pinned Hoenn source recovery regression",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "b4de8773d74670d264ebc611233c9d144bc6264f",
+      "date": "2026-11-26T13:29:40-03:00",
+      "title": "test(hoenn): simulate HTTP 504 recovery exhaustion and invalid tree rejection",
+      "category": "Testes"
+    },
+    {
+      "sha": "1fa52b8b811ae09ea952426611d8fc1efdf3a77b",
+      "date": "2026-11-26T13:29:30-03:00",
+      "title": "fix(hoenn): retry transient pinned tree gateway failures without weakening validation",
+      "category": "Correções"
+    },
+    {
+      "sha": "cbc828024bed557f295f18bacdf60cb7ccda0775",
+      "date": "2026-11-26T13:23:47-03:00",
+      "title": "test(kanto): dispatch Route4 and Cerulean music natively",
+      "category": "Testes"
+    },
+    {
+      "sha": "d352f7f81d231fd03817b8a272d5d2c3293abfb1",
+      "date": "2026-11-26T13:23:40-03:00",
+      "title": "test(kanto): cover integrated protagonist scale and region transitions",
+      "category": "Testes"
+    },
+    {
+      "sha": "65de1a9bee75a290f194b527a7e89e41c429fd91",
+      "date": "2026-11-26T13:23:30-03:00",
+      "title": "fix(kanto): apply protagonist scale in integrated Kanto only",
+      "category": "Correções"
+    },
+    {
       "sha": "0f0400c8ec230d3e634b7733e819bbd558240aa6",
       "date": "2026-11-26T13:22:03-03:00",
       "title": "Kanto K02-A: validate native Mt. Moon, fossils and Cinnabar revival (#354)",
