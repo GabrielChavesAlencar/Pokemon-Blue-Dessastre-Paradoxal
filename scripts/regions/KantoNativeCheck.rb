@@ -161,8 +161,7 @@ module KantoNativeCheck
     end
     [3,27].each do |id|
       source = doors[id][0]
-      exit_id = source == 44 ? 3 : 3
-      landing = exits[source][exit_id]
+      landing = exits[source][3]
       comp = opening_component(city,landing)
       require!(north_event_reachable?(comp,$game_map.events[id]),"K02-C rear door unreachable #{id}")
     end
@@ -181,7 +180,7 @@ module KantoNativeCheck
     require!(BlueKantoPilot.cerulean_bike_exchange && $bag.quantity(:BICYCLE)==1,"K02-C bicycle duplicated")
     $map_factory.setup(city)
     require!(GameData::Trainer.get(:BLUE_KANTO_ROCKET,"Grunt",6).pokemon.length > 0,"K02-C native Grunt6 missing")
-    require!(GameData::Item.exists?(:TM28),"K02-C native TM28 missing")
+    require!(GameData::Item.exists?(:TM28) && GameData::Item.get(:TM28).move == :DIG,"K02-C native TM28/Dig missing")
     [26,37,38].each { |id| north_callback!($game_map.events[id],"BlueKantoPilot.cerulean_rocket") }
     tm_before = $bag.quantity(:TM28)
     losses_remaining["Grunt"] = 1
