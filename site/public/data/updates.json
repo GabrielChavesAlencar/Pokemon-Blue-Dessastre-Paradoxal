@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0bb75cf4971abe943c962e6bb8efb49945d0ecfa",
+      "date": "2026-11-26T09:31:29-03:00",
+      "title": "Merge PR #343: retain required Kanto Android patch baselines",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "89c013a9aaa11f0a4cf1982b6bad448cdd78844f",
+      "date": "2026-11-26T09:25:07-03:00",
+      "title": "Fix K00: retain reported Cerulean Android patch baselines across release churn",
+      "category": "Melhorias"
+    },
+    {
       "sha": "af25ce3a7910f97365f573591ebbd0772e300ae9",
       "date": "2026-11-26T09:09:42-03:00",
       "title": "docs(kanto): roadmap detalhado e gate de releases Windows e Android por entrega perceptível",
