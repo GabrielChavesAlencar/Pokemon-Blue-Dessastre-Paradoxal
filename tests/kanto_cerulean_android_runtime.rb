@@ -210,11 +210,13 @@ Dir.mktmpdir("kanto-cerulean-android-") do |folder|
       def self.note; end
     end
     module_items = Class.new do
-      def self.exists?(item); [:NUGGET, :SSTICKET].include?(item); end
+      def self.exists?(item); [:NUGGET, :BLUE_KANTO_SSTICKET, :SSTICKET].include?(item); end
     end
     GameData.const_set(:Item, module_items) unless GameData.const_defined?(:Item)
     bag = Object.new
+    def bag.has?(item); Array($granted_items).any? { |id,qty| id == item && qty > 0 }; end
     def bag.add(item, quantity)
+      return false if $ticket_bag_full && item == :BLUE_KANTO_SSTICKET
       $granted_items ||= []
       $granted_items << [item, quantity]
       true
@@ -237,9 +239,27 @@ Dir.mktmpdir("kanto-cerulean-android-") do |folder|
     check(BlueKantoPilot.bill_computer, "Bill not restored via PC")
     check($PokemonGlobal.blue_regions["pilot_bill_helped"], "Bill quest flag missing")
     check(BlueKantoPilot.bill_reward, "Bill did not grant S.S. Ticket")
-    check($granted_items.count([:SSTICKET, 1]) == 1, "Bill ticket duplicated/missing")
+    check($granted_items.count([:BLUE_KANTO_SSTICKET, 1]) == 1, "Bill ticket duplicated/missing")
     check(BlueKantoPilot.bill_reward, "Bill's post-quest talk failed")
-    check($granted_items.count([:SSTICKET, 1]) == 1, "Bill ticket duplicated on talk")
+    check($granted_items.count([:BLUE_KANTO_SSTICKET, 1]) == 1, "Bill ticket duplicated on talk")
+    state = $PokemonGlobal.blue_regions
+    state.delete("pilot_bill_ticket_item_granted")
+    $granted_items.delete([:BLUE_KANTO_SSTICKET,1])
+    $ticket_bag_full = true
+    check(BlueKantoPilot.bill_reward && state["pilot_ss_ticket"] &&
+          !state["pilot_bill_ticket_item_granted"], "Full bag revoked old permit")
+    $ticket_bag_full = false
+    check(BlueKantoPilot.bill_reward && state["pilot_bill_ticket_item_granted"], "Legacy permit upgrade failed")
+    check(BlueKantoPilot.bill_reward && $granted_items.count([:BLUE_KANTO_SSTICKET,1]) == 1,
+          "Legacy permit duplicated")
+    state.delete("pilot_bill_ticket_item_granted")
+    $granted_items.delete([:BLUE_KANTO_SSTICKET,1])
+    $granted_items << [:SSTICKET,1]
+    check(BlueKantoPilot.bill_reward && state["pilot_bill_ticket_item_granted"] &&
+          $granted_items.none? { |row| row[0] == :BLUE_KANTO_SSTICKET }, "Legacy real ticket duplicated")
+    $granted_items.delete([:SSTICKET,1])
+    check(BlueKantoPilot.bill_reward && $granted_items.none? { |row| row[0] == :BLUE_KANTO_SSTICKET },
+          "Already materialized ticket granted twice")
   end
 end
 

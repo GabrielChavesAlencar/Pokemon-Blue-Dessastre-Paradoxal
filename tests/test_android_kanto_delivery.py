@@ -8,12 +8,26 @@ import zlib
 
 from scripts.android.verify_kanto_cerulean import assert_delivery, EDGES, JOURNEY, KANTO_RUNTIME
 from scripts.official_rules.prepare_restore import RubyString, dump
+from server.ruby_marshal import integer
+
+
+def ticket_catalog():
+    # Minimal inert Ruby Marshal fixture matching native GameData::Item.
+    def sym(value):
+        raw = value.encode("ascii")
+        return b":" + integer(len(raw)) + raw
+    attrs = {"@id": sym("BLUE_KANTO_SSTICKET"), "@pocket": dump(8),
+             "@price": dump(0), "@consumable": dump(False),
+             "@flags": dump([RubyString(b"KeyItem")])}
+    record = b"o" + sym("GameData::Item") + integer(len(attrs)) + b"".join(
+        sym(key) + value for key, value in attrs.items())
+    return b"\x04\x08{" + integer(1) + sym("BLUE_KANTO_SSTICKET") + record
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 class KantoDeliveryTests(unittest.TestCase):
-    def fixture(self, channel, omit=None, short=None, omit_rival=False):
+    def fixture(self, channel, omit=None, short=None, omit_rival=False, omit_ticket=False):
         manifest = json.loads((ROOT / "data/regions/kanto-source.json").read_text("utf8"))
         mapping = {source: 600 + index for index, source in enumerate(manifest["maps"])}
         root, marker = (("Pokemon-Blue-Kanto-Android/", "Kanto pilot.json")
@@ -45,6 +59,7 @@ class KantoDeliveryTests(unittest.TestCase):
             archive.writestr(root + JOURNEY, source)
             archive.writestr(root + "Plugins/ZZZZ Blue Story and Presentation/RegionTravel.rb", travel)
             archive.writestr(root + "Data/PluginScripts.rxdata", cache)
+            archive.writestr(root + "Data/items.dat", b"\x04\x08{\x00" if omit_ticket else ticket_catalog())
             archive.writestr(root + "Data/blue-kanto-music.txt", "MAP\tfixture\n" * 77)
         return target
 
@@ -58,6 +73,10 @@ class KantoDeliveryTests(unittest.TestCase):
             with self.subTest(channel=channel):
                 with self.assertRaisesRegex(ValueError, "Gary runtime missing"):
                     assert_delivery(self.fixture(channel, omit_rival=True), channel)
+
+    def test_missing_compiled_ticket_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, "Compiled Kanto S.S. Ticket"):
+            assert_delivery(self.fixture("multiregion", omit_ticket=True), "multiregion")
 
     def test_missing_pallet_map_is_rejected_even_with_cerulean_present(self):
         for channel in ("kanto", "multiregion"):

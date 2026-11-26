@@ -836,6 +836,30 @@ module BlueKantoPilot
     true
   end
 
+  # Namespaced native Key Item avoids collisions with another region's PBS.
+  # Keep recognizing the older unnamespaced ID if a legacy game provided it.
+  BILL_TICKET_IDS = [:BLUE_KANTO_SSTICKET, :SSTICKET].freeze
+
+  def self.bill_ticket_item
+    return nil unless defined?(GameData::Item)
+    BILL_TICKET_IDS.find { |id| GameData::Item.exists?(id) }
+  end
+
+  def self.bill_ticket_in_bag?
+    return false unless defined?(GameData::Item) && $bag
+    BILL_TICKET_IDS.any? { |id| GameData::Item.exists?(id) && $bag.has?(id) }
+  end
+
+  def self.bill_ticket_owned?
+    return true if bill_ticket_in_bag?
+    # A legacy native ticket may already be stored in Kanto's item PC.
+    # Never duplicate it. Regional travel stores and restores that PC.
+    pc = $PokemonGlobal.respond_to?(:pcItemStorage) ? $PokemonGlobal.pcItemStorage : nil
+    pc && pc.respond_to?(:items) && pc.items.any? { |entry|
+      entry.is_a?(Array) && BILL_TICKET_IDS.include?(entry[0]) && entry[1].to_i > 0
+    }
+  end
+
   def self.bill_reward
     return false unless kanto_current?
     unless progress["pilot_bill_helped"]
@@ -843,26 +867,33 @@ module BlueKantoPilot
                   "Converse com Bill e opere o computador primeiro."))
       return false
     end
-    if progress["pilot_bill_ticket"] || progress["pilot_ss_ticket"]
+    already_permitted = progress["pilot_bill_ticket"] || progress["pilot_ss_ticket"]
+    if progress["pilot_bill_ticket_item_granted"] || bill_ticket_owned?
+      progress["pilot_bill_ticket_item_granted"] = true
+      progress["pilot_bill_ticket"] = true
+      progress["pilot_ss_ticket"] = true
       pbMessage(t("Bill: Have fun aboard the S.S. Anne!",
                   "Bill: Divirta-se a bordo do S.S. Anne!"))
       return true
     end
-    unless defined?(GameData::Item) && GameData::Item.exists?(:SSTICKET)
-      # Some old Decades builds have no S.S. Ticket item identifier. In that
-      # case, and only AFTER restoring Bill, grant a region-local digital
-      # boarding permit rather than corrupting native item data or softlocking.
+    item = bill_ticket_item
+    unless item
+      # Compatibility with an old runtime/data pair. The delivery gate
+      # requires the native item for all newly published Kanto packages.
       progress["pilot_bill_ticket"] = true
       progress["pilot_ss_ticket"] = true
       pbMessage(t("Bill: Your digital S.S. Anne boarding pass is ready!",
                   "Bill: Sua passagem digital para o S.S. Anne está pronta!"))
       return true
     end
-    unless $bag.add(:SSTICKET, 1)
+    unless $bag.add(item, 1)
       pbMessage(t("Your Bag is full. Come back to receive Bill's S.S. Ticket.",
                   "Sua Bolsa está cheia. Volte para receber o S.S. Ticket do Bill."))
-      return false
+      # A previously issued permit stays valid, even if the physical
+      # upgrade has to be retried after making space.
+      return !!already_permitted
     end
+    progress["pilot_bill_ticket_item_granted"] = true
     progress["pilot_bill_ticket"] = true
     progress["pilot_ss_ticket"] = true
     BlueMusic.kanto_me_play("obtained_item") if defined?(BlueMusic)
@@ -1089,13 +1120,16 @@ module BlueKantoPilot
   # Route25's real Bill quest now controls new tickets. Existing players
   # with an already issued regional pass keep it; no save flag is revoked.
   def self.ticketmaster
+    return false unless kanto_current?
     unless BlueRegions.local_achievements(progress, "KANTO").include?("CASCADE")
       pbMessage(t("Harbor clerk: Earn the Cascade Badge in Cerulean first.",
                   "Porto: conquiste primeiro a Cascade Badge em Cerulean."))
       return false
     end
-    if progress["pilot_ss_ticket"] ||
-       (GameData::Item.exists?(:SSTICKET) && $bag.has?(:SSTICKET))
+    if progress["pilot_ss_ticket"] || bill_ticket_in_bag?
+      # Existing digital permits are upgraded on a return to Bill or at
+      # the clerk, without ever invalidating a previously issued pass.
+      bill_reward if progress["pilot_bill_helped"] && !progress["pilot_bill_ticket_item_granted"]
       progress["pilot_ss_ticket"] = true
       pbMessage(t("Harbor clerk: You're cleared to board the S.S. Anne!",
                   "Porto: sua passagem para o S.S. Anne está liberada!"))
@@ -1111,7 +1145,8 @@ module BlueKantoPilot
   end
 
   def self.harbor_gate(map_id, x, y)
-    unless progress["pilot_ss_ticket"] || (GameData::Item.exists?(:SSTICKET) && $bag.has?(:SSTICKET))
+    return false unless kanto_current?
+    unless progress["pilot_ss_ticket"] || bill_ticket_in_bag?
       pbMessage(BlueKantoPilot.t("You need the S.S. Ticket to enter the harbor. Speak to the clerk.", "O acesso ao porto exige o S.S. Ticket. Fale com o atendente."))
       return
     end

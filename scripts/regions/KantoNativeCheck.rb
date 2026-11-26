@@ -212,11 +212,24 @@ module KantoNativeCheck
     north_callback!($game_map.events[8],"BlueKantoPilot.bill_reward")
     d = north_component(cottage,landing)
     require!(north_event_reachable?(d,$game_map.events[8]), "Restored Bill unreachable")
-    ticket_item = GameData::Item.exists?(:SSTICKET)
-    ticket_before = ticket_item ? $bag.quantity(:SSTICKET) : 0
+    ticket_item = :BLUE_KANTO_SSTICKET
+    ticket_data = GameData::Item.get(ticket_item)
+    require!(ticket_data.is_key_item? && ticket_data.pocket == 8 &&
+             BlueRegionTravel.regional_item?(ticket_item), "K00-C native regional ticket catalog invalid")
+    ticket_before = $bag.quantity(ticket_item)
     require!(BlueKantoPilot.bill_reward && BlueKantoPilot.bill_reward, "Bill reward failed")
     require!(state["pilot_bill_ticket"] && state["pilot_ss_ticket"], "Ticket flag absent")
-    require!(!ticket_item || $bag.quantity(:SSTICKET) == ticket_before+1, "Ticket duplicated or missing")
+    require!($bag.quantity(ticket_item) == ticket_before+1 &&
+             state["pilot_bill_ticket_item_granted"], "Ticket duplicated or missing")
+    # Reconstruct the old digital-permit state in this disposable native
+    # game, and prove one-time conversion using the actual Bag.
+    require!($bag.remove(ticket_item,1), "K00 legacy ticket fixture removal failed")
+    state.delete("pilot_bill_ticket_item_granted")
+    require!(state["pilot_bill_ticket"] && state["pilot_ss_ticket"], "Legacy permission lost")
+    require!(BlueKantoPilot.bill_reward && BlueKantoPilot.bill_reward &&
+             $bag.quantity(ticket_item) == ticket_before+1, "Legacy digital ticket migration failed")
+    require!(BlueRegionTravel.local_bag_contents($bag)["items"].include?([ticket_item,1]),
+             "Ticket not recognized by regional isolation")
     exit_event = $game_map.events.values.find { |ev| Array(ev.list).any? { |op|
       op.code == 201 && op.parameters[0] == 0 && op.parameters[1] == route } }
     require!(north_event_reachable?(d,exit_event), "Cottage exit unreachable")
@@ -229,8 +242,9 @@ module KantoNativeCheck
       "city_center_landing"=>city_landing,"collision_components"=>[a.length,b.length,c.length,d.length],
       "bidirectional_seams"=>[seam1,seam2],"bill_landing"=>landing,
       "bill_return"=>return_landing,"nugget_quantity"=>$bag.quantity(:NUGGET),
-      "ticket_mode"=>(ticket_item ? "native_item" : "regional_permit"),
-      "ticket_quantity"=>(ticket_item ? $bag.quantity(:SSTICKET) : 0),
+      "ticket_mode"=>"native_item","ticket_id"=>ticket_item.to_s,
+      "ticket_quantity"=>$bag.quantity(ticket_item),"legacy_permit_upgrade"=>true,
+      "regional_key_item"=>true,
       "gary_retry"=>true,"bill_completed"=>true}
     $map_factory.setup(gym)
     report
@@ -1096,7 +1110,8 @@ module KantoNativeCheck
              "K00-C self switches lost")
     require!($bag.quantity(:NUGGET) == north_report["nugget_quantity"], "Nugget quantity changed after reload")
     if north_report["ticket_mode"] == "native_item"
-      require!($bag.quantity(:SSTICKET) == north_report["ticket_quantity"], "Ticket quantity changed after reload")
+      require!($bag.quantity(:BLUE_KANTO_SSTICKET) == north_report["ticket_quantity"] &&
+               north_state["pilot_bill_ticket_item_granted"], "Ticket quantity or grant flag changed after reload")
     end
     # Engine save/reload and callback state are genuine; battle outcomes are
     # stubbed and collision witnesses are not manual walking/door animation.
