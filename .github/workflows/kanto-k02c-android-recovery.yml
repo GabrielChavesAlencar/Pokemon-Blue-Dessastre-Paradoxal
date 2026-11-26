@@ -1,0 +1,35 @@
+name: Kanto K02-C - published Android 128 recovery
+on:
+  pull_request:
+    paths:
+      - 'tests/qa_k02c_android_recovery.py'
+      - '.github/workflows/kanto-k02c-android-recovery.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  recovery:
+    strategy:
+      fail-fast: false
+      matrix:
+        baseline: [hotfix31, build82]
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply exact released delta to verified historical ZIP
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python tests/qa_k02c_android_recovery.py ${{ matrix.baseline }}
+      - name: Upload receipt only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: k02c-recovery-${{ matrix.baseline }}
+          path: .blue-work/k02c-recovery-${{ matrix.baseline }}.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
