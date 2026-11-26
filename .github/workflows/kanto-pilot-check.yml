@@ -278,6 +278,19 @@ jobs:
           if((Get-FileHash 'game/mkxp.json' -Algorithm SHA256).Hash -ne $originalConfig){throw 'Native save directory was changed'}
           python scripts/regions/install_kanto.py --apply --game game
           if($LASTEXITCODE -ne 0){throw 'Idempotent install check failed'}
+      - name: K00 - provar migracao 142 a 145 em copia descartavel com RXDATA real
+        shell: powershell
+        run: |
+          python scripts/regions/qa_k00_migration.py
+          if($LASTEXITCODE -ne 0){throw 'K00 migration proof failed'}
+      - name: Preservar recibo K00 da migracao
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k00-migration-proof
+          path: .blue-work/k00-migration-proof.json
+          if-no-files-found: warn
+          retention-days: 14
       - name: Verificar origem Kanto e preservacao do ponto inicial Decades
         shell: powershell
         run: |
