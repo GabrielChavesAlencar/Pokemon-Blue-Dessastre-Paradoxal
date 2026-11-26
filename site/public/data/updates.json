@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2a11a47c156f7286ddd5d7710ab0241405140c3d",
+      "date": "2026-11-26T12:53:26-03:00",
+      "title": "Merge PR #353: native Pewter Brock and Running Shoes proof",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "f9d8942312b0e79330ce42de7ea53038aee40020",
+      "date": "2026-11-26T12:45:49-03:00",
+      "title": "QA K01-E: native Pewter gym, Boulder crystal and Running Shoes progression",
+      "category": "Melhorias"
+    },
+    {
       "sha": "f93cb20f5aea38654fc635d70e0de9756e0a1f8f",
       "date": "2026-11-26T12:44:38-03:00",
       "title": "Merge PR #352: native Viridian Forest corridor and trainer proof",
