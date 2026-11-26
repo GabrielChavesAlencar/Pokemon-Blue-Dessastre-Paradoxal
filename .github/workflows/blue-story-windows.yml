@@ -7,6 +7,7 @@ on:
       - data/regions/sinnoh-shared-mapids.json
       - scripts/regions/install_sinnoh_experimental_windows.py
       - scripts/regions/sinnoh_source_download.py
+      - scripts/regions/sinnoh_f10b7_field_audit.py
       - scripts/regions/sinnoh_f12d_integrated.py
       - scripts/regions/sinnoh_f12d3_canonical_network.py
       - scripts/regions/sinnoh_f12d3_secretpotion_audit.py
@@ -55,6 +56,7 @@ on:
       - data/regions/sinnoh-shared-mapids.json
       - scripts/install_game.py
       - scripts/regions/sinnoh_shared.py
+      - scripts/regions/sinnoh_f10b7_field_audit.py
       - scripts/regions/prepare_sinnoh_shared.py
       - scripts/regions/stage_sinnoh_shared_qa.py
       - scripts/regions/SinnohSharedEvents.rb

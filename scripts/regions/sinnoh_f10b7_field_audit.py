@@ -209,7 +209,9 @@ def access_graph(blobs,mapping,components,root,seed_symbols=None,directional=Fal
             {"SINNOH_VALOR_CAVERN","SINNOH_MT_CORONET_WEST_APPROACH"} for m,x,y in valor_rock)):
         raise ValueError("F12D_VALOR_ROCK_SCOPE")
     rock_symbols={"SINNOH_ROUTE_210","SINNOH_SOLACEON_TOWN","SINNOH_ROUTE_209","SINNOH_ROUTE_210_SEGMENT_2","SINNOH_HEARTHOME_CITY","SINNOH_F07_INTERIOR_125","SINNOH_ROUTE_215","SINNOH_VEILSTONE_CITY","SINNOH_ROUTE_214","SINNOH_VALOR_LAKEFRONT","SINNOH_ROUTE_213","SINNOH_PASTORIA_CITY","SINNOH_ROUTE_212","SINNOH_ROUTE_212_SEGMENT_2"}
-    if rock_cells and (not directional or not strict_movement or reverse.get(473)!="SINNOH_ROUTE_210_SEGMENT_2" or any(reverse.get(m) not in rock_symbols for m,x,y in rock_cells)):
+    route_210_north="SINNOH_ROUTE_210_SEGMENT_2"
+    if rock_cells and (not directional or not strict_movement or reverse.get(mapping.get(route_210_north))!=route_210_north
+            or any(reverse.get(m) not in rock_symbols for m,x,y in rock_cells)):
         raise ValueError("F12D3_ROCK_GRAPH_SCOPE")
     for mid,world in worlds.items():
         occupied={(e.attrs["@x"],e.attrs["@y"]) for e in world.attrs["@events"].values()}
