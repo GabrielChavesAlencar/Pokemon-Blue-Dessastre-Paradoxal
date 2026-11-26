@@ -252,6 +252,10 @@ def apply_install(game, pilot, commit=False, migration=None):
     originals = {}
     for relative in list(files) + extra:
         target = game / relative
+        if migration is not None and (target.is_symlink() or
+                not target.resolve().is_relative_to(game.resolve()) or
+                (target.exists() and not target.is_file())):
+            raise ValueError("Unsafe migration target: " + str(relative))
         originals[relative] = target.read_bytes() if target.is_file() else None
         if originals[relative] is not None:
             atomic(backup / relative, originals[relative])
@@ -259,11 +263,18 @@ def apply_install(game, pilot, commit=False, migration=None):
         for name in DATA_NAMES:
             if digest(game / "Data" / name) != original_hashes[name]:
                 raise ValueError("Shared map registry changed during migration")
+        hashes = {k.replace(chr(92), "/"): v
+                  for k, v in migration["installed_sha256"].items()}
         for relative in list(files) + extra:
             target = game / relative
             current = target.read_bytes() if target.is_file() else None
             if current != originals[relative]:
                 raise ValueError("Installation changed during migration: " + str(relative))
+            if (relative in files and relative.as_posix() not in
+                    {"Data/MapInfos.rxdata", "Data/Tilesets.rxdata"} and
+                    current is not None and current != files[relative].read_bytes() and
+                    hashes.get(relative.as_posix()) != hashlib.sha256(current).hexdigest()):
+                raise ValueError("Unowned migration target: " + str(relative))
     info = {"schema": 1, "maps": mapping, "base_data_sha256": original_hashes,
             "installed_sha256": {str(k): digest(v) for k, v in files.items()},
             "source": "Essentials FRLG 21.1"}
@@ -283,6 +294,9 @@ def apply_install(game, pilot, commit=False, migration=None):
         # The marker is deliberately committed LAST. No menu until ready.
         start = "BLUE_KANTO_START_V1,KANTO,%d,25,7\n" % mapping[7]
         atomic(game / MARKER, start.encode("ascii"))
+        if migration is not None:
+            # Keep the final installed verification inside the rollback boundary.
+            verify_installed(game)
     except BaseException:
         for relative, old in reversed(list(originals.items())):
             target = game / relative
