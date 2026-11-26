@@ -51,6 +51,7 @@ on:
       - scripts/windows/**
       - scripts/install_game.py
       - scripts/regions/sinnoh_shared.py
+      - scripts/regions/prepare_sinnoh_shared.py
       - tests/test_sinnoh_shared_install.py
       - scripts/regions/install_sinnoh_experimental_windows.py
       - scripts/regions/sinnoh_source_download.py
@@ -145,6 +146,38 @@ jobs:
           }
           gh release upload blue-story-windows dist/Blue-Story.exe --clobber
           if ($LASTEXITCODE -ne 0) {throw "Falha ao atualizar o Blue-Story.exe"}
+
+  sinnoh-shared-world-candidate:
+    # No release/upload: this job uses the actual managed base and local source
+    # archives only to generate the private shared-world candidate.
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'sinnoh-shared-blue-story'
+    permissions:
+      contents: read
+    runs-on: windows-2022
+    timeout-minutes: 60
+    env:
+      GIT_TERMINAL_PROMPT: '0'
+      GIT_CONFIG_COUNT: '1'
+      GIT_CONFIG_KEY_0: http.sslBackend
+      GIT_CONFIG_VALUE_0: openssl
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Preparar jogo principal em runner descartavel
+        run: python scripts/install_game.py --apply
+      - name: Gerar 144 mapas contra o jogo principal (sem ativar)
+        run: python scripts/regions/prepare_sinnoh_shared.py
+      - name: Confirmar candidato e ausência de ativação
+        shell: pwsh
+        run: |
+          $p = Get-Content .blue-work/sinnoh-shared-candidate/candidate.json -Raw | ConvertFrom-Json
+          if ($p.map_ids.Count -ne 144 -or $p.runtime_install_enabled -or $p.native_verified) { throw 'Invalid shared candidate' }
+          if (Test-Path game/Data/blue-sinnoh-shared.txt) { throw 'Unreviewed candidate activated' }
+          if (Test-Path .blue-work/sinnoh-shared/manifest.json) { throw 'Unreviewed candidate promoted' }
+          Write-Host 'SINNOH_SHARED_144_MAP_CANDIDATE_PREPARED_NOT_NATIVE_APPROVED'
 
   sinnoh-original-source-live:
     # Explicit acceptance checks for the download and continuity PRs only.
