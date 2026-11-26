@@ -247,6 +247,12 @@ jobs:
               Get-Content $forestTrace
               Write-Host ("KANTO_K01D_NATIVE_FOREST_REPORT:" + (Get-Content $forestProof -Raw).Trim())
               Write-Host 'KANTO_K01D_FOREST_CORRIDOR_TRAINERS_SAVE_RELOAD_OK'
+              $pewterTrace="$pilot/Data/blue-kanto-k01e-pewter-trace.txt"
+              $pewterProof="$pilot/Data/blue-kanto-k01e-pewter-proof.txt"
+              if(-not (Test-Path $pewterTrace) -or -not (Test-Path $pewterProof)){throw 'K01-E native Pewter proof missing'}
+              Get-Content $pewterTrace
+              Write-Host ("KANTO_K01E_NATIVE_PEWTER_REPORT:" + (Get-Content $pewterProof -Raw).Trim())
+              Write-Host 'KANTO_K01E_BROCK_ROUTE3_SHOES_SAVE_RELOAD_OK'
               Get-Content "$pilot/Data/blue-kanto-proof.txt"
               exit 0
             }
@@ -266,7 +272,27 @@ jobs:
           if(Test-Path $route2Trace){Get-Content $route2Trace | ForEach-Object { Write-Host "KANTO_K01C_ROUTE2_GATE_STATE:$_" }}
           $forestTrace="$pilot/Data/blue-kanto-k01d-forest-trace.txt"
           if(Test-Path $forestTrace){Get-Content $forestTrace}
+          $pewterTrace="$pilot/Data/blue-kanto-k01e-pewter-trace.txt"
+          if(Test-Path $pewterTrace){Get-Content $pewterTrace}
           throw 'Kanto native proof missing'
+      - name: Preservar diagnóstico Pewter K01-E
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k01e-pewter-trace.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k01e-native-pewter-trace
+          path: .blue-work/kanto-pilot/Data/blue-kanto-k01e-pewter-trace.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preservar recibo nativo Pewter K01-E
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k01e-pewter-proof.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k01e-native-pewter-proof
+          path: .blue-work/kanto-pilot/Data/blue-kanto-k01e-pewter-proof.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
       - name: Preservar diagnóstico Viridian Forest K01-D
         if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k01d-forest-trace.txt') != ''
         uses: actions/upload-artifact@v4

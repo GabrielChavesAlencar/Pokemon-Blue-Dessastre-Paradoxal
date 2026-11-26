@@ -612,6 +612,148 @@ module KantoNativeCheck
     end
   end
 
+  # K01-E: real Pewter geometry, native trainer records and runtime
+  # movement. Battle outcomes and dialogue rendering are controlled in CI.
+  def self.pewter_trace(label,row)
+    File.open("Data/blue-kanto-k01e-pewter-trace.txt","a") { |file| file.puts("#{label}:#{row.inspect}") }
+    puts "#{label}:#{row.inspect}"
+  end
+
+  def self.pewter_edge_probe(city,point,stage,blocked)
+    $map_factory.setup(city)
+    $game_player.moveto(*point)
+    require!($game_player.passable?(point[0],point[1],6),
+             "K01-E selected east seam is not physically passable #{point.inspect}")
+    require!(BlueKantoPilot.pewter_route3_crossing?($game_player,6),
+             "K01-E east seam is outside authored guard")
+    guard = BlueKantoPilot.pewter_route3_blocked?($game_player,6)
+    require!(guard == blocked, "K01-E guard state mismatch #{stage}")
+    # Avoid drawing an alert animation without a field scene. All movement,
+    # reward, regional flags and native player state remain real.
+    original_exclaim = Object.instance_method(:pbExclaim)
+    begin
+      Object.send(:define_method,:pbExclaim) { |*args| nil }
+      $game_player.move_generic(6,false)
+    ensure
+      Object.send(:define_method,:pbExclaim,original_exclaim)
+    end
+    after = [$game_map.map_id,$game_player.x,$game_player.y]
+    row = {"stage"=>stage,"from"=>[city,*point],"after"=>after,
+      "guard"=>guard,"running_shoes"=>$player.has_running_shoes,
+      "reward_flag"=>!!BlueKantoPilot.progress["pilot_mom_running_shoes"],
+      "runstyle"=>$PokemonSystem.runstyle}
+    pewter_trace("KANTO_K01E_ROUTE3_MOVEMENT",row)
+    if blocked
+      require!(after == [city,*point] && !$player.has_running_shoes && !row["reward_flag"],
+               "K01-E blocked crossing moved player or granted shoes")
+    else
+      require!(after != [city,*point] && $player.has_running_shoes &&
+               row["reward_flag"] && $PokemonSystem.runstyle == 1,
+               "K01-E allowed crossing did not move or grant native shoes")
+    end
+    row
+  end
+
+  def self.pewter_opening_proof(forest_report,battle_calls,losses_remaining)
+    previous_map = $game_map.map_id
+    previous_xy = [$game_player.x,$game_player.y]
+    city,gym,route = [25,28,32].map { |id| BlueKantoPilot.kanto_map_id(id) }
+    arrival = forest_report["outbound"].last["to_xy"]
+    city_component = opening_component(city,arrival)
+    $map_factory.setup(city)
+    gym_door = $game_map.events.values.find { |ev| ev.trigger == 1 &&
+      ev.list.any? { |op| op.code == 201 && op.parameters[0] == 0 && op.parameters[1] == gym } }
+    require!(north_event_reachable?(city_component,gym_door), "K01-E Gym door not reachable")
+    gym_arrival = north_transfer!(gym_door,gym)
+    gym_door_id = gym_door.id
+    seams = opening_crossings(city,city_component,route)
+    require!(!seams.empty?, "K01-E no native Pewter Route3 seam")
+    edge = seams.first[0]
+    $map_factory.setup(city)
+    require!(seams.all? { |left,_|
+      $game_player.moveto(*left)
+      BlueKantoPilot.pewter_route3_blocked?($game_player,6) },
+      "K01-E reachable east seam bypasses Brock")
+    state = BlueKantoPilot.progress
+    require!(BlueRegions.local_achievements(state,"KANTO").empty? &&
+             !$player.has_running_shoes && !state["pilot_mom_running_shoes"],
+             "K01-E badge/shoes awarded before Brock")
+    crystal_before = BlueRegions.crystal_total(state,0)
+    gate_states = [pewter_edge_probe(city,edge,"before_brock",true)]
+    component = opening_component(gym,gym_arrival)
+    $map_factory.setup(gym)
+    trainers = [[6,"Liam",:BLUE_KANTO_CAMPER],[7,"Brock",:BLUE_KANTO_LEADER]].map do |eid,name,type|
+      ev = $game_map.events[eid]
+      key = "KANTO_028_%03d" % eid
+      north_callback!(ev,'BlueKantoPilot.battle(:'+type.to_s+', "'+name+'", "'+key+'")')
+      north_callback!(ev,'BlueKantoPilot.sync_trainer_event("'+key+'", "'+name+'", '+eid.to_s+')')
+      witness = ev.trigger == 0 ? opening_action_witness(component,ev) : north_event_reachable?(component,ev)
+      require!(witness, "K01-E gym trainer inaccessible #{name}")
+      profile = GameData::Trainer.get(type,name)
+      row = {"event_id"=>eid,"name"=>name,"trigger"=>ev.trigger,"key"=>key,
+        "position"=>[ev.x,ev.y],"witness"=>witness,
+        "roster"=>profile.pokemon.map { |p| [p[:species].to_s,p[:level]] }}
+      pewter_trace("KANTO_K01E_GYM_TRAINER",row)
+      row
+    end
+    BlueKantoPilot.battle(:BLUE_KANTO_CAMPER,"Liam","KANTO_028_006")
+    require!(BlueKantoPilot.sync_trainer_event("KANTO_028_006","Liam",6) &&
+             $game_self_switches[[gym,6,"A"]], "K01-E Liam victory not synchronized")
+    losses_remaining["Brock"] = 1
+    require!(!BlueKantoPilot.battle(:BLUE_KANTO_LEADER,"Brock","KANTO_028_007") &&
+             !BlueKantoPilot.sync_trainer_event("KANTO_028_007","Brock",7) &&
+             !$game_self_switches[[gym,7,"A"]] &&
+             !state["pilot_wins"].include?("KANTO_028_007") &&
+             BlueRegions.crystal_total(state,0) == crystal_before,
+             "K01-E loss awarded badge, crystal or victory")
+    gate_states << pewter_edge_probe(city,edge,"after_loss",true)
+    $map_factory.setup(gym)
+    require!(BlueKantoPilot.battle(:BLUE_KANTO_LEADER,"Brock","KANTO_028_007") &&
+             BlueKantoPilot.sync_trainer_event("KANTO_028_007","Brock",7),
+             "K01-E Brock retry/victory failed")
+    require!(BlueRegions.local_achievements(state,"KANTO") == ["BOULDER"] &&
+             BlueRegions.crystal_total(state,0) == crystal_before+1 &&
+             !$player.has_running_shoes && !state["pilot_mom_running_shoes"],
+             "K01-E badge/crystal not unique or shoes awarded at gym")
+    BlueKantoPilot.battle(:BLUE_KANTO_LEADER,"Brock","KANTO_028_007")
+    require!(battle_calls.count { |r| r[1] == "Brock" } == 2 &&
+             BlueRegions.crystal_total(state,0) == crystal_before+1,
+             "K01-E Brock battle or emerald repeated")
+    $game_map.refresh
+    require!([6,7].all? { |eid| $game_self_switches[[gym,eid,"A"]] && $game_map.events[eid].trigger == 0 },
+             "K01-E defeated gym event pages incorrect")
+    exit_event = $game_map.events.values.find { |ev| ev.trigger == 1 &&
+      ev.list.any? { |op| op.code == 201 && op.parameters[0] == 0 && op.parameters[1] == city } }
+    exit_component = opening_component(gym,gym_arrival)
+    $map_factory.setup(gym)
+    require!(north_event_reachable?(exit_component,exit_event), "K01-E gym exit inaccessible")
+    gym_return = north_transfer!(exit_event,city)
+    exit_comp = opening_component(city,gym_return)
+    exit_seams = opening_crossings(city,exit_comp,route)
+    require!(exit_seams.any? { |left,_| left == edge }, "K01-E gym return cannot reach Route3")
+    gate_states << pewter_edge_probe(city,edge,"after_brock",false)
+    require!(!BlueKantoPilot.mom_running_shoes_at_route3,
+             "K01-E duplicate mother reward")
+    route_landing = exit_seams.find { |left,_| left == edge }[1]
+    return_comp = opening_component(route,route_landing)
+    back = opening_crossings(route,return_comp,city)
+    require!(!back.empty?, "K01-E no Route3 return to Pewter")
+    report = {"status"=>"PASS","manual_gameplay"=>false,
+      "mode"=>"native_collision_movement_and_controlled_battle_results",
+      "map_ids"=>[city,gym,route],"gym_door"=>gym_door_id,
+      "gym_arrival"=>gym_arrival,"gym_return"=>gym_return,"trainers"=>trainers,
+      "east_seams"=>exit_seams,"return_seams"=>back,"gate_states"=>gate_states,
+      "brock_loss_retry"=>true,"boulder_delta"=>1,"emerald_delta"=>1,
+      "shoes_after_brock_only"=>true,"duplicate_reward_rejected"=>true}
+    pewter_trace("KANTO_K01E_PEWTER_ACCESS",report)
+    report
+  ensure
+    if previous_map && previous_xy
+      $map_factory.setup(previous_map)
+      $game_player.moveto(*previous_xy)
+    end
+  end
+
   def self.starter_opening_proof(lab)
     state = BlueKantoPilot.progress
     require!(state["pilot_profile_pending"] && !BlueKantoPilot.starter &&
@@ -998,13 +1140,7 @@ module KantoNativeCheck
     BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER, "Sammy", "KANTO_024_020")
     require!(battle_calls.none? { |row| row[1] == "Sammy" }, "Legacy trainer win replayed")
 
-    BlueKantoPilot.battle(:BLUE_KANTO_LEADER, "Brock", "KANTO_028_007")
-    require!(BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO") == ["BOULDER"],
-             "Badge was not awarded exactly once")
-    require!(BlueKantoPilot.progress["pilot_wins"].include?("KANTO_028_007"),
-             "Stable Brock trainer key not persisted")
-    BlueKantoPilot.battle(:BLUE_KANTO_LEADER, "Brock", "KANTO_028_007")
-    require!(battle_calls.count { |row| row[1] == "Brock" } == 1, "Brock battle repeated after victory")
+    pewter_report = pewter_opening_proof(forest_report,battle_calls,losses_remaining)
 
     # Phase 07: Misty must have a real compiled trainer profile and a
     # distinct Cascade milestone. The battle result is stubbed ONLY in CI.
@@ -1740,6 +1876,16 @@ module KantoNativeCheck
     require!(FOREST_TRAINERS.keys.all? { |eid| $game_self_switches[[forest_id,eid,"A"]] } &&
              %w[KANTO_024_016 KANTO_024_017 KANTO_024_018 KANTO_024_019 Sammy].all? { |key| BlueKantoPilot.progress["pilot_wins"].include?(key) },
              "K01-D Forest trainer victory or event switches lost on reload")
+    pewter_gym = pewter_report["map_ids"][1]
+    require!($player.has_running_shoes && BlueKantoPilot.progress["pilot_mom_running_shoes"] &&
+             %w[KANTO_028_006 KANTO_028_007].all? { |key| BlueKantoPilot.progress["pilot_wins"].include?(key) } &&
+             [6,7].all? { |eid| $game_self_switches[[pewter_gym,eid,"A"]] } &&
+             BlueRegions.local_achievements(BlueKantoPilot.progress,"KANTO").count("BOULDER") == 1,
+             "K01-E Boulder / shoes / gym state lost on final reload")
+    pewter_report["save_reload"] = true
+    File.write("Data/blue-kanto-k01e-pewter-proof.txt",pewter_report.inspect)
+    puts "KANTO_K01E_NATIVE_PEWTER_REPORT:#{pewter_report.inspect}"
+    puts "KANTO_K01E_BROCK_ROUTE3_SHOES_SAVE_RELOAD_OK"
     forest_report["save_reload"] = true
     File.write("Data/blue-kanto-k01d-forest-proof.txt",forest_report.inspect)
     puts "KANTO_K01D_NATIVE_FOREST_REPORT:#{forest_report.inspect}"
