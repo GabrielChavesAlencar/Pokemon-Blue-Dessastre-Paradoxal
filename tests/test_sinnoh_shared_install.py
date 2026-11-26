@@ -1,0 +1,115 @@
+"""Integration checks for the shared installer and Android release guard."""
+import json
+from pathlib import Path
+import struct
+import sys
+import tempfile
+import unittest
+from unittest.mock import patch
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path[:0] = [str(ROOT), str(ROOT / "scripts/regions")]
+
+import sinnoh_shared as shared
+from scripts.android.update_client import _preserve_shared_sinnoh
+from server.ruby_marshal import RubyData, RubyObject
+from stage import serialize
+
+
+class SinnohSharedInstallerTests(unittest.TestCase):
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.project = Path(tmp.name).resolve()
+        self.game = self.project / "game"
+        self.overlay = self.project / ".blue-work/sinnoh-shared"
+
+        def table(data):
+            raw = struct.pack("<5I", 1, len(data), 1, 1, len(data))
+            return RubyData("Table", raw + struct.pack(f"<{len(data)}H", *data))
+
+        tileset = RubyObject("RPG::Tileset", {"@passages": table([0, 0]), "@terrain_tags": table([0, 0])})
+        map_data = RubyData("Table",struct.pack("<5I",3,4,4,3,48)+struct.pack("<48H",*([1]*16+[0]*32)))
+        world = RubyObject("RPG::Map", {"@width":4,"@height":4,"@tileset_id":2,"@events":{},"@data":map_data})
+        self.base = {shared.MAP_INFOS:serialize({1:b"Decades"}),shared.TILESETS:serialize([None,tileset]),
+                     shared.CONNECTIONS:serialize([]),shared.PBS_CONNECTIONS:b"# Existing regions\n"}
+        self.files = {shared.MAP_INFOS:serialize({1:b"Decades", **dict.fromkeys(range(442,586), b"Example")}),
+                      shared.TILESETS:serialize([None,tileset,tileset]),
+                      shared.CONNECTIONS:serialize([[442,b"E",0,443,b"W",0]]),
+                      shared.PBS_CONNECTIONS:self.base[shared.PBS_CONNECTIONS]+b"442,E,0,443,W,0\n",
+                      shared.PLUGIN:b"module BlueSinnohSharedEvents; end\n",
+                      shared.META:b"Scripts = SinnohSharedEvents.rb\n"}
+        self.files.update({f"Data/Map{n:03d}.rxdata":serialize(world) for n in range(442,586)})
+        self.approvals={"map_ids":True,"asset_rights":True,"connected_world":True,"windows_travel":True}
+        for rel, raw in self.base.items():
+            self.put(self.game / rel, raw)
+        self.put(self.game / 'Data/Map001.rxdata', b'original Decades map')
+        self.put(self.game / 'Data/PluginScripts.rxdata', b'previous plugin cache')
+        self.put(self.game / 'mkxp.json', b'shared save settings')
+        self.put(self.game / 'Saves/Game.rxdata', b'existing save')
+
+    def put(self, path, raw):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(raw)
+
+    def prepare(self):
+        for rel, raw in self.files.items():
+            self.put(self.overlay / rel,raw)
+        proof = {"schema":1,"profile":"BLUE_SINNOH_SHARED_V1","map_ids":list(range(442,586)),
+                 "approvals":self.approvals,"start":[442,1,1],"arrival":[443,1,1],"agent":[443,2,1],
+                 "base":{p:shared.sha(raw) for p,raw in self.base.items()},
+                 "files":{p:shared.sha(raw) for p,raw in self.files.items()}}
+        self.put(self.overlay / 'manifest.json', json.dumps(proof).encode())
+        return proof
+
+    def test_shared_overlay_is_installed_once_and_can_be_verified_for_android(self):
+        self.assertFalse(shared.integrate(self.project,self.game)['changed'])
+        self.approvals.update(joiplay_travel=True,android_distribution=True)
+        self.prepare()
+        self.assertTrue(shared.integrate(self.project,self.game)['changed'])
+        self.assertFalse(shared.integrate(self.project,self.game)['changed'])
+        self.assertEqual(shared.installed(self.game,android=True)['arrival'],[443,1,1])
+        self.assertEqual((self.game / 'Data/Map001.rxdata').read_bytes(),b'original Decades map')
+        self.assertEqual((self.game / 'mkxp.json').read_bytes(),b'shared save settings')
+        self.assertEqual((self.game / 'Saves/Game.rxdata').read_bytes(),b'existing save')
+
+    def test_mismatched_base_or_pilot_config_cannot_be_installed(self):
+        self.prepare()
+        self.put(self.game / 'Data/Map442.rxdata',b'unrelated map')
+        with self.assertRaisesRegex(ValueError, 'já existem'):
+            shared.integrate(self.project,self.game)
+        self.assertEqual((self.game / 'Data/Map442.rxdata').read_bytes(),b'unrelated map')
+        self.files['mkxp.json']=b'pilot settings'
+        self.prepare()
+        with self.assertRaisesRegex(ValueError, 'fora do overlay'):
+            shared.integrate(self.project,self.game)
+        self.assertFalse((self.game / shared.START).exists())
+
+    def test_windows_approval_does_not_make_sinnoh_distributable_on_android(self):
+        proof = self.prepare()
+        shared.validate_manifest(proof)
+        with self.assertRaisesRegex(ValueError,'esta plataforma'):
+            shared.validate_manifest(proof,android=True)
+        old = {shared.START:{},shared.RECEIPT:{},'Data/Map443.rxdata':{}}
+        with self.assertRaisesRegex(ValueError,'removeria Sinnoh'):
+            _preserve_shared_sinnoh(old,{shared.START:{},shared.RECEIPT:{}})
+
+    def test_failed_install_restores_world_indexes_and_previous_cache(self):
+        self.prepare()
+        atomic = shared.atomic
+        def fail_at_gate(path, data):
+            if path == self.game / shared.START:
+                raise OSError('write interrupted')
+            atomic(path, data)
+        with patch.object(shared,'atomic',side_effect=fail_at_gate):
+            with self.assertRaisesRegex(OSError, 'write interrupted'):
+                shared.integrate(self.project,self.game)
+        for rel,raw in self.base.items():
+            self.assertEqual((self.game / rel).read_bytes(),raw)
+        self.assertEqual((self.game / 'Data/PluginScripts.rxdata').read_bytes(),b'previous plugin cache')
+        self.assertFalse((self.game / shared.RECEIPT).exists())
+        self.assertFalse((self.game / 'Data/Map442.rxdata').exists())
+
+
+if __name__ == '__main__':
+    unittest.main()

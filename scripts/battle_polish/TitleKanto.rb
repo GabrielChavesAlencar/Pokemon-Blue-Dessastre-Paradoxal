@@ -526,6 +526,7 @@ module BlueKantoTitle
             BlueRegionStart.johto_spawn
     johto_release = johto && BlueRegionStart.respond_to?(:johto_install_proof) &&
                     BlueRegionStart.johto_install_proof
+    sinnoh = defined?(BlueRegionStart) && BlueRegionStart.respond_to?(:sinnoh_spawn) && BlueRegionStart.sinnoh_spawn
     START_REGIONS.map do |name, region|
       label = if region == :johto && johto
                 # Same main game and shared save as Kanto/Hoenn.
@@ -536,6 +537,8 @@ module BlueKantoTitle
                 "Kanto (instalação necessária)"
               elsif region == :hoenn && hoenn
                 "Hoenn"
+              elsif region == :sinnoh && sinnoh
+                "Sinnoh"
               else
                 name
               end
@@ -585,6 +588,12 @@ module BlueKantoTitle
         # installation is verified. It retains its own independent save.
         return :launched if launch_hoenn
         pbMessage(_INTL("Hoenn ainda não está integrada nesta instalação. Coloque o ZIP original de Hoenn na pasta do projeto e execute a atualização Blue-Story.exe. Seus saves de Decades/Kanto não foram modificados."))
+      when :sinnoh
+        if defined?(BlueRegionStart) && BlueRegionStart.respond_to?(:sinnoh_spawn) &&
+           BlueRegionStart.sinnoh_spawn && BlueRegionStart.request_initial("SINNOH")
+          return :integrated
+        end
+        return :launched if launch_sinnoh
       when :cancel then return :cancel
       when :unavailable
         pbMessage(_INTL("Essa região ainda não tem uma campanha jogável instalada. Nenhum save foi alterado."))

@@ -224,7 +224,19 @@ def _old_patch_files(info, updated_files):
     return old
 
 
+def _preserve_shared_sinnoh(old, new):
+    # A shared save can be standing on a Sinnoh map when JoiPlay is closed.
+    marker = "Data/blue-sinnoh-shared.txt"
+    if marker not in old:
+        return
+    required = {marker, "Data/blue-sinnoh-shared.json"}
+    required.update(f"Data/Map{mid:03d}.rxdata" for mid in range(442, 600) if f"Data/Map{mid:03d}.rxdata" in old)
+    if not required <= set(new):
+        raise ValueError("A atualização removeria Sinnoh de um save compartilhado.")
+
+
 def _verify_paths(old, new, patch):
+    _preserve_shared_sinnoh(old, new)
     changed = patch.get("changed")
     removed = patch.get("removed", [])
     if not isinstance(changed, dict) or not isinstance(removed, list):
@@ -488,6 +500,7 @@ def apply_full_archive(root, installed, manifest, archive_path):
     """
     if installed["channel"] != manifest["channel"]:
         raise ValueError("Cannot change Android update channels.")
+    _preserve_shared_sinnoh(installed["files"], manifest["files"])
     if not root.is_dir() or root.is_symlink() or root.parent == root:
         raise ValueError("Invalid installed game directory.")
     with zipfile.ZipFile(archive_path) as archive:

@@ -152,6 +152,16 @@ def install(project,game,hub_only=False,allow_kanto_missing=False,skip_kanto=Fal
                     # New Ruby plugin and regional PBS must be compiled by the
                     # native Game.exe before trainer battles can be tested.
                     run([sys.executable,'scripts/launch_game.py','--game-dir',game,'--prepare-only'],project,env)
+        if not skip_kanto:
+            from sinnoh_shared import integrate as integrate_sinnoh
+            try:
+                result = integrate_sinnoh(project, game)
+                print('[SINNOH] Instalação compartilhada:', result['status'], flush=True)
+            except (OSError, ValueError, KeyError, TypeError) as error:
+                print('[SINNOH] Integração bloqueada:', error, flush=True)
+            else:
+                if result['changed']:
+                    run([sys.executable,'scripts/launch_game.py','--game-dir',game,'--prepare-only'],project,env)
         print('[OK] Instalado. Abra ABRIR_JOGO.bat para a campanha ou HUB_DE_BATALHA.bat para o Hub.')
     print('As listas de musica compartilhadas do projeto foram aplicadas; cada batalha sorteia uma faixa da categoria.')
 

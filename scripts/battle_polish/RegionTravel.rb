@@ -78,6 +78,7 @@ module BlueRegionTravel
     when "KANTO" then installed?
     when "JOHTO" then !!johto_installed?
     when "HOENN" then !!hoenn_installed?
+    when "SINNOH" then !!BlueRegionStart.sinnoh_shared_points
     else false
     end
   end
@@ -85,7 +86,7 @@ module BlueRegionTravel
   def self.available?(state = nil)
     return false unless safe_context? && installed?
     state ||= BlueRegions.snapshot
-    source_valid?(state) && %w[DECADES KANTO JOHTO HOENN].include?(state["current"])
+    source_valid?(state)
   end
 
   # A new adventure begins upstairs at home, but returning from another
@@ -170,6 +171,8 @@ module BlueRegionTravel
       # Never use Kanto's maps or Johto's bedroom as an arrival fallback.
       return nil unless johto_installed?
       BlueRegionStart.johto_town_point
+    elsif key == "SINNOH"
+      BlueRegionStart.sinnoh_shared_points&.[](1)
     elsif key == "DECADES"
       # Previous releases mistakenly saved System.rxdata's native INTRO as
       # decades_first_arrival. Ignore it, even for an old Kanto save: visiting
@@ -442,6 +445,9 @@ module BlueRegionTravel
     when "HOENN"
       point = hoenn_town_point
       !!point && $game_map.map_id == point[0]
+    when "SINNOH"
+      point = BlueRegionStart.sinnoh_shared_points&.last
+      !!point && $game_map.map_id == point[0]
     else false
     end
   end
@@ -707,6 +713,23 @@ module BlueRegionTravel
     map.events[event.id] = Game_Event.new(map.map_id, event, map)
   end
 
+  SINNOH_AGENT_NAME = "Agente Regional Sinnoh".freeze
+  def self.attach_sinnoh_agent(map)
+    point = BlueRegionStart.sinnoh_shared_points&.last
+    return unless point && map.map_id == point[0] && map.events.is_a?(Hash)
+    x, y = point[1,2]
+    return unless map.valid?(x,y) && map.passable?(x,y,2)
+    return if map.events.values.any? { |event| event.name == SINNOH_AGENT_NAME || [event.x,event.y] == [x,y] }
+    event = RPG::Event.new(x,y)
+    event.id = (map.events.keys.max || 0) + 1
+    event.name = SINNOH_AGENT_NAME
+    page = event.pages.first
+    page.graphic.character_name = DECADES_AGENT_GRAPHIC
+    page.trigger = 0
+    page.list = [RPG::EventCommand.new(355,0,["BlueRegionTravel.agent(true)"]), RPG::EventCommand.new(0,0,[])]
+    map.events[event.id] = Game_Event.new(map.map_id,event,map)
+  end
+
   # Map setup is not always repeated after loading an existing save.
   # Populate events BEFORE Spriteset_Map builds its character sprites, so a
   # player already standing in Cherryhill can see the NPC on first load.
@@ -732,6 +755,8 @@ module BlueRegionTravel
            johto_installed? ? BlueRegionStart.johto_agent_point&.first : nil
          when "HOENN"
            hoenn_installed? ? BlueRegionStart.hoenn_town_point&.first : nil
+         when "SINNOH"
+           BlueRegionStart.sinnoh_shared_points&.last&.first
          end
     # MapInfos may not yet be ready during startup: don't freeze the
     # fallback Decades ID before the native registry has loaded.
@@ -749,13 +774,14 @@ module BlueRegionTravel
              elsif state.is_a?(Hash) && state["version"] == 1
                state["current"]
              end
-    return unless %w[DECADES KANTO JOHTO HOENN].include?(region)
+    return unless %w[DECADES KANTO JOHTO HOENN SINNOH].include?(region)
     return unless map.map_id == agent_map_id(region)
     case region
     when "DECADES" then attach_decades_agent(map)
     when "KANTO"   then attach_kanto_agent(map)
     when "JOHTO"   then attach_johto_agent(map)
     when "HOENN"   then attach_hoenn_agent(map)
+    when "SINNOH"  then attach_sinnoh_agent(map)
     end
   end
 

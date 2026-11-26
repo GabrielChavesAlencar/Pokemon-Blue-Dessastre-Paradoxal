@@ -14,7 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from scripts.android.update_client import (MARKER, CHANNELS, safe_path, sha256_file,
                                          sha256_bytes, _patchable_immutables,
-                                         _old_patch_files)
+                                         _old_patch_files, _preserve_shared_sinnoh)
 
 
 def from_archive(path: Path, channel: str):
@@ -95,6 +95,7 @@ def publish(archive_path: Path, channel: str, previous_path: Path | None = None,
         previous = verified_previous(path, channel)
         if not previous:
             continue
+        _preserve_shared_sinnoh(previous["files"], current["files"])
         earlier = previous["revision"]
         if earlier in seen or earlier == revision:
             continue

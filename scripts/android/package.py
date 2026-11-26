@@ -9,6 +9,8 @@ from prepare_restore import Marshal,RubyString,dump
 from server.ruby_marshal import loads
 from scripts.android.build_manifest import installed_manifest, verify_manifest
 from scripts.android.early_input import install as install_early_input, verify as verify_early_input
+sys.path.insert(0,str(ROOT/'scripts/regions'))
+import sinnoh_shared
 
 MOBILE='Plugins/ZZZZ Blue Battle Lab/Mobile.rb'
 
@@ -17,6 +19,7 @@ MOBILE='Plugins/ZZZZ Blue Battle Lab/Mobile.rb'
 KANTO_PLUGIN = "Plugins/ZZZZZ Blue Kanto Pilot/KantoPilot.rb"
 HOENN_PLUGIN = "Plugins/ZZZZZ Blue Hoenn Pilot/HoennPilot.rb"
 REGION_START_PLUGIN = "Plugins/ZZZZ Blue Story and Presentation/RegionStart.rb"
+REGION_TRAVEL_PLUGIN = "Plugins/ZZZZ Blue Story and Presentation/RegionTravel.rb"
 REGIONAL_FILES = (
     "Data/blue-kanto-install.json", "Data/blue-kanto-start.txt",
     "Data/blue-kanto-ready.txt", "Data/blue-kanto-music.txt",
@@ -41,7 +44,8 @@ def verify_regions(game):
     # install_hoenn.safe_file validates absolute paths; the Android CLI
     # normally passes --game-dir game (relative to the checkout).
     game = Path(game).resolve()
-    if any((game / name).is_file() for name in ("Kanto pilot.json", "Hoenn pilot.json")):
+    if any((game / name).is_file() for name in ("Kanto pilot.json", "Hoenn pilot.json",
+                                               "Sinnoh pilot.json", "sinnoh-experimental-qa.json")):
         raise ValueError('The Android shared build cannot use isolated pilot save profiles.')
     sys.path.insert(0, str(ROOT / 'scripts/regions'))
     from install_kanto import verify_installed as kanto
@@ -62,6 +66,14 @@ def verify_regions(game):
             raise ValueError("Missing Android regional boot script: " + item)
         compiled_region(compiled, Path(item).name, file.read_bytes())
     return kp, hp
+
+
+def verify_sinnoh(read):
+    proof = json.loads(read(sinnoh_shared.RECEIPT))
+    sinnoh_shared.verify_files(proof, read, android=True, installed=True)
+    compiled = read("Data/PluginScripts.rxdata")
+    for rel in (sinnoh_shared.PLUGIN, REGION_START_PLUGIN, REGION_TRAVEL_PLUGIN):
+        compiled_region(compiled, Path(rel).name, read(rel))
 
 
 def compiled_mobile(cache,source):
@@ -94,6 +106,10 @@ def verify_archive(output,revision,source_sha=None,channel='decades'):
             cache=archive.read(base+'Data/PluginScripts.rxdata')
             for name in (KANTO_PLUGIN,HOENN_PLUGIN,REGION_START_PLUGIN):
                 compiled_region(cache,Path(name).name,archive.read(base+name))
+        if any(base+name in archive.namelist() for name in (sinnoh_shared.RECEIPT, sinnoh_shared.START, sinnoh_shared.PLUGIN)):
+            if channel != 'multiregion':
+                raise ValueError('Sinnoh requires the shared Android channel.')
+            verify_sinnoh(lambda rel: archive.read(base+rel))
     return {'revision':revision,'mobileSha256':actual}
 
 def fingerprint(game):
@@ -141,6 +157,11 @@ def allowed(path):
 def build(game,output,revision,channel='decades'):
     if channel not in ('decades','multiregion'):raise ValueError('Unknown Android History build channel.')
     if channel=='multiregion':verify_regions(game)
+    has_sinnoh = any((game/name).exists() or (game/name).is_symlink() for name in
+        (sinnoh_shared.RECEIPT, sinnoh_shared.START, sinnoh_shared.PLUGIN))
+    if has_sinnoh:
+        if channel != 'multiregion':raise ValueError('Sinnoh exige o canal compartilhado no Android.')
+        verify_sinnoh(lambda rel: sinnoh_shared.safe_file(game.resolve(),rel).read_bytes())
     marker=game/'Data/blue-android-compiled.txt'
     if not marker.is_file():raise ValueError('The native compiler did not produce its completion marker. No Android download can be published.')
     if marker.read_text()!=fingerprint(game):raise ValueError('The native compiler completion marker is stale for the current plugins. No Android download can be published.')
@@ -156,6 +177,9 @@ def build(game,output,revision,channel='decades'):
         # excludes (blue-*.json/txt/dat), or Hoenn stays "em preparação".
         for name in REGIONAL_FILES:
             plans[name]=game/name
+        if has_sinnoh:
+            for name in (sinnoh_shared.RECEIPT,sinnoh_shared.START):
+                plans[name]=game/name
     output.parent.mkdir(parents=True,exist_ok=True)
     build_utc=datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00","Z")
     build_info=('Compatibility: 2\nRevision: '+revision+'\nBuild-UTC: '+build_utc+
@@ -183,6 +207,8 @@ def build(game,output,revision,channel='decades'):
                 'Pacote separado do Decades puro; nao instale patch do canal decades.\n'
                 'A disponibilidade da viagem depende tambem do progresso no jogo.\n'
                 'Nao instale sobre os arquivos de outro canal sem backup dos saves.\n')
+        if has_sinnoh:
+            readme += 'SINNOH: selecione Novo Jogo ou use o Agente de Transporte Regional no mesmo save.\n'
         archive.writestr('Pokemon-Blue-Android/LEIA-ME-ANDROID.txt', readme)
         # Inventory is checked by the release publisher and the Android updater.
         extras={

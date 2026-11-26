@@ -158,6 +158,8 @@ module BlueRegionStart
   def self.johto_agent_point; @johto_ready ? [713,11,11,4] : nil; end
   def self.enable_johto; @johto_ready = true; end
   def self.disable_johto; @johto_ready = false; end
+  def self.sinnoh_shared_points; @sinnoh_ready ? [[442,3,6],[443,2,3,2],[443,2,4]] : nil; end
+  def self.enable_sinnoh; @sinnoh_ready = true; end
 end
 # Minimal RPG event mocks prove that NPCs are generated in-memory without
 # altering Decades RXDATA, source Map IDs or the player's save file.
@@ -602,6 +604,27 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
           new_bark.events.values.first.name == BlueRegionTravel::JOHTO_AGENT_NAME,
           "New Bark transport required the Johto Hall of Fame")
     BlueRegionStart.disable_johto
+    $PokemonGlobal.blue_regions = BlueRegions.new_state("KANTO")
+    $game_map = FakeGameMap.new
+    $game_map.map_id = 300
+    $scene = FakeScene.new
+    $game_temp = FakeTemp.new
+    $bag = FakeBag.new
+    $bag.add(:OAKSPARCEL)
+    $player.party = [FakePokemon.new]
+    check(!BlueRegionTravel.destination($PokemonGlobal.blue_regions,"SINNOH"), "Missing Sinnoh got an arrival")
+    BlueRegionStart.enable_sinnoh
+    BlueRegionTravel.instance_variable_set(:@npc_event_context,true)
+    check(BlueRegionTravel.travel("SINNOH",true), "Kanto -> Sinnoh travel failed")
+    check($game_map.map_id == 443 && $player.party.length == 1 && !$bag.has?(:OAKSPARCEL),
+          "Sinnoh arrival used the wrong map, party or regional bag")
+    town = MockAgentMap.new(443)
+    2.times { BlueRegionTravel.attach_agents(town) }
+    check(town.events.length == 1 && town.events.values.first.name == BlueRegionTravel::SINNOH_AGENT_NAME,
+          "Missing or duplicated Sinnoh return agent")
+    check(BlueRegionTravel.travel("KANTO",true) && $bag.has?(:OAKSPARCEL),
+          "Returning from Sinnoh failed to restore the Kanto key item")
+    BlueRegionTravel.instance_variable_set(:@npc_event_context,false)
   end
 end
 puts "Regional travel, restricted PC, rollback, single save and return OK"
