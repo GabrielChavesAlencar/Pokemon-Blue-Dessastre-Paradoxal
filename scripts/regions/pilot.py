@@ -1022,6 +1022,42 @@ def install_events(source, target, mapping):
                 continue
             if not league_event_allowed(original, event_id) and not passive_field:
                 continue
+            # K02-C source Map039 events and interiors 043–048. Preserve
+            # geometry, event IDs, and local transfer coordinates. No donor
+            # global switches, mart script, or battle commands are executed.
+            if 43 in mapping:
+                if (original == 39 and event_id in (13,25,26,37,38)):
+                    police = event_id in (13,25)
+                    callback = "cerulean_police" if police else "cerulean_rocket"
+                    visible = event_id in (13,25,26)
+                    local = new_event(event, [command(355, f"BlueKantoPilot.{callback}".encode())],
+                                      0 if visible else 2, actor(event) if visible else b"")
+                    page = local.attrs["@pages"][0]
+                    blank = copy.deepcopy(page)
+                    blank.attrs["@graphic"].attrs.update({"@character_name": b"", "@tile_id": 0})
+                    blank.attrs.update({"@trigger": 0, "@through": True, "@list": [command(0)]})
+                    if event_id == 25:
+                        first, second = blank, page
+                    else:
+                        first, second = page, blank
+                    second.attrs["@condition"].attrs.update({"@self_switch_valid": True, "@self_switch_ch": b"A"})
+                    local.attrs["@pages"] = [first,second]
+                    selected[event_id] = local
+                    continue
+                if (original == 39 and event_id in (9,27)) or (original == 48 and event_id == 3):
+                    warp = extract_warps(event, mapping)
+                    if warp is None:
+                        raise ValueError("Missing original guarded Cerulean transfer")
+                    warp.attrs["@indent"] = 1
+                    graphic = event.attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"]
+                    selected[event_id] = new_event(event, if_scene(b"BlueKantoPilot.cerulean_house_entry?", [warp]),
+                                                   1, actor(event) if graphic else b"")
+                    continue
+                if (original,event_id) in ((43,1),(48,1)):
+                    callback = "cerulean_bike_exchange" if original == 43 else "cerulean_house_owner"
+                    selected[event_id] = new_event(event, [command(355, f"BlueKantoPilot.{callback}".encode())],
+                                                   0, actor(event))
+                    continue
             if original in LEAGUE_BARRIER_GATES and event_id in LEAGUE_BARRIER_GATES[original]:
                 required = LEAGUE_BARRIER_GATES[original][event_id]
                 guard = 4 if original == 17 else event_id + 1
