@@ -48,6 +48,49 @@ class KantoInstallerTest(unittest.TestCase):
                 install_cerulean_items(donor,target)
             self.assertIn("[BIKEVOUCHER]",overlay.read_text("utf8"))
 
+    def test_cerulean_voucher_missing_donor_requires_original_shop_witness(self):
+        from pilot import install_cerulean_items
+        from types import SimpleNamespace
+        def obj(**attrs):
+            return SimpleNamespace(attrs={"@" + k: v for k, v in attrs.items()})
+        with tempfile.TemporaryDirectory() as folder:
+            donor, target = Path(folder) / "source", Path(folder) / "game"
+            for project in (donor, target):
+                (project / "PBS").mkdir(parents=True)
+            (donor / "Data").mkdir()
+            (donor / "Data/Map043.rxdata").write_bytes(b"fixture")
+            bike = "[BICYCLE]\nName = Bicycle\nPocket = 8\nPrice = 0\nConsumable = false\nFlags = KeyItem\n"
+            base = target / "PBS/items.txt"
+            base.write_text(bike, encoding="utf8")
+            (donor / "PBS/items.txt").write_text(bike, encoding="utf8")
+            ops = [obj(code=111, indent=0, parameters=[12, b"$bag.has?(:BIKEVOUCHER)"]),
+                   obj(code=355, indent=1, parameters=[b"$bag.remove(:BIKEVOUCHER)"]),
+                   obj(code=355, indent=1, parameters=[b"pbReceiveItem(:BICYCLE)"])]
+            event = obj(name=b"Bike Shop Owner", x=9, y=3, pages=[obj(list=ops)])
+            source_map = obj(events={1: event})
+            with mock.patch("pilot.load", return_value=source_map):
+                install_cerulean_items(donor, target)
+                overlay = target / "PBS/items_kanto.txt"
+                first = overlay.read_text("utf8")
+                self.assertIn("[BIKEVOUCHER]", first)
+                self.assertIn("Pocket = 8", first)
+                self.assertIn("Flags = KeyItem", first)
+                self.assertIn("Consumable = false", first)
+                self.assertNotIn("[BICYCLE]", first)
+                self.assertEqual(base.read_text("utf8"), bike)
+                install_cerulean_items(donor, target)
+                self.assertEqual(overlay.read_text("utf8"), first)
+                ops.reverse()
+                with self.assertRaisesRegex(ValueError, "missing original item definitions"):
+                    install_cerulean_items(donor, target)
+                self.assertEqual(overlay.read_text("utf8"), first)
+                ops.reverse()
+                base.write_text("", encoding="utf8")
+                (donor / "PBS/items.txt").write_text("", encoding="utf8")
+                with self.assertRaisesRegex(ValueError, "missing original item definitions"):
+                    install_cerulean_items(donor, target)
+                self.assertEqual(overlay.read_text("utf8"), first)
+
     def with_game(self, folder):
         root = Path(folder)
         game = root / "game"

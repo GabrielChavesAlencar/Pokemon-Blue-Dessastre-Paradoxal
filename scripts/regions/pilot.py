@@ -1612,8 +1612,31 @@ def copy_game(game, target):
             shutil.copyfile(path, target / path.name)
 
 
+def cerulean_voucher_event_witness(source):
+    """Read the pinned original shop event; never run donor Ruby."""
+    path = source / "Data/Map043.rxdata"
+    if not path.is_file():
+        return False
+    event = load(path).attrs["@events"].get(1)
+    if event is None:
+        return False
+    ev = event.attrs
+    if (text(ev["@name"]) != "Bike Shop Owner" or
+            (ev["@x"], ev["@y"]) != (9, 3) or not ev["@pages"]):
+        return False
+    ops = [(op.attrs["@code"], op.attrs.get("@indent", 0),
+            tuple(text(v) for v in op.attrs["@parameters"]))
+           for op in ev["@pages"][0].attrs["@list"]]
+    required = [(111, 0, ("12", "$bag.has?(:BIKEVOUCHER)")),
+                (355, 1, ("$bag.remove(:BIKEVOUCHER)",)),
+                (355, 1, ("pbReceiveItem(:BICYCLE)",))]
+    if not all(ops.count(op) == 1 for op in required):
+        return False
+    return [ops.index(op) for op in required] == sorted(ops.index(op) for op in required)
+
+
 def install_cerulean_items(source, target):
-    """Supply only missing native bike IDs from the pinned donor PBS.
+    """Supply missing native bike IDs; reconstruct a witnessed missing voucher.
 
     Never replace base item definitions, import unrelated donor items or
     duplicate an existing Kanto overlay when rebuilding a legacy install.
@@ -1637,6 +1660,24 @@ def install_cerulean_items(source, target):
             if key in donor:
                 raise ValueError(f"Duplicate donor Cerulean item {key}")
             donor[key] = rows
+    # The pinned FRLG event consumes BIKEVOUCHER, but its PBS omits the
+    # definition. Reconstruct only that inert key item, with a live source
+    # witness and the native bicycle's key-item pocket. Never grant it here.
+    authored = set()
+    if missing - donor.keys() == {"BIKEVOUCHER"} and cerulean_voucher_event_witness(source):
+        bike = existing.get("BICYCLE", donor.get("BICYCLE", []))
+        fields = {k.strip(): v.strip() for row in bike
+                  for k, sep, v in [row.partition("=")] if sep}
+        pocket = fields.get("Pocket", "")
+        if not pocket.isascii() or not pocket.isdigit() or int(pocket) < 1:
+            raise ValueError("K02-C cannot determine native key-item pocket")
+        donor["BIKEVOUCHER"] = [
+            "Name = Bike Voucher", "NamePlural = Bike Vouchers",
+            f"Pocket = {pocket}", "Price = 0", "Consumable = false",
+            "Flags = KeyItem",
+            "Description = A voucher to exchange for a Bicycle at the Cerulean Bike Shop.",
+        ]
+        authored.add("BIKEVOUCHER")
     if set(donor) != missing:
         raise ValueError(f"K02-C missing original item definitions: {sorted(missing - donor.keys())}")
     for key, rows in {**existing, **donor}.items():
@@ -1653,7 +1694,8 @@ def install_cerulean_items(source, target):
     output.write_text("\n".join(lines) + "\n", encoding="utf8")
     print("KANTO_K02C_ITEM_PBS_REPORT:" + json.dumps({
         "existing": sorted(existing), "added": sorted(donor),
-        "source": "pinned FRLG PBS", "native_compiled": False}), flush=True)
+        "source": "pinned FRLG PBS", "authored_event_witness": sorted(authored),
+        "native_compiled": False}), flush=True)
 
 
 def install_pbs(preview, target, mapping):
