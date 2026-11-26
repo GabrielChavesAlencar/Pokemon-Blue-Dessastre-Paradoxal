@@ -403,6 +403,9 @@ def export(preview: Path):
         if kind == "RIVAL" and int(version) in (31, 32, 33):
             key, role = "CERULEAN_CITY", "Rival de Kanto"
             trainer_id, shown_name = slug("blue_cerulean"), "Gary (Cerulean)"
+        elif kind == "ROCKET" and int(version) == 6:
+            key, role = "CERULEAN_CITY", "Equipe Rocket"
+            trainer_id, shown_name = slug("rocket_cerulean_house"), "Grunt (Cerulean)"
         elif kind == "ROCKET" and int(version) == 5:
             key, role = "ROUTE_24", "Equipe Rocket"
             trainer_id, shown_name = slug("rocket_route_24"), "Grunt (Nugget Bridge)"
