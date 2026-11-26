@@ -840,13 +840,16 @@ module KantoNativeCheck
     north_callback!(miguel,'BlueKantoPilot.battle(:BLUE_KANTO_SUPERNERD, "Miguel", "KANTO_038_019")')
     require!(north_event_reachable?(comp,miguel), "K02-A Miguel not reachable from B2F arrival")
     props = {}
+    fossil_stands = {}
     [:HELIXFOSSIL,:DOMEFOSSIL].each do |item|
       label = item == :HELIXFOSSIL ? "Kanto Helix Fossil" : "Kanto Dome Fossil"
       ev = $game_map.events.values.find { |e| e.name == label }
       props[item] = ev.id if ev
+      witness = opening_action_witness(comp,ev)
+      fossil_stands[item] = witness["standing"] if witness
       moon_trace("KANTO_K02A_FOSSIL_ANCHOR",{"item"=>item.to_s,"event_id"=>ev&.id,
         "position"=>ev ? [ev.x,ev.y] : nil,
-        "character"=>ev&.character_name,"trigger"=>ev&.trigger,
+        "character"=>ev&.character_name,"tile_id"=>ev&.tile_id,"trigger"=>ev&.trigger,
         "reachable"=>ev ? opening_action_witness(comp,ev) : nil,
         "catalogued"=>GameData::Item.exists?(item)})
     end
@@ -859,8 +862,14 @@ module KantoNativeCheck
                "K02-A fossil not reachable or already hidden #{item}")
       require!(GameData::Item.exists?(item), "K02-A fossil item missing from native catalogue #{item}")
     end
-    onward = moon_path(moon,arrival,cerulean,allowed)
-    require!(onward && !onward.empty?, "K02-A no continuous cave to Cerulean path")
+    # The source exit is Map038/Event002 -> Map037/Event004 ->
+    # Map037/Event007 -> Route4 [92,21]. The fossil props may obstruct
+    # this narrow corridor until the legitimate choice hides them.
+    # Record pre-choice reachability, but require post-choice continuity
+    # independently after each native saved transaction.
+    prechoice_onward = moon_path(moon,arrival,cerulean,allowed)
+    moon_trace("KANTO_K02A_EXIT_STATE",{"phase"=>"before_choice",
+      "cerulean_reachable"=>!!prechoice_onward,"path"=>prechoice_onward})
     $map_factory.setup(moon)
     $game_player.moveto(*arrival)
     baseline = "K02 A Native Fossil Baseline"
@@ -904,6 +913,28 @@ module KantoNativeCheck
                props.values.all? { |id| $game_self_switches[[moon,id,"A"]] },
                "K02-A selected fossil lost on reload")
       require!(!BlueKantoPilot.revive_cinnabar_fossil, "K02-A revival allowed outside lab")
+      # Use the actual reachable interaction position for the selected
+      # fossil, not an invented anchor on the far side of the obstruction.
+      before_component = comp
+      # Hidden pages no longer have Action Button geometry; the saved
+      # source position and pre-choice adjacent witness remain authoritative.
+      standing = fossil_stands.fetch(item)
+      require!(before_component.key?(standing), "K02-A missing pre-choice fossil standing cell")
+      after_component = opening_component(moon,standing)
+      $map_factory.setup(moon)
+      exit_event = $game_map.events[2]
+      exit_landing = north_transfer!(exit_event,BlueKantoPilot.kanto_map_id(37))
+      require!(exit_landing == [38,8], "K02-A original B2F exit landing changed")
+      exit_neighbors = [[0,0],[0,1],[0,-1],[1,0],[-1,0]].map { |dx,dy| [exit_event.x+dx,exit_event.y+dy] }
+      moon_trace("KANTO_K02A_EXIT_STATE",{"phase"=>"after_choice_reload","item"=>item.to_s,
+        "standing"=>standing,"component_size"=>after_component.length,
+        "exit_event"=>exit_event.id,"exit_xy"=>[exit_event.x,exit_event.y],
+        "exit_landing"=>exit_landing,"exit_reachable"=>north_event_reachable?(after_component,exit_event),
+        "exit_neighbors"=>exit_neighbors.map { |xy| [xy,after_component.key?(xy)] },
+        "fossils"=>props.values.map { |id| ev=$game_map.events[id]; [id,ev.character_name,ev.tile_id,ev.through,$game_self_switches[[moon,id,"A"]]] }})
+      onward = moon_path(moon,standing,cerulean,allowed)
+      moon_trace("KANTO_K02A_EXIT_STATE",{"phase"=>"after_choice_path","item"=>item.to_s,"path"=>onward})
+      require!(onward && !onward.empty?, "K02-A no continuous cave to Cerulean path after #{item} choice and reload")
       # An isolated late-game lab fixture, not a claimed maritime trip.
       $map_factory.setup(lab)
       require!(BlueKantoPilot.in_cinnabar_lab?, "K02-A real lab map unavailable")
@@ -927,13 +958,13 @@ module KantoNativeCheck
                "K02-A revival lost on reload")
       row = {"item"=>item.to_s,"species"=>species.to_s,"level"=>5,"miguel_loss_retry"=>true,
         "cancel_no_change"=>true,"exclusive"=>true,"switches_persisted"=>true,
-        "revival_consumed_one"=>true,"revival_save_reload"=>true}
+        "revival_consumed_one"=>true,"revival_save_reload"=>true,"onward"=>onward}
       moon_trace("KANTO_K02A_FOSSIL_TRANSACTION",row)
       variants << row
     end
     reload_native_slot(baseline_path)
     {"status"=>"PASS","manual_gameplay"=>false,"mode"=>"native_collision_and_fossil_transactions",
-     "outbound"=>outward,"onward"=>onward,"props"=>props,"variants"=>variants,
+     "outbound"=>outward,"prechoice_onward"=>prechoice_onward,"onward"=>variants.map { |row| row["onward"] },"props"=>props,"variants"=>variants,
      "cinnabar_lab_fixture"=>lab,"maritime_trip_tested"=>false,"baseline_restored"=>true}
   ensure
     Object.send(:define_method,:pbConfirmMessage) { |*args| true }
