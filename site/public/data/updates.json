@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "afd9bab6b4aeba0248574853f54268b50fa33366",
+      "date": "2026-11-26T17:20:27-03:00",
+      "title": "QA K02-D: native Gary movement, Bill return and Misty access (#359)",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "128c70137f989082b22697a34d1a776e1157ffbd",
+      "date": "2026-11-26T17:12:34-03:00",
+      "title": "QA K02-D: exercise native Gary lanes and independent Cerulean return paths",
+      "category": "Melhorias"
+    },
+    {
       "sha": "fce8e938cc58d4b645c6970914b2caacf7c21a11",
       "date": "2026-11-26T16:56:19-03:00",
       "title": "QA K02-C: verify published Android 128 recovery paths (#358)",
