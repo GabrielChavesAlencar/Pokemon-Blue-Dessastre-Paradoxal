@@ -22,6 +22,7 @@ on:
       - scripts/regions/sinnoh_f12d3_psyduck_barrier.py
       - scripts/regions/sinnoh_f12d3_secretpotion_catalogue.py
       - scripts/regions/SinnohF12D3Transaction.rb
+      - scripts/regions/SinnohF12DIntegrated.rb
       - tests/test_sinnoh_j12e_experimental_installer.py
       - scripts/regions/sinnoh_private_visual.py
       - scripts/regions/sinnoh_qa_teleport.py
@@ -77,6 +78,7 @@ on:
       - scripts/regions/sinnoh_f12d3_psyduck_barrier.py
       - scripts/regions/sinnoh_f12d3_secretpotion_catalogue.py
       - scripts/regions/SinnohF12D3Transaction.rb
+      - scripts/regions/SinnohF12DIntegrated.rb
       - tests/test_sinnoh_j12e_experimental_installer.py
       - scripts/regions/sinnoh_private_visual.py
       - scripts/regions/sinnoh_qa_teleport.py

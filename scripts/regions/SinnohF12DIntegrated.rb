@@ -441,16 +441,20 @@ module BlueSinnohF12DIntegrated
       end
       unless NORTH_ROCK_EDGES.empty?
         raise "Sinnoh North terrain" unless rock_reference_valid?
-        raw=load_data("Data/Map500.rxdata")
+        # The generator binds this witness to the audited Mount Coronet map.
+        # The private pilot and the shared world use different MapIDs.
+        north_mid=NORTH_ROCK_EDGES.first[0]
+        raise "Sinnoh North scope" unless north_mid.is_a?(Integer) && north_mid>0 &&
+          NORTH_ROCK_EDGES.all? { |mid,ax,ay,bx,by| mid==north_mid && [ax,ay]==[61,73] && (ax-bx).abs+(ay-by).abs==1 }
+        raw=load_data(sprintf("Data/Map%03d.rxdata",north_mid))
         ts=tiles[raw.tileset_id]
         $game_map=Game_Map.new
-        {map_id:500,map:raw,passages:ts.passages,priorities:ts.priorities,terrain_tags:ts.terrain_tags,events:{}}.each do |k,v|
+        {map_id:north_mid,map:raw,passages:ts.passages,priorities:ts.priorities,terrain_tags:ts.terrain_tags,events:{}}.each do |k,v|
           $game_map.instance_variable_set(:"@#{k}",v)
         end
         occupied=raw.events.values.map { |event| [event.x,event.y] }
         $PokemonGlobal.surfing=false
-        NORTH_ROCK_EDGES.each do |mid,ax,ay,bx,by|
-          raise "Sinnoh North scope" unless mid==500 && [ax,ay]==[61,73] && (ax-bx).abs+(ay-by).abs==1
+        NORTH_ROCK_EDGES.each do |_,ax,ay,bx,by|
           raise "Sinnoh North occupied" if occupied.include?([ax,ay]) || occupied.include?([bx,by])
           raise "Sinnoh North Rock" unless [[ax,ay],[bx,by]].any? { |x,y| $game_map.terrain_tag(x,y).id==:Rock }
           [[ax,ay,bx,by],[bx,by,ax,ay]].each do |x,y,nx,ny|

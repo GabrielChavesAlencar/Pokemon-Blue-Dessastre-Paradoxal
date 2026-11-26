@@ -60,15 +60,20 @@ def compile_boot_script(source, token):
       exit! 1
     end
 ''' + boot)
-    return source.replace(needle, needle + f'''
-    GameData::Trainer.load
-    GameData::Item.load
-    raise "Sinnoh: missing compiled shared runtime or Barry teams" unless BlueSinnohSharedEvents.ready?
-    Object.constants.grep(/\\ABlueSinnoh/).each do |name|
-      handler = Object.const_get(name)
-      handler.verify_compiled! if handler.respond_to?(:verify_compiled!)
+    return source.replace(needle, f'''    begin
+  {needle}
+      GameData::Trainer.load
+      GameData::Item.load
+      raise "Sinnoh: missing compiled shared runtime or Barry teams" unless BlueSinnohSharedEvents.ready?
+      Object.constants.grep(/\\ABlueSinnoh/).each do |name|
+        handler = Object.const_get(name)
+        handler.verify_compiled! if handler.respond_to?(:verify_compiled!)
+      end
+      File.binwrite("{NATIVE_RECEIPT}", "{token}")
+    rescue StandardError, ScriptError => error
+      warn [error.class, error.message, *Array(error.backtrace).first(12)].join("\\n")
+      exit! 1
     end
-    File.binwrite("{NATIVE_RECEIPT}", "{token}")
     exit
 ''')
 
