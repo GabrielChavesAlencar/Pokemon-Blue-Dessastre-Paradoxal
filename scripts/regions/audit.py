@@ -198,8 +198,10 @@ def map_plan(source, game, manifest, existing=None):
     if not wanted.keys() <= (infos.keys() & files.keys()):
         raise ValueError("Source is missing one or more pilot maps.")
     # Three digits is the supported project tooling range, not a claimed engine maximum.
-    if existing and not set(existing.values()) <= (dest_infos.keys() & dest_files.keys()):
-        raise ValueError("Existing Kanto map missing from registry or disk")
+    # A proven legacy slot can have a missing file; its registry entry
+    # remains reserved and is restored by the transactional installer.
+    if existing and not set(existing.values()) <= dest_infos.keys():
+        raise ValueError("Existing Kanto map missing from registry")
     ids = allocate_kanto_ids(wanted, dest_infos.keys() | dest_files.keys(), existing)
     tilesets = load(source / "Data/Tilesets.rxdata")
     metadata = (source / "PBS/map_metadata.txt").read_text(encoding="utf-8-sig")
