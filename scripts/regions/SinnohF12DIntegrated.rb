@@ -483,8 +483,15 @@ module BlueSinnohF12DIntegrated
     raise "Sinnoh F12D3: item regional invalido" unless T.compiled_item_valid?
     raise "Sinnoh F12D lagos: equipes invalidas" unless SPECS.values.all? { |spec| BlueSinnohF10B.valid_team?(spec) }
     raise "Sinnoh F12D: hooks ausentes" unless Game_Event.ancestors.include?(BarrierPages) && Game_Player.ancestors.include?(ProgressionMovement)
-    raise "Sinnoh F12D: hooks sobrescritos" unless Game_Player.instance_method(:move_generic).owner==ProgressionMovement &&
-      Game_Event.instance_method(:refresh).owner==BarrierPages
+    movement=Game_Player.instance_method(:move_generic)
+    refresh=Game_Event.instance_method(:refresh)
+    # Kanto's guard delegates movement on foreign maps to the next method.
+    # In the shared game it can be loaded after Sinnoh.
+    if defined?(BlueKantoPilot::Route2ExitGuard) && movement.owner==BlueKantoPilot::Route2ExitGuard
+      movement=movement.super_method
+    end
+    raise "Sinnoh F12D: hooks sobrescritos (#{movement&.owner}, #{refresh.owner})" unless
+      movement&.owner==ProgressionMovement && refresh.owner==BarrierPages
     # Both native probes have already run at the beginning of the private
     # compile verification. Repeat them here for the complete proof.
     verify_native_movement!
