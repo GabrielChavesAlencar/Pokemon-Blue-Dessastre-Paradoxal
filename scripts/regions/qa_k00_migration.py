@@ -1,7 +1,7 @@
 """CI-only migration exercise using real RXDATA, not a historical player save.
 
-Derive a controlled 142-map registry from the verified current 145-map
-installation. This is a reconstruction, NOT an archival 142-map game or
+Derive controlled 142- or 145-map registries from the verified current
+151-map installation. This is a reconstruction, NOT an archival 142-map game or
 physical playtest. Never write to the original game or publish its data.
 """
 from __future__ import annotations
@@ -63,7 +63,7 @@ def run():
     (game / sentinel).write_bytes(b"K00 synthetic save preservation sentinel")
     protected.append(sentinel)
     protected_before = snapshot(game, protected)
-    # Remove only the three added map slots from this disposable copy.
+    # Remove only the explicitly added source slots from this disposable copy.
     hashes = installer.recorded_hashes(proof)
     for key in NEW:
         mid = current[key]
