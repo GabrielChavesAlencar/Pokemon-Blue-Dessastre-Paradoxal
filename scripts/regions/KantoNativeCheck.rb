@@ -30,6 +30,212 @@ module KantoNativeCheck
       (keys - required - other_allowed).all? { |event_id| passive_field_event?(events[event_id]) }
   end
 
+  # K00-C: use the actual loaded RXDATA, native collision and compiled
+  # trainers. Battle outcomes and dialogue choices remain controlled in CI.
+  # These paths are engine collision witnesses, not manual keyboard play.
+  def self.north_component(map_id, point)
+    $map_factory.setup(map_id)
+    $game_map.events.each_value { |event| event.refresh }
+    $game_player.moveto(*point)
+    require!(point[0] >= 0 && point[1] >= 0 &&
+             point[0] < $game_map.width && point[1] < $game_map.height,
+             "K00-C invalid collision anchor #{map_id}:#{point.inspect}")
+    directions = {2=>[0,1], 4=>[-1,0], 6=>[1,0], 8=>[0,-1]}
+    opposite = {2=>8,4=>6,6=>4,8=>2}
+    seen = {point=>0}
+    queue = [point]
+    cursor = 0
+    while cursor < queue.length
+      x,y = queue[cursor]
+      cursor += 1
+      directions.each do |dir,(dx,dy)|
+        nx,ny = x+dx,y+dy
+        next if nx < 0 || ny < 0 || nx >= $game_map.width || ny >= $game_map.height
+        next if seen.key?([nx,ny])
+        # Game_Player is a live native object; synchronize its current tile
+        # before each directional probe, including the reverse check.
+        $game_player.moveto(x,y)
+        next unless $game_player.passable?(x,y,dir)
+        $game_player.moveto(nx,ny)
+        next unless $game_player.passable?(nx,ny,opposite.fetch(dir))
+        seen[[nx,ny]] = seen[[x,y]] + 1
+        queue << [nx,ny]
+      end
+    end
+    $game_player.moveto(*point)
+    probes = directions.map do |dir,(dx,dy)|
+      [dir,$game_player.passable?(point[0],point[1],dir)]
+    end
+    puts "KANTO_K00_COLLISION_COMPONENT:#{[map_id,point,seen.length,probes].inspect}"
+    require!(seen.length > 1, "K00-C isolated anchor #{map_id}:#{point.inspect}; forward=#{probes.inspect}")
+    seen
+  end
+
+  def self.north_edge_cell(map_id, point, dir)
+    $map_factory.setup(map_id)
+    $game_player.moveto(*point)
+    $game_player.passable?(point[0],point[1],dir)
+  end
+
+  def self.north_witness(map_a, comp_a, map_b, axis)
+    $map_factory.setup(map_a)
+    aw,ah = $game_map.width,$game_map.height
+    $map_factory.setup(map_b)
+    bw,bh = $game_map.width,$game_map.height
+    # FRLG source 53,South,0,39,North,0 and 54,West,0,53,East,0.
+    # Both have zero offset in the actual installed PBS.
+    if axis == :north
+      candidates = (0...[aw,bw].min).map { |x| [[x,0],[x,bh-1]] }
+      forward,reverse = 8,2
+    else
+      candidates = (0...[ah,bh].min).map { |y| [[aw-1,y],[0,y]] }
+      forward,reverse = 6,4
+    end
+    candidates.each do |a,b|
+      next unless comp_a.key?(a)
+      next unless north_edge_cell(map_a,a,forward) && north_edge_cell(map_b,b,reverse)
+      # Start the destination component at the actual matched seam cell.
+      # Do not substitute another connected area if this cell is isolated.
+      return [map_a,a,map_b,b,comp_a[a]]
+    end
+    raise "K00-C no bidirectional native collision seam #{map_a}/#{map_b}"
+  end
+
+  def self.north_event_reachable?(component, event)
+    return false unless event
+    component.keys.any? { |x,y| (x-event.x).abs + (y-event.y).abs <= 1 }
+  end
+
+  def self.north_callback!(event, expected)
+    require!(event && Array(event.list).any? { |op| op.code == 355 &&
+               op.parameters[0].to_s == expected }, "K00-C missing active callback #{expected}")
+  end
+
+  def self.north_transfer!(event, destination)
+    op = event && Array(event.list).find { |cmd| cmd.code == 201 && cmd.parameters[0] == 0 &&
+                                        cmd.parameters[1] == destination }
+    require!(op, "K00-C real transfer to #{destination} absent")
+    op.parameters[2,2]
+  end
+
+  def self.north_story(battle_calls, losses_remaining)
+    city,gym,bridge,route,cottage = [39,42,53,54,55].map { |id| BlueKantoPilot.kanto_map_id(id) }
+    require!([city,gym,bridge,route,cottage].all?, "K00-C missing installed source IDs")
+    state = BlueKantoPilot.progress
+    $map_factory.setup(gym)
+    [[11,:BLUE_KANTO_SWIMMER,"Luis"],[16,:BLUE_KANTO_PICNICKER,"Diana"]].each do |id,type,name|
+      key = "KANTO_042_%03d" % id
+      north_callback!($game_map.events[id],
+        "BlueKantoPilot.cerulean_gym_trainer(:#{type}, \"#{name}\", \"#{key}\", #{id})")
+      require!(GameData::Trainer.get(type,name,0).pokemon.length > 0, "#{name} compiled team missing")
+      losses_remaining[name] = 1
+      require!(!BlueKantoPilot.cerulean_gym_trainer(type,name,key,id), "#{name} loss marked as win")
+      require!(!$game_self_switches[[gym,id,"A"]], "#{name} loss changed page")
+      require!(BlueKantoPilot.cerulean_gym_trainer(type,name,key,id), "#{name} retry failed")
+      require!($game_self_switches[[gym,id,"A"]] && state["pilot_wins"].include?(key), "#{name} win not persisted")
+      BlueKantoPilot.cerulean_gym_trainer(type,name,key,id)
+      require!(battle_calls.count { |row| row[0] == type && row[1] == name } == 2, "#{name} repeated")
+    end
+    require!($game_self_switches[[gym,1,"A"]], "Misty victory page was not activated")
+    $map_factory.setup(city)
+    require!(!BlueKantoPilot.cerulean_rival_graphic.to_s.empty?, "Gary graphic missing")
+    require!(!$game_map.events[32].character_name.to_s.empty?, "Gary invisible before battle")
+    losses_remaining["Blue"] = 1
+    require!(!BlueKantoPilot.cerulean_rival && !state["pilot_cerulean_rival"], "Gary false win")
+    require!(BlueKantoPilot.cerulean_rival && state["pilot_cerulean_rival"], "Gary retry failed")
+    require!($game_map.events[32].character_name.to_s.empty?, "Gary not hidden after win")
+    require!(battle_calls.count { |row| row == [:BLUE_KANTO_RIVAL,"Blue",31] } == 2, "Gary team/retry mismatch")
+    $map_factory.setup(bridge)
+    nugget_before = $bag.quantity(:NUGGET)
+    require!(!BlueKantoPilot.nugget_bridge_rocket, "Rocket accepted before five trainers")
+    [[1,:BLUE_KANTO_CAMPER,"Ethan"],[2,:BLUE_KANTO_LASS,"Reli"],
+     [3,:BLUE_KANTO_YOUNGSTER,"Timmy"],[4,:BLUE_KANTO_LASS,"Ali"],
+     [5,:BLUE_KANTO_BUGCATCHER,"Cale"]].each do |id,type,name|
+      key = "KANTO_053_%03d" % id
+      north_callback!($game_map.events[id], "BlueKantoPilot.battle(:#{type}, \"#{name}\", \"#{key}\")")
+      require!(BlueKantoPilot.battle(type,name,key), "Bridge trainer #{name} failed")
+      require!(BlueKantoPilot.sync_trainer_event(key,name,id), "Bridge trainer switch #{id} missing")
+    end
+    north_callback!($game_map.events[6], "BlueKantoPilot.nugget_bridge_rocket")
+    losses_remaining["Grunt"] = 1
+    require!(!BlueKantoPilot.nugget_bridge_rocket, "Rocket defeat became victory")
+    require!($bag.quantity(:NUGGET) == nugget_before+1 && !state["pilot_wins"].include?("KANTO_053_006"),
+             "Nugget must be granted once before Rocket victory")
+    require!(BlueKantoPilot.nugget_bridge_rocket, "Rocket retry failed")
+    require!($bag.quantity(:NUGGET) == nugget_before+1 && $game_self_switches[[bridge,6,"A"]],
+             "Rocket prize duplicated or switch missing")
+    $map_factory.setup(route)
+    [[1,:BLUE_KANTO_HIKER,"Franklin"],[2,:BLUE_KANTO_HIKER,"Wayne"],[3,:BLUE_KANTO_HIKER,"Nob"],
+     [6,:BLUE_KANTO_LASS,"Haley"],[7,:BLUE_KANTO_YOUNGSTER,"Chad"],[8,:BLUE_KANTO_CAMPER,"Flint"],
+     [9,:BLUE_KANTO_YOUNGSTER,"Joey"],[10,:BLUE_KANTO_YOUNGSTER,"Dan"],[11,:BLUE_KANTO_PICNICKER,"Kelsey"]].each do |id,type,name|
+      key = "KANTO_054_%03d" % id
+      north_callback!($game_map.events[id], "BlueKantoPilot.battle(:#{type}, \"#{name}\", \"#{key}\")")
+      require!(BlueKantoPilot.battle(type,name,key), "Route25 trainer #{name} failed")
+      require!(BlueKantoPilot.sync_trainer_event(key,name,id), "Route25 switch #{id} missing")
+    end
+    # Native collision components and real registered connection rows.
+    rows = File.readlines("PBS/map_connections_kanto.txt").map { |line| line.split("#",2)[0].strip }
+    require!(rows.include?("#{bridge},South,0,#{city},North,0") &&
+             rows.include?("#{route},West,0,#{bridge},East,0"),
+             "K00-C source seam registry changed")
+    # Use the actual Center exit's authored arrival rather than an
+    # experimental teleport coordinate that may land on an obstacle.
+    center = BlueKantoPilot.kanto_map_id(40)
+    $map_factory.setup(center)
+    center_exit = $game_map.events.values.find { |ev| Array(ev.list).any? { |op|
+      op.code == 201 && op.parameters[0] == 0 && op.parameters[1] == city } }
+    city_landing = north_transfer!(center_exit,city)
+    puts "KANTO_K00_CITY_CENTER_EXIT:#{[center,center_exit.id,city,city_landing].inspect}"
+    a = north_component(city,city_landing)
+    seam1 = north_witness(city,a,bridge,:north)
+    puts "KANTO_K00_NATIVE_SEAM:#{seam1.inspect}"
+    b = north_component(bridge,seam1[3])
+    seam2 = north_witness(bridge,b,route,:east)
+    puts "KANTO_K00_NATIVE_SEAM:#{seam2.inspect}"
+    c = north_component(route,seam2[3])
+    $map_factory.setup(bridge)
+    require!(north_event_reachable?(b,$game_map.events[6]), "Rocket unreachable from bridge component")
+    $map_factory.setup(route)
+    door = $game_map.events[18]
+    require!(north_event_reachable?(c,door), "Bill door unreachable from Route25 component")
+    landing = north_transfer!(door,cottage)
+    d = north_component(cottage,landing)
+    north_callback!($game_map.events[3],"BlueKantoPilot.bill_request")
+    north_callback!($game_map.events[4],"BlueKantoPilot.bill_computer")
+    require!(north_event_reachable?(d,$game_map.events[3]) &&
+             north_event_reachable?(d,$game_map.events[4]), "Bill or PC unreachable")
+    require!(!BlueKantoPilot.bill_computer && !BlueKantoPilot.bill_reward, "Bill quest bypassed")
+    BlueKantoPilot.bill_request
+    require!(state["pilot_bill_agreed"], "Bill request not recorded")
+    require!(BlueKantoPilot.bill_computer, "Bill restoration failed")
+    $game_map.events.each_value { |event| event.refresh }
+    north_callback!($game_map.events[8],"BlueKantoPilot.bill_reward")
+    d = north_component(cottage,landing)
+    require!(north_event_reachable?(d,$game_map.events[8]), "Restored Bill unreachable")
+    ticket_item = GameData::Item.exists?(:SSTICKET)
+    ticket_before = ticket_item ? $bag.quantity(:SSTICKET) : 0
+    require!(BlueKantoPilot.bill_reward && BlueKantoPilot.bill_reward, "Bill reward failed")
+    require!(state["pilot_bill_ticket"] && state["pilot_ss_ticket"], "Ticket flag absent")
+    require!(!ticket_item || $bag.quantity(:SSTICKET) == ticket_before+1, "Ticket duplicated or missing")
+    exit_event = $game_map.events.values.find { |ev| Array(ev.list).any? { |op|
+      op.code == 201 && op.parameters[0] == 0 && op.parameters[1] == route } }
+    require!(north_event_reachable?(d,exit_event), "Cottage exit unreachable")
+    return_landing = north_transfer!(exit_event,route)
+    require!(c.key?(return_landing) || c.keys.any? { |x,y|
+      (x-return_landing[0]).abs+(y-return_landing[1]).abs <= 1 },
+      "Cottage return landing disconnected")
+    report = {"mode"=>"native_collision_and_scripted_battle_results",
+      "manual_gameplay"=>false,"map_ids"=>[city,gym,bridge,route,cottage],
+      "city_center_landing"=>city_landing,"collision_components"=>[a.length,b.length,c.length,d.length],
+      "bidirectional_seams"=>[seam1,seam2],"bill_landing"=>landing,
+      "bill_return"=>return_landing,"nugget_quantity"=>$bag.quantity(:NUGGET),
+      "ticket_mode"=>(ticket_item ? "native_item" : "regional_permit"),
+      "ticket_quantity"=>(ticket_item ? $bag.quantity(:SSTICKET) : 0),
+      "gary_retry"=>true,"bill_completed"=>true}
+    $map_factory.setup(gym)
+    report
+  end
+
   def self.run
     SaveData.initialize_bootup_values
     Game.start_new
@@ -212,11 +418,25 @@ module KantoNativeCheck
     misty = GameData::Trainer.get(:BLUE_KANTO_LEADER_MISTY, "Misty")
     require!(misty.pokemon.map { |pokemon| pokemon[:species] } == [:STARYU, :STARMIE],
              "Misty original FRLG team differs from Staryu/Starmie")
+    # Native Cerulean quest proof begins after confirming Cascade cannot
+    # substitute for Bill; leave the existing badge checks intact below.
+    misty_map = BlueKantoPilot.kanto_map_id(42)
+    $map_factory.setup(misty_map)
+    north_callback!($game_map.events[1],
+      'BlueKantoPilot.battle(:BLUE_KANTO_LEADER_MISTY, "Misty", "KANTO_042_001")')
+    losses_remaining["Misty"] = 1
+    require!(!BlueKantoPilot.battle(:BLUE_KANTO_LEADER_MISTY, "Misty", "KANTO_042_001"),
+             "Misty loss marked as win")
+    require!(!BlueRegions.local_achievements(BlueKantoPilot.progress,"KANTO").include?("CASCADE"),
+             "Misty defeat granted Cascade")
+    require!(!$game_self_switches[[misty_map,1,"A"]], "Misty defeat changed event page")
     BlueKantoPilot.battle(:BLUE_KANTO_LEADER_MISTY, "Misty", "KANTO_042_001")
+    require!(BlueKantoPilot.sync_trainer_event("KANTO_042_001","Misty",1),
+             "Misty victory switch missing")
     require!(BlueRegions.local_achievements(BlueKantoPilot.progress,"KANTO") == ["BOULDER","CASCADE"],
              "Cascade Badge not awarded uniquely")
     BlueKantoPilot.battle(:BLUE_KANTO_LEADER_MISTY, "Misty", "KANTO_042_001")
-    require!(battle_calls.count { |row| row[1] == "Misty" } == 1,
+    require!(battle_calls.count { |row| row[1] == "Misty" } == 2,
              "Misty repeated after victory")
     require!(BlueRegions.crystal_total(BlueKantoPilot.progress, 2) == 4,
              "Two Kanto milestones were double-counted or omitted")
@@ -227,18 +447,7 @@ module KantoNativeCheck
     BlueKantoPilot.ticketmaster
     require!(!BlueKantoPilot.progress["pilot_ss_ticket"],
              "Harbor issued a ticket without Bill's Route 25 quest")
-    previous_map = $game_map.map_id
-    cottage_id = BlueKantoPilot.kanto_map_id(55)
-    require!(cottage_id && cottage_id > 0, "Bill cottage MapID unavailable")
-    $map_factory.setup(cottage_id)
-    require!([3,4,8].all? { |eid| $game_map.events[eid] },
-             "Bill transformation/PC/reward events missing from cottage")
-    BlueKantoPilot.progress["pilot_bill_agreed"] = true # Mock Bill's dialogue choice.
-    require!(BlueKantoPilot.bill_computer, "Bill Cell Separator did not restore him")
-    require!(BlueKantoPilot.bill_reward, "Bill did not grant a ticket after recovery")
-    require!(BlueKantoPilot.progress["pilot_bill_helped"] == true,
-             "Bill's successful PC recovery was not persisted")
-    $map_factory.setup(previous_map)
+    north_report = north_story(battle_calls, losses_remaining)
     BlueKantoPilot.ticketmaster
     require!(BlueKantoPilot.progress["pilot_ss_ticket"] == true,
              "Vermilion ticket missing after Bill's quest")
@@ -875,6 +1084,29 @@ module KantoNativeCheck
     require!($player.party.first&.species == :BULBASAUR, "Pilot team did not survive reload")
     require!($game_map.map_id == lab, "Pilot did not reload its map")
     require!(BlueKantoPilot.progress["pilot_ss_ticket"] == true, "S.S. Ticket permit did not survive reload")
+    north_state = BlueKantoPilot.progress
+    require!(%w[pilot_cerulean_rival pilot_nugget_bridge_awarded pilot_bill_agreed pilot_bill_helped pilot_bill_ticket pilot_ss_ticket].all? { |key| north_state[key] },
+             "K00-C quest flags lost after native save/reload")
+    north_keys = ["KANTO_CERULEAN_RIVAL","KANTO_042_001","KANTO_042_011","KANTO_042_016"] +
+      (1..6).map { |id| "KANTO_053_%03d" % id } +
+      [1,2,3,6,7,8,9,10,11].map { |id| "KANTO_054_%03d" % id }
+    require!((north_keys - north_state["pilot_wins"]).empty?, "K00-C victory keys lost")
+    gym_id,bridge_id,route_id,bill_id = north_report["map_ids"][1,4]
+    require!([[gym_id,1],[gym_id,11],[gym_id,16],[bridge_id,6],[bill_id,3],[bill_id,4],[bill_id,8]].all? { |mid,eid| $game_self_switches[[mid,eid,"A"]] },
+             "K00-C self switches lost")
+    require!($bag.quantity(:NUGGET) == north_report["nugget_quantity"], "Nugget quantity changed after reload")
+    if north_report["ticket_mode"] == "native_item"
+      require!($bag.quantity(:SSTICKET) == north_report["ticket_quantity"], "Ticket quantity changed after reload")
+    end
+    # Engine save/reload and callback state are genuine; battle outcomes are
+    # stubbed and collision witnesses are not manual walking/door animation.
+    north_report["save_reload"] = true
+    north_report["victory_keys"] = north_keys.length
+    north_report["native_trainer_encounters"] = north_keys.length
+    north_report["misty_loss_retry"] = true
+    File.write("Data/blue-kanto-k00-cerulean-proof.txt", north_report.inspect)
+    puts "KANTO_K00_CERULEAN_NATIVE_REPORT:#{north_report.inspect}"
+    puts "KANTO_K00_CERULEAN_NATIVE_STORY_OK"
     require!(BlueKantoPilot.progress["pilot_oak_parcel_received"] == true &&
              BlueKantoPilot.progress["pilot_oak_parcel_delivered"] == true,
              "Oak parcel quest flags did not persist through save/reload")

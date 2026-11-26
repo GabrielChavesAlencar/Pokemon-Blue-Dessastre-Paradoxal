@@ -218,6 +218,9 @@ jobs:
               if(-not (Test-Path $nativeAudio)){throw "Native Kanto F6 AudioFile probe missing"}
               if(-not ((Get-Content $nativeAudio -Raw) -match "PASS_NATIVE_AUDIOFILE_DISPATCH_NOT_AUDIBLE")){throw "Kanto music F6 native probe did not pass"}
               Get-Content $nativeAudio
+              $northProof="$pilot/Data/blue-kanto-k00-cerulean-proof.txt"
+              if(-not (Test-Path $northProof)){throw 'K00-C native Cerulean proof missing'}
+              Get-Content $northProof
               Get-Content "$pilot/Data/blue-kanto-proof.txt"
               exit 0
             }
@@ -226,6 +229,15 @@ jobs:
           }
           Get-Content .blue-work/kanto-native-out.txt,.blue-work/kanto-native-err.txt,"$pilot/Data/blue-kanto-error.txt","$pilot/errorlog.txt" -ErrorAction SilentlyContinue | Select-Object -Last 100
           throw 'Kanto native proof missing'
+      - name: Preservar recibo nativo Cerulean K00-C
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k00-cerulean-native-proof
+          path: .blue-work/kanto-pilot/Data/blue-kanto-k00-cerulean-proof.txt
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 14
       - name: Verificar abertura real da janela (diagnostico, sem jogar)
         if: success()
         continue-on-error: true
@@ -284,7 +296,7 @@ jobs:
           python scripts/regions/qa_k00_migration.py
           if($LASTEXITCODE -ne 0){throw 'K00 migration proof failed'}
       - name: Preservar recibo K00 da migracao
-        if: always()
+        if: always() && hashFiles('.blue-work/k00-migration-proof.json') != ''
         uses: actions/upload-artifact@v4
         with:
           name: kanto-k00-migration-proof
