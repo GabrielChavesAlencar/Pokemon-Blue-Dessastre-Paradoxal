@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "98b07acb1f899bdfa7d541369632f1649843cd6e",
+      "date": "2026-11-25T23:45:05-03:00",
+      "title": "Merge PR #341: recover legacy Kanto map drift during Windows migration",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "febad2b148ae8109fdac1b5a9f726a13b857a63b",
+      "date": "2026-11-25T23:37:34-03:00",
+      "title": "Recover verified legacy Kanto map checksum drift or missing files during migration",
+      "category": "Melhorias"
+    },
+    {
       "sha": "e47e26d6d2ff70f2d9a44765db75927c1f31dc6d",
       "date": "2026-11-25T23:26:17-03:00",
       "title": "Merge PR #340: safe Kanto 142-to-145 Windows installer migration",
