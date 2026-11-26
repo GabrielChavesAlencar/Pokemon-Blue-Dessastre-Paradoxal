@@ -1,6 +1,7 @@
 """Install a reviewed Sinnoh overlay into the managed Blue-Story world."""
 from __future__ import annotations
 
+from contextlib import contextmanager
 import json
 import os
 import re
@@ -36,6 +37,12 @@ ID_RANGE = range(442, 600)
 SHARED_IDS = range(451, 595)
 QA_PROFILE = "BLUE_SINNOH_SHARED_QA_V1"
 QA_MARKER = "Data/blue-sinnoh-shared-qa.txt"
+COMPILE_REQUEST = "Data/blue-compile-request.txt"
+PLUGIN_CACHE = "Data/PluginScripts.rxdata"
+INSTALL_LOCK = "Data/.blue-sinnoh-install.lock"
+INSTALL_JOURNAL = "Data/.blue-sinnoh-install.json"
+DIGEST = re.compile(r"[0-9a-f]{64}")
+BACKUP_NAME = re.compile(r"sinnoh-[0-9]{8}T[0-9]{12}Z")
 
 
 def validate_manifest(data, *, android=False, qa=False):
@@ -214,10 +221,89 @@ def installed(game, *, android=False, qa=False):
     return verify_files(json.loads(read(RECEIPT)), read, android=android, installed=True, qa=qa)
 
 
+@contextmanager
+def installer_lock(game):
+    # The OS releases this byte lock even if the installer process is killed.
+    # Keep the same lock file so concurrent installers always lock the same file.
+    with safe_file(game,INSTALL_LOCK).open("a+b") as handle:
+        handle.seek(0)
+        if os.name == "nt":
+            import msvcrt
+            msvcrt.locking(handle.fileno(),msvcrt.LK_NBLCK,1)
+        else:
+            import fcntl
+            fcntl.flock(handle,fcntl.LOCK_EX | fcntl.LOCK_NB)
+        yield
+
+
+def backup_folder(project, name):
+    root = project / ".blue-backups"
+    if not isinstance(name,str) or not BACKUP_NAME.fullmatch(name) or root.is_symlink():
+        raise ValueError("Pasta de recuperação de Sinnoh inválida.")
+    backup = root / name
+    if backup.is_symlink():
+        raise ValueError("Pasta de recuperação de Sinnoh indireta.")
+    return backup
+
+
+def tracked_file(relative):
+    if relative in INSTALL_FILES | MAP_PBS | {RECEIPT,START,QA_MARKER,COMPILE_REQUEST,PLUGIN_CACHE}:
+        return True
+    if match := MAP_FILE.fullmatch(relative):
+        return int(match[1]) in ID_RANGE
+    return ASSET.fullmatch(relative) is not None
+
+
+def rollback_pending(project, game):
+    journal = safe_file(game,INSTALL_JOURNAL)
+    if not journal.exists():
+        return False
+    transaction = json.loads(journal.read_bytes())
+    if not isinstance(transaction,dict) or transaction.get("schema") != 1:
+        raise ValueError("Registro de recuperação de Sinnoh inválido.")
+    backup = backup_folder(project,transaction.get("backup"))
+    changes = transaction.get("files")
+    if not isinstance(changes,dict) or not {RECEIPT,START,PLUGIN_CACHE} <= changes.keys():
+        raise ValueError("Arquivos de recuperação de Sinnoh inválidos.")
+    restore = {}
+    for rel, hashes in changes.items():
+        if not tracked_file(rel) or not isinstance(hashes,list) or len(hashes) != 2 or any(
+                value is not None and (not isinstance(value,str) or not DIGEST.fullmatch(value))
+                for value in hashes):
+            raise ValueError("Arquivo fora do escopo de recuperação de Sinnoh.")
+        before, after = hashes
+        path = safe_file(game,rel)
+        current = sha(path.read_bytes()) if path.exists() else None
+        if current not in (before,after):
+            raise ValueError(f"Arquivo alterado após a interrupção da instalação de Sinnoh: {rel}")
+        if current == before:
+            continue
+        original = safe_file(backup,rel).read_bytes() if before is not None else None
+        if original is not None and sha(original) != before:
+            raise ValueError(f"Backup de Sinnoh diverge do registro: {rel}")
+        restore[path] = original
+    for path, raw in reversed(list(restore.items())):
+        if raw is None:
+            path.unlink(missing_ok=True)
+        else:
+            atomic(path,raw)
+    journal.unlink()
+    return True
+
+
+def recover(project, game):
+    project, game = project.resolve(), game.resolve()
+    if game != project / "game" or not safe_file(game,INSTALL_JOURNAL).exists():
+        return False
+    with installer_lock(game):
+        return rollback_pending(project,game)
+
+
 def integrate(project, game):
     project, game = project.resolve(), game.resolve()
     if game != project / "game":
         return {"changed": False, "status": "fora da instalação gerenciada"}
+    recover(project,game)
     if any((game / rel).exists() or (game / rel).is_symlink() for rel in (RECEIPT, START)):
         installed(game)
         return {"changed": False, "status": "já integrado"}
@@ -227,16 +313,16 @@ def integrate(project, game):
         raise ValueError("O pacote compartilhado de Sinnoh contém um caminho indireto.")
     if not manifest.exists():
         return {"changed": False, "status": "aguardando pacote compartilhado aprovado"}
-    lock = safe_file(game, "Data/.blue-sinnoh-install.lock")
-    fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-    try:
-        return install_overlay(project, game, folder, manifest)
-    finally:
-        os.close(fd)
-        lock.unlink()
+    return install_overlay(project,game,folder,manifest)
 
 
 def install_overlay(project, game, folder, manifest, *, qa=False):
+    with installer_lock(game):
+        rollback_pending(project,game)
+        return apply_overlay(project,game,folder,manifest,qa=qa)
+
+
+def apply_overlay(project, game, folder, manifest, *, qa):
     if any((game / rel).exists() for rel in (RECEIPT, START)):
         installed(game,qa=qa)
         return {"changed": False, "status": "já integrado"}
@@ -250,29 +336,30 @@ def install_overlay(project, game, folder, manifest, *, qa=False):
     if any(path.exists() for path in additions):
         raise ValueError("Arquivos de Sinnoh já existem sem registro de instalação compartilhada.")
     preserve_base(game, data, files)
-    request = "Data/blue-compile-request.txt"
-    cache = "Data/PluginScripts.rxdata"
-    changes = {**files, request:b"compile", RECEIPT:manifest.read_bytes(), START:marker(data)}
+    changes = {**files, COMPILE_REQUEST:b"compile", RECEIPT:manifest.read_bytes()}
     if qa:
         changes[QA_MARKER] = b"STAGED_SHARED_QA\n"
-    paths = {rel:safe_file(game,rel) for rel in (*changes, cache)}
+    changes[START] = marker(data)
+    paths = {rel:safe_file(game,rel) for rel in (PLUGIN_CACHE,*changes)}
     originals = {rel:path.read_bytes() if path.is_file() else None for rel,path in paths.items()}
     if any(sha(originals[rel]) != digest for rel,digest in data["base"].items()):
         raise ValueError("O jogo compartilhado mudou durante a preparação de Sinnoh.")
-    backup = project / ".blue-backups" / datetime.now(timezone.utc).strftime("sinnoh-%Y%m%dT%H%M%S%fZ")
+    backup = backup_folder(project,datetime.now(timezone.utc).strftime("sinnoh-%Y%m%dT%H%M%S%fZ"))
     for rel,raw in originals.items():
         if raw is not None:
             atomic(safe_file(backup,rel), raw)
+    journal = safe_file(game,INSTALL_JOURNAL)
+    transaction = {"schema":1,"backup":backup.name,"files":{
+        rel:[sha(raw) if raw is not None else None,sha(changes[rel]) if rel in changes else None]
+        for rel,raw in originals.items()}}
+    atomic(journal,json.dumps(transaction).encode("utf-8"))
     try:
-        paths[cache].unlink(missing_ok=True)
+        paths[PLUGIN_CACHE].unlink(missing_ok=True)
         for rel,raw in changes.items():
             atomic(paths[rel],raw)
         installed(game,qa=qa)
     except BaseException:
-        for rel,raw in reversed(list(originals.items())):
-            if raw is None:
-                paths[rel].unlink(missing_ok=True)
-            else:
-                atomic(paths[rel],raw)
+        rollback_pending(project,game)
         raise
+    journal.unlink()
     return {"changed": True, "status": "integrado"}

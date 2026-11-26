@@ -55,6 +55,9 @@ def install(project,game,hub_only=False,allow_kanto_missing=False,skip_kanto=Fal
             print('[JOHTO EDITOR] Aviso: editor nao instalado:',error,flush=True)
     game=game.resolve();ensure_base(project,game)
     assert_no_legacy_sinnoh_shared(game)
+    from sinnoh_shared import recover as recover_sinnoh
+    if recover_sinnoh(project,game):
+        print('[SINNOH] Instalação interrompida revertida.',flush=True)
     state_path=project/'.blue-work/installation.json'
     state=json.loads(state_path.read_text(encoding='utf8')) if state_path.is_file() else {}
     if state and state.get('game')!=str(game):raise ValueError('Estado de instalacao pertence a outra pasta do jogo.')

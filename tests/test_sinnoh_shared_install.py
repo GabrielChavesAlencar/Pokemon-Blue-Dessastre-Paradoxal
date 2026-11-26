@@ -2,6 +2,7 @@
 import json
 from pathlib import Path
 import struct
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -68,6 +69,24 @@ class SinnohSharedInstallerTests(unittest.TestCase):
         self.assertFalse(set(pinned.values()) & set(clean_ids.values()))
         self.assertFalse(set(pinned.values()) & set(migrated_ids.values()))
 
+    def test_author_download_tries_canonical_and_short_urls_for_html_response(self):
+        import sinnoh_source_download as source
+        from urllib.error import HTTPError
+        from urllib.response import addinfourl
+        from io import BytesIO
+        canonical, short = source.PAGES["maps"]
+        target = "https://mega.nz/file/" + source.MEGA_ID
+        page = addinfourl(BytesIO(b"<html/>"),{},canonical,200)
+        redirect = HTTPError(short,301,"Moved",{"Location":target},BytesIO())
+        with patch.object(source,"build_opener") as opener:
+            request = opener.return_value.open
+            request.side_effect = [page,redirect]
+            self.assertEqual(source.source_redirect("maps"),target)
+            self.assertEqual([call.args[0].full_url for call in request.call_args_list],[canonical,short])
+        with patch.object(source,"redirect_location",return_value=None):
+            with self.assertRaisesRegex(TimeoutError,"DOWNLOAD_SOURCE_DID_NOT_REDIRECT"):
+                source.source_redirect("maps")
+
     def prepare(self):
         for rel, raw in self.files.items():
             self.put(self.overlay / rel,raw)
@@ -88,6 +107,41 @@ class SinnohSharedInstallerTests(unittest.TestCase):
         self.assertEqual((self.game / 'Data/Map001.rxdata').read_bytes(),b'original Decades map')
         self.assertEqual((self.game / 'mkxp.json').read_bytes(),b'shared save settings')
         self.assertEqual((self.game / 'Saves/Game.rxdata').read_bytes(),b'existing save')
+
+    def test_installer_recovers_after_process_dies_during_marker_publication(self):
+        self.prepare()
+        crash = """
+import os
+from pathlib import Path
+import sys
+import sinnoh_shared as shared
+
+project = Path(sys.argv[1])
+write = shared.atomic
+def stop_after_receipt(path, raw):
+    write(path, raw)
+    if path == project / "game" / shared.RECEIPT:
+        os._exit(57)
+shared.atomic = stop_after_receipt
+shared.integrate(project, project / "game")
+"""
+        env_path = str(ROOT / "scripts/regions")
+        result = subprocess.run(
+            [sys.executable,"-c","import sys; sys.path[:0] = sys.argv[2:4]\n" + crash,
+             str(self.project),env_path,str(ROOT)], cwd=ROOT, capture_output=True, timeout=30)
+        self.assertEqual(result.returncode,57,result.stderr.decode())
+        self.assertTrue((self.game / shared.INSTALL_JOURNAL).is_file())
+        self.assertTrue((self.game / shared.RECEIPT).is_file())
+        self.assertFalse((self.game / shared.START).exists())
+        self.assertTrue(shared.recover(self.project,self.game))
+        self.assertFalse((self.game / shared.RECEIPT).exists())
+        self.assertFalse((self.game / "Data/Map442.rxdata").exists())
+        self.assertEqual((self.game / shared.PLUGIN_CACHE).read_bytes(),b"previous plugin cache")
+        for rel, raw in self.base.items():
+            self.assertEqual((self.game / rel).read_bytes(),raw)
+        self.assertEqual((self.game / "Saves/Game.rxdata").read_bytes(),b"existing save")
+        self.assertTrue(shared.integrate(self.project,self.game)["changed"])
+        self.assertFalse((self.game / shared.INSTALL_JOURNAL).exists())
 
     def test_shared_candidate_uses_144_maps_without_pilot_or_approval(self):
         outputs = dict(self.files)

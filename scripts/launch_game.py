@@ -10,6 +10,9 @@ from prepare_restore import Marshal,RubyString,dump
 def prepare(project,game):
     # Guard BEFORE lab.install or Scripts.rxdata/compile writes.
     assert_no_legacy_sinnoh_shared(game)
+    recovery=game/'Data/.blue-sinnoh-install.json'
+    if recovery.exists() or recovery.is_symlink():
+        raise ValueError('Execute o instalador Blue-Story para recuperar a instalação interrompida de Sinnoh.')
     spec=importlib.util.spec_from_file_location('blue_campaign_plugins',project/'scripts/battle_lab/launch.py')
     lab=importlib.util.module_from_spec(spec);spec.loader.exec_module(lab)
     lab.install(project,game)

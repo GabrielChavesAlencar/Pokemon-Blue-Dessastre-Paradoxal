@@ -23,8 +23,9 @@ from urllib.request import Request, build_opener, HTTPRedirectHandler
 from sinnoh_private_visual import PACKS, discover, fail, verified_archive
 
 PAGES = {
-    "maps": "https://eeveeexpo.com/resources/1661/download",
-    "overworlds": "https://eeveeexpo.com/resources/609/download",
+    "maps": ("https://eeveeexpo.com/resources/generation-3-styled-sinnoh-exterior-and-cave-maps.1661/download",
+             "https://eeveeexpo.com/resources/1661/download"),
+    "overworlds": ("https://eeveeexpo.com/resources/609/download",),
 }
 SIZES = {"maps": 89235961, "overworlds": 2158072}
 MEGA_ID = "PMZxiYhI"
@@ -63,13 +64,11 @@ class ProviderRedirect(HTTPRedirectHandler):
         return super().redirect_request(req,fp,code,msg,headers,newurl)
 
 
-def source_redirect(kind):
-    # Preserve the fragment containing the MEGA public file's decryption key.
-    # Never send the key to a third-party service.
-    req = Request(PAGES[kind], headers={"User-Agent":"Mozilla/5.0"})
+def redirect_location(page, kind):
+    req = Request(page, headers={"User-Agent":"Mozilla/5.0"})
     try:
         with build_opener(NoRedirect()).open(req,timeout=45):
-            fail("DOWNLOAD_SOURCE_DID_NOT_REDIRECT:"+kind)
+            return None
     except HTTPError as exc:
         try:
             if exc.code in TRANSIENT_HTTP:
@@ -79,9 +78,19 @@ def source_redirect(kind):
             location = exc.headers.get("Location","")
         finally:
             exc.close()
-    if not provider_host(location,kind):
+    if not location or not provider_host(location,kind):
         fail("DOWNLOAD_SOURCE_PROVIDER_CHANGED:"+kind)
     return location
+
+
+def source_redirect(kind):
+    # Try both paths to the author's maps page if one temporarily serves HTML.
+    # Provider, file identifier and SHA-256 checks still apply to either path.
+    for page in PAGES[kind]:
+        location = redirect_location(page,kind)
+        if location is not None:
+            return location
+    raise TimeoutError("DOWNLOAD_SOURCE_DID_NOT_REDIRECT:"+kind)
 
 
 def provider_open(url, kind, body=None):

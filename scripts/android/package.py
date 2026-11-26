@@ -161,6 +161,9 @@ def allowed(path):
 def build(game,output,revision,channel='decades',*,sinnoh_qa=False):
     if channel not in ('decades','multiregion'):raise ValueError('Unknown Android History build channel.')
     game,output = game.resolve(),output.resolve()
+    recovery = sinnoh_shared.safe_file(game,sinnoh_shared.INSTALL_JOURNAL)
+    if recovery.exists():
+        raise ValueError('A instalação interrompida de Sinnoh precisa ser recuperada antes de empacotar.')
     qa_marker = game/sinnoh_shared.QA_MARKER
     if (qa_marker.exists() or qa_marker.is_symlink()) != sinnoh_qa:
         raise ValueError('A cópia de QA de Sinnoh exige empacotamento QA explícito.')
