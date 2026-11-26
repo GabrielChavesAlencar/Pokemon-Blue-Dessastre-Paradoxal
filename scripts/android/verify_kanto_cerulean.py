@@ -17,6 +17,7 @@ from zipfile import ZipFile
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from scripts.android.package import compiled_region
+from server.ruby_marshal import loads, RubyObject
 
 SOURCE_MAP_IDS = ("39", "42", "53", "54", "55")
 EDGES = (("39", "53"), ("39", "54"), ("53", "54"))
@@ -100,6 +101,18 @@ def assert_delivery(path: Path, channel: str) -> dict:
                 b"Game_Event.prepend(BlueKantoPilot::CeruleanRivalActor)" not in rival):
             raise ValueError("Cerulean Gary movement/actor fix missing")
         compiled_region(cache, "KantoPilot.rb", rival)
+        # Verify the actual compiled native item, not merely a PBS section.
+        catalog = loads(archive.read(root + "Data/items.dat"))
+        ticket = catalog.get("BLUE_KANTO_SSTICKET") if isinstance(catalog, dict) else None
+        if (not isinstance(ticket, RubyObject) or ticket.name != "GameData::Item"
+                or ticket.attrs.get("@id") != "BLUE_KANTO_SSTICKET"
+                or ticket.attrs.get("@pocket") != 8
+                or ticket.attrs.get("@price") != 0
+                or ticket.attrs.get("@consumable") is not False
+                or not any(flag in ("KeyItem", b"KeyItem") for flag in ticket.attrs.get("@flags", []))):
+            raise ValueError("Compiled Kanto S.S. Ticket key item missing or invalid")
+        if b"pilot_bill_ticket_item_granted" not in rival:
+            raise ValueError("Legacy digital ticket upgrade missing")
         if channel == "multiregion":
             # The former inline PowerShell python -c lost embedded quoting
             # on Windows and failed with SyntaxError after native compilation.
@@ -123,7 +136,8 @@ def assert_delivery(path: Path, channel: str) -> dict:
     return {"channel": channel, "kanto_maps": EXPECTED_KANTO_MAPS,
             "cerulean_sources": list(SOURCE_MAP_IDS),
             "music_maps": EXPECTED_MUSIC_MAPS,
-            "compiled_journey": True, "compiled_cerulean_gary": True}
+            "compiled_journey": True, "compiled_cerulean_gary": True,
+            "compiled_kanto_ss_ticket": True}
 
 
 def main() -> None:

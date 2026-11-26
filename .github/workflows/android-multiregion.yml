@@ -1,9 +1,19 @@
 name: Android - Decades Kanto Hoenn integrado
 on:
   workflow_dispatch:
+  # Validate the actual shared JoiPlay ZIP before merging a Kanto item or
+  # runtime change. PR jobs build/verify deltas but NEVER publish releases.
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/battle_polish/items_blue_iv.txt'
+      - 'scripts/regions/KantoPilot.rb'
+      - 'scripts/android/verify_kanto_cerulean.py'
+      - '.github/workflows/android-multiregion.yml'
   push:
     branches: [main]
     paths:
+      - 'scripts/battle_polish/items_blue_iv.txt'
       - 'scripts/battle_polish/RegionStart.rb'
       - 'scripts/battle_polish/TitleKanto.rb'
       - 'tests/region_start_android_no_json_runtime.rb'
@@ -185,6 +195,7 @@ jobs:
 
           if((Get-Item dist/Blue-Android-Decades-Kanto-Hoenn.zip).Length -gt 2147483648){throw 'Asset excede 2 GiB do GitHub.'}
       - name: Publicar release experimental apenas apos sucesso integral
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         shell: powershell
         env:
           GH_TOKEN: ${{ github.token }}
