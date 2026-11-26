@@ -13,9 +13,9 @@ module KantoMusicNativeProbe
              "Kanto save is not active")
     region = $PokemonGlobal.blue_regions["current"]
     music = BlueMusic.kanto_data
-    require!(music[0].length == 145, "Compiled MapID coverage not 145")
+    require!(music[0].length == 151, "Compiled MapID coverage not 151")
     require!([music[1].length,music[2].length,music[3].length,music[4].length,
-              music[5].length,music[6].length] == [77,8,2,3,6,5],
+              music[5].length,music[6].length] == [83,8,2,3,6,5],
              "Kanto manifest category counts do not match approved rules")
     route2 = music[0].find { |_id, entry| entry[0] == "ROUTE_2" }&.first
     forest = music[0].find { |_id, entry| entry[0] == "VIRIDIAN_FOREST" }&.first
@@ -93,7 +93,7 @@ module KantoMusicNativeProbe
              "Music probe changed current region or map")
     File.write("Data/blue-kanto-music-native-#{label}.txt",
                "STATUS=PASS_NATIVE_AUDIOFILE_DISPATCH_NOT_AUDIBLE\n" +
-               "SCOPE=145;MAP=77;BATTLE=8;TRANSPORT=2;ME=6;SCENE=5\n" +
+               "SCOPE=151;MAP=83;BATTLE=8;TRANSPORT=2;ME=6;SCENE=5\n" +
                "DECODER=SEPARATE_FFMPEG_CI;LOOP_FADE_SPEAKER=BLOCKED_ENV\n")
     puts "KANTO_MUSIC_NATIVE_F6=#{label}|PASS_NATIVE_AUDIOFILE_DISPATCH_NOT_AUDIBLE"
     true
