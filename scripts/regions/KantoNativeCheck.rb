@@ -554,6 +554,95 @@ module KantoNativeCheck
     result
   end
 
+  def self.k03a_daycare_proof(corridor)
+    route = BlueKantoPilot.kanto_map_id(56)
+    daycare = BlueKantoPilot.kanto_map_id(58)
+    require!(daycare && daycare != route, "K03-A Day Care registry missing")
+    anchor = corridor["outbound"].find { |leg| leg["to_map"] == route }["to_xy"]
+    component = opening_component(route,anchor)
+    door = $game_map.events[1]
+    require!(door && [door.x,door.y] == [23,25] && door.trigger == 1 &&
+      north_event_reachable?(component,door), "K03-A original Day Care door inaccessible")
+    landing = north_transfer!(door,daycare)
+    require!(landing == [4,7], "K03-A Day Care arrival differs")
+    inside = opening_component(daycare,landing)
+    require!([$game_map.width,$game_map.height] == [20,15], "K03-A Day Care geometry differs")
+    npc = $game_map.events[3]
+    north_callback!(npc,"BlueKantoPilot.daycare_menu")
+    witness = opening_action_witness(inside,npc)
+    require!(witness && [npc.x,npc.y] == [4,4], "K03-A Day Care caretaker inaccessible")
+    exit_event = $game_map.events[1]
+    require!(north_event_reachable?(inside,exit_event), "K03-A Day Care exit inaccessible")
+    back = north_transfer!(exit_event,route)
+    require!(back == [23,26] && opening_component(route,back).key?(anchor), "K03-A Day Care return disconnected")
+    $map_factory.setup(daycare)
+    $game_player.moveto(*witness["standing"])
+    baseline = "K03 A Day Care Baseline"
+    require!(Game.save(baseline), "K03-A Day Care baseline save failed")
+    baseline_path = SaveData.get_full_path(baseline)
+    baseline_bytes = File.binread(baseline_path)
+    care = $PokemonGlobal.day_care
+    require!(care.is_a?(DayCare) && care.count == 0 &&
+      !care.equal?($PokemonGlobal.instance_variable_get(:@day_care)), "K03-A native/region Day Care isolation failed")
+    require!(!BlueKantoPilot.daycare_deposit(-1) && !BlueKantoPilot.daycare_deposit(0) &&
+      !BlueKantoPilot.daycare_withdraw, "K03-A invalid/last party operation accepted")
+    pkmn = Pokemon.new(:PIDGEY,10)
+    $player.party << pkmn
+    identity = pkmn.personalID
+    index = $player.party.length-1
+    money = $player.money
+    require!(BlueKantoPilot.daycare_deposit(index) && care.count == 1 &&
+      !$player.party.any? { |p| p.personalID == identity } && $player.money == money,
+      "K03-A deposit transaction failed")
+    require!(!BlueKantoPilot.daycare_deposit(0), "K03-A second deposit accepted")
+    slot = care.slots.find { |entry| entry.filled? }
+    exp = slot.pokemon.exp
+    care.update_on_step_taken
+    require!(slot.pokemon.exp == exp+1, "K03-A native step experience failed")
+    stored_exp = slot.pokemon.exp
+    saved_slot = "K03 A Day Care Deposited"
+    require!(Game.save(saved_slot), "K03-A deposit save failed")
+    serialized = SaveData.read_from_file(SaveData.get_full_path(saved_slot))
+    stored = serialized[:global_metadata].instance_variable_get(:@blue_kanto_day_care)
+    require!(stored && stored.count == 1 && stored.slots.find { |entry| entry.filled? }.pokemon.personalID == identity,
+      "K03-A deposited Pokemon missing from native save")
+    reload_native_slot(SaveData.get_full_path(saved_slot))
+    care = $PokemonGlobal.day_care
+    slot = care.slots.find { |entry| entry.filled? }
+    require!($game_map.map_id == daycare && care.count == 1 && slot.pokemon.personalID == identity &&
+      slot.pokemon.exp == stored_exp, "K03-A deposited Pokemon lost on reload")
+    cost = slot.cost
+    $player.money = 0
+    require!(!BlueKantoPilot.daycare_withdraw && care.count == 1, "K03-A unpaid withdrawal accepted")
+    $player.money = money + cost
+    before = $player.money
+    original_party = $player.party.dup
+    $player.party << Pokemon.new(:RATTATA,5) until $player.party_full?
+    require!(!BlueKantoPilot.daycare_withdraw && care.count == 1 && $player.money == before,
+      "K03-A full party withdrawal changed state")
+    $player.party.replace(original_party)
+    require!(BlueKantoPilot.daycare_withdraw && care.count == 0 &&
+      $player.party.count { |p| p.personalID == identity } == 1 &&
+      $player.money == before-cost && !BlueKantoPilot.daycare_withdraw,
+      "K03-A withdrawal/fee uniqueness failed")
+    final_slot = "K03 A Day Care Withdrawn"
+    require!(Game.save(final_slot), "K03-A withdrawal save failed")
+    reload_native_slot(SaveData.get_full_path(final_slot))
+    require!($PokemonGlobal.day_care.count == 0 &&
+      $player.party.count { |p| p.personalID == identity && p.exp == stored_exp } == 1 &&
+      $player.money == before-cost, "K03-A withdrawal lost on reload")
+    require!(File.binread(baseline_path) == baseline_bytes, "K03-A baseline overwritten")
+    reload_native_slot(baseline_path)
+    result = {"status"=>"PASS","source"=>58,"map_id"=>daycare,"dimensions"=>[20,15],
+      "entrance"=>[23,25],"arrival"=>landing,"return"=>back,"caretaker"=>witness,
+      "single_slot"=>true,"native_step_exp"=>1,"fee"=>cost,"deposit_save_reload"=>true,
+      "withdraw_save_reload"=>true,"last_party_guard"=>true,"full_party_guard"=>true,
+      "insufficient_money_guard"=>true,"unique_identity"=>true,"separate_native_storage"=>true,
+      "baseline_restored"=>true,"manual_gameplay"=>false}
+    k03a_trace("KANTO_K03A_NATIVE_DAYCARE_REPORT",result)
+    result
+  end
+
   def self.north_story(battle_calls, losses_remaining)
     city,gym,bridge,route,cottage = [39,42,53,54,55].map { |id| BlueKantoPilot.kanto_map_id(id) }
     require!([city,gym,bridge,route,cottage].all?, "K00-C missing installed source IDs")
@@ -1874,6 +1963,8 @@ module KantoNativeCheck
     north_report = north_story(battle_calls, losses_remaining)
     interiors_report = cerulean_interiors_proof(battle_calls, losses_remaining)
     k03a_report = k03a_corridor_proof(north_report,battle_calls,losses_remaining)
+    k03a_daycare = k03a_daycare_proof(k03a_report)
+    k03a_report["daycare_installed"] = true
     BlueKantoPilot.ticketmaster
     require!(BlueKantoPilot.progress["pilot_ss_ticket"] == true,
              "Vermilion ticket missing after Bill's quest")
@@ -2579,7 +2670,10 @@ module KantoNativeCheck
       north_state["pilot_wins"].include?(row["key"]) && $game_self_switches[[route6,row["event"],"A"]] },
       "K03-A Route6 trainer state lost on native reload")
     k03a_report["save_reload"] = true
-    k03a_report["status"] = "CORRIDOR_PASS_DAYCARE_PENDING"
+    k03a_report["status"] = "PASS"
+    k03a_report["daycare"] = k03a_daycare
+    File.write("Data/blue-kanto-k03a-daycare-proof.txt",k03a_daycare.inspect)
+    puts "KANTO_K03A_DAYCARE_DEPOSIT_WITHDRAW_SAVE_RELOAD_OK"
     File.write("Data/blue-kanto-k03a-proof.txt",k03a_report.inspect)
     puts "KANTO_K03A_NATIVE_CORRIDOR_REPORT:#{k03a_report.inspect}"
     puts "KANTO_K03A_ROUTE5_ROUTE6_TRAINERS_SAVE_RELOAD_OK"

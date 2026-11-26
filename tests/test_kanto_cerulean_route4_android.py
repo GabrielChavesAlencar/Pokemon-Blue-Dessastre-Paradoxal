@@ -74,7 +74,7 @@ class KantoCeruleanMusicRegression(unittest.TestCase):
         self.assertEqual((symbols["CERULEAN_CITY"]["track"], symbols["CERULEAN_CITY"]["enabled"]), (50, True))
         self.assertTrue(TRACKS[32]["filename"].startswith("1-32. Road to Cerulean City"))
         self.assertEqual(TRACKS[50]["filename"], "1-50. Fuchsia City.mp3")
-        self.assertEqual(sum(row["enabled"] for row in RULES["maps"]), 83)
+        self.assertEqual(sum(row["enabled"] for row in RULES["maps"]), 84)
 
     def test_produces_two_exact_bindings_without_reordering_other_music(self):
         original = self.source.music()

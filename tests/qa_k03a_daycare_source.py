@@ -24,7 +24,7 @@ def describe(source):
     require(all(mid in infos and mid in files for mid in ids), "K03-A source map missing")
     maps = {mid: load(files[mid]).attrs for mid in ids}
     registry = json_file(KANTO)
-    require("58" not in registry["maps"], "Day Care already catalogued; re-evaluate scope")
+    require(registry["maps"].get("58") == "DAY_CARE", "Day Care not catalogued")
     require(all(str(mid) in registry["maps"] for mid in ids if mid != 58),
             "K03-A installed corridor registry incomplete")
     name = text(infos[58].attrs["@name"])
@@ -74,7 +74,7 @@ def describe(source):
     report = {"status": "SOURCE_IDENTIFIED", "source_id": 58, "name": name,
               "size": [maps[58]["@width"], maps[58]["@height"]],
               "entrance": entrance, "return": exit_rows, "events": events[58],
-              "daycare_installed": False, "physical_gameplay": False}
+              "catalogued": True, "physical_gameplay": False}
     report["direct_reciprocal_transfers"] = bool(entrance and exit_rows)
     report["mechanic_api_observed"] = any(p["daycare_api_tokens"] for e in events[58] for p in e["pages"])
     return report
@@ -85,6 +85,6 @@ if __name__ == "__main__":
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(report, ensure_ascii=True, indent=2), encoding="utf8")
     print("KANTO_K03A_DAYCARE_SOURCE_REPORT:" + json.dumps(report, ensure_ascii=True))
-    if not report["direct_reciprocal_transfers"]:
+    if not report["direct_reciprocal_transfers"] or not report["mechanic_api_observed"]:
         raise SystemExit("K03-A direct Day Care transfers not proven; inspect source report")
     print("KANTO_K03A_DAYCARE_SOURCE_IDENTITY_OK")
