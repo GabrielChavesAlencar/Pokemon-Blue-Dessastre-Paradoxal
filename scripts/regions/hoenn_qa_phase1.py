@@ -12,6 +12,8 @@ import hashlib
 import json
 import re
 import sys
+import time
+from urllib.error import HTTPError, URLError
 from pathlib import Path
 from urllib.request import Request, urlopen
 
@@ -81,8 +83,27 @@ def load_tree(path: Path, *, offline: bool = False) -> dict:
             raise FileNotFoundError(f"Inventário fixo não encontrado offline: {path}")
         req = Request(TREE_URL, headers={"Accept": "application/vnd.github+json",
                                          "User-Agent": "Blue-Hoenn-Stage1-ReadOnly"})
-        with urlopen(req, timeout=90) as response:
-            tree = json.load(response)
+        # A cold installation must tolerate transient GitHub gateway
+        # failures before any pinned blob download can even begin.
+        # Do not retry rejected authorization or invalid inventory data.
+        delays = (2, 5, 10, 20)
+        for attempt in range(len(delays) + 1):
+            try:
+                with urlopen(req, timeout=90) as response:
+                    tree = json.load(response)
+                break
+            except HTTPError as exc:
+                if exc.code not in (408, 429, 500, 502, 503, 504) or attempt == len(delays):
+                    raise
+                error = exc
+            except (URLError, TimeoutError, ConnectionError) as exc:
+                if attempt == len(delays):
+                    raise
+                error = exc
+            print(f"[HOENN AUTO] Inventario Git temporariamente indisponivel "
+                  f"({attempt + 1}/{len(delays) + 1}): {error}; nova tentativa.",
+                  flush=True)
+            time.sleep(delays[attempt])
         if not isinstance(tree, dict):
             raise ValueError("Resposta de árvore Git inválida")
         tree["revision"] = UPSTREAM
