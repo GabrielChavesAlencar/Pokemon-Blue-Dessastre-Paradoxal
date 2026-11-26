@@ -208,9 +208,10 @@ jobs:
         shell: pwsh
         run: |
           $stage = Get-Content .blue-work/sinnoh-shared-qa/stage.json -Raw | ConvertFrom-Json
-          if ($stage.maps -ne 144 -or -not $stage.plugin_cache_sha256 -or $stage.windows_travel -or $stage.joiplay_travel) { throw 'Invalid shared QA receipt' }
+          if ($stage.maps -ne 144 -or -not $stage.plugin_cache_sha256 -or -not $stage.native_new_game -or -not $stage.native_twinleaf_agent -or $stage.windows_travel -or $stage.joiplay_travel) { throw 'Invalid shared QA receipt' }
           if (Test-Path game/Data/blue-sinnoh-shared.txt) { throw 'Shared QA activated the main game' }
           Write-Host 'SINNOH_SHARED_WINDOWS_144_MAPS_COMPILED_QA'
+          Write-Host 'SINNOH_SHARED_WINDOWS_NATIVE_NEW_GAME_AGENT_QA'
 
   sinnoh-original-source-live:
     # Explicit acceptance checks for the download and continuity PRs only.

@@ -22,14 +22,32 @@ QA_DIR = ".blue-work/sinnoh-shared-qa"
 CACHE = "Data/PluginScripts.rxdata"
 SCRIPTS = "Data/Scripts.rxdata"
 NATIVE_RECEIPT = "Data/blue-sinnoh-shared-native-compile.txt"
+START_RECEIPT = "Data/blue-sinnoh-shared-native-start.txt"
 
 
-def compile_windows(game, token, map_ids):
+def engine_output(raw):
+    return (raw or b"")[-4000:].decode("utf-8",errors="replace").replace("\0","")
+
+
+def run_native_probe(game, patch, *, timeout):
     scripts = shared.safe_file(game,SCRIPTS)
     original = scripts.read_bytes()
     rows = Marshal(original).read()
     entry, = [row for row in rows if row[1] == b"Main"]
     source = zlib.decompress(entry[2]).decode("utf-8")
+    entry[2] = RubyString(zlib.compress(patch(source).encode("utf-8")))
+    shared.atomic(scripts,b"\x04\x08" + dump(rows))
+    try:
+        return subprocess.run([str(game/"Game.exe")],cwd=game,stdout=subprocess.PIPE,
+                              stderr=subprocess.STDOUT,timeout=timeout,check=False)
+    except subprocess.TimeoutExpired as error:
+        raise ValueError(f"Game.exe não concluiu o teste em {timeout}s.\n"+
+                         engine_output(error.stdout)) from error
+    finally:
+        shared.atomic(scripts,original)
+
+
+def compile_boot_script(source, token):
     needle = "    Compiler.main"
     if source.count(needle) != 1:
         raise ValueError("Ponto de entrada do compilador de Blue-Story desconhecido.")
@@ -42,7 +60,7 @@ def compile_windows(game, token, map_ids):
       exit! 1
     end
 ''' + boot)
-    source = source.replace(needle, needle + f'''
+    return source.replace(needle, needle + f'''
     GameData::Trainer.load
     GameData::Item.load
     raise "Sinnoh: missing compiled shared runtime or Barry teams" unless BlueSinnohSharedEvents.ready?
@@ -53,23 +71,22 @@ def compile_windows(game, token, map_ids):
     File.binwrite("{NATIVE_RECEIPT}", "{token}")
     exit
 ''')
-    entry[2] = RubyString(zlib.compress(source.encode("utf-8")))
+
+
+def compile_windows(game, token, map_ids):
     regional_data = [shared.MAP_INFOS,shared.TILESETS,shared.CONNECTIONS]
     regional_data.extend(f"Data/Map{mid:03d}.rxdata" for mid in map_ids)
     protected = {}
     for relative in regional_data:
         path = shared.safe_file(game,relative)
         protected[path] = path.read_bytes()
-    shared.atomic(scripts,b"\x04\x08" + dump(rows))
     try:
-        result = subprocess.run([str(game/"Game.exe")],cwd=game,
-                                stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=360,check=False)
+        result = run_native_probe(game,lambda source:compile_boot_script(source,token),timeout=360)
         receipt = shared.safe_file(game,NATIVE_RECEIPT)
         if result.returncode != 0 or not receipt.is_file() or receipt.read_text("ascii") != token:
             raise ValueError("O Game.exe não concluiu a compilação Sinnoh.\n" +
-                             result.stdout[-4000:].decode("utf-8",errors="replace"))
+                             engine_output(result.stdout))
     finally:
-        shared.atomic(scripts,original)
         # Essentials may regenerate editor indexes and serialized map events.
         # Keep the verified authored Sinnoh events and the regional indexes.
         for path, content in protected.items():
@@ -79,6 +96,43 @@ def compile_windows(game, token, map_ids):
     for path in (shared.PLUGIN, REGION_START_PLUGIN, REGION_TRAVEL_PLUGIN):
         compiled_region(cache,Path(path).name,shared.safe_file(game,path).read_bytes())
     return shared.sha(cache)
+
+
+def verify_native_start(game, manifest, token):
+    expected = json.dumps([manifest[key] for key in ("start","arrival","agent")])
+    def patch(source):
+        source = source.replace("\r\n","\n")
+        anchor = "    Game.set_up_system\n"
+        if source.count(anchor) != 1:
+            raise ValueError("Inicialização de Novo Jogo não reconhecida.")
+        return source.replace(anchor,anchor+f'''
+    begin
+      start, arrival, agent = {expected}
+      raise "Sinnoh ausente no Novo Jogo" unless BlueRegionStart.sinnoh_spawn == start &&
+        BlueRegionStart.request_initial("SINNOH")
+      Game.start_new
+      regional = $PokemonGlobal.blue_regions
+      raise "Região inicial incorreta" unless regional && regional["current"] == "SINNOH" && regional["initial"] == "SINNOH"
+      raise "Quarto inicial incorreto" unless [$game_map.map_id,$game_player.x,$game_player.y] == start
+      $map_factory = PokemonMapFactory.new(arrival[0])
+      $game_player.moveto(arrival[1],arrival[2])
+      2.times {{ BlueRegionTravel.attach_sinnoh_agent($game_map) }}
+      agents = $game_map.events.values.select {{ |event| event.name == BlueRegionTravel::SINNOH_AGENT_NAME }}
+      raise "Agente de Twinleaf ausente, deslocado ou duplicado" unless agents.length == 1 &&
+        [$game_map.map_id,agents[0].x,agents[0].y] == agent
+      File.binwrite("{START_RECEIPT}", "{token}")
+    rescue StandardError, ScriptError => error
+      warn [error.class, error.message, *Array(error.backtrace).first(12)].join("\\n")
+      exit! 1
+    end
+    exit
+''')
+    receipt = shared.safe_file(game,START_RECEIPT)
+    receipt.unlink(missing_ok=True)
+    result = run_native_probe(game,patch,timeout=150)
+    if result.returncode != 0 or not receipt.is_file() or receipt.read_text("ascii") != token:
+        raise ValueError("O Game.exe não confirmou Novo Jogo e agente de Twinleaf.\n" +
+                         engine_output(result.stdout))
 
 
 def stage(project, *, base_game=None, compile_native=False):
@@ -129,6 +183,8 @@ def stage(project, *, base_game=None, compile_native=False):
         if compile_native:
             result["plugin_cache_sha256"] = compile_windows(game,result["overlay_sha256"],proof["map_ids"])
             result["compiler"] = "Windows Game.exe"
+            verify_native_start(game,proof,result["overlay_sha256"])
+            result.update(native_new_game=True,native_twinleaf_agent=True)
         shared.installed(game,qa=True)
         shared.atomic(root/"stage.json",(json.dumps(result,indent=2)+"\n").encode("utf-8"))
         root.rename(target)
