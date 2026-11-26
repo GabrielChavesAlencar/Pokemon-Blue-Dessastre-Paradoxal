@@ -218,6 +218,9 @@ jobs:
               if(-not (Test-Path $nativeAudio)){throw "Native Kanto F6 AudioFile probe missing"}
               if(-not ((Get-Content $nativeAudio -Raw) -match "PASS_NATIVE_AUDIOFILE_DISPATCH_NOT_AUDIBLE")){throw "Kanto music F6 native probe did not pass"}
               Get-Content $nativeAudio
+              $northProof="$pilot/Data/blue-kanto-k00-cerulean-proof.txt"
+              if(-not (Test-Path $northProof)){throw 'K00-C native Cerulean proof missing'}
+              Get-Content $northProof
               Get-Content "$pilot/Data/blue-kanto-proof.txt"
               exit 0
             }
