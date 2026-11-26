@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f93cb20f5aea38654fc635d70e0de9756e0a1f8f",
+      "date": "2026-11-26T12:44:38-03:00",
+      "title": "Merge PR #352: native Viridian Forest corridor and trainer proof",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "550a29cced43b720ac18189db0b9a28813811926",
+      "date": "2026-11-26T12:37:58-03:00",
+      "title": "QA K01-D: validate source trainer interaction modes and loss switch preservation",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "9b9a7d2c85dbd7516936e866856db55573e8f37b",
+      "date": "2026-11-26T12:30:09-03:00",
+      "title": "QA K01-D: native Forest corridor and five source trainer event proofs",
+      "category": "Melhorias"
+    },
+    {
       "sha": "8b155f8377b525b9a0156f03648f9c4fd9de140a",
       "date": "2026-11-26T12:29:05-03:00",
       "title": "Merge PR #351: native Viridian Route 2 gate proof",
