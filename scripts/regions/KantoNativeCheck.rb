@@ -299,7 +299,7 @@ module KantoNativeCheck
   # connections. Exclude Oak's active touch tiles when testing a bypass.
   # Never mistake a collision path or a controlled callback for a real
   # keyboard-driven event-interpreter playthrough.
-  def self.opening_component(map_id, anchor, blocked = [], enforce_route2 = false)
+  def self.opening_component(map_id, anchor, blocked = [], enforce_route2 = false, native_ledges = false)
     $map_factory.setup(map_id)
     $game_map.events.each_value { |event| event.refresh }
     require!(anchor[0].between?(0,$game_map.width-1) &&
@@ -314,9 +314,30 @@ module KantoNativeCheck
       directions.each do |dir,(dx,dy)|
         nx,ny = x+dx,y+dy
         next unless nx.between?(0,$game_map.width-1) && ny.between?(0,$game_map.height-1)
-        next if seen.key?([nx,ny]) || blocked.include?([nx,ny])
-        $game_player.moveto(x,y)
-        next unless $game_player.passable?(x,y,dir)
+        next if blocked.include?([nx,ny])
+        # In Essentials, a ledge is a directed two-tile jump, not an
+        # ordinary walkable tile. Probe real move_generic only on native
+        # ledge terrain, recording the observed landing (never force it).
+        if native_ledges && $game_map.terrain_tag(nx,ny).ledge
+          landing = [nx+dx,ny+dy]
+          next unless landing[0].between?(0,$game_map.width-1) &&
+                      landing[1].between?(0,$game_map.height-1)
+          next if seen.key?(landing) || blocked.include?(landing)
+          $game_player.moveto(x,y)
+          next unless $game_player.passable?(x,y,dir)
+          $game_player.move_generic(dir,true)
+          observed = [$game_player.x,$game_player.y]
+          accepted = $game_map.map_id == map_id && observed == landing
+          moon_trace("KANTO_K02A_NATIVE_LEDGE",{"map"=>map_id,"from"=>[x,y],
+            "ledge"=>[nx,ny],"direction"=>dir,"expected"=>landing,
+            "observed"=>observed,"accepted"=>accepted})
+          next unless accepted
+          nx,ny = landing
+        else
+          next if seen.key?([nx,ny])
+          $game_player.moveto(x,y)
+          next unless $game_player.passable?(x,y,dir)
+        end
         next if enforce_route2 && BlueKantoPilot.route2_exit_blocked?($game_player,dir)
         seen[[nx,ny]] = seen[[x,y]]+1
         queue << [nx,ny]
@@ -773,7 +794,8 @@ module KantoNativeCheck
       map,point,legs = queue[cursor]
       cursor += 1
       return legs if map == target && !accept_target
-      comp = opening_component(map,point)
+      route4 = BlueKantoPilot.kanto_map_id(33)
+      comp = opening_component(map,point,[],false,map == route4)
       $map_factory.setup(map)
       # A map may contain disconnected rooms. A target MapID alone is not
       # evidence that the story NPC and both fossil props are accessible.
@@ -790,7 +812,22 @@ module KantoNativeCheck
       connections.each do |a,b|
         other = a == map ? b : (b == map ? a : nil)
         next unless other && allowed.include?(other)
-        opening_crossings(map,comp,other).each do |left,right|
+        crossings = opening_crossings(map,comp,other)
+        if map == route4 && other == BlueKantoPilot.kanto_map_id(39)
+          row,dir,pairs = opening_seams(map,other)
+          details = pairs.map do |left,right|
+            $map_factory.setup(map)
+            $game_player.moveto(*left)
+            native_target = $map_factory.getFacingTile(dir,$game_player)
+            terrain = $game_map.terrain_tag(*left)
+            {"from"=>left,"to"=>right,"reachable"=>comp.key?(left),
+             "terrain"=>terrain.id.to_s,"native_target"=>native_target,
+             "edge_passable"=>$game_player.passable?(*left,dir)}
+          end
+          moon_trace("KANTO_K02A_ROUTE4_SEAM",{"anchor"=>point,"component_size"=>comp.length,
+            "connection"=>row,"direction"=>dir,"rows"=>details,"crossings"=>crossings})
+        end
+        crossings.each do |left,right|
           candidates << {"kind"=>"native_seam","from_map"=>map,"from_xy"=>left,
             "to_map"=>other,"to_xy"=>right,"component_size"=>comp.length}
         end
