@@ -5,6 +5,8 @@ Kanto's source-present runner additionally checks real Map039/053/054/055
 coordinates. Nothing is taken from guessed MapIDs or donor Ruby scripts.
 """
 import json
+import shutil
+import subprocess
 import sys
 import unittest
 from pathlib import Path
@@ -64,6 +66,42 @@ class CeruleanNorthContract(unittest.TestCase):
         self.assertIn('pbStartTrade(index, received, "Zynx", "Dontae", 0)', runtime)
         self.assertIn('KantoWallMap.png', runtime)
         self.assertNotIn('pbChoosePokemonForTrade(1, 2', runtime)
+
+    def test_native_message_fixture_restores_underlying_method_with_prepend(self):
+        ruby = shutil.which("ruby")
+        if not ruby:
+            self.skipTest("Ruby runtime unavailable")
+        native = ROOT / "scripts/regions/KantoNativeCheck.rb"
+        code = """
+module LocaleWrapper
+  def pbMessage(message,*args,&block)
+    super(message,*args,&block)
+  end
+end
+Object.prepend(LocaleWrapper)
+Object.send(:define_method,:pbMessage) { |*args| args[1].is_a?(Array) ? 0 : nil }
+load ARGV.fetch(0)
+module Probe
+  def self.choose
+    pbMessage("choose",["yes","no"])
+  end
+end
+raise "initial fixture broken" unless Probe.choose == 0
+KantoNativeCheck.with_native_message_fixture(proc { |*args| 1 }) do
+  raise "scoped fixture broken" unless Probe.choose == 1
+end
+raise "restore broken" unless Probe.choose == 0
+begin
+  KantoNativeCheck.with_native_message_fixture(proc { |*args| 1 }) { raise "test exception" }
+rescue RuntimeError => e
+  raise unless e.message == "test exception"
+end
+raise "restore after exception broken" unless Probe.choose == 0
+puts "KANTO_K02C_MESSAGE_PREPEND_RESTORE_OK"
+"""
+        run = subprocess.run([ruby, "-e", code, str(native)], capture_output=True, text=True)
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        self.assertIn("KANTO_K02C_MESSAGE_PREPEND_RESTORE_OK", run.stdout)
 
     def test_furniture_allowlist_rejects_foreign_scripts_and_coordinates(self):
         def obj(**attrs):

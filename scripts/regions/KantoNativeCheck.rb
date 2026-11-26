@@ -4,6 +4,21 @@ module KantoNativeCheck
     raise message unless condition
   end
 
+  # Object.prepend(BlueLocale::Prompts) wraps pbMessage. Capture the method
+  # actually defined on Object, not the prepended wrapper (whose super would
+  # point at itself or vanish when copied onto Object).
+  def self.with_native_message_fixture(handler)
+    original = Object.instance_method(:pbMessage)
+    original = original.super_method until original.nil? || original.owner == Object
+    require!(original, "K02-C missing underlying native message fixture")
+    begin
+      Object.send(:define_method, :pbMessage, handler)
+      yield
+    ensure
+      Object.send(:define_method, :pbMessage, original)
+    end
+  end
+
   # A read-only source sign or a physical CutTree is permitted as an
   # *additional* event on functional maps. Keep all story/event whitelists
   # strict and reject foreign scripts, extra warps, items or trainers.
@@ -209,29 +224,67 @@ module KantoNativeCheck
                saved_jynx.iv == received.iv && saved_jynx.owner.name == "Dontae" &&
                saved_trade[:global_metadata].blue_regions["pilot_cerulean_jynx_trade"],
                "K02-C Jynx or exchange flag not serialized")
+      trade_report = {"species"=>received.species.to_s,"level"=>received.level,
+        "nickname"=>received.name,"nature"=>received.nature_id.to_s,
+        "ability_index"=>received.ability_index,"ivs"=>received.iv,
+        "owner"=>received.owner.name,"obtain_method"=>received.obtain_method,
+        "native_slot_read"=>true,"repeat_rejected"=>true,"animation_tested"=>false}
+      puts "KANTO_K02C_NATIVE_TRADE_REPORT:#{trade_report.inspect}"
     ensure
       Object.send(:define_method,:pbFadeOutInWithMusic,original_fade)
       $player.party.replace(party_before)
       $stats.trade_count = original_trade_count
     end
     $map_factory.setup(mapping[44])
-    original_message = Object.instance_method(:pbMessage)
     choices = []
-    begin
-      Object.send(:define_method,:pbMessage) do |*args|
-        if args[1].is_a?(Array)
-          choices << args[1].dup
-          choices.length == 1 ? 0 : 8
+    badge_messages = []
+    with_native_message_fixture(proc do |*args|
+      if args[1].is_a?(Array)
+        choices << args[1].dup
+        choices.length == 1 ? 0 : 8
+      else
+        badge_messages << args[0].to_s
+        nil
+      end
+    end) do
+      require!(BlueKantoPilot.cerulean_badge_guide && choices.length == 2 &&
+               choices.all? { |row| row.length == 9 } && badge_messages.length >= 2,
+               "K02-C badge guide menu did not run")
+    end
+    require!(BlueKantoPilot.send(:pbMessage,"K02-C restored choice fixture",["OK"]) == 0,
+             "K02-C underlying choice fixture not restored")
+    furniture = {44=>[5],46=>[6,7,8],47=>[5,6,7],48=>[6,7,8,9,10,11,12]}
+    furniture_report = []
+    furniture_messages = []
+    with_native_message_fixture(proc { |message,*args| furniture_messages << message.to_s; nil }) do
+      furniture.each do |source,ids|
+        $map_factory.setup(mapping.fetch(source))
+        ids.each do |eid|
+          event = $game_map.events[eid]
+          require!(event && event.trigger == 0,"K02-C furniture event missing #{source}/#{eid}")
+          callbacks = Array(event.list).select { |op| op.code == 355 }
+          require!(!callbacks.empty?,"K02-C furniture callback missing #{source}/#{eid}")
+          before = furniture_messages.length
+          callbacks.each_with_index do |op,index|
+            require!(op.parameters[0].to_s == "BlueKantoPilot.npc_dialogue(#{source}, #{eid}, #{index})",
+                     "K02-C unexpected furniture callback #{source}/#{eid}/#{index}")
+            BlueKantoPilot.npc_dialogue(source,eid,index)
+          end
+          require!(furniture_messages.length-before == callbacks.length &&
+                   furniture_messages.drop(before).all? { |message| !message.strip.empty? },
+                   "K02-C furniture dialogue failed #{source}/#{eid}")
+          furniture_report << [source,eid,callbacks.length]
         end
       end
-      require!(BlueKantoPilot.cerulean_badge_guide && choices.length == 2 &&
-               choices.all? { |row| row.length == 9 }, "K02-C badge guide menu did not run")
-    ensure
-      Object.send(:define_method,:pbMessage,original_message)
     end
+    require!(furniture_report.length == 14,"K02-C incomplete furniture callbacks")
+    puts "KANTO_K02C_FURNITURE_NATIVE_REPORT:#{furniture_report.inspect}"
     atlas = Bitmap.new(BlueKantoPilot::KANTO_WALL_MAP)
     require!(atlas.width > 0 && atlas.height > 0,"K02-C original atlas invalid")
+    atlas_report = {"width"=>atlas.width,"height"=>atlas.height,"manual_ui"=>false}
     atlas.dispose
+    puts "KANTO_K02C_OPTIONAL_NATIVE_REPORT:#{ {"trade"=>trade_report,"furniture"=>furniture_report,
+      "badge_choices"=>choices,"atlas"=>atlas_report}.inspect }"
     $map_factory.setup(mapping[43])
     item_report = [:BIKEVOUCHER,:BICYCLE,:TM28].to_h do |id|
       item = GameData::Item.try_get(id)
@@ -288,7 +341,8 @@ module KantoNativeCheck
      "tm28"=>$bag.quantity(:TM28),"rocket_retry"=>true,"voucher_fixture"=>true,
      "native_bike_handlers"=>true,"regional_bag_staging"=>true,"required_actor_sprites"=>true,
      "native_trade_transaction"=>true,"trade_native_slot_read"=>true,"trade_animation_tested"=>false,"atlas_bitmap_loaded"=>true,
-     "atlas_manual_ui_tested"=>false,"badge_guide_callback"=>true,"badge_guide_menu_controlled"=>true}
+     "atlas_manual_ui_tested"=>false,"badge_guide_callback"=>true,"badge_guide_menu_controlled"=>true,
+     "trade"=>trade_report,"furniture_callbacks"=>furniture_report,"atlas"=>atlas_report}
   end
 
   def self.north_story(battle_calls, losses_remaining)
