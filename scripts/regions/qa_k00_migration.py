@@ -16,6 +16,7 @@ from unittest.mock import patch
 import install_kanto as installer
 from audit import ROOT, load, inventory
 from stage import serialize
+from pilot import EVENT_CLASSES
 
 NEW = {"53", "54", "55"}
 REPORT = ROOT / ".blue-work/k00-migration-proof.json"
@@ -80,7 +81,7 @@ def run():
     drift_rel = Path(f"Data/Map{drift_id:03d}.rxdata")
     map_data = load(game / drift_rel)
     map_data.attrs["@autoplay_bgm"] = not map_data.attrs["@autoplay_bgm"]
-    installer.atomic(game / drift_rel, serialize(map_data))
+    installer.atomic(game / drift_rel, serialize(map_data, EVENT_CLASSES))
     drift_hash = installer.digest(game / drift_rel)
     check(drift_hash != hashes[drift_rel.as_posix()], "Fixture did not produce map drift")
     # Missing second map has a proven registry slot and checksum.
@@ -107,7 +108,7 @@ def run():
                         and not installer.text(tile.attrs["@tileset_name"]).startswith("FRLG_Preview_"))
     prior = (game / drift_rel).read_bytes()
     map_data.attrs["@tileset_id"] = foreign_tile
-    installer.atomic(game / drift_rel, serialize(map_data))
+    installer.atomic(game / drift_rel, serialize(map_data, EVENT_CLASSES))
     try:
         try:
             installer.apply_install(game, pilot, True, migration=legacy)
