@@ -8,11 +8,11 @@ module BlueKantoPilot
   LEAGUE_ORDER = %w[LORELEI BRUNO AGATHA LANCE CHAMPION].freeze
   LEAGUE_CHAMPION_VERSIONS = {BULBASAUR: 1, CHARMANDER: 2, SQUIRTLE: 3}.freeze
   FULL_POWER_OFFSET = 100
-  # The Blue protagonist charset can be taller than FRLG NPC frames.
-  # Scale ONLY the player while in Kanto, including the integrated game;
-  # a fixed 75% still looked oversized with larger charsets after loading.
-  PLAYER_OVERWORLD_ZOOM = 0.60
-  PLAYER_OVERWORLD_MAX_HEIGHT = 30
+  # Keep native-sized player frames at full size. Only genuinely tall
+  # Blue charsets need a proportional cap; never shrink small FRLG frames
+  # by a fixed percentage (the integrated Oak Lab regression in build 1605).
+  PLAYER_OVERWORLD_ZOOM = 1.0
+  PLAYER_OVERWORLD_MAX_HEIGHT = 40
   PILOT_OVERWORLD_SCALE = File.file?("Kanto pilot.json")
   INTEGRATED_KANTO = !PILOT_OVERWORLD_SCALE && File.file?("Data/blue-kanto-install.json")
 
@@ -2099,7 +2099,7 @@ module BlueKantoPilot
 end
 
 # Sprite_Character ja posiciona o pivot nos pes e atualiza o frame andando.
-# Reduzimos somente o sprite do player, sem alterar NPCs, imagens ou colisoes.
+# Limitamos apenas frames altos do player, sem alterar NPCs, imagens ou colisoes.
 # Prevent a CutTree's alternate direction/pattern rows from rendering as
 # a stump while it is merely being interacted with. Do NOT prepend Game_Event
 # refresh/lock/update: that conflicts with Decades event refresh alias chains
