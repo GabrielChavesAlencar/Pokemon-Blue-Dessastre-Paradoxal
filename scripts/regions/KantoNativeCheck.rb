@@ -295,6 +295,105 @@ module KantoNativeCheck
     serialized
   end
 
+  # K01-B: directional native collision witnesses across installed PBS
+  # connections. Exclude Oak's active touch tiles when testing a bypass.
+  # Never mistake a collision path or a controlled callback for a real
+  # keyboard-driven event-interpreter playthrough.
+  def self.opening_component(map_id, anchor, blocked = [])
+    $map_factory.setup(map_id)
+    $game_map.events.each_value { |event| event.refresh }
+    require!(anchor[0].between?(0,$game_map.width-1) &&
+             anchor[1].between?(0,$game_map.height-1), "K01-B invalid anchor #{map_id}:#{anchor.inspect}")
+    seen = {anchor=>0}
+    queue = [anchor]
+    cursor = 0
+    directions = {2=>[0,1],4=>[-1,0],6=>[1,0],8=>[0,-1]}
+    while cursor < queue.length
+      x,y = queue[cursor]
+      cursor += 1
+      directions.each do |dir,(dx,dy)|
+        nx,ny = x+dx,y+dy
+        next unless nx.between?(0,$game_map.width-1) && ny.between?(0,$game_map.height-1)
+        next if seen.key?([nx,ny]) || blocked.include?([nx,ny])
+        $game_player.moveto(x,y)
+        next unless $game_player.passable?(x,y,dir)
+        seen[[nx,ny]] = seen[[x,y]]+1
+        queue << [nx,ny]
+      end
+    end
+    seen
+  end
+
+  def self.opening_seams(a,b)
+    rows = File.readlines("PBS/map_connections_kanto.txt").filter_map do |line|
+      fields = line.split("#",2)[0].to_s.strip.split(",").map(&:strip)
+      next unless fields.length == 6
+      if fields[0].to_i == a && fields[3].to_i == b
+        fields
+      elsif fields[0].to_i == b && fields[3].to_i == a
+        fields[3,3]+fields[0,3]
+      end
+    end
+    require!(rows.length == 1, "K01-B expected one native connection #{a}/#{b}: #{rows.inspect}")
+    _,side,offset,_,other,other_offset = rows.first
+    $map_factory.setup(a)
+    aw,ah = $game_map.width,$game_map.height
+    $map_factory.setup(b)
+    bw,bh = $game_map.width,$game_map.height
+    delta = other_offset.to_i-offset.to_i
+    if ["North","South"].include?(side)
+      require!(other == (side == "North" ? "South" : "North"), "K01-B invalid connection sides")
+      dir = side == "North" ? 8 : 2
+      candidates = (0...aw).filter_map { |x|
+        bx = x+delta
+        [[x,side == "North" ? 0 : ah-1],[bx,other == "North" ? 0 : bh-1]] if bx.between?(0,bw-1) }
+    else
+      require!([["East","West"],["West","East"]].include?([side,other]), "K01-B invalid horizontal connection")
+      dir = side == "East" ? 6 : 4
+      candidates = (0...ah).filter_map { |y|
+        by = y+delta
+        [[side == "West" ? 0 : aw-1,y],[other == "West" ? 0 : bw-1,by]] if by.between?(0,bh-1) }
+    end
+    [rows.first,dir,candidates]
+  end
+
+  def self.opening_crossings(a,component,b)
+    row,dir,pairs = opening_seams(a,b)
+    result = pairs.select { |left,right| component.key?(left) && north_edge_cell(a,left,dir) }
+    puts "KANTO_K01B_NATIVE_SEAM:#{[row,component.length,result].inspect}"
+    result
+  end
+
+  def self.pallet_opening_gate_proof(lab)
+    pallet = BlueKantoPilot.kanto_map_id(5)
+    route = BlueKantoPilot.kanto_map_id(9)
+    $map_factory.setup(lab)
+    landing = north_transfer!($game_map.events[1],pallet)
+    $map_factory.setup(pallet)
+    gates = [11,13].map { |id|
+      ev = $game_map.events[id]
+      require!(ev && ev.trigger == 1 &&
+               ev.list.any? { |op| op.code == 111 && op.parameters[1].to_s == "!BlueKantoPilot.starter" },
+               "K01-B Oak gate condition absent at #{id}")
+      north_callback!(ev,"BlueKantoPilot.oak_invitation")
+      require!(north_transfer!(ev,lab) == [6,12], "K01-B Oak escort changed destination")
+      [ev.x,ev.y]
+    }
+    component = opening_component(pallet,landing,gates)
+    require!(gates.all? { |gx,gy| component.keys.any? { |x,y| (x-gx).abs+(y-gy).abs <= 1 } },
+             "K01-B Oak touch lane inaccessible from Pallet")
+    crossings = opening_crossings(pallet,component,route)
+    gate_report = {"pallet"=>pallet,"route1"=>route,"lab_exit"=>landing,
+      "oak_gate_tiles"=>gates,"reachable_without_touch"=>component.length,
+      "north_bypass_cells"=>crossings,"manual_gameplay"=>false}
+    File.write("Data/blue-kanto-k01b-gate-trace.txt",gate_report.inspect)
+    require!(crossings.empty?, "K01-B Pallet bypass without Oak: #{gate_report.inspect}")
+    gate_report
+  ensure
+    $map_factory.setup(lab)
+    $game_player.moveto(6,12)
+  end
+
   def self.starter_opening_proof(lab)
     state = BlueKantoPilot.progress
     require!(state["pilot_profile_pending"] && !BlueKantoPilot.starter &&
@@ -487,19 +586,61 @@ module KantoNativeCheck
         !!data
       end
     end
+    # Pre-starter gate: existing authored Oak events must intercept every
+    # reachable northbound exit. Keep the disposable save in the lab.
+    pallet_gate_report = pallet_opening_gate_proof(lab)
     opening_report = starter_opening_proof(lab)
     require!($player.party.first&.species == :BULBASAUR, "Starter proof did not leave Bulbasaur for campaign")
     require!(!BlueKantoPilot.forest_unlocked?, "Forest opened before Oak's parcel")
     require!(Game_Player.ancestors.include?(BlueKantoPilot::Route2ExitGuard),
              "Viridian Route 2 outdoor boundary hook was not installed")
     starting_balls = $bag.quantity(:POKEBALL)
+    # K01-B: do not deliver Oak's parcel from inside the Mart.
+    # Derive door landings and map seams from installed data.
+    require!($player.respond_to?(:has_pokedex) && !$player.has_pokedex,
+             "K01-B Pokédex already awarded before parcel")
+    BlueKantoPilot.choose_starter
+    require!($bag.quantity(:POKEBALL) == starting_balls && !$player.has_pokedex &&
+             !BlueKantoPilot.progress["pilot_oak_parcel_delivered"],
+             "K01-B Oak gave parcel reward too early")
+    BlueKantoPilot.rival
+    require!(battle_calls.last == [:BLUE_KANTO_RIVAL, "Blue", 11] && BlueKantoPilot.rival_done?,
+             "K01-B first Gary battle not recorded")
+    route1_id = BlueKantoPilot.kanto_map_id(9)
+    city_id = BlueKantoPilot.kanto_map_id(10)
+    mart_id = BlueKantoPilot.kanto_map_id(12)
+    $map_factory.setup(lab)
+    lab_exit = north_transfer!($game_map.events[1],pallet)
+    pallet_comp = opening_component(pallet,lab_exit)
+    first_seams = opening_crossings(pallet,pallet_comp,route1_id)
+    require!(!first_seams.empty?, "K01-B Pallet north exit blocked after starter")
+    # Try all reachable first seams until a real Route1 -> Viridian seam
+    # leads to the Mart door, rather than picking a disconnected first cell.
+    route_witness = nil
+    first_seams.each do |first|
+      rcomp = opening_component(route1_id,first[1])
+      opening_crossings(route1_id,rcomp,city_id).each do |second|
+        vcomp = opening_component(city_id,second[1])
+        mart_door = $game_map.events.values.find { |ev| ev.trigger == 1 &&
+          ev.list.any? { |op| op.code == 201 && op.parameters[0] == 0 && op.parameters[1] == mart_id } }
+        next unless north_event_reachable?(vcomp,mart_door)
+        route_witness = [first,second,mart_door.id,north_transfer!(mart_door,mart_id)]
+        break
+      end
+      break if route_witness
+    end
+    require!(route_witness, "K01-B no continuous native route from Pallet to Mart")
     # Stage 03: the Pallet -> Viridian -> Pallet Oak parcel loop is local to
     # Kanto, delivered once, and never creates an invalid FRLG item in Decades.
     mart_visits = []
     # A stale intro self-switch in older Kanto saves must be reset by
     # walking into the Mart, before the parcel has been collected.
-    mart_id = File.read("Kanto pilot.json").match(/"12":\s*(\d+)/)[1].to_i
     $map_factory.setup(mart_id)
+    $game_player.moveto(*route_witness[3])
+    mart_comp = opening_component(mart_id,route_witness[3])
+    clerk = $game_map.events.values.find { |ev| ev.trigger == 0 &&
+      ev.list.any? { |op| op.code == 355 && op.parameters[0].to_s == "BlueKantoPilot.viridian_mart" } }
+    require!(north_event_reachable?(mart_comp,clerk), "K01-B Mart clerk not reachable")
     intro_id = $game_map.events.values.find { |ev| ev.name == "Kanto Oak Parcel Intro" }&.id
     require!(intro_id, "Viridian Mart automatic parcel scene is missing")
     $game_self_switches[[mart_id, intro_id, "A"]] = true
@@ -521,6 +662,45 @@ module KantoNativeCheck
     BlueKantoPilot.viridian_mart
     require!(mart_visits.empty?,
              "Viridian Mart opened before Oak received the parcel")
+    # Verify a physical return witness independently: southbound ledges
+    # may use a different path than the outward trip.
+    mart_exit = $game_map.events.values.find { |ev| ev.trigger == 1 &&
+      ev.list.any? { |op| op.code == 201 && op.parameters[0] == 0 && op.parameters[1] == city_id } }
+    require!(north_event_reachable?(mart_comp,mart_exit), "K01-B Mart exit unreachable")
+    city_return = north_transfer!(mart_exit,city_id)
+    return_witness = nil
+    vcomp = opening_component(city_id,city_return)
+    opening_crossings(city_id,vcomp,route1_id).each do |first|
+      rcomp = opening_component(route1_id,first[1])
+      opening_crossings(route1_id,rcomp,pallet).each do |second|
+        pcomp = opening_component(pallet,second[1])
+        lab_door = $game_map.events.values.find { |ev| ev.trigger == 1 &&
+          ev.list.any? { |op| op.code == 201 && op.parameters[0] == 0 && op.parameters[1] == lab } }
+        next unless north_event_reachable?(pcomp,lab_door)
+        return_witness = [first,second,lab_door.id,north_transfer!(lab_door,lab)]
+        break
+      end
+      break if return_witness
+    end
+    require!(return_witness, "K01-B no continuous native return route to Oak")
+    lab_comp = opening_component(lab,return_witness[3])
+    oak = $game_map.events[15]
+    north_callback!(oak,"BlueKantoPilot.choose_starter")
+    require!(north_event_reachable?(lab_comp,oak), "K01-B Oak unreachable from lab door")
+    # Test failure transaction with controlled Bag rejection, then remove
+    # the singleton override before the genuine grant and native save.
+    bag = $bag
+    original_add = bag.method(:add)
+    begin
+      bag.define_singleton_method(:add) { |item,qty=1| item == :POKEBALL ? false : original_add.call(item,qty) }
+      BlueKantoPilot.choose_starter
+      require!(BlueKantoPilot.progress["pilot_oak_parcel_received"] &&
+               !BlueKantoPilot.progress["pilot_oak_parcel_delivered"] &&
+               !$player.has_pokedex && $bag.quantity(:POKEBALL) == starting_balls,
+               "K01-B failed Bag transaction committed rewards")
+    ensure
+      bag.singleton_class.send(:remove_method,:add)
+    end
     BlueKantoPilot.choose_starter
     require!(BlueKantoPilot.progress["pilot_oak_parcel_delivered"] == true,
              "Oak did not accept the parcel upon return")
@@ -531,14 +711,20 @@ module KantoNativeCheck
     BlueKantoPilot.choose_starter
     require!($bag.quantity(:POKEBALL) == starting_balls + 5,
              "Returning to Oak duplicated the parcel reward")
+    $map_factory.setup(mart_id)
     BlueKantoPilot.viridian_mart
     BlueKantoPilot.viridian_mart
     require!(mart_visits.length == 2 &&
              BlueKantoPilot.progress["pilot_oak_parcel_delivered"],
              "Viridian Mart must open only after Oak receives his parcel")
-    BlueKantoPilot.rival
-    require!(battle_calls.last == [:BLUE_KANTO_RIVAL, "Blue", 11], "Wrong rival team")
-    require!(BlueKantoPilot.rival_done?, "Rival result not recorded")
+    parcel_report = {"status"=>"PASS","manual_gameplay"=>false,
+      "mode"=>"native_directional_collision_and_controlled_callbacks",
+      "gate"=>pallet_gate_report,"map_ids"=>[pallet,route1_id,city_id,mart_id,lab],
+      "outbound"=>route_witness,"return"=>return_witness,
+      "premature_reward_rejected"=>true,"mart_locked_before_delivery"=>true,
+      "bag_rejection_controlled"=>true,"retry_success"=>true,"pokedex"=>true,
+      "pokeball_delta"=>5,"duplicate_reward_rejected"=>true,"mart_unlocked"=>true,
+      "first_rival_version"=>11}
     first_route = nil
     MapFactoryHelper.eachConnectionForMap(current) do |edge|
       neighbor = edge[0] == current ? edge[3] : edge[0]
@@ -1286,6 +1472,12 @@ module KantoNativeCheck
     require!(BlueKantoPilot.progress["pilot_oak_parcel_received"] == true &&
              BlueKantoPilot.progress["pilot_oak_parcel_delivered"] == true,
              "Oak parcel quest flags did not persist through save/reload")
+    require!($player.has_pokedex && $bag.quantity(:POKEBALL) == starting_balls+5,
+             "K01-B Pokédex or parcel reward changed on final reload")
+    parcel_report["save_reload"] = true
+    File.write("Data/blue-kanto-k01b-parcel-proof.txt",parcel_report.inspect)
+    puts "KANTO_K01B_NATIVE_PALLET_OAK_REPORT:#{parcel_report.inspect}"
+    puts "KANTO_K01B_PALLET_OAK_PARCEL_SAVE_RELOAD_OK"
     walk_verified = walk_rows.count { |row| row[4] == "native_step_verified" }
     File.write("Data/blue-kanto-proof.txt",
                "Kanto 145 maps: Cerulean north, Nugget Bridge, Bill, Victory Road, eight badge guards, Elite Four/Blue, unique Hall of Fame and Decades/Johto eligibility; save/reload (battles simulated); " +
