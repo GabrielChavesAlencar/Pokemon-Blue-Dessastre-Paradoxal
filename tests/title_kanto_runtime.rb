@@ -34,17 +34,19 @@ $notices = 0
 # Isolated UI fixture: no game saves are created by the title picker.
 module BlueRegionStart
   class << self
-    attr_accessor :integrated, :johto_integrated
+    attr_accessor :integrated, :johto_integrated, :sinnoh_integrated
     attr_reader :requests
     def request_initial(region)
       return false if region == "KANTO" && !integrated
       return false if region == "JOHTO" && !johto_integrated
+      return false if region == "SINNOH" && !sinnoh_integrated
       (@requests ||= []) << region
       true
     end
     def kanto_integrated?; !!integrated; end
     def johto_spawn; johto_integrated ? [674,6,7] : nil; end
     def johto_install_proof; nil; end
+    def sinnoh_spawn; sinnoh_integrated ? [445,9,8] : nil; end
   end
 end
 require File.expand_path(ARGV.fetch(0))
@@ -131,7 +133,7 @@ require_check(scene.pbChoose(original, 0) == 1, "Unavailable Sinnoh must return 
 # remain available and may not change Continue / Mystery Gift navigation.
 require_check(BlueKantoTitle::START_REGIONS.map(&:first) == [
   "Decades", "Kanto", "Johto (piloto experimental)",
-  "Hoenn (piloto experimental)", "Sinnoh (piloto experimental)",
+  "Hoenn (piloto experimental)", "Sinnoh (instalação necessária)",
   "Unova (indisponível)", "Kalos (indisponível)",
   "Alola (indisponível)", "Galar (indisponível)",
   "Paldea (indisponível)", "Hisui (indisponível)", "Voltar ao menu"
@@ -169,14 +171,26 @@ scene.queue = [1]
 require_check(scene.pbChoose(original, 0) == 1, "Unavailable shared Johto did not ask again")
 require_check($last_region_options[2].include?("instalação necessária"), "Uninstalled Johto claimed to be integrated")
 
-# Hoenn/Sinnoh retain their explicitly selected isolated fallback modes.
-[[:launch_hoenn, 3], [:launch_sinnoh, 4]].each do |method, choice|
-  BlueKantoTitle.define_singleton_method(method) { true }
-  $region_choices = [choice]
-  scene.queue = [1]
-  require_check(scene.pbChoose(original, 0) == 3, "#{method} must exit after starting isolated pilot")
-  require_check($last_region_options.length == 12, "Region list was not displayed")
-end
+# Hoenn retains its isolated fallback while the shared game is unavailable.
+BlueKantoTitle.define_singleton_method(:launch_hoenn) { true }
+$region_choices = [3]
+scene.queue = [1]
+require_check(scene.pbChoose(original, 0) == 3, "Hoenn fallback must start its isolated pilot")
+require_check($last_region_options.length == 12, "Region list was not displayed")
+
+BlueKantoTitle.define_singleton_method(:launch_sinnoh) { raise "Sinnoh pilot must not be launched from New Game" }
+$region_choices = [4, 0]
+scene.queue = [1]
+require_check(scene.pbChoose(original, 0) == 1, "Unavailable Sinnoh did not ask again")
+require_check($last_region_options[4] == "Sinnoh (instalação necessária)", "Uninstalled Sinnoh claimed to be integrated")
+
+BlueRegionStart.sinnoh_integrated = true
+$region_choices = [4]
+scene.queue = [1]
+require_check(scene.pbChoose(original, 0) == 1, "Integrated Sinnoh must use native Game.exe")
+require_check(BlueRegionStart.requests.last == "SINNOH", "Shared Sinnoh session choice was not recorded")
+require_check($last_region_options[4] == "Sinnoh", "Installed Sinnoh label is incorrect")
+BlueRegionStart.sinnoh_integrated = false
 BlueKantoTitle.define_singleton_method(:launch_johto) { false }
 $region_choices = [5, 0]
 scene.queue = [1]
