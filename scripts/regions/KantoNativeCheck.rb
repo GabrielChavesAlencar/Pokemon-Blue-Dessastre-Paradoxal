@@ -761,7 +761,7 @@ module KantoNativeCheck
     puts "#{label}:#{row.inspect}"
   end
 
-  def self.moon_path(start,anchor,target,allowed)
+  def self.moon_path(start,anchor,target,allowed,&accept_target)
     queue = [[start,anchor,[]]]
     seen = {[start,anchor]=>true}
     cursor = 0
@@ -772,9 +772,12 @@ module KantoNativeCheck
     while cursor < queue.length
       map,point,legs = queue[cursor]
       cursor += 1
-      return legs if map == target
+      return legs if map == target && !accept_target
       comp = opening_component(map,point)
       $map_factory.setup(map)
+      # A map may contain disconnected rooms. A target MapID alone is not
+      # evidence that the story NPC and both fossil props are accessible.
+      return legs if map == target && accept_target.call(point,comp)
       candidates = $game_map.events.values.flat_map do |ev|
         next [] unless [1,2].include?(ev.trigger) && north_event_reachable?(comp,ev)
         ev.list.filter_map do |op|
@@ -815,8 +818,21 @@ module KantoNativeCheck
              allowed.uniq.length == source_ids.length && lab.is_a?(Integer) && lab > 0,
              "K02-A missing or duplicate installed corridor/lab IDs #{source_ids.zip(allowed).inspect}/#{lab.inspect}")
     anchor = pewter_report["east_seams"].first[1]
-    outward = moon_path(route,anchor,moon,allowed)
-    require!(outward && !outward.empty?, "K02-A no continuous Route3 to Mt Moon B2F")
+    outward = moon_path(route,anchor,moon,allowed) do |point,component|
+      trainer = $game_map.events[19]
+      fossils = ["Kanto Helix Fossil","Kanto Dome Fossil"].map do |name|
+        event = $game_map.events.values.find { |ev| ev.name == name }
+        {"name"=>name,"event_id"=>event&.id,"position"=>event ? [event.x,event.y] : nil,
+         "witness"=>opening_action_witness(component,event)}
+      end
+      trainer_reachable = north_event_reachable?(component,trainer)
+      accepted = trainer_reachable && fossils.all? { |row| row["witness"] }
+      moon_trace("KANTO_K02A_B2F_ARRIVAL",{"map"=>moon,"anchor"=>point,
+        "component_size"=>component.length,"miguel_xy"=>trainer ? [trainer.x,trainer.y] : nil,
+        "miguel_reachable"=>trainer_reachable,"fossils"=>fossils,"accepted"=>accepted})
+      accepted
+    end
+    require!(outward && !outward.empty?, "K02-A no continuous Route3 path to Miguel and both fossils in B2F")
     arrival = outward.last["to_xy"]
     comp = opening_component(moon,arrival)
     $map_factory.setup(moon)
