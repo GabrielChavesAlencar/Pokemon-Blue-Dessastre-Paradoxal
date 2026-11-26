@@ -1612,6 +1612,50 @@ def copy_game(game, target):
             shutil.copyfile(path, target / path.name)
 
 
+def install_cerulean_items(source, target):
+    """Supply only missing native bike IDs from the pinned donor PBS.
+
+    Never replace base item definitions, import unrelated donor items or
+    duplicate an existing Kanto overlay when rebuilding a legacy install.
+    The regional travel system already vaults KeyItem/HM records.
+    """
+    pbs = target / "PBS"
+    output = pbs / "items_kanto.txt"
+    required = {"BIKEVOUCHER", "BICYCLE"}
+    existing = {}
+    for path in sorted(pbs.glob("items*.txt")):
+        if path == output:
+            continue
+        for key, rows in read_blocks(path, required).items():
+            if key in existing:
+                raise ValueError(f"Duplicate native Cerulean item {key}")
+            existing[key] = rows
+    missing = required - existing.keys()
+    donor = {}
+    for path in sorted((source / "PBS").glob("items*.txt")):
+        for key, rows in read_blocks(path, missing).items():
+            if key in donor:
+                raise ValueError(f"Duplicate donor Cerulean item {key}")
+            donor[key] = rows
+    if set(donor) != missing:
+        raise ValueError(f"K02-C missing original item definitions: {sorted(missing - donor.keys())}")
+    for key, rows in {**existing, **donor}.items():
+        fields = {k.strip(): v.strip() for row in rows
+                  for k, sep, v in [row.partition("=")] if sep}
+        if ("KeyItem" not in {v.strip() for v in fields.get("Flags", "").split(",")}
+                or fields.get("Consumable", "").lower() != "false"):
+            raise ValueError(f"K02-C incompatible regional key item {key}")
+    # Local PBS descriptions and explicit metadata keep the donor's binary
+    # item IDs and Essentials handlers, without importing its scripts.
+    lines = ["# K02-C: missing native key items only"]
+    for key in sorted(donor):
+        lines += [f"[{key}]", *donor[key], ""]
+    output.write_text("\n".join(lines) + "\n", encoding="utf8")
+    print("KANTO_K02C_ITEM_PBS_REPORT:" + json.dumps({
+        "existing": sorted(existing), "added": sorted(donor),
+        "source": "pinned FRLG PBS", "native_compiled": False}), flush=True)
+
+
 def install_pbs(preview, target, mapping):
     pbs = target / "PBS"
     draft = preview / "drafts"
@@ -1800,6 +1844,7 @@ def build(source, game, output, existing=None):
         copy_game(game, target)
         for folder in ("Data", "Graphics"):
             shutil.copytree(preview / folder, target / folder, dirs_exist_ok=True)
+        install_cerulean_items(source, target)
         install_events(source, target, mapping)
         install_pewter_route3_gate(source, target, mapping)
         install_pbs(preview, target, mapping)
