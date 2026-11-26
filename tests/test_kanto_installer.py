@@ -94,6 +94,19 @@ class KantoInstallerTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             allocate_kanto_ids({5, 7, 53}, {300, 302, 999}, existing)
 
+    def test_only_exact_published_catalogs_can_migrate_to_151(self):
+        from audit import KANTO, json_file
+        base = set(json_file(KANTO)["maps"])
+        extra = {"43", "44", "45", "46", "47", "48"}
+        north = {"53", "54", "55"}
+        self.assertEqual(len(base), 145)
+        self.assertTrue(installer.known_legacy_catalog(base, base - north))
+        self.assertFalse(installer.known_legacy_catalog(base, base))
+        self.assertTrue(installer.known_legacy_catalog(base | extra, base))
+        self.assertTrue(installer.known_legacy_catalog(base | extra, base - north))
+        self.assertFalse(installer.known_legacy_catalog(base | extra, (base - {"53"}) | {"43"}))
+        self.assertFalse(installer.known_legacy_catalog(base | extra, base | {"43"}))
+
     def test_legacy_drift_is_recoverable_but_foreign_map_is_rejected(self):
         from server.ruby_marshal import RubyObject
         from stage import serialize
