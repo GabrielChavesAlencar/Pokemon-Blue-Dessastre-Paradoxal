@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import json
+import io
+from urllib.error import HTTPError
 import sys
 import tempfile
 import unittest
@@ -102,6 +104,47 @@ class HoennQA01Tests(unittest.TestCase):
         with patch.object(qa, "urlopen", side_effect=AssertionError("network called")):
             with self.assertRaisesRegex(FileNotFoundError, "offline"):
                 qa.load_tree(self.work / "missing.json", offline=True)
+
+    def test_tree_gateway_retry_preserves_pinned_validation(self):
+        target = self.work / "tree.json"
+        tree = self.make_inventory()
+        transient = HTTPError(qa.TREE_URL, 504, "Gateway Timeout", {}, None)
+        with patch.object(qa, "urlopen", side_effect=[
+                transient, io.BytesIO(json.dumps(tree).encode("utf8"))]) as opener, \
+             patch.object(qa.time, "sleep") as sleep:
+            self.assertEqual(qa.load_tree(target), tree)
+            self.assertEqual(opener.call_count, 2)
+            sleep.assert_called_once_with(2)
+        with patch.object(qa, "urlopen", side_effect=AssertionError("network called")):
+            self.assertEqual(qa.load_tree(target, offline=True), tree)
+
+    def test_tree_gateway_exhaustion_does_not_cache(self):
+        target = self.work / "tree.json"
+        error = HTTPError(qa.TREE_URL, 504, "Gateway Timeout", {}, None)
+        with patch.object(qa, "urlopen", side_effect=error) as opener, \
+             patch.object(qa.time, "sleep") as sleep:
+            with self.assertRaises(HTTPError):
+                qa.load_tree(target)
+            self.assertEqual(opener.call_count, 5)
+            self.assertEqual(sleep.call_count, 4)
+        self.assertFalse(target.exists())
+
+    def test_tree_invalid_response_and_403_fail_without_retry(self):
+        target = self.work / "tree.json"
+        tree = self.make_inventory()
+        tree["truncated"] = True
+        with patch.object(qa, "urlopen", return_value=io.BytesIO(
+                json.dumps(tree).encode("utf8"))) as opener:
+            with self.assertRaises(ValueError):
+                qa.load_tree(target)
+            self.assertEqual(opener.call_count, 1)
+        self.assertFalse(target.exists())
+        error = HTTPError(qa.TREE_URL, 403, "Forbidden", {}, None)
+        with patch.object(qa, "urlopen", side_effect=error) as opener:
+            with self.assertRaises(HTTPError):
+                qa.load_tree(target)
+            self.assertEqual(opener.call_count, 1)
+        self.assertFalse(target.exists())
 
     def test_output_must_remain_under_ignored_workdir(self):
         self.assertEqual(

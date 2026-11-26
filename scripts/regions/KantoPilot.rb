@@ -9,8 +9,8 @@ module BlueKantoPilot
   LEAGUE_CHAMPION_VERSIONS = {BULBASAUR: 1, CHARMANDER: 2, SQUIRTLE: 3}.freeze
   FULL_POWER_OFFSET = 100
   # The Blue protagonist charset can be taller than FRLG NPC frames.
-  # Scale ONLY the player in the separately built Kanto pilot; a fixed 75%
-  # still looked oversized with the larger charset selected after loading.
+  # Scale ONLY the player while in Kanto, including the integrated game;
+  # a fixed 75% still looked oversized with larger charsets after loading.
   PLAYER_OVERWORLD_ZOOM = 0.60
   PLAYER_OVERWORLD_MAX_HEIGHT = 30
   PILOT_OVERWORLD_SCALE = File.file?("Kanto pilot.json")
@@ -1948,13 +1948,10 @@ module BlueKantoPilot::PlayerOverworldScale
                           ((graphic.direction - 2) / 2) * @ch, @cw, @ch)
       end
     end
-    return unless BlueKantoPilot::PILOT_OVERWORLD_SCALE
-    return unless @character && @character.equal?($game_player)
-
-    # The boot-time constant is not proof the pilot marker still exists.
-    # Save the original zoom once and restore it if the isolated pilot
-    # marker disappears (e.g. reloading into the main Decades context).
-    if File.file?("Kanto pilot.json")
+    # The pilot marker alone excluded the shared Windows/Android builds.
+    # The existing regional predicate also checks the integrated install
+    # and current save region; NPCs, other regions and collision stay intact.
+    if @character && @character.equal?($game_player) && BlueKantoPilot.kanto_current?
       unless instance_variable_defined?(:@blue_kanto_original_zoom)
         @blue_kanto_original_zoom = [zoom_x, zoom_y]
       end

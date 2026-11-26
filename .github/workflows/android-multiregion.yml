@@ -8,6 +8,9 @@ on:
     paths:
       - 'scripts/battle_polish/items_blue_iv.txt'
       - 'scripts/regions/KantoPilot.rb'
+      - 'scripts/regions/ensure_hoenn_source.py'
+      - 'scripts/regions/hoenn_qa_phase1.py'
+      - 'tests/test_hoenn_qa_phase1.py'
       - 'scripts/android/verify_kanto_cerulean.py'
       - '.github/workflows/android-multiregion.yml'
   push:
@@ -37,6 +40,7 @@ on:
       - 'tests/test_kanto_fossils.py'
       - 'scripts/regions/auto_integrate_hoenn.py'
       - 'scripts/regions/ensure_hoenn_source.py'
+      - 'scripts/regions/hoenn_qa_phase1.py'
       - 'scripts/regions/install_hoenn.py'
       - 'scripts/regions/install_kanto.py'
       - '.github/workflows/android-multiregion.yml'
@@ -65,6 +69,8 @@ jobs:
       - name: Validar atualizador Android no runner antes de empacotar
         shell: powershell
         run: |
+          python -m unittest discover -s tests -p test_hoenn_qa_phase1.py -v
+          if($LASTEXITCODE -ne 0){throw 'Falha no contrato da fonte fixada Hoenn.'}
           python -m py_compile scripts/android/update_client.py scripts/android/publish_updates.py
           if($LASTEXITCODE -ne 0){throw 'Erro de sintaxe no atualizador Android.'}
           python -m unittest discover -s tests -p test_android_updates.py -v
