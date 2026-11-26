@@ -124,7 +124,7 @@ jobs:
           # The latest multiregion release can be on page 2+ because this
           # repository publishes many unrelated Battle Hub releases. Scan all
           # pages before selecting verified channel-specific old manifests.
-          $selected=@(python scripts/android/select_previous_multiregion_releases.py --fetch-github)
+          $selected=@(python scripts/android/select_previous_multiregion_releases.py --fetch-github --require-known-baselines)
           if($LASTEXITCODE -ne 0 -or $selected.Count -eq 0){throw 'Historico de releases Android multirregionais incompleto; nenhum delta seguro sera publicado'}
           $args=@('--channel','multiregion','--full-zip','dist/Blue-Android-Decades-Kanto-Hoenn.zip')
           foreach($tag in $selected){
@@ -134,14 +134,19 @@ jobs:
             if($LASTEXITCODE -ne 0){throw "Manifesto Android anterior indisponivel: $tag"}
             $args+=@('--previous-manifest',(Join-Path $old 'Blue-Android-Decades-Kanto-Hoenn.update.json'))
           }
-          # Also support the on-device installation revision reported by Termux.
-          $specific='android-multiregion-hotfix-2-5d0cc84'
-          if(-not @($selected | Where-Object { $_.tag_name -eq $specific }).Count){
-            $legacy=Join-Path 'dist/previous' $specific
-            New-Item -ItemType Directory -Force -Path $legacy | Out-Null
-            gh release download $specific --pattern 'Blue-Android-Decades-Kanto-Hoenn.update.json' --dir $legacy
-            if($LASTEXITCODE -ne 0){throw 'Manifesto da versao 5d0cc84 indisponivel'}
-            $args+=@('--previous-manifest',(Join-Path $legacy 'Blue-Android-Decades-Kanto-Hoenn.update.json'))
+          # Required legacy manifests are selected exactly once by the Python
+          # selector; selected entries are strings, not release objects.
+          $knownBaselines=@{
+            'android-multiregion-hotfix-2-5d0cc84'='5d0cc84fa309039699e625daec18766d52948c1e'
+            'android-multiregion-hotfix-30-ba020a5'='ba020a57052e2952de308dbb4166aad760b1e72c'
+          }
+          foreach($knownTag in $knownBaselines.Keys){
+            if($selected -notcontains $knownTag){throw "Baseline obrigatoria ausente: $knownTag"}
+            $knownPath=Join-Path (Join-Path 'dist/previous' $knownTag) 'Blue-Android-Decades-Kanto-Hoenn.update.json'
+            $knownManifest=Get-Content $knownPath -Raw | ConvertFrom-Json
+            if($knownManifest.channel -ne 'multiregion' -or $knownManifest.revision -ne $knownBaselines[$knownTag]){
+              throw "Manifesto de baseline obrigatoria incorreto: $knownTag"
+            }
           }
           # A previous opt-in performance preview is an actual installed
           # Android revision. It must be able to upgrade to this main build,
@@ -168,6 +173,15 @@ jobs:
           $delta = @($manifest.patches | Where-Object { $_.from_revision -eq '02e8e5addc7a7f2c4a9f71195fcae7f49631ed54' })
           if($delta.Count -eq 0){throw 'Delta da preview para a main nao gerado'}
           Write-Host 'PASS: preview-to-main incremental patch'
+          foreach($knownTag in $knownBaselines.Keys){
+            $knownRevision=$knownBaselines[$knownTag]
+            $knownDelta=@($manifest.patches | Where-Object { $_.from_revision -eq $knownRevision })
+            if($knownDelta.Count -ne 1){throw "Delta incremental obrigatorio ausente ou duplicado: $knownTag"}
+            $deltaPath=Join-Path 'dist' $knownDelta[0].asset
+            if(-not (Test-Path -LiteralPath $deltaPath -PathType Leaf)){throw "Arquivo de delta obrigatorio ausente: $knownTag"}
+            if((Get-Item -LiteralPath $deltaPath).Length -ne $knownDelta[0].size -or (Get-FileHash -LiteralPath $deltaPath -Algorithm SHA256).Hash.ToLowerInvariant() -ne $knownDelta[0].sha256){throw "Integridade do delta obrigatorio falhou: $knownTag"}
+            Write-Host "PASS: retained on-device multiregion baseline $knownTag"
+          }
 
           if((Get-Item dist/Blue-Android-Decades-Kanto-Hoenn.zip).Length -gt 2147483648){throw 'Asset excede 2 GiB do GitHub.'}
       - name: Publicar release experimental apenas apos sucesso integral
