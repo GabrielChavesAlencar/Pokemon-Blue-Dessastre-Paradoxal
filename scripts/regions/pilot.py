@@ -1058,6 +1058,26 @@ def install_events(source, target, mapping):
                     selected[event_id] = new_event(event, [command(355, f"BlueKantoPilot.{callback}".encode())],
                                                    0, actor(event))
                     continue
+                optional = {(44,1): "cerulean_badge_guide", (46,2): "cerulean_jynx_trade",
+                            (46,5): "cerulean_wall_map", (47,4): "cerulean_wall_map"}
+                callback = optional.get((original,event_id))
+                if callback:
+                    selected[event_id] = new_event(event, [command(355, f"BlueKantoPilot.{callback}".encode())],
+                                                   0, actor(event) if (original,event_id) in ((44,1),(46,2)) else b"")
+                    continue
+                # Original furniture is read-only text, not a donor script.
+                furniture = {44:{5},46:{6,7,8},47:{5,6,7},48:{6,7,8,9,10,11,12}}
+                if event_id in furniture.get(original, set()):
+                    page = event.attrs["@pages"][0].attrs
+                    ops = page["@list"]
+                    if any(op.attrs["@code"] not in (0,101,401) for op in ops):
+                        raise ValueError(f"Unexpected Cerulean furniture script {original}/{event_id}")
+                    literals = npc_literals([op for op in ops if op.attrs["@code"] in (101,401)])
+                    if not literals:
+                        raise ValueError(f"Missing Cerulean furniture dialogue {original}/{event_id}")
+                    npc_dialogues.append([original,event_id,literals])
+                    selected[event_id] = new_event(event, npc_dialogue_calls(original,event_id,literals), 0, b"")
+                    continue
             if original in LEAGUE_BARRIER_GATES and event_id in LEAGUE_BARRIER_GATES[original]:
                 required = LEAGUE_BARRIER_GATES[original][event_id]
                 guard = 4 if original == 17 else event_id + 1
@@ -1635,6 +1655,40 @@ def cerulean_voucher_event_witness(source):
     return [ops.index(op) for op in required] == sorted(ops.index(op) for op in required)
 
 
+def install_cerulean_wall_map(source, target):
+    """Copy only the original Kanto atlas image; no Decades atlas overwrite."""
+    candidates = []
+    for pbs in sorted((source / "PBS").glob("town_map*.txt")):
+        for key, rows in read_blocks(pbs).items():
+            fields = {k.strip(): v.split("#", 1)[0].strip() for row in rows
+                      for k, sep, v in [row.partition("=")] if sep}
+            if fields.get("Name", "").casefold() in ("kanto", "kanto region"):
+                candidates.append((key, fields.get("Filename", "")))
+    if len(candidates) != 1:
+        raise ValueError(f"K02-C expected one source Kanto atlas, got {candidates!r}")
+    region, filename = candidates[0]
+    if not re.fullmatch(r"[\w .()\-]+\.png", filename, re.I):
+        raise ValueError("K02-C invalid original Kanto atlas filename")
+    graphics = source / "Graphics"
+    # Prefer the standard Essentials location, then its known plugin layout.
+    choices = [graphics / "UI/Town Map" / filename,
+               graphics / "UI/Town Map/Regions" / filename,
+               graphics / "Pictures" / filename]
+    found = [path for path in choices if path.is_file() and not path.is_symlink()
+             and path.resolve().is_relative_to(graphics.resolve())]
+    if not found or any(path.read_bytes() != found[0].read_bytes() for path in found):
+        raise ValueError("K02-C missing or ambiguous original Kanto atlas art")
+    image = found[0].read_bytes()
+    if not image.startswith(b"\x89PNG\r\n\x1a\n") or len(image) < 24:
+        raise ValueError("K02-C invalid Kanto atlas PNG")
+    destination = target / "Plugins/ZZZZZ Blue Kanto Pilot/KantoWallMap.png"
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_bytes(image)
+    print("KANTO_K02C_WALL_MAP_SOURCE:" + json.dumps({
+        "region": region, "source": found[0].relative_to(source).as_posix(),
+        "sha256": hashlib.sha256(image).hexdigest()}), flush=True)
+
+
 def install_cerulean_items(source, target):
     """Supply missing native bike IDs; reconstruct a witnessed missing voucher.
 
@@ -1922,6 +1976,7 @@ def build(source, game, output, existing=None):
         from scripts.music.install_kanto_music import install as install_kanto_audio
         install_kanto_audio(target, apply=True, numbers=approved_audio_track_numbers(ROOT))
         install_runtime(target, mapping, game)
+        install_cerulean_wall_map(source, target)
         write_audit(target, ROOT)
         if output.exists():
             raise ValueError("Another pilot already exists at the output path.")

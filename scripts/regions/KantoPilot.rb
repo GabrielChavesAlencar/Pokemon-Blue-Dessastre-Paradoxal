@@ -935,6 +935,99 @@ module BlueKantoPilot
     end
   end
 
+  # K02-C optional source events. Use local progress, never donor variables 1/2.
+  def self.cerulean_trade_eligible?(pkmn)
+    pkmn && pkmn.species == :POLIWHIRL && !pkmn.egg? &&
+      !pkmn.shadowPokemon? && !pkmn.cannot_trade
+  end
+
+  def self.cerulean_trade_selected(index)
+    return false unless kanto_current? && $game_map &&
+      $game_map.map_id == kanto_map_id(46) && $player &&
+      !progress["pilot_cerulean_jynx_trade"]
+    return false unless index.is_a?(Integer) && index.between?(0,$player.party.length-1)
+    offered = $player.party[index]
+    return false unless cerulean_trade_eligible?(offered) && GameData::Species.exists?(:JYNX)
+    received = Pokemon.new(:JYNX, offered.level)
+    received.ability_index = 0
+    received.nature = :MILD
+    {HP:18, ATTACK:17, DEFENSE:18, SPECIAL_ATTACK:22, SPECIAL_DEFENSE:25, SPEED:21}.each do |stat,iv|
+      received.iv[stat] = iv
+    end
+    received.calc_stats
+    pbStartTrade(index, received, "Zynx", "Dontae", 0)
+    return false unless $player.party[index].equal?(received)
+    progress["pilot_cerulean_jynx_trade"] = true
+    true
+  end
+
+  def self.cerulean_jynx_trade
+    return false unless kanto_current? && $game_map && $game_map.map_id == kanto_map_id(46)
+    if progress["pilot_cerulean_jynx_trade"]
+      pbMessage(t("Has the Jynx I traded you grown stronger?", "A Jynx que troquei com você ficou mais forte?"))
+      return false
+    end
+    return false unless pbConfirmMessage(t("Trade your Poliwhirl for my Jynx?",
+                                            "Trocar seu Poliwhirl pela minha Jynx?"))
+    index = -1
+    pbFadeOutIn do
+      scene = PokemonParty_Scene.new
+      screen = PokemonPartyScreen.new(scene, $player.party)
+      index = screen.pbChooseTradablePokemon(proc { |pkmn| cerulean_trade_eligible?(pkmn) })
+    end
+    return false unless cerulean_trade_selected(index)
+    pbMessage(t("Thanks!", "Obrigado!"))
+    true
+  end
+
+  def self.cerulean_badge_guide
+    return false unless kanto_current? && $game_map && $game_map.map_id == kanto_map_id(44)
+    badges = LEAGUE_REQUIRED_BADGES
+    names = badges.map { |badge| badge.capitalize + " Badge" }
+    pbMessage(t("Each local Badge earns one Emerald. Field moves require the local HM, Badge and a compatible Pokémon.",
+                "Cada insígnia local concede uma esmeralda. HMs exigem o item, a insígnia local e um Pokémon compatível."))
+    loop do
+      index = pbMessage(t("Which Badge should I describe?", "Qual insígnia deseja consultar?"),
+                        names + [t("Back", "Voltar")], names.length)
+      break unless index.is_a?(Integer) && index.between?(0,names.length-1)
+      obtained = BlueRegions.local_achievements(progress, "KANTO").include?(badges[index])
+      pbMessage(t("{1}: {2}", "{1}: {2}", names[index],
+                  obtained ? t("Earned in Kanto.", "Conquistada em Kanto.") :
+                             t("Not yet earned in Kanto.", "Ainda não conquistada em Kanto.")))
+    end
+    true
+  end
+
+  KANTO_WALL_MAP = "Plugins/ZZZZZ Blue Kanto Pilot/KantoWallMap.png".freeze
+  def self.cerulean_wall_map
+    return false unless kanto_current? && $game_map &&
+      [kanto_map_id(46),kanto_map_id(47)].include?($game_map.map_id)
+    return false unless File.file?(KANTO_WALL_MAP)
+    # Read-only atlas: native Decades map UI defaults to Beatha. No global
+    # town-map registration, Fly destination or player movement is changed.
+    pbFadeOutIn do
+      viewport = Viewport.new(0,0,Graphics.width,Graphics.height)
+      viewport.z = 99999
+      sprite = Sprite.new(viewport)
+      bitmap = Bitmap.new(KANTO_WALL_MAP)
+      sprite.bitmap = bitmap
+      zoom = [Graphics.width.to_f / bitmap.width, Graphics.height.to_f / bitmap.height].min
+      sprite.zoom_x = sprite.zoom_y = zoom
+      sprite.x = ((Graphics.width-bitmap.width*zoom)/2).round
+      sprite.y = ((Graphics.height-bitmap.height*zoom)/2).round
+      loop do
+        Graphics.update
+        Input.update
+        break if Input.trigger?(Input::BACK) || Input.trigger?(Input::USE)
+      end
+    ensure
+      sprite.dispose if sprite && !sprite.disposed?
+      bitmap.dispose if bitmap && !bitmap.disposed?
+      viewport.dispose if viewport && !viewport.disposed?
+    end
+    true
+  end
+
   def self.cerulean_bike_exchange
     return false unless kanto_current? && $game_map &&
       $game_map.map_id == kanto_map_id(43) && $bag && defined?(GameData::Item)

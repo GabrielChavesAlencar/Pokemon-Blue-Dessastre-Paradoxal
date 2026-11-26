@@ -158,6 +158,13 @@ module KantoNativeCheck
         require!(name && !name.empty? && pbResolveBitmap("Graphics/Characters/#{name}"),
                  "K02-C required actor sprite missing #{source}/1")
       end
+      optional = {44=>{1=>"cerulean_badge_guide"},46=>{2=>"cerulean_jynx_trade",5=>"cerulean_wall_map"},
+                  47=>{4=>"cerulean_wall_map"}}
+      optional.fetch(source,{}).each do |eid, callback|
+        event = $game_map.events[eid]
+        north_callback!(event,"BlueKantoPilot.#{callback}")
+        require!(opening_action_witness(interior,event),"K02-C optional event unreachable #{source}/#{eid}")
+      end
       if source == 43
         require!(opening_action_witness(interior,$game_map.events[1]),"K02-C bike owner unreachable")
         north_callback!($game_map.events[1],"BlueKantoPilot.cerulean_bike_exchange")
@@ -171,6 +178,31 @@ module KantoNativeCheck
       comp = opening_component(city,landing)
       require!(north_event_reachable?(comp,$game_map.events[id]),"K02-C rear door unreachable #{id}")
     end
+    # Native trade transaction; only interactive animation is suppressed.
+    $map_factory.setup(mapping[46])
+    party_before = $player.party.dup
+    original_fade = Object.instance_method(:pbFadeOutInWithMusic)
+    original_trade_count = $stats.trade_count
+    begin
+      Object.send(:define_method,:pbFadeOutInWithMusic) { |*args,&block| nil }
+      $player.party << Pokemon.new(:POLIWHIRL,17)
+      index = $player.party.length-1
+      require!(!BlueKantoPilot.cerulean_trade_selected(-1) &&
+               !BlueKantoPilot.cerulean_trade_selected(0) &&
+               !state["pilot_cerulean_jynx_trade"],"K02-C invalid trade accepted")
+      require!(BlueKantoPilot.cerulean_trade_selected(index),"K02-C native trade failed")
+      received = $player.party[index]
+      require!(received.species == :JYNX && received.level == 17 && received.name == "Zynx" &&
+               received.nature == :MILD && received.iv[:SPECIAL_DEFENSE] == 25 &&
+               !BlueKantoPilot.cerulean_trade_selected(index),"K02-C original trade attributes or repeat guard failed")
+    ensure
+      Object.send(:define_method,:pbFadeOutInWithMusic,original_fade)
+      $player.party.replace(party_before)
+      $stats.trade_count = original_trade_count
+    end
+    atlas = Bitmap.new(BlueKantoPilot::KANTO_WALL_MAP)
+    require!(atlas.width > 0 && atlas.height > 0,"K02-C original atlas invalid")
+    atlas.dispose
     $map_factory.setup(mapping[43])
     item_report = [:BIKEVOUCHER,:BICYCLE,:TM28].to_h do |id|
       item = GameData::Item.try_get(id)
@@ -225,7 +257,9 @@ module KantoNativeCheck
              $game_map.events[id].character_name.to_s.empty? },"K02-C Rocket pages not hidden")
     {"manual_gameplay"=>false,"witnesses"=>witnesses,"bicycle"=>1,"voucher"=>0,
      "tm28"=>$bag.quantity(:TM28),"rocket_retry"=>true,"voucher_fixture"=>true,
-     "native_bike_handlers"=>true,"regional_bag_staging"=>true,"required_actor_sprites"=>true}
+     "native_bike_handlers"=>true,"regional_bag_staging"=>true,"required_actor_sprites"=>true,
+     "native_trade_transaction"=>true,"trade_animation_tested"=>false,"atlas_bitmap_loaded"=>true,
+     "atlas_manual_ui_tested"=>false,"badge_guide_callback"=>true}
   end
 
   def self.north_story(battle_calls, losses_remaining)
@@ -2220,7 +2254,8 @@ module KantoNativeCheck
     end
     # Engine save/reload and callback state are genuine; battle outcomes are
     # stubbed and collision witnesses are not manual walking/door animation.
-    require!(north_state["pilot_cerulean_bike_exchanged"] &&
+    require!(north_state["pilot_cerulean_jynx_trade"] &&
+             north_state["pilot_cerulean_bike_exchanged"] &&
              north_state["pilot_cerulean_dig_awarded"] &&
              north_state["pilot_wins"].include?(BlueKantoPilot::CERULEAN_ROCKET_KEY) &&
              $bag.quantity(:BICYCLE)==interiors_report["bicycle"] &&

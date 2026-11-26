@@ -52,6 +52,17 @@ class CeruleanNorthContract(unittest.TestCase):
         self.assertEqual({sid: upgraded[sid] for sid in existing}, existing)
         self.assertEqual([upgraded[sid] for sid in sorted(extra)], list(range(801, 807)))
 
+    def test_optional_cerulean_callbacks_are_local_and_source_anchored(self):
+        runtime = RUNTIME.read_text("utf-8")
+        builder = BUILDER.read_text("utf-8")
+        for source in ('(44,1): "cerulean_badge_guide"', '(46,2): "cerulean_jynx_trade"',
+                       '(46,5): "cerulean_wall_map"', '(47,4): "cerulean_wall_map"'):
+            self.assertIn(source, builder)
+        self.assertIn('!progress["pilot_cerulean_jynx_trade"]', runtime)
+        self.assertIn('pbStartTrade(index, received, "Zynx", "Dontae", 0)', runtime)
+        self.assertIn('KantoWallMap.png', runtime)
+        self.assertNotIn('pbChoosePokemonForTrade(1, 2', runtime)
+
     def test_02_source_trainer_bindings_are_local_and_unique(self):
         self.assertEqual(len(TRAINERS[53]), 6)
         self.assertEqual(len(TRAINERS[54]), 9)
