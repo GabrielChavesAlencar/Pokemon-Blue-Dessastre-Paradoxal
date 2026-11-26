@@ -252,6 +252,19 @@ module KantoNativeCheck
 
   # K01-A: real native event pages, save files and bag/party in the disposable
   # pilot. Only the confirmation dialogue is controlled; no user save is read.
+  def self.opening_snapshot(label)
+    state = BlueKantoPilot.progress
+    row = {"label"=>label,"map_id"=>$game_map.map_id,
+      "position"=>[$game_player.x,$game_player.y],
+      "party"=>$player.party.map { |pkmn| [pkmn.species.to_s,pkmn.level] },
+      "starter"=>state["pilot_starter"],"profile_pending"=>state["pilot_profile_pending"],
+      "region"=>state["current"],"potions"=>$bag.quantity(:POTION),
+      "pokeballs"=>$bag.quantity(:POKEBALL)}
+    puts "KANTO_K01A_SAVE_STATE:#{row.inspect}"
+    File.open("Data/blue-kanto-k01a-state-trace.txt","a") { |file| file.puts(row.inspect) }
+    row
+  end
+
   def self.starter_opening_proof(lab)
     state = BlueKantoPilot.progress
     require!(state["pilot_profile_pending"] && !BlueKantoPilot.starter &&
@@ -267,16 +280,40 @@ module KantoNativeCheck
     # A separate native baseline lets us test every choice with the actual
     # Pokémon, Bag, self switches and Game.save/Game.load, not a fake party.
     baseline = "K01 A Native Unchosen"
+    # The previous proof entered the lab by QA map setup without executing
+    # the profile event. Complete its real handler with a controlled choice
+    # rather than saving an impossible pre-profile state inside Oak's lab.
+    # Only the interactive character selection call is replaced.
+    original_profile = Object.instance_method(:pbCharacterSelect)
+    begin
+      Object.send(:define_method,:pbCharacterSelect) { |*args| nil }
+      BlueKantoPilot.choose_profile
+    ensure
+      Object.send(:define_method,:pbCharacterSelect,original_profile)
+    end
+    require!(!BlueKantoPilot.progress["pilot_profile_pending"], "K01-A profile handler did not finish")
+    $game_player.moveto(6,12)
+    before = opening_snapshot("unchosen_before_save")
     require!(Game.save(baseline), "K01-A initial CI save failed")
     baseline_file = SaveData.get_full_path(baseline)
+    require!(File.file?(baseline_file), "K01-A baseline save file absent")
+    # Preserve the exact file bytes, and reject any unexpected rewrite of
+    # the baseline while testing other slots.
+    baseline_bytes = File.binread(baseline_file)
     potion_before = $bag.quantity(:POTION)
     ball_before = $bag.quantity(:POKEBALL)
     rows = []
     # Restore Bulbasaur last because the existing full-campaign proof uses it.
     [cases[1],cases[2],cases[0]].each do |id,species|
-      Game.load(SaveData.read_from_file(baseline_file))
-      require!($game_map.map_id == lab && $player.party.empty? && !BlueKantoPilot.starter,
-               "K01-A baseline reload retained another starter")
+      require!(File.binread(baseline_file) == baseline_bytes, "K01-A baseline file unexpectedly rewritten")
+      saved = SaveData.read_from_file(baseline_file)
+      Game.load(saved)
+      actual = opening_snapshot("unchosen_reload_#{species}")
+      require!(actual["map_id"] == lab, "K01-A baseline map mismatch: expected #{lab}, got #{actual.inspect}")
+      require!(actual["party"].empty?, "K01-A baseline party mismatch: #{actual.inspect}")
+      require!(!actual["starter"], "K01-A baseline starter flag mismatch: #{actual.inspect}")
+      require!(actual["region"] == before["region"] && !actual["profile_pending"],
+               "K01-A baseline regional/profile state mismatch: #{actual.inspect}")
       Object.send(:define_method,:pbConfirmMessage) { |*args| false }
       BlueKantoPilot.choose_starter_ball(species)
       require!($player.party.empty? && !BlueKantoPilot.starter &&
@@ -304,7 +341,9 @@ module KantoNativeCheck
                "K01-A repeated starter or early parcel reward")
       slot = "K01 A Native #{species}"
       require!(Game.save(slot), "K01-A selected starter save failed")
+      opening_snapshot("selected_before_reload_#{species}")
       Game.load(SaveData.read_from_file(SaveData.get_full_path(slot)))
+      opening_snapshot("selected_after_reload_#{species}")
       require!($game_map.map_id == lab && $player.party.length == 1 &&
                $player.party.first.species == species && BlueKantoPilot.starter == species &&
                $bag.quantity(:POTION) == potion_before+2 &&
@@ -320,7 +359,7 @@ module KantoNativeCheck
                "all_balls_hidden"=>true,"duplicate_rejected"=>true,"save_reload"=>true}
     end
     {"status"=>"PASS","mode"=>"native_party_bag_event_pages_save_reload",
-     "manual_gameplay"=>false,"profile_ui_executed"=>false,
+     "manual_gameplay"=>false,"profile_ui_executed"=>false,"profile_handler_executed"=>true,
      "lab_map_id"=>lab,"variants"=>rows}
   ensure
     Object.send(:define_method,:pbConfirmMessage) { |*args| true }
