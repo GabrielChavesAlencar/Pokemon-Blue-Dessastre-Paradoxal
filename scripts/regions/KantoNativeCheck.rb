@@ -118,6 +118,85 @@ module KantoNativeCheck
     op.parameters[2,2]
   end
 
+  # K02-C: actual installed native events and directional collision checks.
+  # The route proof is not a manual input session; battles remain controlled.
+  def self.cerulean_interiors_proof(battle_calls, losses_remaining)
+    city = BlueKantoPilot.kanto_map_id(39)
+    mapping = (43..48).to_h { |id| [id,BlueKantoPilot.kanto_map_id(id)] }
+    require!(mapping.values.all? && mapping.values.uniq.length == 6,"K02-C missing interior registry")
+    state = BlueKantoPilot.progress
+    require!(BlueKantoPilot.cerulean_house_open?, "K02-C Bill did not unlock house")
+    city_component = opening_component(city,[22,20])
+    require!($game_map.events[13].character_name.to_s.empty? &&
+             !$game_map.events[25].character_name.to_s.empty?, "K02-C police did not move")
+    # Source receipts: city event => [interior source, native landing, exits].
+    doors = {3=>[44,[3,2],[2,3]],7=>[43,[5,8],[5]],8=>[46,[4,7],[3]],
+             9=>[48,[3,7],[3,4]],10=>[44,[3,8],[2,3]],11=>[45,[4,7],[1]],
+             12=>[47,[4,7],[2]],27=>[48,[4,2],[3,4]]}
+    exits = {43=>{5=>[13,29]},44=>{2=>[10,12],3=>[10,8]},
+             45=>{1=>[17,12]},46=>{3=>[15,18]},47=>{2=>[23,29]},
+             48=>{3=>[31,8],4=>[30,12]}}
+    witnesses = []
+    doors.each do |id,(source,landing,return_ids)|
+      $map_factory.setup(city)
+      ev = $game_map.events[id]
+      require!(north_transfer!(ev,mapping[source]) == landing,"K02-C wrong source landing #{id}")
+      # Back doors are reached via the authored interior exits, not an
+      # artificial city seam. Front doors start from the center landing.
+      if ![3,27].include?(id)
+        require!(north_event_reachable?(city_component,ev),"K02-C city door unreachable #{id}")
+      end
+      interior = opening_component(mapping[source],landing)
+      return_ids.each do |eid|
+        event = $game_map.events[eid]
+        require!(north_transfer!(event,city) == exits[source][eid],"K02-C wrong exit #{source}/#{eid}")
+        require!(north_event_reachable?(interior,event),"K02-C exit unreachable #{source}/#{eid}")
+      end
+      if source == 43
+        require!(opening_action_witness(interior,$game_map.events[1]),"K02-C bike owner unreachable")
+        north_callback!($game_map.events[1],"BlueKantoPilot.cerulean_bike_exchange")
+      end
+      witnesses << {"city_event"=>id,"source"=>source,"landing"=>landing,
+                    "reachable_cells"=>interior.length,"returns"=>return_ids}
+    end
+    [3,27].each do |id|
+      source = doors[id][0]
+      exit_id = source == 44 ? 3 : 3
+      landing = exits[source][exit_id]
+      comp = opening_component(city,landing)
+      require!(north_event_reachable?(comp,$game_map.events[id]),"K02-C rear door unreachable #{id}")
+    end
+    $map_factory.setup(mapping[43])
+    require!(GameData::Item.exists?(:BIKEVOUCHER) && GameData::Item.exists?(:BICYCLE),
+             "K02-C compiled native bike/voucher missing")
+    require!(GameData::Item.get(:BIKEVOUCHER).is_key_item? && GameData::Item.get(:BICYCLE).is_key_item?,
+             "K02-C bike/voucher must remain regional key items")
+    require!(!$bag.has?(:BIKEVOUCHER) && !$bag.has?(:BICYCLE),"K02-C fresh bag unexpectedly has bicycle")
+    require!(!BlueKantoPilot.cerulean_bike_exchange && !$bag.has?(:BICYCLE),"K02-C free bike")
+    # Test the store contract with a native item fixture. Its actual Fan Club
+    # acquisition belongs to K03 and is not claimed here.
+    require!($bag.add(:BIKEVOUCHER,1),"K02-C voucher fixture failed")
+    require!(BlueKantoPilot.cerulean_bike_exchange && $bag.quantity(:BICYCLE)==1 &&
+             $bag.quantity(:BIKEVOUCHER)==0,"K02-C voucher exchange failed")
+    require!(BlueKantoPilot.cerulean_bike_exchange && $bag.quantity(:BICYCLE)==1,"K02-C bicycle duplicated")
+    $map_factory.setup(city)
+    require!(GameData::Trainer.get(:BLUE_KANTO_ROCKET,"Grunt",6).pokemon.length > 0,"K02-C native Grunt6 missing")
+    require!(GameData::Item.exists?(:TM28),"K02-C native TM28 missing")
+    [26,37,38].each { |id| north_callback!($game_map.events[id],"BlueKantoPilot.cerulean_rocket") }
+    tm_before = $bag.quantity(:TM28)
+    losses_remaining["Grunt"] = 1
+    require!(!BlueKantoPilot.cerulean_rocket && !state.fetch("pilot_wins",[]).include?(BlueKantoPilot::CERULEAN_ROCKET_KEY) &&
+             $bag.quantity(:TM28)==tm_before,"K02-C defeat granted reward")
+    require!(BlueKantoPilot.cerulean_rocket && $bag.quantity(:TM28)==tm_before+1,"K02-C Rocket retry/reward failed")
+    require!(BlueKantoPilot.cerulean_rocket && $bag.quantity(:TM28)==tm_before+1 &&
+             battle_calls.count { |r| r==[:BLUE_KANTO_ROCKET,"Grunt",6] }==2,"K02-C repeat reward/battle")
+    $game_map.events.each_value { |event| event.refresh }
+    require!([26,37,38].all? { |id| $game_self_switches[[city,id,"A"]] &&
+             $game_map.events[id].character_name.to_s.empty? },"K02-C Rocket pages not hidden")
+    {"manual_gameplay"=>false,"witnesses"=>witnesses,"bicycle"=>1,"voucher"=>0,
+     "tm28"=>$bag.quantity(:TM28),"rocket_retry"=>true,"voucher_fixture"=>true}
+  end
+
   def self.north_story(battle_calls, losses_remaining)
     city,gym,bridge,route,cottage = [39,42,53,54,55].map { |id| BlueKantoPilot.kanto_map_id(id) }
     require!([city,gym,bridge,route,cottage].all?, "K00-C missing installed source IDs")
@@ -1434,7 +1513,9 @@ module KantoNativeCheck
     BlueKantoPilot.ticketmaster
     require!(!BlueKantoPilot.progress["pilot_ss_ticket"],
              "Harbor issued a ticket without Bill's Route 25 quest")
+    require!(!BlueKantoPilot.cerulean_house_open?, "K02-C house opened before Bill")
     north_report = north_story(battle_calls, losses_remaining)
+    interiors_report = cerulean_interiors_proof(battle_calls, losses_remaining)
     BlueKantoPilot.ticketmaster
     require!(BlueKantoPilot.progress["pilot_ss_ticket"] == true,
              "Vermilion ticket missing after Bill's quest")
@@ -2108,6 +2189,17 @@ module KantoNativeCheck
     end
     # Engine save/reload and callback state are genuine; battle outcomes are
     # stubbed and collision witnesses are not manual walking/door animation.
+    require!(north_state["pilot_cerulean_bike_exchanged"] &&
+             north_state["pilot_cerulean_dig_awarded"] &&
+             north_state["pilot_wins"].include?(BlueKantoPilot::CERULEAN_ROCKET_KEY) &&
+             $bag.quantity(:BICYCLE)==interiors_report["bicycle"] &&
+             $bag.quantity(:BIKEVOUCHER)==interiors_report["voucher"] &&
+             $bag.quantity(:TM28)==interiors_report["tm28"],
+             "K02-C reward/quest persistence failed")
+    interiors_report["save_reload"] = true
+    File.write("Data/blue-kanto-k02c-native-proof.txt", interiors_report.inspect)
+    puts "KANTO_K02C_NATIVE_INTERIORS_REPORT:#{interiors_report.inspect}"
+    puts "KANTO_K02C_INTERIORS_BIKE_ROCKET_SAVE_RELOAD_OK"
     north_report["save_reload"] = true
     north_report["victory_keys"] = north_keys.length
     north_report["native_trainer_encounters"] = north_keys.length
