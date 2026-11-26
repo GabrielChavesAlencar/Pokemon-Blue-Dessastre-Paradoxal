@@ -51,6 +51,18 @@ module KantoMusicNativeProbe
     # sound path; this is NOT proof of audible speakers, seamless loops or fade.
     previous=BlueMusic.current_bgm
     begin
+      # Resolve and dispatch both restored tracks through the native audio
+      # API, including their installed files, without mutating the save.
+      [route4,cerulean].each do |regional_map|
+        track=BlueMusic.kanto_audio_for('map',regional_map)
+        require!(track && File.file?("Audio/BGM/" + track.name),
+                 "K02-B missing regional music asset #{regional_map}")
+        pbBGMPlay(track)
+        active=BlueMusic.current_bgm
+        require!(active && active.name==track.name,
+                 "K02-B native BGM selection failed #{regional_map}")
+        puts "KANTO_K02B_NATIVE_BGM:#{[regional_map,track.name,track.volume,track.pitch].inspect}"
+      end
       pbBGMPlay(bgm)
       current=BlueMusic.current_bgm
       require!(current && current.name==bgm.name,
