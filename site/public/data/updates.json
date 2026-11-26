@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "af25ce3a7910f97365f573591ebbd0772e300ae9",
+      "date": "2026-11-26T09:09:42-03:00",
+      "title": "docs(kanto): roadmap detalhado e gate de releases Windows e Android por entrega perceptível",
+      "category": "Documentação"
+    },
+    {
       "sha": "98b07acb1f899bdfa7d541369632f1649843cd6e",
       "date": "2026-11-25T23:45:05-03:00",
       "title": "Merge PR #341: recover legacy Kanto map drift during Windows migration",
