@@ -904,6 +904,83 @@ module BlueKantoPilot
 
   # Source Map053 Event006: reward precedes the sixth battle. Recording the
   # item independently prevents defeat/retry from duplicating Nuggets.
+  # K02-C: keep donor switch 87/88 out of the shared save. Bill's
+  # verified local quest unlocks the original front and rear doors.
+  CERULEAN_ROCKET_KEY = "KANTO_039_026".freeze
+  def self.cerulean_house_open?
+    kanto_current? && !!progress["pilot_bill_helped"]
+  end
+
+  def self.cerulean_house_entry?
+    return true if cerulean_house_open?
+    pbMessage(t("The police are investigating. Help Bill first.",
+                "A polícia está investigando. Ajude Bill primeiro.")) if kanto_current?
+    false
+  end
+
+  def self.cerulean_police
+    return unless kanto_current?
+    pbMessage(t("Team Rocket robbed this house. We are investigating.",
+                "A Equipe Rocket roubou esta casa. Estamos investigando."))
+  end
+
+  def self.cerulean_house_owner
+    return unless kanto_current?
+    if progress["pilot_cerulean_dig_awarded"]
+      pbMessage(t("I decided to teach Diglett Dig without a TM.",
+                  "Decidi ensinar Dig ao Diglett sem uma TM."))
+    else
+      pbMessage(t("Team Rocket stole my Dig TM!", "A Equipe Rocket roubou minha TM Dig!"))
+    end
+  end
+
+  def self.cerulean_bike_exchange
+    return false unless kanto_current? && $game_map &&
+      $game_map.map_id == kanto_map_id(43) && $bag && defined?(GameData::Item)
+    return false unless GameData::Item.exists?(:BIKEVOUCHER) &&
+      GameData::Item.exists?(:BICYCLE)
+    if progress["pilot_cerulean_bike_exchanged"] || $bag.has?(:BICYCLE)
+      pbMessage(t("Enjoy your Bicycle!", "Aproveite sua bicicleta!"))
+      return true
+    end
+    unless $bag.has?(:BIKEVOUCHER)
+      pbMessage(t("Bring a Bike Voucher from the Pokémon Fan Club in Vermilion.",
+                  "Traga um vale-bicicleta do Fã-Clube Pokémon de Vermilion."))
+      return false
+    end
+    return false if $bag.respond_to?(:can_add?) && !$bag.can_add?(:BICYCLE, 1)
+    return false unless $bag.remove(:BIKEVOUCHER, 1)
+    unless $bag.add(:BICYCLE, 1)
+      raise "Bike Voucher rollback failed" unless $bag.add(:BIKEVOUCHER, 1)
+      return false
+    end
+    progress["pilot_cerulean_bike_exchanged"] = true
+    pbMessage(t("You received a Bicycle!", "Você recebeu uma bicicleta!"))
+    true
+  end
+
+  # All three original Rocket events use the same stable win and reward
+  # keys. A full bag leaves a retriable reward, without replaying a battle.
+  def self.cerulean_rocket
+    return false unless cerulean_house_open? && $game_map &&
+      $game_map.map_id == kanto_map_id(39)
+    return true if progress["pilot_cerulean_dig_awarded"]
+    return false unless defined?(GameData::Item) && GameData::Item.exists?(:TM28)
+    return false unless progress.fetch("pilot_wins", []).include?(CERULEAN_ROCKET_KEY) ||
+      battle(:BLUE_KANTO_ROCKET, "Grunt", CERULEAN_ROCKET_KEY, 6)
+    unless $bag.add(:TM28, 1)
+      pbMessage(t("Make room in your Bag for TM28.", "Libere espaço na Bolsa para a TM28."))
+      return false
+    end
+    progress["pilot_cerulean_dig_awarded"] = true
+    [26,37,38].each do |id|
+      $game_self_switches[[$game_map.map_id,id,"A"]] = true
+    end
+    $game_map.need_refresh = true
+    pbMessage(t("You recovered TM28!", "Você recuperou a TM28!"))
+    true
+  end
+
   def self.nugget_bridge_rocket
     return false unless kanto_current?
     (1..5).each do |eid|
@@ -951,7 +1028,7 @@ module BlueKantoPilot
     key = event_key || "#{type}:#{name}"
     # Both Silph Co. and Viridian have a boss named Giovanni. A legacy
     # Silph name-only victory must never mark the *gym* Giovanni as beaten.
-    if wins.include?(key) || (key != CERULEAN_RIVAL_KEY &&
+    if wins.include?(key) || (key != CERULEAN_RIVAL_KEY && key != CERULEAN_ROCKET_KEY &&
         type != :BLUE_KANTO_LEADER_GIOVANNI && wins.include?(name))
       # Older saves may have Miguel defeated but still use his first page.
       # Both paths must offer the missing one-time prize.
@@ -2012,6 +2089,27 @@ module BlueKantoPilot::CeruleanRivalActor
   end
 end
 Game_Event.prepend(BlueKantoPilot::CeruleanRivalActor) if defined?(Game_Event)
+
+# Derive local police/Rocket pages from the saved quest flags on map load,
+# including saves that helped Bill before these interiors were installed.
+module BlueKantoPilot::CeruleanQuestPages
+  def refresh
+    map_id = @map_id || (@map && @map.respond_to?(:map_id) && @map.map_id)
+    if $game_self_switches && $PokemonGlobal &&
+       BlueKantoPilot.kanto_current? && BlueKantoPilot.kanto_map_id(43) &&
+       map_id == BlueKantoPilot.kanto_map_id(39)
+      if [13,25].include?(@id)
+        $game_self_switches[[map_id,@id,"A"]] = BlueKantoPilot.cerulean_house_open?
+      elsif [26,37,38].include?(@id)
+        $game_self_switches[[map_id,@id,"A"]] =
+          !!BlueKantoPilot.progress["pilot_cerulean_dig_awarded"]
+      end
+    end
+    super
+  end
+end
+Game_Event.prepend(BlueKantoPilot::CeruleanQuestPages) if defined?(Game_Event)
+
 
 module BlueKantoPilot::Route2ExitGuard
   def move_generic(dir, turn_enabled = true)
