@@ -786,7 +786,7 @@ module KantoNativeCheck
       end
       connections.each do |a,b|
         other = a == map ? b : (b == map ? a : nil)
-        next unless allowed.include?(other)
+        next unless other && allowed.include?(other)
         opening_crossings(map,comp,other).each do |left,right|
           candidates << {"kind"=>"native_seam","from_map"=>map,"from_xy"=>left,
             "to_map"=>other,"to_xy"=>right,"component_size"=>comp.length}
@@ -808,7 +808,12 @@ module KantoNativeCheck
     previous_map = $game_map.map_id
     previous_xy = [$game_player.x,$game_player.y]
     route,moon,cerulean,lab = [32,38,39,203].map { |id| BlueKantoPilot.kanto_map_id(id) }
-    allowed = [32,33,34,35,36,37,38,39].map { |id| BlueKantoPilot.kanto_map_id(id) }
+    # Source 035 is a hierarchy-only entry, not an installed content map.
+    source_ids = [32,33,34,36,37,38,39]
+    allowed = source_ids.map { |id| BlueKantoPilot.kanto_map_id(id) }
+    require!(allowed.all? { |id| id.is_a?(Integer) && id > 0 } &&
+             allowed.uniq.length == source_ids.length && lab.is_a?(Integer) && lab > 0,
+             "K02-A missing or duplicate installed corridor/lab IDs #{source_ids.zip(allowed).inspect}/#{lab.inspect}")
     anchor = pewter_report["east_seams"].first[1]
     outward = moon_path(route,anchor,moon,allowed)
     require!(outward && !outward.empty?, "K02-A no continuous Route3 to Mt Moon B2F")
