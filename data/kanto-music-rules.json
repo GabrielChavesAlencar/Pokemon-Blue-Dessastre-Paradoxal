@@ -3,8 +3,38 @@
   "region": "KANTO",
   "phase": 5,
   "default_enabled": false,
-  "notes": "Fase 5 (correcao 2026-11-18): Cerulean City usa o tema Fuchsia City (faixa 1-50, compartilhado em FireRed/LeafGreen); Route 4 usa Road to Cerulean City / Leaving Mt. Moon (faixa 1-32, mesmo tema de Route 3). Ambos sao mapas Kanto existentes, nao preview. Escopo simbolico; sem MapIDs numericos fixos; sem alterar musica de Decades, saves ou outras regioes. Cenas permanecem com os mesmos gatilhos validados. Route24/Route25 use the approved Road to Cerulean City BGM as a declared substitute for the kit's Route 24 OGG; Bill Cottage uses the established Cerulean/Fuchsia theme.",
+  "notes": "Fase 5 (correcao 2026-11-18): Cerulean City usa o tema Fuchsia City (faixa 1-50, compartilhado em FireRed/LeafGreen); Route 4 usa Road to Cerulean City / Leaving Mt. Moon (faixa 1-32, mesmo tema de Route 3). Ambos sao mapas Kanto existentes, nao preview. Escopo simbolico; sem MapIDs numericos fixos; sem alterar musica de Decades, saves ou outras regioes. Cenas permanecem com os mesmos gatilhos validados. Route24/Route25 use the approved Road to Cerulean City BGM as a declared substitute for the kit's Route 24 OGG; Bill Cottage and the six Cerulean interiors use the established Cerulean/Fuchsia theme as an explicit local substitute.",
   "maps": [
+    {
+      "map": "CERULEAN_BIKE_SHOP",
+      "track": 50,
+      "enabled": true
+    },
+    {
+      "map": "CERULEAN_HOUSE_A",
+      "track": 50,
+      "enabled": true
+    },
+    {
+      "map": "CERULEAN_HOUSE_B",
+      "track": 50,
+      "enabled": true
+    },
+    {
+      "map": "CERULEAN_HOUSE_C",
+      "track": 50,
+      "enabled": true
+    },
+    {
+      "map": "CERULEAN_HOUSE_D",
+      "track": 50,
+      "enabled": true
+    },
+    {
+      "map": "CERULEAN_RANSACKED_HOUSE",
+      "track": 50,
+      "enabled": true
+    },
     {
       "map": "BILL_COTTAGE",
       "track": 50,
