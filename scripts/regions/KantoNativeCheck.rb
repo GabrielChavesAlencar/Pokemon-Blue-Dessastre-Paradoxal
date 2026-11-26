@@ -570,17 +570,30 @@ module KantoNativeCheck
     trainers = FOREST_TRAINERS.map do |id,name|
       event = $game_map.events[id]
       key = "KANTO_024_%03d" % id
-      require!(event && event.trigger == 2 && event.name.match?(/Sight\(\d+\)/i),
-               "K01-D missing original trainer sight #{id}/#{name}")
+      require!(event, "K01-D missing original trainer event #{id}/#{name}")
+      # Match the installed source event name exactly as verify_pilot.py
+      # does. Some source trainers are Action Button, not Event Touch.
+      # A non-sight trainer must still have a reachable interaction and
+      # the same audited battle/sync callbacks and native roster.
+      sight = event.name.match(/(?:Trainer|Sight)\((\d+)\)/i)
+      notice = event.list.any? { |op| op.code == 355 && op.parameters[0].to_s == "pbNoticePlayer(get_self)" }
+      witness = sight ? north_event_reachable?(component,event) : opening_action_witness(component,event)
+      row = {"id"=>id,"name"=>name,"key"=>key,"position"=>[event.x,event.y],
+        "source_event_name"=>event.name,"trigger"=>event.trigger,
+        "interaction"=>sight ? "event_touch_sight" : "action_button",
+        "sight_range"=>sight ? sight[1].to_i : nil,"notice_callback"=>notice,
+        "access_witness"=>witness}
+      forest_trace("KANTO_K01D_TRAINER_EVENT",row)
+      require!(event.trigger == (sight ? 2 : 0) && notice == !!sight,
+               "K01-D trainer trigger/notice contradicts authored name #{row.inspect}")
+      require!(witness, "K01-D trainer not reachable from Forest entrance #{name}")
       north_callback!(event,'BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER, "'+name+'", "'+key+'")')
       north_callback!(event,'BlueKantoPilot.sync_trainer_event("'+key+'", "'+name+'", '+id.to_s+')')
-      require!(event.list.any? { |op| op.code == 355 && op.parameters[0].to_s == "pbNoticePlayer(get_self)" },
-               "K01-D trainer notice callback missing #{name}")
-      require!(north_event_reachable?(component,event), "K01-D trainer not reachable from Forest entrance #{name}")
       profile = GameData::Trainer.get(:BLUE_KANTO_BUGCATCHER,name)
       require!(profile && !profile.pokemon.empty?, "K01-D no compiled trainer roster #{name}")
-      {"id"=>id,"name"=>name,"key"=>key,"position"=>[event.x,event.y],
-       "sight"=>event.name,"roster"=>profile.pokemon.map { |p| [p[:species].to_s,p[:level]] }}
+      row["roster"] = profile.pokemon.map { |p| [p[:species].to_s,p[:level]] }
+      forest_trace("KANTO_K01D_TRAINER_PROFILE",row)
+      row
     end
     encounter = GameData::Encounter.get(forest)
     require!(encounter && encounter.types[:LandDay] && !encounter.types[:LandDay].empty?,
@@ -972,6 +985,9 @@ module KantoNativeCheck
     BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER, "Doug", "KANTO_024_017")
     require!(!BlueKantoPilot.progress["pilot_wins"].include?("KANTO_024_017"),
              "Defeat incorrectly marked as a win")
+    require!(!BlueKantoPilot.sync_trainer_event("KANTO_024_017","Doug",17) &&
+             !$game_self_switches[[$game_map.map_id,17,"A"]],
+             "K01-D loss incorrectly activated Doug's defeated page")
     BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER, "Doug", "KANTO_024_017")
     require!(battle_calls.count { |row| row[1] == "Doug" } == 2 &&
              BlueKantoPilot.progress["pilot_wins"].include?("KANTO_024_017"),
@@ -1108,6 +1124,7 @@ module KantoNativeCheck
       "K01-D defeated Forest trainers still auto-challenge")
     forest_report["controlled_battle_results"] = true
     forest_report["doug_loss_retry"] = true
+    forest_report["doug_loss_switch_preserved"] = true
     forest_report["sammy_legacy_name_preserved"] = true
     forest_report["defeated_event_pages"] = 5
 
