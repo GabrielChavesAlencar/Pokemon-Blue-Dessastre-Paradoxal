@@ -1,4 +1,4 @@
-name: Android - ZIP corrigido Decades Kanto Hoenn
+name: Android - regressao do repack legado (sem publicacao)
 on:
   workflow_dispatch:
   push:
@@ -23,12 +23,12 @@ on:
       - 'scripts/android/publish_updates.py'
       - '.github/workflows/android-multiregion-repack.yml'
 permissions:
-  contents: write
+  contents: read
 concurrency:
   group: android-multiregion-hotfix
   cancel-in-progress: false
 jobs:
-  repair-and-release:
+  legacy-regression:
     runs-on: ubuntu-latest
     timeout-minutes: 110
     steps:
@@ -54,6 +54,7 @@ jobs:
           python -m unittest discover -s tests -p test_kanto_music_phase5.py -v
           python -m unittest discover -s tests -p test_kanto_cerulean_route4_android.py -v
       - name: Baixar ZIP ORIGINAL auditado e hashes da release integrada
+        if: github.event_name == 'workflow_dispatch'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -65,6 +66,7 @@ jobs:
           cd dist/base
           sha256sum -c Blue-Android-Decades-Kanto-Hoenn.zip.sha256
       - name: Reempacotar arquivos reais e gerar deltas para versoes anteriores
+        if: github.event_name == 'workflow_dispatch'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -107,18 +109,12 @@ jobs:
           cd dist
           sha256sum Blue-Android-Decades-Kanto-Hoenn.zip > Blue-Android-Decades-Kanto-Hoenn.zip.sha256
           test "$(stat -c %s Blue-Android-Decades-Kanto-Hoenn.zip)" -lt 2147483648
-      - name: Publicar ZIP completo com a correcao ja instalada
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          TAG="android-multiregion-hotfix-$GITHUB_RUN_NUMBER-$(echo "$GITHUB_SHA" | cut -c1-7)"
-          assets=(dist/Blue-Android-Decades-Kanto-Hoenn.zip
-            dist/Blue-Android-Decades-Kanto-Hoenn.update.json
-            dist/Blue-Android-Decades-Kanto-Hoenn.zip.sha256)
-          shopt -s nullglob
-          for patch in dist/Blue-Android-Decades-Kanto-Hoenn*.patch.zip; do assets+=("$patch"); done
-          gh release create "$TAG" "${assets[@]}" \
-            --target "$GITHUB_SHA" \
-            --title "Pokemon Blue Android - Decades Kanto Hoenn - Kanto corrigido" \
-            --notes "Kanto Android: BGM da Rota 4 (faixa 1-32) e Cerulean City (faixa 1-50 de Fuchsia City) vinculadas ao MapID instalado e verificadas no pacote. Otimiza verificacoes de instalacao repetidas nas transicoes entre mapas conectados; preserva eventos, mapas, fossils, menu de versao e atualizador por patch sem backup. Saves e Game.exe preservados. Teste de fluidez e audio no JoiPlay real ainda pendente." \
-            --prerelease
+      # Historical 142-map input is for regression only. The full integrated
+      # build is the sole publisher; do not offer the historical ZIP or deltas.
+      - name: Registrar diagnostico legado sem distribuir jogo
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: legacy-repack-diagnostic-only
+          path: dist/Blue-Android-Decades-Kanto-Hoenn.zip.sha256
+          if-no-files-found: error

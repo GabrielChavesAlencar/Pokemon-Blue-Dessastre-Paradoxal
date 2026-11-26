@@ -33,6 +33,9 @@ TAG = re.compile(
 REQUIRED_BASELINES = (
     "android-multiregion-hotfix-2-5d0cc84",
     "android-multiregion-hotfix-30-ba020a5",
+    # Keep the bad install as a migration input, NEVER as a download target.
+    "android-multiregion-hotfix-31-e7200ef",
+    "android-multiregion-82-e23ff33",
 )
 
 

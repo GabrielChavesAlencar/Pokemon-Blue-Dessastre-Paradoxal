@@ -70,11 +70,13 @@ class MultiregionReleasePaginationTests(unittest.TestCase):
         pinned = [
             release("android-multiregion-hotfix-2-5d0cc84", "2026-11-14T00:00:00Z"),
             release("android-multiregion-hotfix-30-ba020a5", "2026-11-19T01:04:03Z"),
+            release("android-multiregion-hotfix-31-e7200ef", "2026-11-26T19:30:00Z"),
+            release("android-multiregion-82-e23ff33", "2026-11-26T15:00:00Z"),
         ]
         tags, _, count = select_releases([rows, [old, *pinned]],
                                          require_known_baselines=True)
-        self.assertEqual(count, 16)
-        self.assertEqual(tags[0], "android-multiregion-73-abcdef0")
+        self.assertEqual(count, 18)
+        self.assertEqual(tags[0], "android-multiregion-hotfix-31-e7200ef")
         self.assertEqual(len(tags), len(set(tags)))
         for tag in REQUIRED_BASELINES:
             self.assertIn(tag, tags)
@@ -111,6 +113,25 @@ class MultiregionReleasePaginationTests(unittest.TestCase):
         for value in ([], {}, None, ["bad"], [[None]], [[{"tag_name": "battle-hub-1"}]]):
             with self.subTest(value=value), self.assertRaises(ValueError):
                 select_releases(value)
+
+    def test_withdrawn_hotfix_and_previous_good_release_remain_required(self):
+        rows = [release(tag, "2026-11-26T19:30:00Z") for tag in REQUIRED_BASELINES]
+        tags, _, _ = select_releases(rows, require_known_baselines=True)
+        self.assertIn("android-multiregion-hotfix-31-e7200ef", tags)
+        self.assertIn("android-multiregion-82-e23ff33", tags)
+        with self.assertRaisesRegex(ValueError, "hotfix-31"):
+            select_releases([row for row in rows if "hotfix-31" not in row["tag_name"]],
+                            require_known_baselines=True)
+
+    def test_legacy_repack_cannot_publish_and_portal_build_precedes_tests(self):
+        old = (ROOT / ".github/workflows/android-multiregion-repack.yml").read_text("utf8")
+        self.assertIn("contents: read", old)
+        self.assertNotIn("contents: write", old)
+        self.assertNotIn("gh release create", old)
+        self.assertNotIn("gh release upload", old)
+        self.assertIn("python -m unittest discover", old)
+        portal = (ROOT / ".github/workflows/android-multiregion-tests.yml").read_text("utf8")
+        self.assertLess(portal.index("npm run build --prefix site"), portal.index("npm test --prefix site"))
 
     def test_release_workflow_always_selects_paginated_old_manifests(self):
         text = WORKFLOW.read_text("utf8")

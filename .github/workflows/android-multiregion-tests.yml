@@ -1,5 +1,13 @@
 name: Android multirregional - contratos e portal
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/android/**'
+      - 'tests/test_android_updates.py'
+      - 'tests/test_multiregion_release_pagination.py'
+      - 'site/**'
+      - '.github/workflows/android-multiregion-tests.yml'
   push:
     branches: [main]
     paths:
@@ -37,5 +45,7 @@ jobs:
         run: |
           ruby -c scripts/battle_polish/RegionStart.rb
           ruby tests/region_start_android_no_json_runtime.rb scripts/battle_polish/RegionStart.rb
+      - name: Compilar site antes dos testes de publicacao
+        run: npm run build --prefix site
       - name: Testar site de downloads e verificação real de release
         run: npm test --prefix site
