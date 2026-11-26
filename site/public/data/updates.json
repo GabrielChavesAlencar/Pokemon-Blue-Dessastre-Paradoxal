@@ -2,6 +2,36 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c435335003ed705027aa3402d022cb02eef1a8fe",
+      "date": "2026-11-26T12:07:09-03:00",
+      "title": "Merge PR #349: native Kanto three-starter save/reload proof",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "f8efe426811a4dedd818ea77e5994a182a6a60ba",
+      "date": "2026-11-26T11:55:03-03:00",
+      "title": "QA K01-A: validate actual serialized global_metadata and expose native save trace",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "a2df2a70677a0204d64c1b9fd49b82194f4ea394",
+      "date": "2026-11-26T11:47:31-03:00",
+      "title": "QA K01-A: reset native loaded save registry before every slot reload",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "5e510a860745bf410a267176d25ac677522c4327",
+      "date": "2026-11-26T11:42:00-03:00",
+      "title": "QA K01-A: complete profile handler and trace independent native save state",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "1a0f8e1783f5f90641dee445f6f8cb7371784cbe",
+      "date": "2026-11-26T11:34:45-03:00",
+      "title": "QA K01-A: native starter selection and save/reload for all three variants",
+      "category": "Melhorias"
+    },
+    {
       "sha": "6e9d28d710a4de9f9d3ba5048f4fd544a774f353",
       "date": "2026-11-26T11:24:28-03:00",
       "title": "Merge PR #348: Kanto native S.S. Ticket and legacy permit migration",
