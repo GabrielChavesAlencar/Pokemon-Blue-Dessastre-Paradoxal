@@ -825,6 +825,7 @@ module BlueKantoPilot
     end
     # No foreign switches 87 or event scripts are executed.
     progress["pilot_bill_helped"] = true
+    sync_cerulean_quest_pages(kanto_map_id(39))
     map_id = $game_map.map_id
     [3, 4, 8].each do |event_id|
       next unless $game_map.events[event_id]
@@ -904,6 +905,177 @@ module BlueKantoPilot
 
   # Source Map053 Event006: reward precedes the sixth battle. Recording the
   # item independently prevents defeat/retry from duplicating Nuggets.
+  # K02-C: keep donor switch 87/88 out of the shared save. Bill's
+  # verified local quest unlocks the original front and rear doors.
+  CERULEAN_ROCKET_KEY = "KANTO_039_026".freeze
+  def self.cerulean_house_open?
+    kanto_current? && !!progress["pilot_bill_helped"]
+  end
+
+  def self.cerulean_house_entry?
+    return true if cerulean_house_open?
+    pbMessage(t("The police are investigating. Help Bill first.",
+                "A polícia está investigando. Ajude Bill primeiro.")) if kanto_current?
+    false
+  end
+
+  def self.cerulean_police
+    return unless kanto_current?
+    pbMessage(t("Team Rocket robbed this house. We are investigating.",
+                "A Equipe Rocket roubou esta casa. Estamos investigando."))
+  end
+
+  def self.cerulean_house_owner
+    return unless kanto_current?
+    if progress["pilot_cerulean_dig_awarded"]
+      pbMessage(t("I decided to teach Diglett Dig without a TM.",
+                  "Decidi ensinar Dig ao Diglett sem uma TM."))
+    else
+      pbMessage(t("Team Rocket stole my Dig TM!", "A Equipe Rocket roubou minha TM Dig!"))
+    end
+  end
+
+  # K02-C optional source events. Use local progress, never donor variables 1/2.
+  def self.cerulean_trade_eligible?(pkmn)
+    pkmn && pkmn.species == :POLIWHIRL && !pkmn.egg? &&
+      !pkmn.shadowPokemon? && !pkmn.cannot_trade
+  end
+
+  def self.cerulean_trade_selected(index)
+    return false unless kanto_current? && $game_map &&
+      $game_map.map_id == kanto_map_id(46) && $player &&
+      !progress["pilot_cerulean_jynx_trade"]
+    return false unless index.is_a?(Integer) && index.between?(0,$player.party.length-1)
+    offered = $player.party[index]
+    return false unless cerulean_trade_eligible?(offered) && GameData::Species.exists?(:JYNX)
+    received = Pokemon.new(:JYNX, offered.level)
+    received.ability_index = 0
+    received.nature = :MILD
+    {HP:18, ATTACK:17, DEFENSE:18, SPECIAL_ATTACK:22, SPECIAL_DEFENSE:25, SPEED:21}.each do |stat,iv|
+      received.iv[stat] = iv
+    end
+    received.calc_stats
+    pbStartTrade(index, received, "Zynx", "Dontae", 0)
+    return false unless $player.party[index].equal?(received)
+    progress["pilot_cerulean_jynx_trade"] = true
+    true
+  end
+
+  def self.cerulean_jynx_trade
+    return false unless kanto_current? && $game_map && $game_map.map_id == kanto_map_id(46)
+    if progress["pilot_cerulean_jynx_trade"]
+      pbMessage(t("Has the Jynx I traded you grown stronger?", "A Jynx que troquei com você ficou mais forte?"))
+      return false
+    end
+    return false unless pbConfirmMessage(t("Trade your Poliwhirl for my Jynx?",
+                                            "Trocar seu Poliwhirl pela minha Jynx?"))
+    index = -1
+    pbFadeOutIn do
+      scene = PokemonParty_Scene.new
+      screen = PokemonPartyScreen.new(scene, $player.party)
+      index = screen.pbChooseTradablePokemon(proc { |pkmn| cerulean_trade_eligible?(pkmn) })
+    end
+    return false unless cerulean_trade_selected(index)
+    pbMessage(t("Thanks!", "Obrigado!"))
+    true
+  end
+
+  def self.cerulean_badge_guide
+    return false unless kanto_current? && $game_map && $game_map.map_id == kanto_map_id(44)
+    badges = LEAGUE_REQUIRED_BADGES
+    names = badges.map { |badge| badge.capitalize + " Badge" }
+    pbMessage(t("Each local Badge earns one Emerald. Field moves require the local HM, Badge and a compatible Pokémon.",
+                "Cada insígnia local concede uma esmeralda. HMs exigem o item, a insígnia local e um Pokémon compatível."))
+    loop do
+      index = pbMessage(t("Which Badge should I describe?", "Qual insígnia deseja consultar?"),
+                        names + [t("Back", "Voltar")], names.length)
+      break unless index.is_a?(Integer) && index.between?(0,names.length-1)
+      obtained = BlueRegions.local_achievements(progress, "KANTO").include?(badges[index])
+      pbMessage(t("{1}: {2}", "{1}: {2}", names[index],
+                  obtained ? t("Earned in Kanto.", "Conquistada em Kanto.") :
+                             t("Not yet earned in Kanto.", "Ainda não conquistada em Kanto.")))
+    end
+    true
+  end
+
+  KANTO_WALL_MAP = "Plugins/ZZZZZ Blue Kanto Pilot/KantoWallMap.png".freeze
+  def self.cerulean_wall_map
+    return false unless kanto_current? && $game_map &&
+      [kanto_map_id(46),kanto_map_id(47)].include?($game_map.map_id)
+    return false unless File.file?(KANTO_WALL_MAP)
+    # Read-only atlas: native Decades map UI defaults to Beatha. No global
+    # town-map registration, Fly destination or player movement is changed.
+    pbFadeOutIn do
+      viewport = Viewport.new(0,0,Graphics.width,Graphics.height)
+      viewport.z = 99999
+      sprite = Sprite.new(viewport)
+      bitmap = Bitmap.new(KANTO_WALL_MAP)
+      sprite.bitmap = bitmap
+      zoom = [Graphics.width.to_f / bitmap.width, Graphics.height.to_f / bitmap.height].min
+      sprite.zoom_x = sprite.zoom_y = zoom
+      sprite.x = ((Graphics.width-bitmap.width*zoom)/2).round
+      sprite.y = ((Graphics.height-bitmap.height*zoom)/2).round
+      loop do
+        Graphics.update
+        Input.update
+        break if Input.trigger?(Input::BACK) || Input.trigger?(Input::USE)
+      end
+    ensure
+      sprite.dispose if sprite && !sprite.disposed?
+      bitmap.dispose if bitmap && !bitmap.disposed?
+      viewport.dispose if viewport && !viewport.disposed?
+    end
+    true
+  end
+
+  def self.cerulean_bike_exchange
+    return false unless kanto_current? && $game_map &&
+      $game_map.map_id == kanto_map_id(43) && $bag && defined?(GameData::Item)
+    return false unless GameData::Item.exists?(:BIKEVOUCHER) &&
+      GameData::Item.exists?(:BICYCLE)
+    if progress["pilot_cerulean_bike_exchanged"] || $bag.has?(:BICYCLE)
+      pbMessage(t("Enjoy your Bicycle!", "Aproveite sua bicicleta!"))
+      return true
+    end
+    unless $bag.has?(:BIKEVOUCHER)
+      pbMessage(t("Bring a Bike Voucher from the Pokémon Fan Club in Vermilion.",
+                  "Traga um vale-bicicleta do Fã-Clube Pokémon de Vermilion."))
+      return false
+    end
+    return false if $bag.respond_to?(:can_add?) && !$bag.can_add?(:BICYCLE, 1)
+    return false unless $bag.remove(:BIKEVOUCHER, 1)
+    unless $bag.add(:BICYCLE, 1)
+      raise "Bike Voucher rollback failed" unless $bag.add(:BIKEVOUCHER, 1)
+      return false
+    end
+    progress["pilot_cerulean_bike_exchanged"] = true
+    pbMessage(t("You received a Bicycle!", "Você recebeu uma bicicleta!"))
+    true
+  end
+
+  # All three original Rocket events use the same stable win and reward
+  # keys. A full bag leaves a retriable reward, without replaying a battle.
+  def self.cerulean_rocket
+    return false unless cerulean_house_open? && $game_map &&
+      $game_map.map_id == kanto_map_id(39)
+    return true if progress["pilot_cerulean_dig_awarded"]
+    return false unless $bag && defined?(GameData::Item) && GameData::Item.exists?(:TM28)
+    return false unless GameData::Item.get(:TM28).move == :DIG
+    return false unless progress.fetch("pilot_wins", []).include?(CERULEAN_ROCKET_KEY) ||
+      battle(:BLUE_KANTO_ROCKET, "Grunt", CERULEAN_ROCKET_KEY, 6)
+    unless $bag.add(:TM28, 1)
+      pbMessage(t("Make room in your Bag for TM28.", "Libere espaço na Bolsa para a TM28."))
+      return false
+    end
+    progress["pilot_cerulean_dig_awarded"] = true
+    [26,37,38].each do |id|
+      $game_self_switches[[$game_map.map_id,id,"A"]] = true
+    end
+    $game_map.need_refresh = true
+    pbMessage(t("You recovered TM28!", "Você recuperou a TM28!"))
+    true
+  end
+
   def self.nugget_bridge_rocket
     return false unless kanto_current?
     (1..5).each do |eid|
@@ -951,7 +1123,7 @@ module BlueKantoPilot
     key = event_key || "#{type}:#{name}"
     # Both Silph Co. and Viridian have a boss named Giovanni. A legacy
     # Silph name-only victory must never mark the *gym* Giovanni as beaten.
-    if wins.include?(key) || (key != CERULEAN_RIVAL_KEY &&
+    if wins.include?(key) || (key != CERULEAN_RIVAL_KEY && key != CERULEAN_ROCKET_KEY &&
         type != :BLUE_KANTO_LEADER_GIOVANNI && wins.include?(name))
       # Older saves may have Miguel defeated but still use his first page.
       # Both paths must offer the missing one-time prize.
@@ -2012,6 +2184,54 @@ module BlueKantoPilot::CeruleanRivalActor
   end
 end
 Game_Event.prepend(BlueKantoPilot::CeruleanRivalActor) if defined?(Game_Event)
+
+# Synchronize self-switches at map boundaries, never by prepending
+# Game_Event#refresh. Event Indicators aliases that method; aliasing a
+# prepended refresh calls super back into the alias and overflows the stack.
+module BlueKantoPilot
+  def self.sync_cerulean_quest_pages(map_id)
+    return false unless $game_self_switches && $PokemonGlobal &&
+      kanto_current? && kanto_map_id(43) && map_id == kanto_map_id(39)
+    desired = {13=>cerulean_house_open?,25=>cerulean_house_open?}
+    [26,37,38].each { |id| desired[id] = !!progress["pilot_cerulean_dig_awarded"] }
+    changed = false
+    desired.each do |id, value|
+      key = [map_id,id,"A"]
+      next if !!$game_self_switches[key] == value
+      $game_self_switches[key] = value
+      changed = true
+    end
+    changed
+  end
+
+  # A save may restore an existing map without calling setup again.
+  # Refresh through the engine's existing chain only after flags change.
+  def self.sync_loaded_cerulean_map(map)
+    return unless map && sync_cerulean_quest_pages(map.map_id)
+    map.need_refresh = true
+    map.events.each_value { |event| event.refresh }
+  end
+end
+
+module BlueKantoPilot::CeruleanQuestMapSetup
+  def setup(map_id, *args)
+    BlueKantoPilot.sync_cerulean_quest_pages(map_id)
+    super
+  end
+end
+Game_Map.prepend(BlueKantoPilot::CeruleanQuestMapSetup) if defined?(Game_Map)
+
+module BlueKantoPilot::CeruleanQuestMapLoad
+  def createSpritesets(*args)
+    if $map_factory && $map_factory.respond_to?(:maps)
+      $map_factory.maps.each { |map| BlueKantoPilot.sync_loaded_cerulean_map(map) }
+    else
+      BlueKantoPilot.sync_loaded_cerulean_map($game_map)
+    end
+    super
+  end
+end
+Scene_Map.prepend(BlueKantoPilot::CeruleanQuestMapLoad) if defined?(Scene_Map)
 
 module BlueKantoPilot::Route2ExitGuard
   def move_generic(dir, turn_enabled = true)

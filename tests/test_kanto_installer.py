@@ -14,6 +14,128 @@ finally:
 
 
 class KantoInstallerTest(unittest.TestCase):
+    def test_cerulean_items_overlay_preserves_base_catalogue(self):
+        from pilot import install_cerulean_items
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            donor, target = root / "source", root / "game"
+            for project in (donor,target):
+                (project / "PBS").mkdir(parents=True)
+            bike = "[BICYCLE]\nName = Bicycle\nNamePlural = Bicycles\nPocket = 8\nPrice = 0\nFieldUse = Direct\nFlags = KeyItem\n"
+            voucher = "[BIKEVOUCHER]\nName = Bike Voucher\nPocket = 8\nPrice = 0\nConsumable = false\nFlags = KeyItem\n"
+            base = target / "PBS/items.txt"
+            base.write_text(bike, encoding="utf8")
+            (donor / "PBS/items.txt").write_text(bike + voucher, encoding="utf8")
+            overlay = target / "PBS/items_kanto.txt"
+            install_cerulean_items(donor,target)
+            result = overlay.read_text("utf8")
+            self.assertIn("[BIKEVOUCHER]", result)
+            self.assertNotIn("[BICYCLE]", result)
+            self.assertEqual(base.read_text("utf8"),bike)
+            install_cerulean_items(donor,target)
+            self.assertEqual(overlay.read_text("utf8"),result)
+            base.write_text(bike + voucher, encoding="utf8")
+            install_cerulean_items(donor,target)
+            self.assertNotIn("[BIKEVOUCHER]",overlay.read_text("utf8"))
+            self.assertNotIn("[BICYCLE]",overlay.read_text("utf8"))
+            base.write_text("",encoding="utf8")
+            install_cerulean_items(donor,target)
+            self.assertIn("[BICYCLE]",overlay.read_text("utf8"))
+            self.assertIn("[BIKEVOUCHER]",overlay.read_text("utf8"))
+            self.assertIn("items_kanto.txt",installer.PBS_NAMES)
+            (donor / "PBS/items.txt").write_text(bike,encoding="utf8")
+            with self.assertRaisesRegex(ValueError,"missing original item definitions"):
+                install_cerulean_items(donor,target)
+            self.assertIn("[BIKEVOUCHER]",overlay.read_text("utf8"))
+
+    def test_cerulean_voucher_missing_donor_requires_original_shop_witness(self):
+        from pilot import install_cerulean_items
+        from types import SimpleNamespace
+        def obj(**attrs):
+            return SimpleNamespace(attrs={"@" + k: v for k, v in attrs.items()})
+        with tempfile.TemporaryDirectory() as folder:
+            donor, target = Path(folder) / "source", Path(folder) / "game"
+            for project in (donor, target):
+                (project / "PBS").mkdir(parents=True)
+            (donor / "Data").mkdir()
+            (donor / "Data/Map043.rxdata").write_bytes(b"fixture")
+            bike = "[BICYCLE]\nName = Bicycle\nNamePlural = Bicycles\nPocket = 8\nPrice = 0\nFieldUse = Direct\nFlags = KeyItem\n"
+            base = target / "PBS/items.txt"
+            base.write_text(bike, encoding="utf8")
+            (donor / "PBS/items.txt").write_text(bike, encoding="utf8")
+            ops = [obj(code=111, indent=0, parameters=[12, b"$bag.has?(:BIKEVOUCHER)"]),
+                   obj(code=355, indent=1, parameters=[b"$bag.remove(:BIKEVOUCHER)"]),
+                   obj(code=355, indent=1, parameters=[b"pbReceiveItem(:BICYCLE)"])]
+            event = obj(name=b"Bike Shop Owner", x=9, y=3, pages=[obj(list=ops)])
+            source_map = obj(events={1: event})
+            with mock.patch("pilot.load", return_value=source_map):
+                install_cerulean_items(donor, target)
+                overlay = target / "PBS/items_kanto.txt"
+                first = overlay.read_text("utf8")
+                self.assertIn("[BIKEVOUCHER]", first)
+                self.assertIn("Pocket = 8", first)
+                self.assertIn("Flags = KeyItem", first)
+                self.assertIn("Consumable = false", first)
+                self.assertNotIn("[BICYCLE]", first)
+                self.assertEqual(base.read_text("utf8"), bike)
+                install_cerulean_items(donor, target)
+                self.assertEqual(overlay.read_text("utf8"), first)
+                ops.reverse()
+                with self.assertRaisesRegex(ValueError, "missing original item definitions"):
+                    install_cerulean_items(donor, target)
+                self.assertEqual(overlay.read_text("utf8"), first)
+                ops.reverse()
+                base.write_text("", encoding="utf8")
+                (donor / "PBS/items.txt").write_text("", encoding="utf8")
+                with self.assertRaisesRegex(ValueError, "missing original item definitions"):
+                    install_cerulean_items(donor, target)
+                self.assertEqual(overlay.read_text("utf8"), first)
+
+    def test_native_key_item_defaults_and_explicit_conflicts(self):
+        from pilot import install_cerulean_items
+        with tempfile.TemporaryDirectory() as folder:
+            donor, target = Path(folder) / "source", Path(folder) / "game"
+            for project in (donor, target):
+                (project / "PBS").mkdir(parents=True)
+            bike = "[BICYCLE]\nName = Bicycle\nPocket = 8\nFieldUse = Direct\nFlags = KeyItem\n"
+            voucher = "[BIKEVOUCHER]\nName = Bike Voucher\nPocket = 8\nFlags = KeyItem\n"
+            base = target / "PBS/items.txt"
+            (donor / "PBS/items.txt").write_text(voucher, encoding="utf8")
+            for extra in ("", "Consumable = false\n", "Consumable = False # default\n"):
+                base.write_text(bike + extra, encoding="utf8")
+                install_cerulean_items(donor, target)
+                self.assertEqual(base.read_text("utf8"), bike + extra)
+            overlay = target / "PBS/items_kanto.txt"
+            before = overlay.read_bytes()
+            for invalid in (bike + "Consumable = true\n",
+                            bike + "Consumable = nonsense\n",
+                            bike.replace("KeyItem", "Fling_30"),
+                            bike.replace("FieldUse = Direct", "FieldUse = OnPokemon")):
+                base.write_text(invalid, encoding="utf8")
+                with self.assertRaisesRegex(ValueError, "incompatible regional key item BICYCLE"):
+                    install_cerulean_items(donor, target)
+                self.assertEqual(overlay.read_bytes(), before)
+                self.assertEqual(base.read_text("utf8"), invalid)
+
+    def test_cerulean_reward_preserves_native_decades_tr(self):
+        from pilot import audit_cerulean_reward_item
+        with tempfile.TemporaryDirectory() as folder:
+            game = Path(folder)
+            (game / "PBS").mkdir()
+            path = game / "PBS/items.txt"
+            native = "[TM28]\nName = TM28\nPocket = 9#4\nPrice = 2000\nFieldUse = TR\nFlags = Fling_80\nMove = DIG\n"
+            path.write_text(native, encoding="utf8")
+            audit_cerulean_reward_item(game)
+            self.assertEqual(path.read_text("utf8"), native)
+            for invalid in ("", native.replace("DIG", "CUT"), native.replace("TR", "Direct")):
+                path.write_text(invalid, encoding="utf8")
+                with self.assertRaisesRegex(ValueError, "TM28/DIG"):
+                    audit_cerulean_reward_item(game)
+            path.write_text(native, encoding="utf8")
+            (game / "PBS/items_other.txt").write_text(native, encoding="utf8")
+            with self.assertRaisesRegex(ValueError, "TM28/DIG"):
+                audit_cerulean_reward_item(game)
+
     def with_game(self, folder):
         root = Path(folder)
         game = root / "game"
@@ -93,6 +215,19 @@ class KantoInstallerTest(unittest.TestCase):
             allocate_kanto_ids({5, 7}, {300}, existing)
         with self.assertRaises(ValueError):
             allocate_kanto_ids({5, 7, 53}, {300, 302, 999}, existing)
+
+    def test_only_exact_published_catalogs_can_migrate_to_151(self):
+        from audit import KANTO, json_file
+        base = set(json_file(KANTO)["maps"]) - {"43","44","45","46","47","48"}
+        extra = {"43", "44", "45", "46", "47", "48"}
+        north = {"53", "54", "55"}
+        self.assertEqual(len(base), 145)
+        self.assertTrue(installer.known_legacy_catalog(base, base - north))
+        self.assertFalse(installer.known_legacy_catalog(base, base))
+        self.assertTrue(installer.known_legacy_catalog(base | extra, base))
+        self.assertTrue(installer.known_legacy_catalog(base | extra, base - north))
+        self.assertFalse(installer.known_legacy_catalog(base | extra, (base - {"53"}) | {"43"}))
+        self.assertFalse(installer.known_legacy_catalog(base | extra, base | {"43"}))
 
     def test_legacy_drift_is_recoverable_but_foreign_map_is_rejected(self):
         from server.ruby_marshal import RubyObject

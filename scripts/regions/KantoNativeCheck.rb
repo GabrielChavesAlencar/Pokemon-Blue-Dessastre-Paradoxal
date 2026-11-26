@@ -4,6 +4,21 @@ module KantoNativeCheck
     raise message unless condition
   end
 
+  # Object.prepend(BlueLocale::Prompts) wraps pbMessage. Capture the method
+  # actually defined on Object, not the prepended wrapper (whose super would
+  # point at itself or vanish when copied onto Object).
+  def self.with_native_message_fixture(handler)
+    original = Object.instance_method(:pbMessage)
+    original = original.super_method until original.nil? || original.owner == Object
+    require!(original, "K02-C missing underlying native message fixture")
+    begin
+      Object.send(:define_method, :pbMessage, handler)
+      yield
+    ensure
+      Object.send(:define_method, :pbMessage, original)
+    end
+  end
+
   # A read-only source sign or a physical CutTree is permitted as an
   # *additional* event on functional maps. Keep all story/event whitelists
   # strict and reject foreign scripts, extra warps, items or trainers.
@@ -116,6 +131,221 @@ module KantoNativeCheck
                                         cmd.parameters[1] == destination }
     require!(op, "K00-C real transfer to #{destination} absent")
     op.parameters[2,2]
+  end
+
+  # K02-C: actual installed native events and directional collision checks.
+  # The route proof is not a manual input session; battles remain controlled.
+  def self.cerulean_interiors_proof(battle_calls, losses_remaining)
+    city = BlueKantoPilot.kanto_map_id(39)
+    mapping = (43..48).to_h { |id| [id,BlueKantoPilot.kanto_map_id(id)] }
+    require!(mapping.values.all? && mapping.values.uniq.length == 6,"K02-C missing interior registry")
+    state = BlueKantoPilot.progress
+    require!(BlueKantoPilot.cerulean_house_open?, "K02-C Bill did not unlock house")
+    city_component = opening_component(city,[22,20])
+    require!($game_map.events[13].character_name.to_s.empty? &&
+             !$game_map.events[25].character_name.to_s.empty?, "K02-C police did not move")
+    # Source receipts: city event => [interior source, native landing, exits].
+    doors = {3=>[44,[3,2],[2,3]],7=>[43,[5,8],[5]],8=>[46,[4,7],[3]],
+             9=>[48,[3,7],[3,4]],10=>[44,[3,8],[2,3]],11=>[45,[4,7],[1]],
+             12=>[47,[4,7],[2]],27=>[48,[4,2],[3,4]]}
+    exits = {43=>{5=>[13,29]},44=>{2=>[10,12],3=>[10,8]},
+             45=>{1=>[17,12]},46=>{3=>[15,18]},47=>{2=>[23,29]},
+             48=>{3=>[31,8],4=>[30,12]}}
+    witnesses = []
+    doors.each do |id,(source,landing,return_ids)|
+      $map_factory.setup(city)
+      ev = $game_map.events[id]
+      require!(north_transfer!(ev,mapping[source]) == landing,"K02-C wrong source landing #{id}")
+      # Back doors are reached via the authored interior exits, not an
+      # artificial city seam. Front doors start from the center landing.
+      if ![3,27].include?(id)
+        require!(north_event_reachable?(city_component,ev),"K02-C city door unreachable #{id}")
+      end
+      interior = opening_component(mapping[source],landing)
+      return_ids.each do |eid|
+        event = $game_map.events[eid]
+        require!(north_transfer!(event,city) == exits[source][eid],"K02-C wrong exit #{source}/#{eid}")
+        require!(north_event_reachable?(interior,event),"K02-C exit unreachable #{source}/#{eid}")
+      end
+      if [43,48].include?(source)
+        actor = $game_map.events[1]
+        name = actor && actor.character_name.to_s
+        require!(name && !name.empty? && pbResolveBitmap("Graphics/Characters/#{name}"),
+                 "K02-C required actor sprite missing #{source}/1")
+      end
+      optional = {44=>{1=>"cerulean_badge_guide"},46=>{2=>"cerulean_jynx_trade",5=>"cerulean_wall_map"},
+                  47=>{4=>"cerulean_wall_map"}}
+      optional.fetch(source,{}).each do |eid, callback|
+        event = $game_map.events[eid]
+        north_callback!(event,"BlueKantoPilot.#{callback}")
+        require!(opening_action_witness(interior,event),"K02-C optional event unreachable #{source}/#{eid}")
+      end
+      if source == 43
+        require!(opening_action_witness(interior,$game_map.events[1]),"K02-C bike owner unreachable")
+        north_callback!($game_map.events[1],"BlueKantoPilot.cerulean_bike_exchange")
+      end
+      witnesses << {"city_event"=>id,"source"=>source,"landing"=>landing,
+                    "reachable_cells"=>interior.length,"returns"=>return_ids}
+    end
+    [3,27].each do |id|
+      source = doors[id][0]
+      landing = exits[source][3]
+      comp = opening_component(city,landing)
+      require!(north_event_reachable?(comp,$game_map.events[id]),"K02-C rear door unreachable #{id}")
+    end
+    # Native trade transaction; only interactive animation is suppressed.
+    $map_factory.setup(mapping[46])
+    party_before = $player.party.dup
+    original_fade = Object.instance_method(:pbFadeOutInWithMusic)
+    original_trade_count = $stats.trade_count
+    begin
+      Object.send(:define_method,:pbFadeOutInWithMusic) { |*args,&block| nil }
+      $player.party << Pokemon.new(:POLIWHIRL,17)
+      index = $player.party.length-1
+      require!(!BlueKantoPilot.cerulean_trade_selected(-1) &&
+               !BlueKantoPilot.cerulean_trade_selected(0) &&
+               !state["pilot_cerulean_jynx_trade"],"K02-C invalid trade accepted")
+      require!(BlueKantoPilot.cerulean_trade_selected(index),"K02-C native trade failed")
+      received = $player.party[index]
+      require!(received.species == :JYNX && received.level == 17 && received.name == "Zynx" &&
+               received.nature_id == :MILD && received.ability_index == 0 &&
+               received.owner.name == "Dontae" && received.obtain_method == 2 &&
+               {HP:18,ATTACK:17,DEFENSE:18,SPECIAL_ATTACK:22,SPECIAL_DEFENSE:25,SPEED:21}.all? { |stat,iv| received.iv[stat] == iv } &&
+               !BlueKantoPilot.cerulean_trade_selected(index),"K02-C original trade attributes or repeat guard failed")
+      # Read the actual native slot before restoring the campaign fixture.
+      # Keep the normal final campaign reload proof for the local trade flag.
+      $game_player.moveto(4,7)
+      trade_slot = "K02 C Native Jynx"
+      require!(Game.save(trade_slot),"K02-C native trade save failed")
+      saved_trade = SaveData.read_from_file(SaveData.get_full_path(trade_slot))
+      saved_jynx = saved_trade[:player].party[index]
+      require!(saved_jynx.species == :JYNX && saved_jynx.level == received.level &&
+               saved_jynx.name == received.name && saved_jynx.nature_id == received.nature_id &&
+               saved_jynx.iv == received.iv && saved_jynx.owner.name == "Dontae" &&
+               saved_trade[:global_metadata].blue_regions["pilot_cerulean_jynx_trade"],
+               "K02-C Jynx or exchange flag not serialized")
+      trade_report = {"species"=>received.species.to_s,"level"=>received.level,
+        "nickname"=>received.name,"nature"=>received.nature_id.to_s,
+        "ability_index"=>received.ability_index,"ivs"=>received.iv,
+        "owner"=>received.owner.name,"obtain_method"=>received.obtain_method,
+        "native_slot_read"=>true,"repeat_rejected"=>true,"animation_tested"=>false}
+      puts "KANTO_K02C_NATIVE_TRADE_REPORT:#{trade_report.inspect}"
+    ensure
+      Object.send(:define_method,:pbFadeOutInWithMusic,original_fade)
+      $player.party.replace(party_before)
+      $stats.trade_count = original_trade_count
+    end
+    $map_factory.setup(mapping[44])
+    choices = []
+    badge_messages = []
+    with_native_message_fixture(proc do |*args|
+      if args[1].is_a?(Array)
+        choices << args[1].dup
+        choices.length == 1 ? 0 : 8
+      else
+        badge_messages << args[0].to_s
+        nil
+      end
+    end) do
+      require!(BlueKantoPilot.cerulean_badge_guide && choices.length == 2 &&
+               choices.all? { |row| row.length == 9 } && badge_messages.length >= 2,
+               "K02-C badge guide menu did not run")
+    end
+    require!(BlueKantoPilot.send(:pbMessage,"K02-C restored choice fixture",["OK"]) == 0,
+             "K02-C underlying choice fixture not restored")
+    furniture = {44=>[5],46=>[6,7,8],47=>[5,6,7],48=>[6,7,8,9,10,11,12]}
+    furniture_report = []
+    furniture_messages = []
+    with_native_message_fixture(proc { |message,*args| furniture_messages << message.to_s; nil }) do
+      furniture.each do |source,ids|
+        $map_factory.setup(mapping.fetch(source))
+        ids.each do |eid|
+          event = $game_map.events[eid]
+          require!(event && event.trigger == 0,"K02-C furniture event missing #{source}/#{eid}")
+          callbacks = Array(event.list).select { |op| op.code == 355 }
+          require!(!callbacks.empty?,"K02-C furniture callback missing #{source}/#{eid}")
+          before = furniture_messages.length
+          callbacks.each_with_index do |op,index|
+            require!(op.parameters[0].to_s == "BlueKantoPilot.npc_dialogue(#{source}, #{eid}, #{index})",
+                     "K02-C unexpected furniture callback #{source}/#{eid}/#{index}")
+            BlueKantoPilot.npc_dialogue(source,eid,index)
+          end
+          require!(furniture_messages.length-before == callbacks.length &&
+                   furniture_messages.drop(before).all? { |message| !message.strip.empty? },
+                   "K02-C furniture dialogue failed #{source}/#{eid}")
+          furniture_report << [source,eid,callbacks.length]
+        end
+      end
+    end
+    require!(furniture_report.length == 14,"K02-C incomplete furniture callbacks")
+    puts "KANTO_K02C_FURNITURE_NATIVE_REPORT:#{furniture_report.inspect}"
+    atlas = Bitmap.new(BlueKantoPilot::KANTO_WALL_MAP)
+    require!(atlas.width == 480 && atlas.height == 320,"K02-C authored atlas invalid")
+    require!(File.binread(BlueKantoPilot::KANTO_WALL_MAP).include?("Blue authored schematic v1"),
+             "K02-C authored atlas provenance missing")
+    atlas_report = {"width"=>atlas.width,"height"=>atlas.height,"manual_ui"=>false,
+                    "kind"=>"blue_authored_schematic_v1"}
+    atlas.dispose
+    puts "KANTO_K02C_OPTIONAL_NATIVE_REPORT:#{ {"trade"=>trade_report,"furniture"=>furniture_report,
+      "badge_choices"=>choices,"atlas"=>atlas_report}.inspect }"
+    $map_factory.setup(mapping[43])
+    item_report = [:BIKEVOUCHER,:BICYCLE,:TM28].to_h do |id|
+      item = GameData::Item.try_get(id)
+      [id.to_s, item ? {"key_item"=>item.is_key_item?, "consumable"=>item.consumable,
+                       "move"=>item.move.to_s} : nil]
+    end
+    puts "KANTO_K02C_NATIVE_ITEM_CATALOGUE:#{item_report.inspect}"
+    require!(GameData::Item.exists?(:BIKEVOUCHER) && GameData::Item.exists?(:BICYCLE),
+             "K02-C compiled native bike/voucher missing: #{item_report.inspect}")
+    require!(GameData::Item.get(:BIKEVOUCHER).is_key_item? && GameData::Item.get(:BICYCLE).is_key_item? &&
+             !GameData::Item.get(:BIKEVOUCHER).consumable && !GameData::Item.get(:BICYCLE).consumable,
+             "K02-C bike/voucher must remain regional key items")
+    require!(GameData::Item.get(:BICYCLE).field_use == 2 &&
+             ItemHandlers.hasOutHandler(:BICYCLE) && ItemHandlers.hasUseInFieldHandler(:BICYCLE),
+             "K02-C bicycle native use/register handlers missing")
+    require!(BlueRegionTravel.regional_item?(:BIKEVOUCHER) &&
+             BlueRegionTravel.regional_item?(:BICYCLE) && !BlueRegionTravel.regional_item?(:TM28),
+             "K02-C regional key items or global TM28 policy changed")
+    require!(!$bag.has?(:BIKEVOUCHER) && !$bag.has?(:BICYCLE),"K02-C fresh bag unexpectedly has bicycle")
+    require!(!BlueKantoPilot.cerulean_bike_exchange && !$bag.has?(:BICYCLE),"K02-C free bike")
+    # Test the store contract with a native item fixture. Its actual Fan Club
+    # acquisition belongs to K03 and is not claimed here.
+    require!($bag.add(:BIKEVOUCHER,1),"K02-C voucher fixture failed")
+    require!(BlueKantoPilot.cerulean_bike_exchange && $bag.quantity(:BICYCLE)==1 &&
+             $bag.quantity(:BIKEVOUCHER)==0,"K02-C voucher exchange failed")
+    require!(BlueKantoPilot.cerulean_bike_exchange && $bag.quantity(:BICYCLE)==1,"K02-C bicycle duplicated")
+    staged_bag, local_items, = BlueRegionTravel.stage_local_bag({}, "DECADES")
+    require!(!staged_bag.has?(:BICYCLE) && !staged_bag.has?(:BIKEVOUCHER) &&
+             local_items["items"].include?([:BICYCLE,1]) && $bag.quantity(:BICYCLE)==1,
+             "K02-C staged regional travel leaked or lost the bicycle")
+    $map_factory.setup(city)
+    require!(GameData::Trainer.get(:BLUE_KANTO_ROCKET,"Grunt",6).pokemon.length > 0,"K02-C native Grunt6 missing")
+    require!(GameData::Item.exists?(:TM28) && GameData::Item.get(:TM28).move == :DIG &&
+             (GameData::Item.get(:TM28).is_TM? || GameData::Item.get(:TM28).is_TR?),
+             "K02-C native TM28/Dig machine missing")
+    [25,26].each do |id|
+      actor = $game_map.events[id]
+      name = actor && actor.character_name.to_s
+      require!(name && !name.empty? && pbResolveBitmap("Graphics/Characters/#{name}"),
+               "K02-C required Cerulean actor sprite missing #{id}")
+    end
+    [26,37,38].each { |id| north_callback!($game_map.events[id],"BlueKantoPilot.cerulean_rocket") }
+    tm_before = $bag.quantity(:TM28)
+    losses_remaining["Grunt"] = 1
+    require!(!BlueKantoPilot.cerulean_rocket && !state.fetch("pilot_wins",[]).include?(BlueKantoPilot::CERULEAN_ROCKET_KEY) &&
+             $bag.quantity(:TM28)==tm_before,"K02-C defeat granted reward")
+    require!(BlueKantoPilot.cerulean_rocket && $bag.quantity(:TM28)==tm_before+1,"K02-C Rocket retry/reward failed")
+    require!(BlueKantoPilot.cerulean_rocket && $bag.quantity(:TM28)==tm_before+1 &&
+             battle_calls.count { |r| r==[:BLUE_KANTO_ROCKET,"Grunt",6] }==2,"K02-C repeat reward/battle")
+    $game_map.events.each_value { |event| event.refresh }
+    require!([26,37,38].all? { |id| $game_self_switches[[city,id,"A"]] &&
+             $game_map.events[id].character_name.to_s.empty? },"K02-C Rocket pages not hidden")
+    {"manual_gameplay"=>false,"witnesses"=>witnesses,"bicycle"=>1,"voucher"=>0,
+     "tm28"=>$bag.quantity(:TM28),"rocket_retry"=>true,"voucher_fixture"=>true,
+     "native_bike_handlers"=>true,"regional_bag_staging"=>true,"required_actor_sprites"=>true,
+     "native_trade_transaction"=>true,"trade_native_slot_read"=>true,"trade_animation_tested"=>false,"atlas_bitmap_loaded"=>true,
+     "atlas_manual_ui_tested"=>false,"badge_guide_callback"=>true,"badge_guide_menu_controlled"=>true,
+     "trade"=>trade_report,"furniture_callbacks"=>furniture_report,"atlas"=>atlas_report}
   end
 
   def self.north_story(battle_calls, losses_remaining)
@@ -1434,7 +1664,9 @@ module KantoNativeCheck
     BlueKantoPilot.ticketmaster
     require!(!BlueKantoPilot.progress["pilot_ss_ticket"],
              "Harbor issued a ticket without Bill's Route 25 quest")
+    require!(!BlueKantoPilot.cerulean_house_open?, "K02-C house opened before Bill")
     north_report = north_story(battle_calls, losses_remaining)
+    interiors_report = cerulean_interiors_proof(battle_calls, losses_remaining)
     BlueKantoPilot.ticketmaster
     require!(BlueKantoPilot.progress["pilot_ss_ticket"] == true,
              "Vermilion ticket missing after Bill's quest")
@@ -2108,6 +2340,18 @@ module KantoNativeCheck
     end
     # Engine save/reload and callback state are genuine; battle outcomes are
     # stubbed and collision witnesses are not manual walking/door animation.
+    require!(north_state["pilot_cerulean_jynx_trade"] &&
+             north_state["pilot_cerulean_bike_exchanged"] &&
+             north_state["pilot_cerulean_dig_awarded"] &&
+             north_state["pilot_wins"].include?(BlueKantoPilot::CERULEAN_ROCKET_KEY) &&
+             $bag.quantity(:BICYCLE)==interiors_report["bicycle"] &&
+             $bag.quantity(:BIKEVOUCHER)==interiors_report["voucher"] &&
+             $bag.quantity(:TM28)==interiors_report["tm28"],
+             "K02-C reward/quest persistence failed")
+    interiors_report["save_reload"] = true
+    File.write("Data/blue-kanto-k02c-native-proof.txt", interiors_report.inspect)
+    puts "KANTO_K02C_NATIVE_INTERIORS_REPORT:#{interiors_report.inspect}"
+    puts "KANTO_K02C_INTERIORS_BIKE_ROCKET_SAVE_RELOAD_OK"
     north_report["save_reload"] = true
     north_report["victory_keys"] = north_keys.length
     north_report["native_trainer_encounters"] = north_keys.length

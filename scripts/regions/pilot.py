@@ -19,9 +19,10 @@ from export_kanto import LOCATION_NAMES
 from pbs import catalogue, read_blocks
 from kanto_overworld import (MissingActorGraphic, safely_adapt_source_field_event,
                              source_item_ball, source_npc_dialogue, source_sign_dialogue,
-                             source_obstacle)
+                             source_obstacle, CERULEAN_FURNITURE, source_cerulean_furniture)
 from kanto_npc_locale import install_npc_locale, npc_literals
 from kanto_locale_audit import write_audit
+from kanto_wall_atlas import render_wall_atlas
 from server.ruby_marshal import RubyObject, dumps_simple, text
 from stage import serialize, stage
 
@@ -33,6 +34,7 @@ PILOT_META = "Kanto pilot.json"
 # Changes to any of these inputs require a new isolated pilot build.
 PILOT_INPUTS = (
     "scripts/regions/pilot.py",
+    "scripts/regions/kanto_wall_atlas.py",
     "scripts/regions/kanto_overworld.py",
     "scripts/regions/kanto_npc_locale.py",
     "scripts/regions/kanto_locale_audit.py",
@@ -1022,6 +1024,63 @@ def install_events(source, target, mapping):
                 continue
             if not league_event_allowed(original, event_id) and not passive_field:
                 continue
+            # K02-C source Map039 events and interiors 043–048. Preserve
+            # geometry, event IDs, and local transfer coordinates. No donor
+            # global switches, mart script, or battle commands are executed.
+            if 43 in mapping:
+                if (original == 39 and event_id in (13,25,26,37,38)):
+                    police = event_id in (13,25)
+                    callback = "cerulean_police" if police else "cerulean_rocket"
+                    visible = event_id in (13,25,26)
+                    local = new_event(event, [command(355, f"BlueKantoPilot.{callback}".encode())],
+                                      0 if visible else 2, actor(event) if visible else b"")
+                    page = local.attrs["@pages"][0]
+                    blank = copy.deepcopy(page)
+                    blank.attrs["@graphic"].attrs.update({"@character_name": b"", "@tile_id": 0})
+                    blank.attrs.update({"@trigger": 0, "@through": True, "@list": [command(0)]})
+                    if event_id == 25:
+                        first, second = blank, page
+                    else:
+                        first, second = page, blank
+                    second.attrs["@condition"].attrs.update({"@self_switch_valid": True, "@self_switch_ch": b"A"})
+                    local.attrs["@pages"] = [first,second]
+                    selected[event_id] = local
+                    continue
+                if (original == 39 and event_id in (9,27)) or (original == 48 and event_id == 3):
+                    warp = extract_warps(event, mapping)
+                    if warp is None:
+                        raise ValueError("Missing original guarded Cerulean transfer")
+                    warp.attrs["@indent"] = 1
+                    graphic = event.attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"]
+                    selected[event_id] = new_event(event, if_scene(b"BlueKantoPilot.cerulean_house_entry?", [warp]),
+                                                   1, actor(event) if graphic else b"")
+                    continue
+                if (original,event_id) in ((43,1),(48,1)):
+                    callback = "cerulean_bike_exchange" if original == 43 else "cerulean_house_owner"
+                    selected[event_id] = new_event(event, [command(355, f"BlueKantoPilot.{callback}".encode())],
+                                                   0, actor(event))
+                    continue
+                optional = {(44,1): "cerulean_badge_guide", (46,2): "cerulean_jynx_trade",
+                            (46,5): "cerulean_wall_map", (47,4): "cerulean_wall_map"}
+                callback = optional.get((original,event_id))
+                if callback:
+                    selected[event_id] = new_event(event, [command(355, f"BlueKantoPilot.{callback}".encode())],
+                                                   0, actor(event) if (original,event_id) in ((44,1),(46,2)) else b"")
+                    continue
+                # Original furniture is read-only text, not a donor script.
+                if (original, event_id) in CERULEAN_FURNITURE:
+                    ops = source_cerulean_furniture(event, original, event_id)
+                    literals = npc_literals(ops) if ops else []
+                    if not literals:
+                        raise ValueError(f"Missing or unsafe Cerulean furniture dialogue {original}/{event_id}")
+                    npc_dialogues.append([original,event_id,literals])
+                    selected[event_id] = new_event(event, npc_dialogue_calls(original,event_id,literals), 0, b"")
+                    field_inventory.append({
+                        "source_map": original, "map": destination, "event": event_id,
+                        "x": event.attrs["@x"], "y": event.attrs["@y"],
+                        "source_name": text(event.attrs["@name"]), "kind": "furniture_dialogue",
+                    })
+                    continue
             if original in LEAGUE_BARRIER_GATES and event_id in LEAGUE_BARRIER_GATES[original]:
                 required = LEAGUE_BARRIER_GATES[original][event_id]
                 guard = 4 if original == 17 else event_id + 1
@@ -1576,6 +1635,164 @@ def copy_game(game, target):
             shutil.copyfile(path, target / path.name)
 
 
+def cerulean_voucher_event_witness(source):
+    """Read the pinned original shop event; never run donor Ruby."""
+    path = source / "Data/Map043.rxdata"
+    if not path.is_file():
+        return False
+    event = load(path).attrs["@events"].get(1)
+    if event is None:
+        return False
+    ev = event.attrs
+    if (text(ev["@name"]) != "Bike Shop Owner" or
+            (ev["@x"], ev["@y"]) != (9, 3) or not ev["@pages"]):
+        return False
+    ops = [(op.attrs["@code"], op.attrs.get("@indent", 0),
+            tuple(text(v) for v in op.attrs["@parameters"]))
+           for op in ev["@pages"][0].attrs["@list"]]
+    required = [(111, 0, ("12", "$bag.has?(:BIKEVOUCHER)")),
+                (355, 1, ("$bag.remove(:BIKEVOUCHER)",)),
+                (355, 1, ("pbReceiveItem(:BICYCLE)",))]
+    if not all(ops.count(op) == 1 for op in required):
+        return False
+    return [ops.index(op) for op in required] == sorted(ops.index(op) for op in required)
+
+
+def install_cerulean_wall_map(source, target):
+    """Verify donor atlas privately; distribute only an original Blue schematic."""
+    candidates = []
+    atlas_pbs = [path for path in sorted((source / "PBS").glob("*.txt"))
+                 if re.fullmatch(r"(?:town_map|townmap)(?:_[^/]+)?\.txt", path.name, re.I)]
+    for pbs in atlas_pbs:
+        for key, rows in read_blocks(pbs).items():
+            fields = {k.strip(): v.split("#", 1)[0].strip() for row in rows
+                      for k, sep, v in [row.partition("=")] if sep}
+            if fields.get("Name", "").casefold() in ("kanto", "kanto region"):
+                candidates.append((key, fields.get("Filename", "")))
+    if len(candidates) != 1:
+        raise ValueError(f"K02-C expected one source Kanto atlas, got {candidates!r}; "
+                         f"PBS files={[path.name for path in atlas_pbs]!r}")
+    region, filename = candidates[0]
+    filename = filename.strip('"')
+    if filename and not Path(filename).suffix:
+        filename += ".png"
+    if not re.fullmatch(r"[\w .()\-]+\.png", filename, re.I):
+        raise ValueError("K02-C invalid original Kanto atlas filename")
+    graphics = source / "Graphics"
+    # Prefer the standard Essentials location, then its known plugin layout.
+    choices = [graphics / "UI/Town Map" / filename,
+               graphics / "UI/Town Map/Regions" / filename,
+               graphics / "Pictures" / filename]
+    found = [path for path in choices if path.is_file() and not path.is_symlink()
+             and path.resolve().is_relative_to(graphics.resolve())]
+    if not found or any(path.read_bytes() != found[0].read_bytes() for path in found):
+        raise ValueError("K02-C missing or ambiguous original Kanto atlas art")
+    image = found[0].read_bytes()
+    if hashlib.sha256(image).hexdigest() != "d896124bf9f711cf408484e1e4f51056a6f42d72e007b13ab041123bff75dbd5":
+        raise ValueError("K02-C original Kanto atlas SHA-256 differs")
+    if not image.startswith(b"\x89PNG\r\n\x1a\n") or len(image) < 24:
+        raise ValueError("K02-C invalid Kanto atlas PNG")
+    destination = target / "Plugins/ZZZZZ Blue Kanto Pilot/KantoWallMap.png"
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    authored = render_wall_atlas()
+    if authored == image:
+        raise ValueError("K02-C donor atlas cannot be distributed")
+    destination.write_bytes(authored)
+    print("KANTO_K02C_WALL_MAP_SOURCE:" + json.dumps({
+        "region": region, "source": found[0].relative_to(source).as_posix(),
+        "sha256": hashlib.sha256(image).hexdigest(), "private_reference_only": True}), flush=True)
+    print("KANTO_K02C_WALL_MAP_DELIVERY:" + json.dumps({
+        "kind": "blue_authored_schematic_v1", "donor_pixels": False,
+        "sha256": hashlib.sha256(authored).hexdigest()}), flush=True)
+
+
+def install_cerulean_items(source, target):
+    """Supply missing native bike IDs; reconstruct a witnessed missing voucher.
+
+    Never replace base item definitions, import unrelated donor items or
+    duplicate an existing Kanto overlay when rebuilding a legacy install.
+    The regional travel system already vaults KeyItem/HM records.
+    """
+    pbs = target / "PBS"
+    output = pbs / "items_kanto.txt"
+    required = {"BIKEVOUCHER", "BICYCLE"}
+    existing = {}
+    for path in sorted(pbs.glob("items*.txt")):
+        if path == output:
+            continue
+        for key, rows in read_blocks(path, required).items():
+            if key in existing:
+                raise ValueError(f"Duplicate native Cerulean item {key}")
+            existing[key] = rows
+    missing = required - existing.keys()
+    donor = {}
+    for path in sorted((source / "PBS").glob("items*.txt")):
+        for key, rows in read_blocks(path, missing).items():
+            if key in donor:
+                raise ValueError(f"Duplicate donor Cerulean item {key}")
+            donor[key] = rows
+    # The pinned FRLG event consumes BIKEVOUCHER, but its PBS omits the
+    # definition. Reconstruct only that inert key item, with a live source
+    # witness and the native bicycle's key-item pocket. Never grant it here.
+    authored = set()
+    if missing - donor.keys() == {"BIKEVOUCHER"} and cerulean_voucher_event_witness(source):
+        bike = existing.get("BICYCLE", donor.get("BICYCLE", []))
+        fields = {k.strip(): v.strip() for row in bike
+                  for k, sep, v in [row.partition("=")] if sep}
+        pocket = fields.get("Pocket", "")
+        if not pocket.isascii() or not pocket.isdigit() or int(pocket) < 1:
+            raise ValueError("K02-C cannot determine native key-item pocket")
+        donor["BIKEVOUCHER"] = [
+            "Name = Bike Voucher", "NamePlural = Bike Vouchers",
+            f"Pocket = {pocket}", "Price = 0", "Consumable = false",
+            "Flags = KeyItem",
+            "Description = A voucher to exchange for a Bicycle at the Cerulean Bike Shop.",
+        ]
+        authored.add("BIKEVOUCHER")
+    if set(donor) != missing:
+        raise ValueError(f"K02-C missing original item definitions: {sorted(missing - donor.keys())}")
+    effective = {}
+    for key, rows in {**existing, **donor}.items():
+        fields = {k.strip(): v.split("#", 1)[0].strip() for row in rows
+                  for k, sep, v in [row.partition("=")] if sep}
+        # Essentials v21.1 GameData::Item initializes an omitted Consumable
+        # to !is_important?, and KeyItem is important. Preserve original PBS.
+        flags = {v.strip().lower() for v in fields.get("Flags", "").split(",")}
+        raw = fields.get("Consumable")
+        if ("keyitem" not in flags or (raw is not None and raw.lower() != "false")
+                or (key == "BICYCLE" and fields.get("FieldUse") != "Direct")):
+            raise ValueError(f"K02-C incompatible regional key item {key}: "
+                             f"flags={sorted(flags)}, Consumable={raw!r}, FieldUse={fields.get('FieldUse')!r}")
+        effective[key] = {"consumable": False, "explicit": raw is not None,
+                          "field_use": fields.get("FieldUse", "None")}
+    # Local PBS descriptions and explicit metadata keep the donor's binary
+    # item IDs and Essentials handlers, without importing its scripts.
+    lines = ["# K02-C: missing native key items only"]
+    for key in sorted(donor):
+        lines += [f"[{key}]", *donor[key], ""]
+    output.write_text("\n".join(lines) + "\n", encoding="utf8")
+    print("KANTO_K02C_ITEM_PBS_REPORT:" + json.dumps({
+        "existing": sorted(existing), "added": sorted(donor),
+        "source": "pinned FRLG PBS", "authored_event_witness": sorted(authored),
+        "effective": effective, "native_compiled": False}), flush=True)
+
+
+def audit_cerulean_reward_item(target):
+    # Decades' pinned TM28 is a TR teaching DIG. Preserve its authored
+    # machine type, price, and global item policy, rather than replacing it.
+    found = []
+    for path in sorted((target / "PBS").glob("items*.txt")):
+        for rows in read_blocks(path, {"TM28"}).values():
+            fields = {k.strip(): v.split("#", 1)[0].strip() for row in rows
+                      for k, sep, v in [row.partition("=")] if sep}
+            found.append((path.name, fields))
+    if len(found) != 1 or found[0][1].get("Move") != "DIG" or found[0][1].get("FieldUse") not in ("TM", "TR"):
+        raise ValueError("K02-C requires exactly one native TM28/DIG machine")
+    print("KANTO_K02C_REWARD_PBS_REPORT:" + json.dumps({
+        "file": found[0][0], "move": "DIG", "field_use": found[0][1]["FieldUse"],
+        "native_compiled": False}), flush=True)
+
+
 def install_pbs(preview, target, mapping):
     pbs = target / "PBS"
     draft = preview / "drafts"
@@ -1764,6 +1981,8 @@ def build(source, game, output, existing=None):
         copy_game(game, target)
         for folder in ("Data", "Graphics"):
             shutil.copytree(preview / folder, target / folder, dirs_exist_ok=True)
+        audit_cerulean_reward_item(target)
+        install_cerulean_items(source, target)
         install_events(source, target, mapping)
         install_pewter_route3_gate(source, target, mapping)
         install_pbs(preview, target, mapping)
@@ -1774,6 +1993,7 @@ def build(source, game, output, existing=None):
         from scripts.music.install_kanto_music import install as install_kanto_audio
         install_kanto_audio(target, apply=True, numbers=approved_audio_track_numbers(ROOT))
         install_runtime(target, mapping, game)
+        install_cerulean_wall_map(source, target)
         write_audit(target, ROOT)
         if output.exists():
             raise ValueError("Another pilot already exists at the output path.")

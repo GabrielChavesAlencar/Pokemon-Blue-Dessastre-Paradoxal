@@ -13,19 +13,32 @@ const model={byId:new Map(catalog.species.map(p=>[p.id,p]))};
 const loc=id=>kanto.locations.find(v=>v.id===id);
 
 test('Kanto prototype states are explicit and the route 23 exception stays visible',()=>{
-  assert.equal(kanto.locations.length,145);
-  assert.equal(kanto.trainers.length,161);
+  assert.equal(kanto.locations.length,151);
+  assert.equal(kanto.trainers.length,162);
   assert.equal(kanto.locations.filter(x=>x.status==='preview').length,35);
   assert.equal(kanto.locations.filter(x=>x.status==='encounter_review').length,1);
-  assert.equal(kanto.locations.filter(x=>x.status==='experimental').length,109);
+  assert.equal(kanto.locations.filter(x=>x.status==='experimental').length,115);
   assert.ok(kanto.locations.filter(x=>x.status==='preview').every(x=>!x.methods.length&&!x.trainers.length));
   const route23=kantoLocation(model,kanto,loc('kanto-route-23'));
   assert.match(route23,/Encontros temporariamente suspensos/);
   assert.match(route23,/método duplicado/);
   const preview=kanto.locations.find(x=>x.status==='preview');
   assert.match(kantoLocation(model,kanto,preview),/Somente cenário/);
-  assert.match(kantoIndex(model,kanto,'localizacoes'),/145 locais e 161 treinadores/);
+  assert.match(kantoIndex(model,kanto,'localizacoes'),/151 locais e 162 treinadores/);
   assert.doesNotMatch(route23,/Trecho de Pallet Town a Pewter City/);
+});
+test('seis interiores de Cerulean e Grunt 6 são explícitos sem alterar as prévias',()=>{
+  for(const id of ['bike-shop','house-a','house-b','house-c','house-d','ransacked-house']){
+    const interior=loc('kanto-cerulean-'+id);
+    assert.ok(interior,id);
+    assert.equal(interior.status,'experimental');
+    assert.deepEqual(interior.methods,[]);
+  }
+  const grunt=kanto.trainers.find(t=>t.id==='kanto-rocket-cerulean-house');
+  assert.ok(grunt);
+  assert.equal(grunt.location,'kanto-cerulean-city');
+  assert.deepEqual(grunt.variants[0].team.map(p=>[p.species,p.level]),[['MACHOP',17],['DROWZEE',17]]);
+  assert.equal(loc('kanto-cerulean-city').trainers.filter(id=>id===grunt.id).length,1);
 });
 test('cada líder exibe sua INSÍGNIA própria e nenhum treinador comum recebe Boulder',()=>{
   const leaders=kanto.trainers.filter(t=>t.leader);

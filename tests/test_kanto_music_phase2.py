@@ -8,13 +8,13 @@ from scripts.music import compile_kanto_music as compiler
 
 
 class PhaseTwoMusicTests(KantoMusicPhaseOneTests):
-    """Reuse the 145-map synthetic pilot without copyrighted audio recordings."""
+    """Reuse the 151-map synthetic pilot without copyrighted audio recordings."""
 
     def test_phase2_has_only_approved_maps_and_exact_required_tracks(self):
         enabled = [row for row in self.rules["maps"] if row["enabled"]]
         disabled = {row["map"] for row in self.rules["maps"] if not row["enabled"]}
         self.assertGreaterEqual(self.rules["phase"], 2)
-        self.assertEqual(len(enabled), 77)
+        self.assertEqual(len(enabled), 83)
         self.assertEqual(disabled, {"SILPH_LOBBY"})
         self.assertEqual(compiler.phase2_track_numbers(self.project),
                          {6, 8, 13, 15, 17, 21, 25, 32, 34, 35, 36, 37, 40,
@@ -30,9 +30,9 @@ class PhaseTwoMusicTests(KantoMusicPhaseOneTests):
         lines = content.decode().splitlines()
         maps = [row.split("\t") for row in lines if row.startswith("MAP\t")]
         modes = [row.split("\t") for row in lines if row.startswith("TRANSPORT\t")]
-        self.assertEqual(len(maps), 77)
+        self.assertEqual(len(maps), 83)
         self.assertEqual(len(modes), 2)
-        self.assertEqual(report["active_map_bindings"], 77)
+        self.assertEqual(report["active_map_bindings"], 83)
         self.assertEqual(report["active_transport_bindings"], 2)
         self.assertEqual(report["active_battle_bindings"], 0)
         # This fixture installs only 19 F2 tracks. Missing F3 tracks must
@@ -62,7 +62,7 @@ class PhaseTwoMusicTests(KantoMusicPhaseOneTests):
                                   self.catalog["files"] if item["number"] == 6)
         pallet.unlink()
         content, report = self.compile()
-        self.assertEqual(report["active_map_bindings"], 76)
+        self.assertEqual(report["active_map_bindings"], 82)
         self.assertEqual(report["active_transport_bindings"], 2)
         self.assertFalse(any(row.startswith("MAP\t705\t") for row in
                              content.decode().splitlines()))
@@ -75,7 +75,7 @@ class PhaseTwoMusicTests(KantoMusicPhaseOneTests):
         row["enabled"]=True
         self.write_rules()
         content, report=self.compile()
-        self.assertEqual(report["active_map_bindings"],77)
+        self.assertEqual(report["active_map_bindings"],83)
         self.assertIn("SILPH_LOBBY",report["preview_skipped"])
         self.assertFalse(any(row.startswith(f"MAP\t{self.mapping['177']}\t") for
                              row in content.decode().splitlines()))

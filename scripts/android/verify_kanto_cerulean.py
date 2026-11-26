@@ -18,13 +18,15 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from scripts.android.package import compiled_region
 from server.ruby_marshal import loads, RubyObject
+from scripts.regions.kanto_wall_atlas import render_wall_atlas
 
-SOURCE_MAP_IDS = ("39", "42", "53", "54", "55")
+SOURCE_MAP_IDS = ("39", "42", "43", "44", "45", "46", "47", "48", "53", "54", "55")
 EDGES = (("39", "53"), ("39", "54"), ("53", "54"))
-EXPECTED_KANTO_MAPS = 145
-EXPECTED_MUSIC_MAPS = 77
+EXPECTED_KANTO_MAPS = 151
+EXPECTED_MUSIC_MAPS = 83
 JOURNEY = "Plugins/ZZZZ Blue Story and Presentation/Journey.rb"
 KANTO_RUNTIME = "Plugins/ZZZZZ Blue Kanto Pilot/KantoPilot.rb"
+KANTO_ATLAS = "Plugins/ZZZZZ Blue Kanto Pilot/KantoWallMap.png"
 
 
 def assert_delivery(path: Path, channel: str) -> dict:
@@ -46,7 +48,7 @@ def assert_delivery(path: Path, channel: str) -> dict:
         if (not isinstance(mapping, dict) or
                 len(mapping) != EXPECTED_KANTO_MAPS or
                 not all(source in mapping for source in SOURCE_MAP_IDS)):
-            raise ValueError("Android ZIP lacks the 145-map Kanto/Cerulean revision")
+            raise ValueError("Android ZIP lacks the 151-map Kanto/Cerulean revision")
         all_ids = list(mapping.values())
         if (any(type(value) is not int or value <= 0 for value in all_ids)
                 or len(set(all_ids)) != len(all_ids)):
@@ -84,6 +86,7 @@ def assert_delivery(path: Path, channel: str) -> dict:
         pbs = archive.read(trainer_pbs).decode("utf-8-sig")
         for section in ("[BLUE_KANTO_SWIMMER,Luis,0]",
                         "[BLUE_KANTO_PICNICKER,Diana,0]",
+                        "[BLUE_KANTO_ROCKET,Grunt,6]",
                         *(f"[BLUE_KANTO_RIVAL,Blue,{version}]" for version in (31, 32, 33))):
             if section not in pbs:
                 raise ValueError(f"Native trainer is missing from Kanto PBS: {section}")
@@ -100,7 +103,12 @@ def assert_delivery(path: Path, channel: str) -> dict:
         if (b"def self.cerulean_rival_crossing?" not in rival or
                 b"Game_Event.prepend(BlueKantoPilot::CeruleanRivalActor)" not in rival):
             raise ValueError("Cerulean Gary movement/actor fix missing")
+        for callback in (b"def self.cerulean_bike_exchange", b"def self.cerulean_rocket", b"def self.cerulean_house_entry?"):
+            if callback not in rival:
+                raise ValueError("Cerulean interiors runtime missing")
         compiled_region(cache, "KantoPilot.rb", rival)
+        if root + KANTO_ATLAS not in files or archive.read(root + KANTO_ATLAS) != render_wall_atlas():
+            raise ValueError("Kanto authored atlas absent or differs from release policy")
         # Verify the actual compiled native item, not merely a PBS section.
         catalog = loads(archive.read(root + "Data/items.dat"))
         ticket = catalog.get("BLUE_KANTO_SSTICKET") if isinstance(catalog, dict) else None
@@ -111,6 +119,18 @@ def assert_delivery(path: Path, channel: str) -> dict:
                 or ticket.attrs.get("@consumable") is not False
                 or not any(flag in ("KeyItem", b"KeyItem") for flag in ticket.attrs.get("@flags", []))):
             raise ValueError("Compiled Kanto S.S. Ticket key item missing or invalid")
+        for key in ("BIKEVOUCHER", "BICYCLE"):
+            item = catalog.get(key)
+            if (not isinstance(item, RubyObject) or item.name != "GameData::Item"
+                    or item.attrs.get("@id") != key
+                    or item.attrs.get("@consumable") is not False
+                    or not any(flag in ("KeyItem", b"KeyItem") for flag in item.attrs.get("@flags", []))):
+                raise ValueError(f"Compiled Cerulean key item missing or invalid: {key}")
+        tm = catalog.get("TM28")
+        if (not isinstance(tm, RubyObject) or tm.name != "GameData::Item"
+                or tm.attrs.get("@id") != "TM28" or tm.attrs.get("@move") != "DIG"
+                or tm.attrs.get("@field_use") not in (3, 5)):
+            raise ValueError("Compiled Cerulean TM28/DIG machine missing or invalid")
         if b"pilot_bill_ticket_item_granted" not in rival:
             raise ValueError("Legacy digital ticket upgrade missing")
         if channel == "multiregion":
@@ -132,12 +152,13 @@ def assert_delivery(path: Path, channel: str) -> dict:
         count = sum(line.startswith("MAP\t") for line in
                     archive.read(music).decode("utf8").splitlines())
         if count != EXPECTED_MUSIC_MAPS:
-            raise ValueError(f"Stale Kanto music scope: {count}, expected 77")
+            raise ValueError(f"Stale Kanto music scope: {count}, expected 83")
     return {"channel": channel, "kanto_maps": EXPECTED_KANTO_MAPS,
             "cerulean_sources": list(SOURCE_MAP_IDS),
             "music_maps": EXPECTED_MUSIC_MAPS,
             "compiled_journey": True, "compiled_cerulean_gary": True,
-            "compiled_kanto_ss_ticket": True}
+            "compiled_kanto_ss_ticket": True, "compiled_cerulean_bike_items": True,
+            "compiled_cerulean_dig_machine": True}
 
 
 def main() -> None:

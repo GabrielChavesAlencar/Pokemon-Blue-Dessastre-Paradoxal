@@ -1,7 +1,7 @@
 """CI-only migration exercise using real RXDATA, not a historical player save.
 
-Derive a controlled 142-map registry from the verified current 145-map
-installation. This is a reconstruction, NOT an archival 142-map game or
+Derive controlled 142- or 145-map registries from the verified current
+151-map installation. This is a reconstruction, NOT an archival 142-map game or
 physical playtest. Never write to the original game or publish its data.
 """
 from __future__ import annotations
@@ -18,9 +18,11 @@ from audit import ROOT, load, inventory
 from stage import serialize
 from pilot import EVENT_CLASSES
 
-NEW = {"53", "54", "55"}
-REPORT = ROOT / ".blue-work/k00-migration-proof.json"
-WORK = ROOT / ".blue-work/k00-migration-ci"
+NEW = {"43", "44", "45", "46", "47", "48"}
+if "--from-142" in sys.argv:
+    NEW |= {"53", "54", "55"}
+REPORT = ROOT / (".blue-work/k00-migration-proof.json" if "--from-142" in sys.argv else ".blue-work/k02c-migration-proof.json")
+WORK = ROOT / (".blue-work/k00-migration-ci" if "--from-142" in sys.argv else ".blue-work/k02c-migration-ci")
 
 
 def check(condition, message):
@@ -47,7 +49,7 @@ def run():
     proof_path = Path("Data/blue-kanto-install.json")
     proof = json.loads((game / proof_path).read_text("utf-8"))
     current = dict(proof["maps"])
-    check(len(current) == 145 and NEW <= current.keys(), "Unexpected current registry")
+    check(len(current) == 151 and NEW <= current.keys(), "Unexpected current registry")
     old = {key: value for key, value in current.items() if key not in NEW}
     infos, native_maps = inventory(game)
     foreign = {mid: path for mid, path in native_maps.items()
@@ -61,7 +63,7 @@ def run():
     (game / sentinel).write_bytes(b"K00 synthetic save preservation sentinel")
     protected.append(sentinel)
     protected_before = snapshot(game, protected)
-    # Remove only the three added map slots from this disposable copy.
+    # Remove only the explicitly added source slots from this disposable copy.
     hashes = installer.recorded_hashes(proof)
     for key in NEW:
         mid = current[key]
@@ -94,10 +96,10 @@ def run():
     installer.build(installer.SOURCE, game, pilot,
                     existing={int(k): v for k, v in old.items()})
     files, mapping, _ = installer.manifest(pilot, game, migration=legacy)
-    check(len(mapping) == 145 and all(mapping[int(k)] == v for k, v in old.items()),
-          "142 existing MapIDs changed")
+    check(len(mapping) == 151 and all(mapping[int(k)] == v for k, v in old.items()),
+          "Published MapIDs changed")
     check(not (set(mapping.values()) & set(foreign)), "Foreign map ID collision")
-    check(len(set(mapping.values()) - set(old.values())) == 3, "Expected exactly 3 new IDs")
+    check(len(set(mapping.values()) - set(old.values())) == len(NEW), "Unexpected new IDs")
     touched = list(files) + [proof_path, installer.READY_GATE, installer.MARKER,
                              Path("Data/blue-compile-request.txt"),
                              Path("Data/PluginScripts.rxdata")]
@@ -134,7 +136,7 @@ def run():
     check(result["status"] == "migrated", "Migration not committed")
     recovered = {p.replace(chr(92), "/") for p in result["recovered_legacy_maps"]}
     check({drift_rel.as_posix(), missing_rel.as_posix()} <= recovered, "Recovery not reported")
-    check(installer.verify_installed(game)["maps"] == 145, "Final verification failed")
+    check(installer.verify_installed(game)["maps"] == 151, "Final verification failed")
     check(snapshot(game, protected) == protected_before, "Protected files changed")
     final = snapshot(game, touched + protected)
     check(installer.sync_runtime(game, True)["status"] == "runtime_current",
@@ -147,7 +149,7 @@ def run():
         raise AssertionError("Duplicate installation accepted")
     check(snapshot(game, touched + protected) == final, "Second install changed files")
     check(snapshot(original, protected[:-1]) == original_protected, "Original game changed")
-    return {"status": "PASS", "fixture": "reconstructed_142_from_real_145_rxdata",
+    return {"status": "PASS", "fixture": f"reconstructed_{len(old)}_from_real_151_rxdata",
             "historical_install": False, "physical_gameplay": False,
             "revision": os.environ.get("GITHUB_SHA"),
             "old_maps": len(old), "new_maps": len(mapping), "preserved_map_ids": len(old),
@@ -166,4 +168,4 @@ if __name__ == "__main__":
         raise
     REPORT.write_text(json.dumps(report, indent=2), encoding="utf-8")
     print("KANTO_K00_MIGRATION_REPORT:" + json.dumps(report, sort_keys=True))
-    print("KANTO_K00_REAL_RXDATA_MIGRATION_FIXTURE_OK")
+    print("KANTO_K00_REAL_RXDATA_MIGRATION_FIXTURE_OK" if "--from-142" in sys.argv else "KANTO_K02C_REAL_145_TO_151_MIGRATION_FIXTURE_OK")
