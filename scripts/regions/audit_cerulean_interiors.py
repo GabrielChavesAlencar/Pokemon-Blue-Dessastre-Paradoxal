@@ -115,7 +115,9 @@ def run():
     # Write evidence before staging, so an asset failure cannot hide the
     # original event pages necessary to implement the local adapters.
     receipt.write_text(json.dumps(report, ensure_ascii=True, indent=2), encoding="utf8")
-    print("KANTO_K02C_SOURCE_EVENTS:" + json.dumps(report, ensure_ascii=True), flush=True)
+    for sid in ("39", *ADDITIONS):
+        for event in evidence[sid]["events"]:
+            print("KANTO_K02C_SOURCE_EVENT:" + json.dumps({"source": sid, **event}, ensure_ascii=True), flush=True)
     plan = stage(ROOT, source, pilot, output, existing=existing, manifest=expanded)
     mapping = {row["source_id"]: row["proposed_id"] for row in plan["maps"]}
     if len(mapping) != 151 or any(mapping[k] != v for k, v in existing.items()):
