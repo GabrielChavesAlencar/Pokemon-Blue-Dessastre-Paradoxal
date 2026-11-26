@@ -229,6 +229,15 @@ jobs:
           }
           Get-Content .blue-work/kanto-native-out.txt,.blue-work/kanto-native-err.txt,"$pilot/Data/blue-kanto-error.txt","$pilot/errorlog.txt" -ErrorAction SilentlyContinue | Select-Object -Last 100
           throw 'Kanto native proof missing'
+      - name: Preservar recibo nativo Cerulean K00-C
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k00-cerulean-native-proof
+          path: .blue-work/kanto-pilot/Data/blue-kanto-k00-cerulean-proof.txt
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 14
       - name: Verificar abertura real da janela (diagnostico, sem jogar)
         if: success()
         continue-on-error: true

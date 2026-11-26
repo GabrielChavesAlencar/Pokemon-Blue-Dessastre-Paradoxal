@@ -125,9 +125,7 @@ module KantoNativeCheck
       BlueKantoPilot.cerulean_gym_trainer(type,name,key,id)
       require!(battle_calls.count { |row| row[0] == type && row[1] == name } == 2, "#{name} repeated")
     end
-    north_callback!($game_map.events[1],
-      'BlueKantoPilot.battle(:BLUE_KANTO_LEADER_MISTY, "Misty", "KANTO_042_001")')
-    # Misty battle itself remains in the existing phase 07 check below.
+    require!($game_self_switches[[gym,1,"A"]], "Misty victory page was not activated")
     $map_factory.setup(city)
     require!(!BlueKantoPilot.cerulean_rival_graphic.to_s.empty?, "Gary graphic missing")
     require!(!$game_map.events[32].character_name.to_s.empty?, "Gary invisible before battle")
@@ -212,7 +210,7 @@ module KantoNativeCheck
       "bill_return"=>return_landing,"nugget_quantity"=>$bag.quantity(:NUGGET),
       "ticket_mode"=>(ticket_item ? "native_item" : "regional_permit"),
       "ticket_quantity"=>(ticket_item ? $bag.quantity(:SSTICKET) : 0),
-      "native_trainer_teams"=>18,"gary_retry"=>true,"bill_completed"=>true}
+      "gary_retry"=>true,"bill_completed"=>true}
     $map_factory.setup(gym)
     report
   end
@@ -401,12 +399,19 @@ module KantoNativeCheck
              "Misty original FRLG team differs from Staryu/Starmie")
     # Native Cerulean quest proof begins after confirming Cascade cannot
     # substitute for Bill; leave the existing badge checks intact below.
+    misty_map = BlueKantoPilot.kanto_map_id(42)
+    $map_factory.setup(misty_map)
+    north_callback!($game_map.events[1],
+      'BlueKantoPilot.battle(:BLUE_KANTO_LEADER_MISTY, "Misty", "KANTO_042_001")')
     losses_remaining["Misty"] = 1
     require!(!BlueKantoPilot.battle(:BLUE_KANTO_LEADER_MISTY, "Misty", "KANTO_042_001"),
              "Misty loss marked as win")
     require!(!BlueRegions.local_achievements(BlueKantoPilot.progress,"KANTO").include?("CASCADE"),
              "Misty defeat granted Cascade")
+    require!(!$game_self_switches[[misty_map,1,"A"]], "Misty defeat changed event page")
     BlueKantoPilot.battle(:BLUE_KANTO_LEADER_MISTY, "Misty", "KANTO_042_001")
+    require!(BlueKantoPilot.sync_trainer_event("KANTO_042_001","Misty",1),
+             "Misty victory switch missing")
     require!(BlueRegions.local_achievements(BlueKantoPilot.progress,"KANTO") == ["BOULDER","CASCADE"],
              "Cascade Badge not awarded uniquely")
     BlueKantoPilot.battle(:BLUE_KANTO_LEADER_MISTY, "Misty", "KANTO_042_001")
@@ -1066,7 +1071,7 @@ module KantoNativeCheck
       [1,2,3,6,7,8,9,10,11].map { |id| "KANTO_054_%03d" % id }
     require!((north_keys - north_state["pilot_wins"]).empty?, "K00-C victory keys lost")
     gym_id,bridge_id,route_id,bill_id = north_report["map_ids"][1,4]
-    require!([[gym_id,11],[gym_id,16],[bridge_id,6],[bill_id,3],[bill_id,4],[bill_id,8]].all? { |mid,eid| $game_self_switches[[mid,eid,"A"]] },
+    require!([[gym_id,1],[gym_id,11],[gym_id,16],[bridge_id,6],[bill_id,3],[bill_id,4],[bill_id,8]].all? { |mid,eid| $game_self_switches[[mid,eid,"A"]] },
              "K00-C self switches lost")
     require!($bag.quantity(:NUGGET) == north_report["nugget_quantity"], "Nugget quantity changed after reload")
     if north_report["ticket_mode"] == "native_item"
@@ -1076,6 +1081,7 @@ module KantoNativeCheck
     # stubbed and collision witnesses are not manual walking/door animation.
     north_report["save_reload"] = true
     north_report["victory_keys"] = north_keys.length
+    north_report["native_trainer_encounters"] = north_keys.length
     north_report["misty_loss_retry"] = true
     File.write("Data/blue-kanto-k00-cerulean-proof.txt", north_report.inspect)
     puts "KANTO_K00_CERULEAN_NATIVE_REPORT:#{north_report.inspect}"
