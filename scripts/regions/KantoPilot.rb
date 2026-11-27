@@ -2485,8 +2485,9 @@ end
 
 module BlueKantoPilot::CeruleanDoorContact
   def move_generic(dir, turn_enabled = true)
-    contact = turn_enabled && !moving? && !jumping? &&
-      BlueKantoPilot.cerulean_door_contact(self,dir)
+    contact = turn_enabled && BlueKantoPilot.cerulean_door_contact(self,dir)
+    contact = nil if contact && ((respond_to?(:moving?) && moving?) ||
+      (respond_to?(:jumping?) && jumping?))
     city = $game_map if contact
     result = super
     if contact && $game_map.equal?(city)

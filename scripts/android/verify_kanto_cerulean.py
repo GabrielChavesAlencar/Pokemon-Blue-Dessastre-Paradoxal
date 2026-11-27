@@ -29,6 +29,38 @@ KANTO_RUNTIME = "Plugins/ZZZZZ Blue Kanto Pilot/KantoPilot.rb"
 KANTO_ATLAS = "Plugins/ZZZZZ Blue Kanto Pilot/KantoWallMap.png"
 
 
+# Exact source-authored city event identity, coordinates and remapped
+# transfer landings; this checks RXDATA bytes shipped to the player.
+CERULEAN_DOORS = {
+    3: ("44", (10, 9), (3, 2)),
+    7: ("43", (13, 28), (5, 8)),
+    8: ("46", (15, 17), (4, 7)),
+    9: ("48", (30, 11), (3, 7)),
+    10: ("44", (10, 11), (3, 8)),
+    11: ("45", (17, 11), (4, 7)),
+    12: ("47", (23, 28), (4, 7)),
+    27: ("48", (31, 9), (4, 2)),
+}
+
+
+def verify_cerulean_doors(native: bytes, mapping: dict) -> None:
+    city = loads(native)
+    events = city.attrs.get("@events") if isinstance(city, RubyObject) else None
+    if not isinstance(events, dict):
+        raise ValueError("Cerulean city RXDATA has no event table")
+    for event_id, (source, xy, landing) in CERULEAN_DOORS.items():
+        event = events.get(event_id)
+        if (not isinstance(event, RubyObject) or
+                (event.attrs.get("@x"), event.attrs.get("@y")) != xy):
+            raise ValueError(f"Cerulean door {event_id} missing or moved in installed map")
+        pages = event.attrs.get("@pages", [])
+        if not any(page.attrs.get("@trigger") == 1 and any(
+                op.attrs.get("@code") == 201 and
+                op.attrs.get("@parameters", [])[:4] == [0, mapping[source], *landing]
+                for op in page.attrs.get("@list", [])) for page in pages):
+            raise ValueError(f"Cerulean door {event_id} missing native transfer in installed map")
+
+
 def assert_delivery(path: Path, channel: str) -> dict:
     roots = {
         "kanto": ("Pokemon-Blue-Kanto-Android/", "Kanto pilot.json"),
@@ -60,6 +92,7 @@ def assert_delivery(path: Path, channel: str) -> dict:
             native = root + f"Data/Map{destination:03d}.rxdata"
             if native not in files or archive.getinfo(native).file_size < 128:
                 raise ValueError(f"Source Map{source} was not compiled for Android")
+        verify_cerulean_doors(archive.read(root + f"Data/Map{mapping['39']:03}.rxdata"), mapping)
         # Native connections must use the DESTINATION MapIDs, never the FRLG
         # donor IDs. This also catches old connected-map files in a new ZIP.
         connections = root + "PBS/map_connections_kanto.txt"
@@ -103,7 +136,7 @@ def assert_delivery(path: Path, channel: str) -> dict:
         if (b"def self.cerulean_rival_crossing?" not in rival or
                 b"Game_Event.prepend(BlueKantoPilot::CeruleanRivalActor)" not in rival):
             raise ValueError("Cerulean Gary movement/actor fix missing")
-        for callback in (b"def self.cerulean_bike_exchange", b"def self.cerulean_rocket", b"def self.cerulean_house_entry?"):
+        for callback in (b"def self.cerulean_bike_exchange", b"def self.cerulean_rocket", b"def self.cerulean_house_entry?", b"def self.cerulean_door_contact"):
             if callback not in rival:
                 raise ValueError("Cerulean interiors runtime missing")
         for callback in (b"def self.daycare_deposit", b"def self.daycare_withdraw", b"def self.daycare_menu", b"PokemonGlobalMetadata.prepend(BlueKantoDayCareMetadata)"):
@@ -161,7 +194,7 @@ def assert_delivery(path: Path, channel: str) -> dict:
             "music_maps": EXPECTED_MUSIC_MAPS,
             "compiled_journey": True, "compiled_cerulean_gary": True,
             "compiled_kanto_ss_ticket": True, "compiled_cerulean_bike_items": True,
-            "compiled_cerulean_dig_machine": True}
+            "compiled_cerulean_dig_machine": True, "cerulean_city_doors": 8}
 
 
 def main() -> None:
