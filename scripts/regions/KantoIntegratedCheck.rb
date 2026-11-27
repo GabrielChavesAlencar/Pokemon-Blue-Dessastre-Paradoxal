@@ -254,16 +254,26 @@ module KantoIntegratedCheck
       BlueRegions.award(cut_state,"KANTO","CASCADE")
       require!(BlueRegionalPolicy.field_result(:CUT) == :hm,"K03-C missing Cut HM accepted")
       require!($bag.add(cut_item,1),"K03-C unable to add temporary HM")
-      $player.party.replace([Pokemon.new(:PIDGEY,5)])
-      require!(BlueRegionalPolicy.field_result(:CUT) == :pokemon,"K03-C incompatible Pokemon accepted")
-      # Keep the native Bulbasaur contract; diagnose the compiled learnset
-      # and party identity rather than mocking compatibility or bypassing Cut.
-      cut_user = Pokemon.new(:BULBASAUR,5)
-      $player.party.replace([cut_user])
+      incompatible = Pokemon.new(:PIDGEY,5)
+      $player.party.replace([incompatible])
+      require!(!incompatible.compatible_with_move?(:CUT) &&
+        BlueRegionalPolicy.field_result(:CUT) == :pokemon &&
+        BlueRegionalPolicy.field_result(:CUT,incompatible) == :pokemon,
+        "K03-C incompatible Pokemon accepted")
+      # Native receipt 46014131620 proved that Blue's compiled Bulbasaur
+      # does not learn Cut, while Rattata, Paras and Farfetch'd do. The gate
+      # intentionally respects the installed species data, not FRLG assumptions.
+      # Use a fixed audited compatible species (never search until one passes).
+      cut_user = Pokemon.new(:RATTATA,5)
+      require!(cut_user.compatible_with_move?(:CUT) && !cut_user.hasMove?(:CUT),
+        "K03-C audited native Rattata fixture no longer compatible or already knows Cut")
+      require!(BlueRegionalPolicy.field_result(:CUT,cut_user) == :pokemon,
+        "K03-C compatible Pokemon outside party accepted")
+      $player.party.replace([cut_user,incompatible])
       cut_result = BlueRegionalPolicy.field_result(:CUT)
       cut_selected = BlueRegionalPolicy.field_result(:CUT,cut_user)
       cut_diagnostic = {
-        "region"=>BlueRegionalPolicy.state["current"],
+        "region"=>BlueRegionalPolicy.state["current"], "species"=>cut_user.species,
         "badge"=>BlueRegions.local_achievements(BlueRegionalPolicy.state,"KANTO"),
         "hm"=>cut_item, "hm_owned"=>BlueRegionalPolicy.hm_owned?(:CUT),
         "move_exists"=>GameData::Move.exists?(:CUT),
@@ -284,6 +294,16 @@ module KantoIntegratedCheck
       puts "KANTO_K03C_INTEGRATED_CUT_DIAGNOSTIC:#{cut_diagnostic.inspect}"
       require!(cut_result == :allowed && cut_selected == :allowed,
         "K03-C eligible Cut blocked: #{cut_diagnostic.inspect}")
+      require!(BlueRegionalPolicy.field_result(:CUT,incompatible) == :pokemon,
+        "K03-C incompatible selected Pokemon borrowed Rattata eligibility")
+      original_hp = cut_user.hp
+      cut_user.hp = 0
+      require!(cut_user.fainted? && BlueRegionalPolicy.field_result(:CUT) == :pokemon &&
+        BlueRegionalPolicy.field_result(:CUT,cut_user) == :pokemon,
+        "K03-C fainted compatible Pokemon accepted")
+      cut_user.hp = original_hp
+      require!(BlueRegionalPolicy.field_result(:CUT) == :allowed,
+        "K03-C healed eligible Pokemon remains blocked")
     ensure
       $bag.remove(cut_item,1) if cut_item && $bag.has?(cut_item)
       $player.party.replace(original_party)

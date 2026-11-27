@@ -59,6 +59,8 @@ A [auditoria de mapas de Kanto de 19/11/2026](docs/KANTO_MAPAS_AUSENTES_2026_11_
 
 ## Continuidade do projeto
 
+**[Roadmap Codex — Unova 100% jogável, Windows e Android](docs/UNOVA_ROADMAP_CODEX_100_JOGAVEL_WINDOWS_ANDROID.md)** — execução nativa de White, fontes, MapIDs, campanha, QA e publicações sincronizadas.
+
 **[Roadmap atual de Kanto e regra obrigatória de publicação Windows + Android](docs/KANTO_ROADMAP_PUBLICACAO_WINDOWS_ANDROID.md)** — cada mudança perceptível deve ser publicada nas duas plataformas antes do próximo lote de desenvolvimento.
 
 [Próximos passos do jogo, de Kanto e do portal](docs/PROXIMOS_PASSOS.md) · [Plano Codex de testes reais para a Barra 2](docs/KANTO_CODEX_TESTES_E2E.md) · [Prompt pronto para Codex](docs/KANTO_CODEX_PROMPT.md)
