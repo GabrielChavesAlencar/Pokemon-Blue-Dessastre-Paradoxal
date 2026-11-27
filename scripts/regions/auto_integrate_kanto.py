@@ -180,7 +180,9 @@ def integrate(project: Path = ROOT, game: Path | None = None,
                              legacy.get("source") == "Essentials FRLG 21.1" and
                              ((target_count == 145 and old_count == 142) or
                               (target_count == 151 and old_count in (142, 145)) or
-                              (target_count == 152 and old_count in (142, 145, 151))) and
+                              (target_count == 152 and old_count in (142, 145, 151)) or
+                              (target_count == old_count and target_count >= 151 and
+                               "Cerulean door" in str(err))) and
                              (game / KANTO_MARKER).is_file())
             except (OSError, ValueError, TypeError, AttributeError, KeyError):
                 candidate = False

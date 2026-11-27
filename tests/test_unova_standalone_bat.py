@@ -31,6 +31,7 @@ NEEDED=(
  "scripts/regions/audit_unova_a14_sandbox.py",
  "scripts/install_game.py",
  "scripts/regions/install_kanto.py",
+ "scripts/regions/cerulean_doors.py",
  "scripts/regions/pilot.py",
  "scripts/regions/kanto_wall_atlas.py",
  "scripts/regions/johto_main_preview.py",
@@ -77,7 +78,7 @@ class StandaloneBatTests(unittest.TestCase):
         self.assertIn("python",self.prefix.casefold())
         self.assertIn("exit /b",self.prefix)
 
-    def test_02_contains_all_twenty_eight_dependency_files(self):
+    def test_02_contains_all_twenty_nine_dependency_files(self):
         self.assertEqual(set(self.files),set(NEEDED))
 
     def test_03_embedded_files_same_as_repository(self):

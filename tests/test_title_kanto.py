@@ -1,4 +1,4 @@
-"""Verify Game.exe dispatches Kanto, Johto and Sinnoh test options safely.
+"""Verify Game.exe dispatches the main title and regional start options safely.
 
 The runtime fixture emulates Essentials and the Decades Auto Multi Save
 signature without touching the original saves or launching processes.
@@ -32,8 +32,9 @@ class TitleKantoTests(unittest.TestCase):
         assert "BlueKantoTitle.install" in setup, "Plugin was not activated"
         title = SOURCE.read_text("utf-8")
         assert "SINNOH_LABEL" in title and "Testar Sinnoh" in title
-        assert "pilot_sinnoh.py" in title and "SINNOH_JOGAR_EXPERIMENTAL.bat" in title
-        assert "Sinnoh pilot.json" in title, "Isolated Sinnoh pilot must not show the menu again"
+        assert 'BlueRegionStart.request_initial("SINNOH")' in title
+        assert "ordered << :blue_test_sinnoh if sinnoh_experimental_copy?" in title
+        self.assertNotIn("SINNOH_JOGAR_EXPERIMENTAL.bat", title)
         assert "ensure_source.py" in launcher, "Kanto launcher can't bootstrap source maps"
         assert "--launch-only" in launcher, "Experimental launch needs no Win32 window probe"
         self.assertNotIn("game\\data", launcher.lower(), "The pilot BAT must not overwrite main game saves")

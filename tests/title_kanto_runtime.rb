@@ -251,15 +251,13 @@ Dir.mktmpdir("blue-title-root-") do |root|
       end
       require_check(BlueKantoTitle.hoenn_launcher == [File.join(full_hoenn, "Game.exe"), full_hoenn],
                     "Hoenn should prefer the current compiled pilot over the older copy")
-      [["johto", "Johto", "blue-johto-qa-compiled.txt"], ["sinnoh", "Sinnoh", "blue-sinnoh-compiled.txt"]].each do |key, label, stamp|
-        pilot = File.join(root, ".blue-work", "#{key}-pilot")
-        FileUtils.mkdir_p(File.join(pilot, "Data"))
-        File.write(File.join(pilot, "Game.exe"), "pilot")
-        File.write(File.join(pilot, "#{label} pilot.json"), "{}")
-        File.write(File.join(pilot, "Data", stamp), "compiled")
-        require_check(BlueKantoTitle.public_send("#{key}_launcher") == [File.join(pilot, "Game.exe"), pilot],
-                      "#{label} must open its compiled copy before looking for a BAT")
-      end
+      johto = File.join(root, ".blue-work", "johto-pilot")
+      FileUtils.mkdir_p(File.join(johto, "Data"))
+      File.write(File.join(johto, "Game.exe"), "pilot")
+      File.write(File.join(johto, "Johto pilot.json"), "{}")
+      File.write(File.join(johto, "Data", "blue-johto-qa-compiled.txt"), "compiled")
+      require_check(BlueKantoTitle.johto_launcher == [File.join(johto, "Game.exe"), johto],
+                    "Johto must open its compiled copy before looking for a BAT")
       Dir.chdir(hoenn) do
         require_check(BlueKantoTitle.hoenn_launcher.nil?, "Hoenn may launch itself recursively")
         require_check(BlueKantoTitle.command_order(original, true) == [0, 1, 2, 3],

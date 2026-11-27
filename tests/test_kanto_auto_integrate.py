@@ -169,6 +169,40 @@ class KantoAutoIntegrationTests(unittest.TestCase):
         self.assertIn("--migrate-existing", self.calls[2])
         self.assertIn("--verify-installed", self.calls[3])
 
+    def test_current_count_broken_cerulean_door_retries_verified_migration(self):
+        import json
+        (self.game / auto.KANTO_MARKER).write_text("installed")
+        maps = {str(i): i + 300 for i in range(152)}
+        (self.game / auto.KANTO_MANIFEST).write_text(json.dumps({
+            "schema": 1, "source": "Essentials FRLG 21.1", "maps": maps}))
+        catalogue = self.project / "data/regions/kanto-source.json"
+        catalogue.parent.mkdir(parents=True)
+        catalogue.write_text(json.dumps({"maps": maps}))
+        def runner(argv, project, env):
+            self.calls.append(argv)
+            if len(self.calls) == 1:
+                raise ValueError("Cerulean door 7 missing or moved in installed map")
+        result = auto.integrate(self.project, self.game, run=runner)
+        self.assertTrue(result["ready"])
+        self.assertIn("--migrate-existing", self.calls[2])
+        self.assertIn("--verify-installed", self.calls[3])
+
+    def test_current_count_unrelated_error_never_rebuilds(self):
+        import json
+        (self.game / auto.KANTO_MARKER).write_text("installed")
+        maps = {str(i): i + 300 for i in range(152)}
+        (self.game / auto.KANTO_MANIFEST).write_text(json.dumps({
+            "schema": 1, "source": "Essentials FRLG 21.1", "maps": maps}))
+        catalogue = self.project / "data/regions/kanto-source.json"
+        catalogue.parent.mkdir(parents=True)
+        catalogue.write_text(json.dumps({"maps": maps}))
+        def runner(argv, project, env):
+            self.calls.append(argv)
+            raise ValueError("Unrelated map integrity error")
+        result = auto.integrate(self.project, self.game, run=runner)
+        self.assertFalse(result["ready"])
+        self.assertEqual(len(self.calls), 1)
+
     def test_partial_import_without_marker_is_not_overwritten(self):
         partial = self.game / "PBS/trainers_kanto.txt"
         partial.write_text("existing user Kanto data")

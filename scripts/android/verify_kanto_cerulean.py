@@ -19,6 +19,7 @@ sys.path.insert(0, str(ROOT))
 from scripts.android.package import compiled_region
 from server.ruby_marshal import loads, RubyObject
 from scripts.regions.kanto_wall_atlas import render_wall_atlas
+from scripts.regions.cerulean_doors import CERULEAN_DOORS, verify_cerulean_doors
 
 SOURCE_MAP_IDS = ("39", "42", "43", "44", "45", "46", "47", "48", "53", "54", "55", "58")
 EDGES = (("39", "53"), ("39", "54"), ("53", "54"))
@@ -60,6 +61,7 @@ def assert_delivery(path: Path, channel: str) -> dict:
             native = root + f"Data/Map{destination:03d}.rxdata"
             if native not in files or archive.getinfo(native).file_size < 128:
                 raise ValueError(f"Source Map{source} was not compiled for Android")
+        verify_cerulean_doors(archive.read(root + f"Data/Map{mapping['39']:03}.rxdata"), mapping)
         # Native connections must use the DESTINATION MapIDs, never the FRLG
         # donor IDs. This also catches old connected-map files in a new ZIP.
         connections = root + "PBS/map_connections_kanto.txt"
@@ -103,7 +105,7 @@ def assert_delivery(path: Path, channel: str) -> dict:
         if (b"def self.cerulean_rival_crossing?" not in rival or
                 b"Game_Event.prepend(BlueKantoPilot::CeruleanRivalActor)" not in rival):
             raise ValueError("Cerulean Gary movement/actor fix missing")
-        for callback in (b"def self.cerulean_bike_exchange", b"def self.cerulean_rocket", b"def self.cerulean_house_entry?"):
+        for callback in (b"def self.cerulean_bike_exchange", b"def self.cerulean_rocket", b"def self.cerulean_house_entry?", b"def self.cerulean_door_contact"):
             if callback not in rival:
                 raise ValueError("Cerulean interiors runtime missing")
         for callback in (b"def self.daycare_deposit", b"def self.daycare_withdraw", b"def self.daycare_menu", b"PokemonGlobalMetadata.prepend(BlueKantoDayCareMetadata)"):
@@ -161,7 +163,7 @@ def assert_delivery(path: Path, channel: str) -> dict:
             "music_maps": EXPECTED_MUSIC_MAPS,
             "compiled_journey": True, "compiled_cerulean_gary": True,
             "compiled_kanto_ss_ticket": True, "compiled_cerulean_bike_items": True,
-            "compiled_cerulean_dig_machine": True}
+            "compiled_cerulean_dig_machine": True, "cerulean_city_doors": 8}
 
 
 def main() -> None:

@@ -6,7 +6,7 @@ import unittest
 from zipfile import ZipFile
 import zlib
 
-from scripts.android.verify_kanto_cerulean import assert_delivery, EDGES, JOURNEY, KANTO_RUNTIME, KANTO_ATLAS
+from scripts.android.verify_kanto_cerulean import assert_delivery, EDGES, JOURNEY, KANTO_RUNTIME, KANTO_ATLAS, CERULEAN_DOORS
 from scripts.regions.kanto_wall_atlas import render_wall_atlas
 from scripts.official_rules.prepare_restore import RubyString, dump
 from server.ruby_marshal import integer
@@ -34,11 +34,36 @@ def ticket_catalog(omit_bike=False, invalid_dig=False):
         records.append(sym(key) + record)
     return b"\x04\x08{" + integer(len(records)) + b"".join(records)
 
+def city_fixture(mapping, missing_door=None):
+    def sym(value):
+        raw = value.encode("ascii")
+        return b":" + integer(len(raw)) + raw
+
+    def obj(name, attrs):
+        return b"o" + sym(name) + integer(len(attrs)) + b"".join(
+            sym(k) + v for k, v in attrs.items())
+
+    def arr(values):
+        return b"[" + integer(len(values)) + b"".join(values)
+
+    events = {}
+    for event_id, (source, xy, landing) in CERULEAN_DOORS.items():
+        if event_id == missing_door:
+            continue
+        op = obj("RPG::EventCommand", {
+            "@code": dump(201), "@parameters": dump([0, mapping[source], *landing, 2, 0])})
+        page = obj("RPG::Event::Page", {"@trigger": dump(1), "@list": arr([op])})
+        events[event_id] = obj("RPG::Event", {
+            "@x": dump(xy[0]), "@y": dump(xy[1]), "@pages": arr([page])})
+    table = b"{" + integer(len(events)) + b"".join(dump(k) + v for k, v in events.items())
+    return b"\x04\x08" + obj("RPG::Map", {"@events": table})
+
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
 class KantoDeliveryTests(unittest.TestCase):
-    def fixture(self, channel, omit=None, short=None, omit_rival=False, omit_ticket=False, omit_bike=False, invalid_dig=False, atlas="authored"):
+    def fixture(self, channel, omit=None, short=None, omit_rival=False, omit_ticket=False, omit_bike=False, invalid_dig=False, atlas="authored", missing_door=None):
         manifest = json.loads((ROOT / "data/regions/kanto-source.json").read_text("utf8"))
         mapping = {source: 600 + index for index, source in enumerate(manifest["maps"])}
         root, marker = (("Pokemon-Blue-Kanto-Android/", "Kanto pilot.json")
@@ -59,7 +84,7 @@ class KantoDeliveryTests(unittest.TestCase):
             for original, destination in mapping.items():
                 if original != omit:
                     archive.writestr(root + f"Data/Map{destination:03}.rxdata",
-                                     b"map" if original == short else b"m" * 128)
+                                     b"map" if original == short else (city_fixture(mapping, missing_door) if original == "39" else b"m" * 128))
             archive.writestr(root + "PBS/map_connections_kanto.txt", "\n".join(
                 f"{mapping[a]},North,0,{mapping[b]},South,0" for a, b in EDGES))
             archive.writestr(root + "PBS/trainers_kanto.txt",
@@ -80,6 +105,10 @@ class KantoDeliveryTests(unittest.TestCase):
         for channel in ("kanto", "multiregion"):
             with self.subTest(channel=channel):
                 self.assertEqual(assert_delivery(self.fixture(channel), channel)["kanto_maps"], 152)
+
+    def test_missing_cerulean_door_is_rejected_even_with_all_maps_present(self):
+        with self.assertRaisesRegex(ValueError, "Cerulean door 7 missing"):
+            assert_delivery(self.fixture("multiregion", missing_door=7), "multiregion")
 
     def test_authored_atlas_required_in_both_channels(self):
         for channel in ("kanto", "multiregion"):
