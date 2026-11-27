@@ -235,6 +235,8 @@ Não iniciar antes da verificação das duas publicações e do gate de QA físi
 
 **K03-D — IN_PROGRESS:** Lt. Surge, puzzle das lixeiras em ambos os sentidos, reinício após erro, proteção contra callback remoto, sincronização das barreiras em carregamento, prova nativa de entrada/Cut, derrota/retry e esmeralda única. Nenhum novo MapID ou alteração de equipes. Aguardar CI e revisar recibos de colisão/Cut antes do merge. Não iniciar Rota11/Diglett antes da publicação de K03-D.
 
+**CI K03-D — HEAD `7a1ca1b2a3c02ce6be0e1f7ecd19d38984efc600`:** 7/7 workflows e 15/15 jobs aprovados; [recibo nativo](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/46045536012/job/140663735372) confirma 15 lixeiras/44 pares ordenados, reset, componentes 111→153, derrota/retry, delta de esmeralda +1 e save/reload. A porta 10 de Vermilion estava inacessível antes de Cut e a árvore 1 em (23,24) era alcançável. Faltava provar o efeito nativo da árvore e a entrada após Cut: acrescentada exigência do interpretador real (pbCut/pbSmashThisEvent), colisão no mapa carregado, HM preservado e transferência por Player Touch, com novo marcador `KANTO_K03D_NATIVE_CUT_ACCESS_OK`. Nova CI obrigatória; sem merge ou publicação até evidência integral.
+
 ## Referências
 
 - [Etapas de Kanto](KANTO_ETAPAS.md), [plano E2E](KANTO_CODEX_TESTES_E2E.md), [integração Decades](KANTO_INTEGRACAO_DECADES.md), [auditoria dos mapas ausentes](KANTO_MAPAS_AUSENTES_2026_11_19.md), [plano regional v2](PLANO_REGIOES_DESSASTRE_V2.md).

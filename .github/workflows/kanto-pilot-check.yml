@@ -312,7 +312,10 @@ jobs:
               Write-Host 'KANTO_K03C_BOARDING_CAPTAIN_CUT_SAVE_RELOAD_OK'
               $surgeProof="$pilot/Data/blue-kanto-k03d-proof.txt"
               if(-not (Test-Path $surgeProof)){throw 'K03-D native Surge proof missing'}
-              Write-Host ("KANTO_K03D_NATIVE_SURGE_REPORT:" + (Get-Content $surgeProof -Raw).Trim())
+              $surgeReceipt=(Get-Content $surgeProof -Raw).Trim()
+              if($surgeReceipt -notmatch '"cut_access"=>\{' -or $surgeReceipt -notmatch '"native_interpreter"=>true' -or $surgeReceipt -notmatch '"after"=>true'){throw 'K03-D physical Cut receipt incomplete'}
+              Write-Host ("KANTO_K03D_NATIVE_SURGE_REPORT:" + $surgeReceipt)
+              Write-Host 'KANTO_K03D_NATIVE_CUT_ACCESS_OK'
               Write-Host 'KANTO_K03D_SURGE_THUNDER_SAVE_RELOAD_OK'
               $corridorTrace="$pilot/Data/blue-kanto-k03a-trace.txt"
               $corridorProof="$pilot/Data/blue-kanto-k03a-proof.txt"

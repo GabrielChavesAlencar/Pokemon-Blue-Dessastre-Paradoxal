@@ -1337,8 +1337,12 @@ module KantoNativeCheck
   # connections. Exclude Oak's active touch tiles when testing a bypass.
   # Never mistake a collision path or a controlled callback for a real
   # keyboard-driven event-interpreter playthrough.
-  def self.opening_component(map_id, anchor, blocked = [], enforce_route2 = false, native_ledges = false)
-    $map_factory.setup(map_id)
+  def self.opening_component(map_id, anchor, blocked = [], enforce_route2 = false, native_ledges = false, reuse_loaded: false)
+    if reuse_loaded
+      require!($game_map.map_id == map_id, "K03-D collision probe lost loaded map")
+    else
+      $map_factory.setup(map_id)
+    end
     $game_map.events.each_value { |event| event.refresh }
     require!(anchor[0].between?(0,$game_map.width-1) &&
              anchor[1].between?(0,$game_map.height-1), "K01-B invalid anchor #{map_id}:#{anchor.inspect}")
@@ -2641,6 +2645,81 @@ module KantoNativeCheck
     gym_landing = north_transfer!(door,surge_map_id)
     door_id = door.id
     door_before_cut = north_event_reachable?(city_comp,door)
+    require!(!door_before_cut, "K03-D gym accessible without Cut")
+    tree = cut_trees.find { |ev| opening_action_witness(city_comp,ev) }
+    approach = opening_action_witness(city_comp,tree)
+    tree_id = tree.id
+    tree_xy = [tree.x,tree.y]
+    original_party = $player.party.dup
+    original_cut = $bag.quantity(anne_cut)
+    begin
+      # Native policy must accept the actual captain HM, not a fabricated
+      # item or a move taught by QA. Use a temporary compatible party member.
+      $player.party.replace([Pokemon.new(:PIDGEY,5)])
+      require!(BlueRegionalPolicy.field_result(:CUT) == :pokemon,
+        "K03-D incompatible party bypassed Cut")
+      $player.party.replace([Pokemon.new(:RATTATA,5)])
+      require!(BlueRegionalPolicy.field_result(:CUT) == :allowed,
+        "K03-D captain HM + Cascade + compatible party rejected")
+      $game_player.moveto(*approach.fetch("standing"))
+      $game_player.direction = approach.fetch("direction") if $game_player.respond_to?(:direction=)
+      $game_map.events.each_value { |ev| ev.clear_starting }
+      tree.start
+      interpreter = pbMapInterpreter
+      require!(!interpreter.running?, "K03-D Cut interpreter busy")
+      interpreter.setup_starting_event
+      require!(interpreter.running? && interpreter.instance_variable_get(:@event_id) == tree_id,
+        "K03-D native Cut event not selected")
+      # Native command 111 calls pbCut, then command 355 calls
+      # pbSmashThisEvent. No direct erase or synthetic through flag.
+      deadline = System.uptime + 12
+      loop do
+        interpreter.update
+        break if !interpreter.running? || System.uptime >= deadline
+        Graphics.update
+        $game_player.update
+        $game_map.update
+      end
+      require!(!interpreter.running?, "K03-D Cut event did not complete")
+      require!($bag.quantity(anne_cut) == original_cut, "K03-D Cut consumed HM")
+      city_after_cut = opening_component(vermilion,k03a_report.fetch("vermilion_center_landing"),
+        reuse_loaded: true)
+      require!(city_after_cut.key?(tree_xy) && north_event_reachable?(city_after_cut,door),
+        "K03-D native Cut did not open physical path to gym")
+      # Exercise the real player touch and native interpreter from a tile
+      # reached by the post-Cut collision component; no map setup beforehand.
+      door_step = {2=>[0,1],4=>[-1,0],6=>[1,0],8=>[0,-1]}.filter_map do |dir,(dx,dy)|
+        from = [door.x-dx,door.y-dy]
+        next unless city_after_cut.key?(from)
+        $game_player.moveto(*from)
+        [from,dir,$game_player.passable?(*from,dir)]
+      end.sort_by { |from,_dir,passable| [passable ? 0 : 1,city_after_cut.fetch(from)] }
+      selected = nil
+      door_step.each do |from,dir,passable|
+        $game_player.moveto(*from)
+        $game_map.events.each_value { |ev| ev.clear_starting }
+        $game_player.move_generic(dir,true)
+        deadline = System.uptime + 3
+        until door.starting || System.uptime >= deadline
+          break unless $game_player.moving? || $game_player.jumping?
+          Graphics.update
+          $game_player.update
+        end
+        if door.starting
+          selected = [from,dir,passable]
+          break
+        end
+      end
+      require!(selected, "K03-D post-Cut door did not start on player touch")
+      cut_transfer = cerulean_native_started_transfer!(door,surge_map_id,*selected)
+      require!(cut_transfer["landing"] == gym_landing, "K03-D gym entry landing changed")
+      cut_report = {"event"=>tree_id,"tree_xy"=>tree_xy,"before"=>false,
+        "after"=>true,"native_interpreter"=>true,"hm_preserved"=>true,
+        "before_cells"=>city_comp.length,"after_cells"=>city_after_cut.length,
+        "transfer"=>cut_transfer}
+    ensure
+      $player.party.replace(original_party)
+    end
     locked_comp = opening_component(surge_map_id,gym_landing)
     require!(!north_event_reachable?(locked_comp,$game_map.events[5]),
       "K03-D leader reachable while locks closed")
@@ -2683,6 +2762,7 @@ module KantoNativeCheck
     require!(exit_event,"K03-D gym return door missing")
     surge_report = {"gym"=>surge_map_id,"door"=>door_id,"landing"=>gym_landing,
       "city_cut_trees"=>trees,"door_reachable_before_cut"=>door_before_cut,
+      "cut_access"=>cut_report,
       "locked_component"=>locked_comp.length,"open_component"=>open_comp.length,
       "pairs"=>pairs,"wrong_can_reset"=>true,"return"=>north_transfer!(exit_event,vermilion)}
     losses_remaining["Lt. Surge"] = 1
@@ -3338,6 +3418,7 @@ module KantoNativeCheck
       "K03-D puzzle, victory or badge lost after reload")
     surge_report["save_reload"] = true
     File.write("Data/blue-kanto-k03d-proof.txt",surge_report.inspect)
+    puts "KANTO_K03D_NATIVE_CUT_ACCESS_OK"
     puts "KANTO_K03D_SURGE_THUNDER_SAVE_RELOAD_OK"
     anne_report["save_reload"] = true
     anne_report["cut_quantity"] = anne_quantity
