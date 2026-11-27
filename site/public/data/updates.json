@@ -2,6 +2,30 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5f1eca09bdbdda7493525dffe176f1895b17e7d2",
+      "date": "2026-11-27T07:04:53-03:00",
+      "title": "Merge pull request #364 from GabrielChavesAlencar/fix/cerulean-native-door-contact",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "01a3d88d26f785c4fcba8922dfe8fc6e59e5fd25",
+      "date": "2026-11-27T06:55:45-03:00",
+      "title": "Verify the shared title in the integrated native Kanto check",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "4a7551be85e684731e7159cef90cec959633e7c9",
+      "date": "2026-11-27T06:54:16-03:00",
+      "title": "Align title regression with the shared launcher and record Kanto roadmap status",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "5e8582431101546a4e461c762341c3dd36d936f8",
+      "date": "2026-11-27T06:47:55-03:00",
+      "title": "Synchronize Cerulean recovery with main and verify native door transfers",
+      "category": "Melhorias"
+    },
+    {
       "sha": "3e30767495173d5f273de02e2e4d96a8d6d97e95",
       "date": "2026-11-27T00:16:11-03:00",
       "title": "Document the verified shared Sinnoh Windows installation",
@@ -36,6 +60,36 @@
       "date": "2026-11-26T23:39:59-03:00",
       "title": "Start Sinnoh in the managed Blue-Story campaign",
       "category": "Melhorias"
+    },
+    {
+      "sha": "f1a23279533acb9bc921ea7d1dd4b868e59fc869",
+      "date": "2026-11-26T23:15:52-03:00",
+      "title": "fix(kanto): dispatch canonical door contact before movement and refresh portable bundle dependencies",
+      "category": "Correções"
+    },
+    {
+      "sha": "8a63ce46672f86dcbd5a22501b43908129be00ae",
+      "date": "2026-11-26T23:06:25-03:00",
+      "title": "fix(kanto): restrict door contact to real native events and test same-count repair gate",
+      "category": "Correções"
+    },
+    {
+      "sha": "494c0164f6e909ca5ae18afda2069e04282eead5",
+      "date": "2026-11-26T23:05:37-03:00",
+      "title": "fix(kanto): prove native interpreter transfer and repair verified same-catalogue door damage on Windows",
+      "category": "Correções"
+    },
+    {
+      "sha": "6f9bdbb47438ddcb79a5f31624ec58005b184839",
+      "date": "2026-11-26T23:04:17-03:00",
+      "title": "fix(kanto): isolate door contact from Gary and require all eight RXDATA doors in Android package",
+      "category": "Correções"
+    },
+    {
+      "sha": "f90c349469c678b8332736b7459664c1a7a0e01a",
+      "date": "2026-11-26T23:03:12-03:00",
+      "title": "fix(kanto): activate verified Cerulean doors on native doorstep contact and test real movement",
+      "category": "Correções"
     },
     {
       "sha": "734bc1ff2475fdb6913aee445ab84d37a33df5be",
