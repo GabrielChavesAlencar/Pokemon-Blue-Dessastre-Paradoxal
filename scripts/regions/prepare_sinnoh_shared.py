@@ -201,11 +201,12 @@ def prepare_world(game, outputs, report):
     return files, review, proof
 
 
-def prepare(project, game):
+def prepare(project, game, *, candidate_dir=None):
     project, game = project.resolve(), game.resolve()
     shared.assert_no_legacy_sinnoh_shared(game)
-    folder = project / CANDIDATE
-    if folder.exists() or folder.is_symlink() or folder.parent.is_symlink():
+    folder = candidate_dir if candidate_dir is not None else project / CANDIDATE
+    if (not folder.resolve().is_relative_to(project) or
+            folder.exists() or folder.is_symlink() or folder.parent.is_symlink()):
         raise ValueError("Candidate exists; preserve it or move it before preparing another")
     from sinnoh_source_download import ensure_sources
     from install_sinnoh_experimental_windows import build_files

@@ -108,6 +108,33 @@ class SinnohSharedInstallerTests(unittest.TestCase):
         self.assertEqual((self.game / 'mkxp.json').read_bytes(),b'shared save settings')
         self.assertEqual((self.game / 'Saves/Game.rxdata').read_bytes(),b'existing save')
 
+    def test_verified_local_sources_enable_sinnoh_in_the_managed_game(self):
+        proof = self.prepare()
+        (self.overlay/"manifest.json").unlink()
+        proof.update(profile="BLUE_SINNOH_SHARED_CANDIDATE_V1",
+                     map_symbols={"SINNOH_PLAYER_BEDROOM":442,"SINNOH_TWINLEAF_TOWN":443,
+                                  **{f"SINNOH_MAP_{mid}":mid for mid in range(444,586)}})
+        proof["approvals"] = dict.fromkeys((*self.approvals,"joiplay_travel","android_distribution"),False)
+
+        def prepare_main(project,game,*,candidate_dir):
+            self.assertEqual((project,game),(self.project,self.game))
+            for rel, raw in self.files.items():
+                self.put(candidate_dir/"world"/rel,raw)
+            return proof
+
+        with patch.object(shared,"SHARED_IDS",range(442,586)), \
+             patch("sinnoh_private_visual.discover",return_value={"maps":True,"overworlds":True}), \
+             patch.object(candidate,"prepare",side_effect=prepare_main) as generator:
+            self.assertTrue(shared.integrate(self.project,self.game)["changed"])
+            self.assertFalse(shared.integrate(self.project,self.game)["changed"])
+            self.assertEqual(shared.installed(self.game,local=True)["start"],[442,1,1])
+            with self.assertRaises(ValueError):
+                shared.installed(self.game,android=True,local=True)
+            generator.assert_called_once()
+        self.assertTrue((self.game/shared.LOCAL_MARKER).is_file())
+        self.assertFalse((self.game/shared.QA_MARKER).exists())
+        self.assertEqual((self.game/"Saves/Game.rxdata").read_bytes(),b"existing save")
+
     def test_installer_recovers_after_process_dies_during_marker_publication(self):
         self.prepare()
         crash = """

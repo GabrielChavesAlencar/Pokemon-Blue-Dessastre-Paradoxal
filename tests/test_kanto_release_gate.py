@@ -36,7 +36,7 @@ class KantoReleaseGateTests(unittest.TestCase):
     def test_current_catalog_is_safe_prototype_not_final_acceptance(self):
         result=release_gate.inspect(ROOT)
         self.assertTrue(result["ci_preflight_passed"])
-        self.assertEqual(result["map_count"],151)
+        self.assertEqual(result["map_count"],152)
         self.assertEqual(result["preview_maps"],35)
         self.assertEqual(result["trainers"],162)
         self.assertEqual(result["wild_locations"],28)
@@ -56,13 +56,22 @@ class KantoReleaseGateTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,"145 stable IDs"):
                 release_gate.inspect(root)
 
+    def test_daycare_identity_cannot_pass_release_gate_if_wrong(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder)
+            self.clone(root)
+            self.patch_json(root,"data/regions/kanto-source.json",
+                            lambda d:d["maps"].update({"58":"WRONG_DAY_CARE"}))
+            with self.assertRaisesRegex(ValueError,"Day Care"):
+                release_gate.inspect(root)
+
     def test_stale_portal_cannot_pass_release_gate(self):
         with tempfile.TemporaryDirectory() as folder:
             root=Path(folder)
             self.clone(root)
             self.patch_json(root,"site/public/data/kanto.json",
                             lambda d:d["locations"].pop())
-            with self.assertRaisesRegex(ValueError,"151 maps/162 grouped trainers"):
+            with self.assertRaisesRegex(ValueError,"152 maps/162 grouped trainers"):
                 release_gate.inspect(root)
 
     def test_forged_playable_status_rejected_before_manual_qa(self):

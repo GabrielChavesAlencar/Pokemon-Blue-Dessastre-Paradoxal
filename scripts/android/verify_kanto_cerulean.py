@@ -20,10 +20,10 @@ from scripts.android.package import compiled_region
 from server.ruby_marshal import loads, RubyObject
 from scripts.regions.kanto_wall_atlas import render_wall_atlas
 
-SOURCE_MAP_IDS = ("39", "42", "43", "44", "45", "46", "47", "48", "53", "54", "55")
+SOURCE_MAP_IDS = ("39", "42", "43", "44", "45", "46", "47", "48", "53", "54", "55", "58")
 EDGES = (("39", "53"), ("39", "54"), ("53", "54"))
-EXPECTED_KANTO_MAPS = 151
-EXPECTED_MUSIC_MAPS = 83
+EXPECTED_KANTO_MAPS = 152
+EXPECTED_MUSIC_MAPS = 84
 JOURNEY = "Plugins/ZZZZ Blue Story and Presentation/Journey.rb"
 KANTO_RUNTIME = "Plugins/ZZZZZ Blue Kanto Pilot/KantoPilot.rb"
 KANTO_ATLAS = "Plugins/ZZZZZ Blue Kanto Pilot/KantoWallMap.png"
@@ -48,7 +48,7 @@ def assert_delivery(path: Path, channel: str) -> dict:
         if (not isinstance(mapping, dict) or
                 len(mapping) != EXPECTED_KANTO_MAPS or
                 not all(source in mapping for source in SOURCE_MAP_IDS)):
-            raise ValueError("Android ZIP lacks the 151-map Kanto/Cerulean revision")
+            raise ValueError("Android ZIP lacks the 152-map Kanto/Day Care revision")
         all_ids = list(mapping.values())
         if (any(type(value) is not int or value <= 0 for value in all_ids)
                 or len(set(all_ids)) != len(all_ids)):
@@ -106,6 +106,9 @@ def assert_delivery(path: Path, channel: str) -> dict:
         for callback in (b"def self.cerulean_bike_exchange", b"def self.cerulean_rocket", b"def self.cerulean_house_entry?"):
             if callback not in rival:
                 raise ValueError("Cerulean interiors runtime missing")
+        for callback in (b"def self.daycare_deposit", b"def self.daycare_withdraw", b"def self.daycare_menu", b"PokemonGlobalMetadata.prepend(BlueKantoDayCareMetadata)"):
+            if callback not in rival:
+                raise ValueError("Kanto Day Care runtime missing")
         compiled_region(cache, "KantoPilot.rb", rival)
         if root + KANTO_ATLAS not in files or archive.read(root + KANTO_ATLAS) != render_wall_atlas():
             raise ValueError("Kanto authored atlas absent or differs from release policy")
@@ -152,7 +155,7 @@ def assert_delivery(path: Path, channel: str) -> dict:
         count = sum(line.startswith("MAP\t") for line in
                     archive.read(music).decode("utf8").splitlines())
         if count != EXPECTED_MUSIC_MAPS:
-            raise ValueError(f"Stale Kanto music scope: {count}, expected 83")
+            raise ValueError(f"Stale Kanto music scope: {count}, expected {EXPECTED_MUSIC_MAPS}")
     return {"channel": channel, "kanto_maps": EXPECTED_KANTO_MAPS,
             "cerulean_sources": list(SOURCE_MAP_IDS),
             "music_maps": EXPECTED_MUSIC_MAPS,

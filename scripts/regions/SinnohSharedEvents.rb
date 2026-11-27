@@ -43,11 +43,37 @@ module BlueSinnohSharedEvents
     BlueSinnohPilot.sync_route_trainers
   end
 
+  module PreserveAuthoredMaps
+    def compile_all(*args, &block)
+      return super unless BlueSinnohSharedEvents.map_ids
+      paths = Dir.glob("Data/Map[0-9][0-9][0-9].rxdata")
+      paths.concat(%w[Data/MapInfos.rxdata Data/Tilesets.rxdata Data/map_connections.dat])
+      originals = paths.to_h { |path| [path, File.binread(path)] }
+      begin
+        super
+      ensure
+        originals.each do |path, contents|
+          next if File.file?(path) && File.binread(path) == contents
+          temp = path + ".blue-sinnoh-compile"
+          begin
+            File.binwrite(temp, contents)
+            File.rename(temp, path)
+          ensure
+            File.delete(temp) if File.file?(temp)
+          end
+        end
+      end
+    end
+  end
+
   def self.bind!
     return false unless defined?(EventHandlers)
     EventHandlers.add(:on_enter_map, :blue_sinnoh_shared_events, proc { |*args| BlueSinnohSharedEvents.enter_map })
     BlueSinnohSafeMovement.install! if defined?(BlueSinnohSafeMovement)
     BlueSinnohForestEdge.install! if defined?(BlueSinnohForestEdge)
+    if defined?(Compiler) && !Compiler.singleton_class.ancestors.include?(PreserveAuthoredMaps)
+      Compiler.singleton_class.prepend(PreserveAuthoredMaps)
+    end
     if defined?(BlueSinnohF12DIntegrated)
       raise "Sinnoh: hooks de campo indisponíveis" unless BlueSinnohF12DIntegrated.bind_pages!
     end

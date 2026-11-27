@@ -8,17 +8,65 @@ module BlueKantoPilot
   LEAGUE_ORDER = %w[LORELEI BRUNO AGATHA LANCE CHAMPION].freeze
   LEAGUE_CHAMPION_VERSIONS = {BULBASAUR: 1, CHARMANDER: 2, SQUIRTLE: 3}.freeze
   FULL_POWER_OFFSET = 100
-  # The Blue protagonist charset can be taller than FRLG NPC frames.
-  # Scale ONLY the player while in Kanto, including the integrated game;
-  # a fixed 75% still looked oversized with larger charsets after loading.
-  PLAYER_OVERWORLD_ZOOM = 0.60
-  PLAYER_OVERWORLD_MAX_HEIGHT = 30
+  # Gary's imported Oak Lab charset is the visual reference. Measure actual
+  # non-transparent pixels rather than the padded height of the spritesheet.
   PILOT_OVERWORLD_SCALE = File.file?("Kanto pilot.json")
   INTEGRATED_KANTO = !PILOT_OVERWORLD_SCALE && File.file?("Data/blue-kanto-install.json")
 
-  def self.player_overworld_zoom(frame_height)
-    return PLAYER_OVERWORLD_ZOOM unless frame_height.is_a?(Numeric) && frame_height > 0
-    [PLAYER_OVERWORLD_ZOOM, PLAYER_OVERWORLD_MAX_HEIGHT.to_f / frame_height].min
+  # User capture (build 1606): NPC 80px, player 62px, feet aligned.
+  # The target is the actual NPC height, not 1.29 multiplied a second time
+  # after normalization. This also works at different screen zoom levels.
+  def self.overworld_frame_bounds(bitmap, x, y, width, height)
+    return nil unless bitmap && width.to_i > 0 && height.to_i > 0 &&
+      x >= 0 && y >= 0 && x+width <= bitmap.width && y+height <= bitmap.height
+    top = nil
+    bottom = nil
+    height.times do |row|
+      next unless width.times.any? { |column| bitmap.get_pixel(x+column,y+row).alpha > 0 }
+      top ||= row
+      bottom = row
+    end
+    top ? [top,bottom] : nil
+  end
+
+  # Measure all frames for the NPC reference. The player itself uses the
+  # active source rectangle: real Red frames vary from 46 to 50 opaque pixels.
+  def self.overworld_visible_height(bitmap, frame_width, frame_height)
+    return nil unless bitmap && frame_width.to_i > 0 && frame_height.to_i > 0
+    return nil unless bitmap.respond_to?(:get_pixel) &&
+      bitmap.width == frame_width * 4 && bitmap.height == frame_height * 4
+    tallest = 0
+    4.times do |row|
+      4.times do |column|
+        bounds = overworld_frame_bounds(bitmap,column*frame_width,row*frame_height,
+          frame_width,frame_height)
+        tallest = [tallest, bounds[1]-bounds[0]+1].max if bounds
+      end
+    end
+    tallest > 0 ? tallest : nil
+  end
+
+  def self.gary_overworld_height
+    name = cerulean_rival_graphic
+    return nil unless name && respond_to?(:cerulean_rival_graphic)
+    @gary_overworld_heights ||= {}
+    return @gary_overworld_heights[name] if @gary_overworld_heights.key?(name)
+    path = pbResolveBitmap("Graphics/Characters/#{name}")
+    return nil unless path
+    reference = Bitmap.new(path)
+    height = overworld_visible_height(reference, reference.width / 4, reference.height / 4)
+    @gary_overworld_heights[name] = height if height
+    height
+  rescue StandardError
+    nil
+  ensure
+    reference.dispose if reference && !reference.disposed?
+  end
+
+  def self.player_overworld_zoom(visible_height, reference_height = gary_overworld_height)
+    return 1.0 unless visible_height.is_a?(Numeric) && visible_height > 0 &&
+      reference_height.is_a?(Numeric) && reference_height > 0
+    reference_height.to_f / visible_height
   end
 
   # Shared runtime is active ONLY while the current regional save is in Kanto.
@@ -115,6 +163,70 @@ module BlueKantoPilot
 
   def self.progress
     $PokemonGlobal.blue_regions ||= BlueRegions.new_state("KANTO")
+  end
+
+  # Route 5 Day Care: one slot, using the native Essentials transactions.
+  def self.daycare_active?
+    kanto_current? && $game_map && $game_map.map_id == kanto_map_id(58) &&
+      defined?(DayCare) && $PokemonGlobal.respond_to?(:day_care)
+  end
+
+  def self.daycare_deposit(index)
+    return false unless daycare_active? && index.is_a?(Integer) &&
+      index >= 0 && index < $player.party.length
+    care = $PokemonGlobal.day_care
+    return false unless care && care.count == 0
+    pokemon = $player.party[index]
+    return false if !pokemon || pokemon.egg? || pokemon.cannot_store
+    return false unless $player.party.each_with_index.any? { |p,i|
+      i != index && !p.egg? && !p.fainted? }
+    DayCare.deposit(index)
+    true
+  end
+
+  def self.daycare_withdraw
+    return false unless daycare_active?
+    care = $PokemonGlobal.day_care
+    index = care.slots.index { |slot| slot.filled? }
+    return false unless index && !$player.party_full?
+    cost = care[index].cost
+    return false unless cost.is_a?(Integer) && cost >= 0 && $player.money >= cost
+    DayCare.withdraw(index)
+    $player.money -= cost
+    true
+  end
+
+  def self.daycare_menu
+    return false unless daycare_active?
+    care = $PokemonGlobal.day_care
+    if care.count == 0
+      commands = $player.party.map { |p| t("{1} Lv.{2}", "{1} Nv.{2}",p.name,p.level) }
+      commands << t("Cancel","Cancelar")
+      choice = pbMessage(t("Day Care: Which Pokémon should I look after?",
+        "Creche: De qual Pokémon devo cuidar?"),commands,commands.length)
+      return false unless choice.is_a?(Integer) && choice >= 0 && choice < commands.length-1
+      unless daycare_deposit(choice)
+        pbMessage(t("Keep at least one Pokémon able to battle. Eggs cannot be deposited here.",
+          "Mantenha pelo menos um Pokémon capaz de batalhar. Ovos não podem ficar aqui."))
+        return false
+      end
+      pbMessage(t("I'll take good care of your Pokémon. Come back later!",
+        "Vou cuidar bem do seu Pokémon. Volte mais tarde!"))
+      return true
+    end
+    slot = care.slots.find { |entry| entry.filled? }
+    return false unless slot
+    return false unless pbConfirmMessage(t(
+      "{1} gained {2} level(s). Take it back for $ {3}?",
+      "{1} ganhou {2} nível(is). Quer retirá-lo por $ {3}?",
+      slot.pokemon.name,slot.level_gain,slot.cost))
+    unless daycare_withdraw
+      pbMessage(t("You need room in your party and enough money.",
+        "Você precisa de espaço na equipe e dinheiro suficiente."))
+      return false
+    end
+    pbMessage(t("Take good care of your Pokémon!", "Cuide bem do seu Pokémon!"))
+    true
   end
 
   def self.choose_profile
@@ -2099,7 +2211,7 @@ module BlueKantoPilot
 end
 
 # Sprite_Character ja posiciona o pivot nos pes e atualiza o frame andando.
-# Reduzimos somente o sprite do player, sem alterar NPCs, imagens ou colisoes.
+# Igualamos a altura visível ao Gary, sem alterar NPCs, imagens ou colisoes.
 # Prevent a CutTree's alternate direction/pattern rows from rendering as
 # a stump while it is merely being interacted with. Do NOT prepend Game_Event
 # refresh/lock/update: that conflicts with Decades event refresh alias chains
@@ -2107,6 +2219,12 @@ end
 # Only the visible src_rect is normalized; game state is never modified.
 module BlueKantoPilot::PlayerOverworldScale
   def update
+    # Undo only our previous multiplier before the native update. Native
+    # camera/animation zoom may change and must not be multiplied repeatedly.
+    if instance_variable_defined?(:@blue_kanto_original_zoom)
+      self.zoom_x, self.zoom_y = @blue_kanto_original_zoom
+      remove_instance_variable(:@blue_kanto_original_zoom)
+    end
     super
     if BlueKantoPilot.kanto_current? && @character &&
        BlueKantoPilot.cut_tree_obstacle?(@character) &&
@@ -2124,16 +2242,26 @@ module BlueKantoPilot::PlayerOverworldScale
     # The existing regional predicate also checks the integrated install
     # and current save region; NPCs, other regions and collision stay intact.
     if @character && @character.equal?($game_player) && BlueKantoPilot.kanto_current?
-      unless instance_variable_defined?(:@blue_kanto_original_zoom)
+      sheet = respond_to?(:bitmap) ? bitmap : nil
+      if sheet && @cw && @ch && @character.respond_to?(:character_name) &&
+         respond_to?(:src_rect) && src_rect
+        rect = src_rect
+        key = [@character.character_name, sheet.object_id, sheet.width, sheet.height]
+        if @blue_kanto_visible_key != key
+          @blue_kanto_frame_bounds = {}
+          @blue_kanto_visible_key = key
+        end
+        frame = [rect.x,rect.y,rect.width,rect.height]
+        unless @blue_kanto_frame_bounds.key?(frame)
+          @blue_kanto_frame_bounds[frame] = BlueKantoPilot.overworld_frame_bounds(sheet,*frame)
+        end
+        bounds = @blue_kanto_frame_bounds[frame]
+        visible = bounds && bounds[1]-bounds[0]+1
+        factor = BlueKantoPilot.player_overworld_zoom(visible)
         @blue_kanto_original_zoom = [zoom_x, zoom_y]
+        self.zoom_x = zoom_x * factor
+        self.zoom_y = zoom_y * factor
       end
-      # @ch is the live frame height updated by Sprite_Character#update.
-      zoom = BlueKantoPilot.player_overworld_zoom(@ch)
-      self.zoom_x = zoom
-      self.zoom_y = zoom
-    elsif instance_variable_defined?(:@blue_kanto_original_zoom)
-      self.zoom_x, self.zoom_y = @blue_kanto_original_zoom
-      remove_instance_variable(:@blue_kanto_original_zoom)
     end
   end
 end
@@ -2204,10 +2332,53 @@ module BlueKantoPilot
     changed
   end
 
+  # A save or an already-cached neighbouring map may retain the pre-K02-C
+  # Game_Event table even after the installer added the six interiors.
+  # Refreshing its old pages cannot create the missing doors. Only reload a
+  # proven current Cerulean RXDATA, before sprites are created. Never touch
+  # save files, MapIDs, player coordinates, quest flags or unrelated maps.
+  CERULEAN_INTERIOR_DOORS = {3=>44,7=>43,8=>46,9=>48,10=>44,11=>45,12=>47,27=>48}.freeze
+
+  def self.cerulean_door_transfer?(commands, destination)
+    destination && Array(commands).any? { |op| op.code == 201 &&
+      op.parameters[0] == 0 && op.parameters[1] == destination }
+  end
+
+  def self.reload_stale_cerulean_doors(map)
+    return false unless map && kanto_current? && map.map_id == kanto_map_id(39)
+    destinations = CERULEAN_INTERIOR_DOORS.transform_values { |source| kanto_map_id(source) }
+    return false unless destinations.values.all? && destinations.values.uniq.length == 6
+    stale = destinations.keys.select do |id|
+      event = map.events[id]
+      !event || event.trigger != 1 || !cerulean_door_transfer?(event.list,destinations[id])
+    end
+    return false if stale.empty?
+    path = format("Data/Map%03d.rxdata",map.map_id)
+    return false unless File.file?(path)
+    authored = load_data(path)
+    # The on-disk map must already contain ALL eight verified transfers.
+    # An incomplete installation cannot be fixed by inventing a warp.
+    return false unless authored.respond_to?(:events) &&
+      destinations.all? { |id,destination| authored.events[id] &&
+        authored.events[id].pages.any? { |page| page.trigger == 1 &&
+          cerulean_door_transfer?(page.list,destination) } } &&
+      destinations.values.all? { |id| File.file?(format("Data/Map%03d.rxdata",id)) }
+    display = [map.display_x,map.display_y] if map.respond_to?(:display_x) && map.respond_to?(:display_y)
+    map.setup(map.map_id)
+    if display && map.respond_to?(:display_x=) && map.respond_to?(:display_y=)
+      map.display_x,map.display_y = display
+    end
+    puts "KANTO_CERULEAN_STALE_DOORS_RELOADED:#{stale.inspect}"
+    true
+  end
+
   # A save may restore an existing map without calling setup again.
   # Refresh through the engine's existing chain only after flags change.
   def self.sync_loaded_cerulean_map(map)
-    return unless map && sync_cerulean_quest_pages(map.map_id)
+    return unless map
+    reloaded = reload_stale_cerulean_doors(map)
+    changed = sync_cerulean_quest_pages(map.map_id)
+    return unless reloaded || changed
     map.need_refresh = true
     map.events.each_value { |event| event.refresh }
   end
@@ -2303,3 +2474,20 @@ MenuHandlers.add(:pause_menu, :blue_kanto_fossil_lab, {
     false
   end
 })
+
+# Region-specific serialized native storage. The ordinary Essentials DayCare
+# instance is never replaced; the native walking handler uses this getter.
+if defined?(PokemonGlobalMetadata) && defined?(DayCare)
+  module BlueKantoDayCareMetadata
+    def day_care
+      return super unless BlueKantoPilot.kanto_current?
+      if !@blue_kanto_day_care
+        @blue_kanto_day_care = DayCare.new
+        @blue_kanto_day_care.gain_exp = true
+        @blue_kanto_day_care.share_egg_moves = false
+      end
+      @blue_kanto_day_care
+    end
+  end
+  PokemonGlobalMetadata.prepend(BlueKantoDayCareMetadata)
+end

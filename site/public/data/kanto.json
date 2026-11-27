@@ -1698,6 +1698,13 @@
       "trainers": []
     },
     {
+      "id": "kanto-day-care",
+      "name": "Creche Pokémon",
+      "status": "experimental",
+      "methods": [],
+      "trainers": []
+    },
+    {
       "id": "kanto-route-5",
       "name": "Rota 5",
       "status": "experimental",

@@ -73,13 +73,13 @@ class KantoDeliveryTests(unittest.TestCase):
             archive.writestr(root + "Plugins/ZZZZ Blue Story and Presentation/RegionTravel.rb", travel)
             archive.writestr(root + "Data/PluginScripts.rxdata", cache)
             archive.writestr(root + "Data/items.dat", b"\x04\x08{\x00" if omit_ticket else ticket_catalog(omit_bike, invalid_dig))
-            archive.writestr(root + "Data/blue-kanto-music.txt", "MAP\tfixture\n" * 83)
+            archive.writestr(root + "Data/blue-kanto-music.txt", "MAP\tfixture\n" * 84)
         return target
 
     def test_all_maps_and_compiled_luis_guard_pass_in_both_channels(self):
         for channel in ("kanto", "multiregion"):
             with self.subTest(channel=channel):
-                self.assertEqual(assert_delivery(self.fixture(channel), channel)["kanto_maps"], 151)
+                self.assertEqual(assert_delivery(self.fixture(channel), channel)["kanto_maps"], 152)
 
     def test_authored_atlas_required_in_both_channels(self):
         for channel in ("kanto", "multiregion"):

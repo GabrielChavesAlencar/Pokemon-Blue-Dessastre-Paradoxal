@@ -53,15 +53,15 @@ class KantoMusicPhaseOneTests(unittest.TestCase):
     def test_145_actual_ids_and_35_previews_are_scoped_but_not_playing(self):
         content, report = self.compile()
         lines = content.decode().splitlines()
-        self.assertEqual(report["source_maps"], 151)
+        self.assertEqual(report["source_maps"], 152)
         self.assertEqual(report["preview_maps"], 35)
-        self.assertEqual(report["staged_map_rules"], 84)
+        self.assertEqual(report["staged_map_rules"], 85)
         self.assertEqual(report["staged_battles"], 8)
         self.assertEqual(report["staged_events"], 14)
         self.assertEqual(report["staged_scenes"], 13)
         self.assertEqual(report["active_map_bindings"], 0)
         self.assertEqual(report["active_battle_bindings"], 0)
-        self.assertEqual(len([line for line in lines if line.startswith("SCOPE\t")]), 151)
+        self.assertEqual(len([line for line in lines if line.startswith("SCOPE\t")]), 152)
         self.assertEqual(len([line for line in lines if line.startswith(("MAP\t","BATTLE\t"))]),0)
         pallet = report["real_map_ids"]["PALLET_TOWN"]
         self.assertEqual(pallet, 705)

@@ -5,6 +5,7 @@ from contextlib import contextmanager
 import json
 import os
 import re
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -32,11 +33,13 @@ ASSET = re.compile(r"(?:Graphics/(?:Tilesets|Autotiles|Characters)/SN(?:QA|SH)_[
                    r"Audio/(?:BGM|BGS|ME|SE)/SN(?:QA|SH)_[A-Za-z0-9_]+\.(?:ogg|wav)|"
                    r"PBS/[a-z_]+_sinnoh(?:_[a-z0-9_]+)?\.txt)")
 ID_RANGE = range(442, 600)
-# A clean 151-map Kanto installation can use IDs through 450. Its upgrades
+# A clean 152-map Kanto installation can use IDs through 451. Its upgrades
 # can instead append above Hoenn. Use the same Sinnoh slots on both bases.
-SHARED_IDS = range(451, 595)
+SHARED_IDS = range(452, 596)
 QA_PROFILE = "BLUE_SINNOH_SHARED_QA_V1"
 QA_MARKER = "Data/blue-sinnoh-shared-qa.txt"
+LOCAL_PROFILE = "BLUE_SINNOH_SHARED_LOCAL_V1"
+LOCAL_MARKER = "Data/blue-sinnoh-shared-local.txt"
 COMPILE_REQUEST = "Data/blue-compile-request.txt"
 PLUGIN_CACHE = "Data/PluginScripts.rxdata"
 INSTALL_LOCK = "Data/.blue-sinnoh-install.lock"
@@ -45,15 +48,16 @@ DIGEST = re.compile(r"[0-9a-f]{64}")
 BACKUP_NAME = re.compile(r"sinnoh-[0-9]{8}T[0-9]{12}Z")
 
 
-def validate_manifest(data, *, android=False, qa=False):
+def validate_manifest(data, *, android=False, qa=False, local=False):
     if not isinstance(data, dict):
         raise ValueError("Manifesto compartilhado de Sinnoh inválido.")
     approvals = ("map_ids", "asset_rights", "connected_world", "windows_travel")
     if android:
         approvals += ("joiplay_travel", "android_distribution")
     status = data.get("approvals", {})
-    profile_ok = (not android and data.get("profile") == QA_PROFILE and isinstance(status,dict) and
-                  all(status.get(key) is False for key in (*approvals,"joiplay_travel","android_distribution"))) if qa else (
+    profile_ok = (not android and not (qa and local) and
+                  data.get("profile") == (QA_PROFILE if qa else LOCAL_PROFILE) and isinstance(status,dict) and
+                  all(status.get(key) is False for key in (*approvals,"joiplay_travel","android_distribution"))) if qa or local else (
                   data.get("profile") == "BLUE_SINNOH_SHARED_V1" and isinstance(status,dict) and
                   all(status.get(key) is True for key in approvals))
     if data.get("schema") != 1 or not profile_ok:
@@ -62,13 +66,15 @@ def validate_manifest(data, *, android=False, qa=False):
     if (not isinstance(ids, list) or len(ids) != 144 or
             any(type(mid) is not int or mid not in ID_RANGE for mid in ids) or ids != sorted(set(ids))):
         raise ValueError("Reserva dos 144 MapIDs de Sinnoh inválida.")
+    if local and ids != list(SHARED_IDS):
+        raise ValueError("A instalação local de Sinnoh exige a reserva compartilhada.")
     for key in ("start", "arrival", "agent"):
         point = data.get(key)
         if (not isinstance(point, list) or len(point) != 3 or
                 any(type(v) is not int or v < 0 for v in point) or point[0] not in ids):
             raise ValueError(f"Posição física de Sinnoh inválida: {key}")
     symbols = data.get("map_symbols")
-    if (qa or symbols is not None) and (not isinstance(symbols,dict) or
+    if (qa or local or symbols is not None) and (not isinstance(symbols,dict) or
             not all(isinstance(key,str) and key.startswith("SINNOH_") and type(mid) is int
                     for key,mid in symbols.items()) or sorted(symbols.values()) != ids or
             symbols.get("SINNOH_PLAYER_BEDROOM") != data["start"][0] or
@@ -97,8 +103,8 @@ def marker(data):
     return ("BLUE_SINNOH_SHARED_V1\n" + "".join(",".join(map(str,row))+"\n" for row in rows)).encode("ascii")
 
 
-def verify_files(data, read, *, android=False, installed=False, qa=False):
-    validate_manifest(data, android=android, qa=qa)
+def verify_files(data, read, *, android=False, installed=False, qa=False, local=False):
+    validate_manifest(data, android=android, qa=qa, local=local)
     # Shared indexes can grow when another region is added. Semantic checks below
     # verify that the installed Sinnoh maps are still bound to those indexes.
     # The editable global indexes may grow. The candidate's Sinnoh rows must
@@ -214,11 +220,11 @@ def preserve_base(game, data, files):
         raise ValueError("PBS e conexões compiladas de Sinnoh divergem.")
 
 
-def installed(game, *, android=False, qa=False):
+def installed(game, *, android=False, qa=False, local=False):
     read = lambda rel: safe_file(game, rel).read_bytes()
-    if (game / QA_MARKER).exists() != qa:
-        raise ValueError("Instalação de QA de Sinnoh exige o verificador local de QA.")
-    return verify_files(json.loads(read(RECEIPT)), read, android=android, installed=True, qa=qa)
+    if (safe_file(game,QA_MARKER).exists(),safe_file(game,LOCAL_MARKER).exists()) != (qa,local):
+        raise ValueError("O perfil instalado de Sinnoh não corresponde ao modo de verificação.")
+    return verify_files(json.loads(read(RECEIPT)), read, android=android, installed=True, qa=qa, local=local)
 
 
 @contextmanager
@@ -247,7 +253,7 @@ def backup_folder(project, name):
 
 
 def tracked_file(relative):
-    if relative in INSTALL_FILES | MAP_PBS | {RECEIPT,START,QA_MARKER,COMPILE_REQUEST,PLUGIN_CACHE}:
+    if relative in INSTALL_FILES | MAP_PBS | {RECEIPT,START,QA_MARKER,LOCAL_MARKER,COMPILE_REQUEST,PLUGIN_CACHE}:
         return True
     if match := MAP_FILE.fullmatch(relative):
         return int(match[1]) in ID_RANGE
@@ -305,33 +311,46 @@ def integrate(project, game):
         return {"changed": False, "status": "fora da instalação gerenciada"}
     recover(project,game)
     if any((game / rel).exists() or (game / rel).is_symlink() for rel in (RECEIPT, START)):
-        installed(game)
+        installed(game,local=safe_file(game,LOCAL_MARKER).is_file())
         return {"changed": False, "status": "já integrado"}
     folder = project / ".blue-work/sinnoh-shared"
     manifest = folder / "manifest.json"
     if any(path.is_symlink() for path in (folder.parent,folder,manifest)) or not manifest.resolve().is_relative_to(project):
         raise ValueError("O pacote compartilhado de Sinnoh contém um caminho indireto.")
-    if not manifest.exists():
-        return {"changed": False, "status": "aguardando pacote compartilhado aprovado"}
-    return install_overlay(project,game,folder,manifest)
+    if manifest.exists():
+        return install_overlay(project,game,folder,manifest)
+
+    from sinnoh_private_visual import PACKS, discover
+    if len(discover(project)) != len(PACKS):
+        return {"changed": False, "status": "aguardando os dois ZIPs de origem de Sinnoh"}
+    from prepare_sinnoh_shared import prepare
+    folder.parent.mkdir(exist_ok=True)
+    print("[SINNOH] Preparando 144 mapas para o jogo principal.",flush=True)
+    with tempfile.TemporaryDirectory(prefix="sinnoh-local-",dir=folder.parent) as temp:
+        candidate = Path(temp) / "candidate"
+        proof = prepare(project,game,candidate_dir=candidate)
+        proof["profile"] = LOCAL_PROFILE
+        local_manifest = candidate / "manifest.json"
+        atomic(local_manifest,json.dumps(proof,ensure_ascii=False).encode("utf-8"))
+        return install_overlay(project,game,candidate/"world",local_manifest,local=True)
 
 
-def install_overlay(project, game, folder, manifest, *, qa=False):
+def install_overlay(project, game, folder, manifest, *, qa=False, local=False):
     with installer_lock(game):
         rollback_pending(project,game)
-        return apply_overlay(project,game,folder,manifest,qa=qa)
+        return apply_overlay(project,game,folder,manifest,qa=qa,local=local)
 
 
-def apply_overlay(project, game, folder, manifest, *, qa):
+def apply_overlay(project, game, folder, manifest, *, qa, local):
     if any((game / rel).exists() for rel in (RECEIPT, START)):
-        installed(game,qa=qa)
+        installed(game,qa=qa,local=local)
         return {"changed": False, "status": "já integrado"}
     assert_no_legacy_sinnoh_shared(game)
     if (game / "sinnoh-experimental-qa.json").exists():
         raise ValueError("O perfil experimental de Sinnoh deve ficar em uma cópia separada.")
-    data = validate_manifest(json.loads(manifest.read_bytes()), qa=qa)
+    data = validate_manifest(json.loads(manifest.read_bytes()), qa=qa, local=local)
     files = {rel:safe_file(folder, rel).read_bytes() for rel in data["files"]}
-    verify_files(data, files.__getitem__, qa=qa)
+    verify_files(data, files.__getitem__, qa=qa, local=local)
     additions = {safe_file(game, rel) for rel in files if rel not in data["base"]}
     if any(path.exists() for path in additions):
         raise ValueError("Arquivos de Sinnoh já existem sem registro de instalação compartilhada.")
@@ -339,6 +358,8 @@ def apply_overlay(project, game, folder, manifest, *, qa):
     changes = {**files, COMPILE_REQUEST:b"compile", RECEIPT:manifest.read_bytes()}
     if qa:
         changes[QA_MARKER] = b"STAGED_SHARED_QA\n"
+    if local:
+        changes[LOCAL_MARKER] = b"BLUE_SINNOH_SHARED_LOCAL_V1\n"
     changes[START] = marker(data)
     paths = {rel:safe_file(game,rel) for rel in (PLUGIN_CACHE,*changes)}
     originals = {rel:path.read_bytes() if path.is_file() else None for rel,path in paths.items()}
@@ -357,7 +378,7 @@ def apply_overlay(project, game, folder, manifest, *, qa):
         paths[PLUGIN_CACHE].unlink(missing_ok=True)
         for rel,raw in changes.items():
             atomic(paths[rel],raw)
-        installed(game,qa=qa)
+        installed(game,qa=qa,local=local)
     except BaseException:
         rollback_pending(project,game)
         raise
