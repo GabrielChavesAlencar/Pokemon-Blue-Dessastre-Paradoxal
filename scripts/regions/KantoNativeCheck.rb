@@ -1471,6 +1471,28 @@ module KantoNativeCheck
     require!($player.character_ID == 1 && !$game_player.character_name.empty? &&
              !$game_player.transparent, "Kanto sprite is not visible before the first step")
     require!(BlueKantoPilot.progress["pilot_profile_pending"], "Pilot missed character and name selection")
+    # Measure the actual installed protagonist and Gary art in the native engine.
+    gary_height = BlueKantoPilot.gary_overworld_height
+    require!(gary_height && gary_height > 0, "Gary Oak Lab visible height unavailable")
+    player_path = pbResolveBitmap("Graphics/Characters/#{$game_player.character_name}")
+    require!(player_path, "Player charset unavailable")
+    player_bitmap = Bitmap.new(player_path)
+    begin
+      player_height = BlueKantoPilot.overworld_visible_height(player_bitmap,
+        player_bitmap.width / 4, player_bitmap.height / 4)
+      require!(player_height && player_height > 0, "Player visible height unavailable")
+      factor = BlueKantoPilot.player_overworld_zoom(player_height)
+      require!((player_height * factor - gary_height).abs < 0.01,
+        "Player and Gary visible heights diverged")
+      puts "KANTO_GARY_VISIBLE_PLAYER_SCALE_REPORT:#{{
+        'gary_charset'=>BlueKantoPilot.cerulean_rival_graphic,
+        'gary_height'=>gary_height,'player_charset'=>$game_player.character_name,
+        'player_height'=>player_height,'zoom'=>factor,
+        'rendered_height'=>player_height*factor}.inspect}"
+      puts "KANTO_GARY_VISIBLE_PLAYER_SCALE_OK"
+    ensure
+      player_bitmap.dispose
+    end
     home = $game_map.map_id
     # Phase 02: actual mkxp-z Game_Player passable? and directional move_ methods
     # in a throwaway CI run, not simulated keyboard/graphical acceptance.

@@ -8,17 +8,57 @@ module BlueKantoPilot
   LEAGUE_ORDER = %w[LORELEI BRUNO AGATHA LANCE CHAMPION].freeze
   LEAGUE_CHAMPION_VERSIONS = {BULBASAUR: 1, CHARMANDER: 2, SQUIRTLE: 3}.freeze
   FULL_POWER_OFFSET = 100
-  # Keep native-sized player frames at full size. Only genuinely tall
-  # Blue charsets need a proportional cap; never shrink small FRLG frames
-  # by a fixed percentage (the integrated Oak Lab regression in build 1605).
-  PLAYER_OVERWORLD_ZOOM = 1.0
-  PLAYER_OVERWORLD_MAX_HEIGHT = 40
+  # Gary's imported Oak Lab charset is the visual reference. Measure actual
+  # non-transparent pixels rather than the padded height of the spritesheet.
   PILOT_OVERWORLD_SCALE = File.file?("Kanto pilot.json")
   INTEGRATED_KANTO = !PILOT_OVERWORLD_SCALE && File.file?("Data/blue-kanto-install.json")
 
-  def self.player_overworld_zoom(frame_height)
-    return PLAYER_OVERWORLD_ZOOM unless frame_height.is_a?(Numeric) && frame_height > 0
-    [PLAYER_OVERWORLD_ZOOM, PLAYER_OVERWORLD_MAX_HEIGHT.to_f / frame_height].min
+  # Measure the tallest visible frame, once per charset. A constant scale
+  # across all 16 poses prevents the avatar pulsing while walking.
+  def self.overworld_visible_height(bitmap, frame_width, frame_height)
+    return nil unless bitmap && frame_width.to_i > 0 && frame_height.to_i > 0
+    return nil unless bitmap.respond_to?(:get_pixel) &&
+      bitmap.width == frame_width * 4 && bitmap.height == frame_height * 4
+    tallest = 0
+    4.times do |row|
+      4.times do |column|
+        top = nil
+        bottom = nil
+        frame_height.times do |y|
+          visible = frame_width.times.any? do |x|
+            bitmap.get_pixel(column * frame_width + x, row * frame_height + y).alpha > 0
+          end
+          next unless visible
+          top ||= y
+          bottom = y
+        end
+        tallest = [tallest, bottom - top + 1].max if top
+      end
+    end
+    tallest > 0 ? tallest : nil
+  end
+
+  def self.gary_overworld_height
+    name = cerulean_rival_graphic
+    return nil unless name && respond_to?(:cerulean_rival_graphic)
+    @gary_overworld_heights ||= {}
+    return @gary_overworld_heights[name] if @gary_overworld_heights.key?(name)
+    path = pbResolveBitmap("Graphics/Characters/#{name}")
+    return nil unless path
+    reference = Bitmap.new(path)
+    height = overworld_visible_height(reference, reference.width / 4, reference.height / 4)
+    @gary_overworld_heights[name] = height if height
+    height
+  rescue StandardError
+    nil
+  ensure
+    reference.dispose if reference && !reference.disposed?
+  end
+
+  def self.player_overworld_zoom(visible_height, reference_height = gary_overworld_height)
+    return 1.0 unless visible_height.is_a?(Numeric) && visible_height > 0 &&
+      reference_height.is_a?(Numeric) && reference_height > 0
+    reference_height.to_f / visible_height
   end
 
   # Shared runtime is active ONLY while the current regional save is in Kanto.
@@ -2099,7 +2139,7 @@ module BlueKantoPilot
 end
 
 # Sprite_Character ja posiciona o pivot nos pes e atualiza o frame andando.
-# Limitamos apenas frames altos do player, sem alterar NPCs, imagens ou colisoes.
+# Igualamos a altura visível ao Gary, sem alterar NPCs, imagens ou colisoes.
 # Prevent a CutTree's alternate direction/pattern rows from rendering as
 # a stump while it is merely being interacted with. Do NOT prepend Game_Event
 # refresh/lock/update: that conflicts with Decades event refresh alias chains
@@ -2107,6 +2147,12 @@ end
 # Only the visible src_rect is normalized; game state is never modified.
 module BlueKantoPilot::PlayerOverworldScale
   def update
+    # Undo only our previous multiplier before the native update. Native
+    # camera/animation zoom may change and must not be multiplied repeatedly.
+    if instance_variable_defined?(:@blue_kanto_original_zoom)
+      self.zoom_x, self.zoom_y = @blue_kanto_original_zoom
+      remove_instance_variable(:@blue_kanto_original_zoom)
+    end
     super
     if BlueKantoPilot.kanto_current? && @character &&
        BlueKantoPilot.cut_tree_obstacle?(@character) &&
@@ -2124,16 +2170,18 @@ module BlueKantoPilot::PlayerOverworldScale
     # The existing regional predicate also checks the integrated install
     # and current save region; NPCs, other regions and collision stay intact.
     if @character && @character.equal?($game_player) && BlueKantoPilot.kanto_current?
-      unless instance_variable_defined?(:@blue_kanto_original_zoom)
+      sheet = respond_to?(:bitmap) ? bitmap : nil
+      if sheet && @cw && @ch && @character.respond_to?(:character_name)
+        key = [@character.character_name, sheet.width, sheet.height, @cw, @ch]
+        if @blue_kanto_visible_key != key
+          @blue_kanto_visible_height = BlueKantoPilot.overworld_visible_height(sheet, @cw, @ch)
+          @blue_kanto_visible_key = key
+        end
+        factor = BlueKantoPilot.player_overworld_zoom(@blue_kanto_visible_height)
         @blue_kanto_original_zoom = [zoom_x, zoom_y]
+        self.zoom_x = zoom_x * factor
+        self.zoom_y = zoom_y * factor
       end
-      # @ch is the live frame height updated by Sprite_Character#update.
-      zoom = BlueKantoPilot.player_overworld_zoom(@ch)
-      self.zoom_x = zoom
-      self.zoom_y = zoom
-    elsif instance_variable_defined?(:@blue_kanto_original_zoom)
-      self.zoom_x, self.zoom_y = @blue_kanto_original_zoom
-      remove_instance_variable(:@blue_kanto_original_zoom)
     end
   end
 end
