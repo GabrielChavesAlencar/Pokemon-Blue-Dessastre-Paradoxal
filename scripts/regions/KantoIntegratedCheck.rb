@@ -118,7 +118,7 @@ module KantoIntegratedCheck
              "Native main load scene does not include Kanto and Johto test options")
     commands = [" <- Decades Save -> ", _INTL("New Game"), _INTL("Options"), _INTL("Quit Game")]
     indices = BlueKantoTitle.command_order(commands, true)
-    require!(indices == [0, 1, :blue_test_kanto, :blue_test_johto, :blue_test_hoenn, :blue_test_sinnoh, 2, 3],
+    require!(indices == [0, 1, :blue_test_kanto, :blue_test_johto, :blue_test_hoenn, 2, 3],
              "Regional test options changed Continue/New Game or Auto Multi Save indexes")
     require!(BlueKantoTitle::LABEL == "Testar Kanto" &&
              BlueKantoTitle::JOHTO_LABEL == "Testar Johto",
