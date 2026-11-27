@@ -220,9 +220,22 @@ check(map.events[13].calls == 1,"native event refresh chain changed")
 check(!$game_self_switches[[321,13,"A"]],"police moved before Bill")
 check(map.events[13].list.map(&:code) == [101,0],"front police did not receive native text")
 check(map.events[13].character_name == "police" && map.events[25].through,"front police page incorrect")
+# Model the actual compiled item and bag, not an old Bill-only flag.
+module GameData
+  class Item
+    def self.exists?(id); $native_ticket_available && id == :BLUE_KANTO_SSTICKET; end
+  end
+end
+$native_ticket_available = true
+$bag = Object.new
+def $bag.has?(id); $physical_ticket && id == :BLUE_KANTO_SSTICKET; end
+$physical_ticket = false
 $PokemonGlobal.blue_regions["pilot_bill_helped"] = true
 map.setup(321)
-check(map.flags_at_setup[[321,13,"A"]] && map.flags_at_setup[[321,25,"A"]],"map setup missed police flags")
+check(!map.flags_at_setup[[321,13,"A"]] && map.events[25].through,"Bill-only flag moved police")
+$physical_ticket = true
+map.setup(321)
+check(map.flags_at_setup[[321,13,"A"]] && map.flags_at_setup[[321,25,"A"]],"map setup missed physical ticket police flags")
 $PokemonGlobal.blue_regions["pilot_cerulean_dig_awarded"] = true
 $map_factory = Struct.new(:maps).new([map])
 check(Scene_Map.new.createSpritesets == :native,"native spriteset load skipped")
@@ -238,11 +251,18 @@ check(map.events[13].character_name == "police","stale guard fixture failed")
 Scene_Map.new.createSpritesets
 check(map.events[13].through && map.events[13].character_name.empty?,"stale guard still blocks door")
 check(map.events[25].character_name == "police" && map.events[25].list.map(&:code) == [101,0],"side guard missing native dialogue")
-# Legacy ticket alone must reconcile the guard without granting new items.
+# Native catalog: flags alone cannot open the guard. Old builds with no
+# native ticket retain the historical digital permission compatibility.
 $PokemonGlobal.blue_regions.delete("pilot_bill_helped")
 $PokemonGlobal.blue_regions["pilot_ss_ticket"] = true
+$physical_ticket = false
 map.setup(321)
-check(map.events[13].through && map.events[25].list.first.code == 101,"legacy ticket did not unlock guard")
+check(!map.events[13].through && map.events[25].through,"digital flag bypassed real ticket gate")
+$native_ticket_available = false
+map.setup(321)
+check(map.events[13].through && map.events[25].list.first.code == 101,"legacy no-item catalog permission not preserved")
+$native_ticket_available = true
+$physical_ticket = true
 %w[DECADES JOHTO HOENN SINNOH].each do |region|
   $PokemonGlobal.blue_regions["current"] = region
   $game_self_switches.clear

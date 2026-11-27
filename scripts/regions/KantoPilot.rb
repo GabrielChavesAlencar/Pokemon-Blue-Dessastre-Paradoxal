@@ -2402,9 +2402,9 @@ module BlueKantoPilot
     city = kanto_map_id(39)
     return unless city
     sync_cerulean_quest_pages(city)
-    maps = $map_factory && $map_factory.respond_to?(:maps) ? $map_factory.maps : [$game_map]
-    Array(maps).each do |map|
-      sync_loaded_cerulean_map(map) if map && map.map_id == city
+    maps = $map_factory && $map_factory.respond_to?(:maps) ? Array($map_factory.maps) : []
+    (maps + [$game_map]).compact.uniq.each do |map|
+      sync_loaded_cerulean_map(map) if map.map_id == city
     end
   end
 
@@ -2732,11 +2732,12 @@ module BlueKantoPilot
   def self.cerulean_mobile_contact(player,dir)
     return false unless $game_map && kanto_current?
     return false unless [2,8].include?(dir)
-    return false if player.moving? || player.jumping?
-    return false if defined?(pbMapInterpreterRunning?) && pbMapInterpreterRunning?
-    return false if $game_temp && ($game_temp.in_battle || $game_temp.message_window_showing ||
-      $game_temp.player_transferring || $game_temp.menu_calling)
     return false unless $game_map.map_id == kanto_map_id(39)
+    blocker = cerulean_mobile_contact_blocker(player)
+    if blocker
+      cerulean_mobile_trace("contact blocked=#{blocker} from=#{[player.x,player.y].inspect} dir=#{dir}")
+      return false
+    end
     contact = cerulean_door_contact(player,dir)
     if contact && contact[3]
       event = contact[0]
@@ -2745,6 +2746,18 @@ module BlueKantoPilot
       return true
     end
     false
+  end
+
+  def self.cerulean_mobile_contact_blocker(player)
+    return :moving if player.moving?
+    return :jumping if player.jumping?
+    return :interpreter if defined?(pbMapInterpreterRunning?) && pbMapInterpreterRunning?
+    if $game_temp
+      [:in_battle,:message_window_showing,:player_transferring,:menu_calling].each do |flag|
+        return flag if $game_temp.respond_to?(flag) && $game_temp.public_send(flag)
+      end
+    end
+    nil
   end
 
   def self.cerulean_mobile_trace(line)
