@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9cfff472d2af9d9278dc962f5a72e038ed5deb37",
+      "date": "2026-11-27T12:15:52-03:00",
+      "title": "fix(kanto): Cerulean police native dialogue on Android (#368)",
+      "category": "Correções"
+    },
+    {
+      "sha": "341e787d0ca8558de060d806de3e54660caa5aff",
+      "date": "2026-11-27T12:06:32-03:00",
+      "title": "test(kanto): update Android guard ZIP fixtures, portable bundle and same-catalog migration gate",
+      "category": "Testes"
+    },
+    {
+      "sha": "70dcd7d2931f6ca96ff39d477c8a01ea34c61298",
+      "date": "2026-11-27T11:58:23-03:00",
+      "title": "fix(kanto): ship native Cerulean police pages and repair cached guard scripts on Android",
+      "category": "Correções"
+    },
+    {
       "sha": "4c0ae1e82ab81d22f632db9a09fb24e8b8a1577c",
       "date": "2026-11-27T11:47:33-03:00",
       "title": "docs: link Kalos Codex roadmap from README",
