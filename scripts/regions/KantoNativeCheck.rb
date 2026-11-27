@@ -157,10 +157,26 @@ module KantoNativeCheck
       require!(active.list.map(&:code) == [101,0], "Cerulean packaged police still evaluates script")
       cached = $game_map.events[id].instance_variable_get(:@event)
       require!(cached && cached.respond_to?(:pages), "Cerulean cached police page unavailable")
-      old = cached.pages[id == 13 ? 0 : 1].list.first
-      old.code = 355
-      old.parameters = ["BlueKantoPilot.cerulean_police"]
+      old_list = cached.pages[id == 13 ? 0 : 1].list
+      old = old_list.first
+      legacy = (0..2).map do |index|
+        op = old.dup
+        op.code = 355
+        op.parameters = ["BlueKantoPilot.npc_dialogue(39, #{id}, #{index})"]
+        op
+      end
+      old_list.replace(legacy + [old_list.last])
     end
+    # Exact phone trace, including already-copied interpreter scripts that
+    # no amount of map refresh can change. Only one message for the three.
+    legacy_messages = []
+    legacy_id = open ? 25 : 13
+    with_native_message_fixture(proc { |message,*args| legacy_messages << message.to_s; nil }) do
+      script = (0..2).map { |i| "BlueKantoPilot.npc_dialogue(39, #{legacy_id}, #{i})" }.join("\n")
+      pbMapInterpreter.send(:execute_script,script)
+    end
+    require!(legacy_messages.length == 1 && !legacy_messages.first.strip.empty?,
+      "Physical JoiPlay legacy police calls failed or repeated")
     BlueKantoPilot.sync_loaded_cerulean_map($game_map)
     [13,25].each { |id| $game_map.events[id].refresh }
     front,side = $game_map.events[13],$game_map.events[25]
@@ -191,7 +207,8 @@ module KantoNativeCheck
       "Cerulean police dialogue did not finish")
     result = {"open"=>open,"visible"=>visible.id,"hidden"=>hidden.id,
       "front"=>[front.x,front.y],"side"=>[side.x,side.y],"native_messages"=>messages,
-      "stale_cache_tested"=>open,"manual_gameplay"=>false}
+      "legacy_phone_messages"=>legacy_messages,
+      "stale_cache_tested"=>true,"manual_gameplay"=>false}
     puts "KANTO_CERULEAN_POLICE_PACKAGED_NATIVE_AND_CACHE_REFRESH_OK"
     puts "KANTO_CERULEAN_POLICE_NATIVE_REPORT:#{result.inspect}"
     result
@@ -213,7 +230,16 @@ module KantoNativeCheck
     # interior events do not exist in the saved native Game_Map event table.
     doors.keys.each { |id| $game_map.events.delete(id) }
     require!([4,5,6].all? { |id| $game_map.events[id] }, "Legacy public services fixture missing")
-    BlueKantoPilot.sync_loaded_cerulean_map($game_map)
+    # Reproduce a device that did not run the expected load/spriteset hook.
+    # The player's actual doorway probe must recover the stale map itself.
+    from,dir = BlueKantoPilot::CERULEAN_DOOR_STEPS.fetch(7)
+    $game_player.moveto(*from)
+    contact = BlueKantoPilot.cerulean_door_contact($game_player,dir)
+    require!(contact && contact[0].id == 7 && contact[3],
+      "Legacy Cerulean doorway did not self-recover")
+    require!([$game_player.x,$game_player.y] == from,
+      "Legacy doorstep recovery moved player")
+    $game_player.moveto(*position)
     require!($game_map.events.keys.sort == old_event_ids, "Legacy Cerulean events not restored")
     doors.each do |id,source|
       event = $game_map.events[id]
@@ -3097,7 +3123,7 @@ module KantoNativeCheck
         e.fetch("native_return").fetch("destination_loaded") },
       "Cerulean roundtrip receipt incomplete")
     File.write("Data/blue-kanto-cerulean-regression.txt",
-      "KANTO_CERULEAN_POLICE_BEFORE_AFTER_BILL_OK\nKANTO_CERULEAN_NATIVE_ROUNDTRIP_OK\nKANTO_CERULEAN_POLICE_PACKAGED_NATIVE_AND_CACHE_REFRESH_OK\n")
+      "KANTO_CERULEAN_POLICE_BEFORE_AFTER_BILL_OK\nKANTO_CERULEAN_NATIVE_ROUNDTRIP_OK\nKANTO_CERULEAN_POLICE_PACKAGED_NATIVE_AND_CACHE_REFRESH_OK\nKANTO_CERULEAN_PHYSICAL_LEGACY_DIALOGUE_AND_DOOR_RECOVERY_OK\n")
     File.write("Data/blue-kanto-k02c-native-proof.txt", interiors_report.inspect)
     puts "KANTO_K02C_NATIVE_INTERIORS_REPORT:#{interiors_report.inspect}"
     puts "KANTO_K02C_INTERIORS_BIKE_ROCKET_SAVE_RELOAD_OK"

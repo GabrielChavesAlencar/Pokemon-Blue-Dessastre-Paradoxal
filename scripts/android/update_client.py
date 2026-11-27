@@ -621,14 +621,14 @@ def cerulean_logs(root):
     for name in ("Data/blue-mobile-build.txt", "Data/blue-android-runtime.txt",
                  "Data/blue-android-event-error.txt", "errorlog.txt"):
         path = _local_target(root, name)
-        print("\\n--- " + name + " ---")
+        print("\n--- " + name + " ---")
         if not path.is_file():
             print("Nao encontrado.")
             continue
         with path.open("rb") as stream:
             stream.seek(max(0, path.stat().st_size - 24000))
             content = stream.read().decode("utf-8", errors="replace")
-        print("\\n".join(content.splitlines()[-65:]))
+        print("\n".join(content.splitlines()[-65:]))
 
 
 def main(argv=None):
