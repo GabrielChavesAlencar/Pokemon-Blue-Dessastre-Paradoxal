@@ -2448,6 +2448,62 @@ module BlueKantoPilot::Route2ExitGuard
 end
 Game_Player.prepend(BlueKantoPilot::Route2ExitGuard)
 
+# The imported door tile can be unwalkable from its original doorstep even
+# though another adjacent square passes a collision probe. Use the native
+# event's starting flag on deliberate contact with the verified doorway.
+# No new warp or teleport is constructed: the original event interpreter,
+# including Bill's conditional and the authored destination, remains in charge.
+module BlueKantoPilot
+  CERULEAN_DOOR_STEPS = {
+    3=>[[10,8],2], 7=>[[13,29],8], 8=>[[15,18],8],
+    9=>[[30,12],8], 10=>[[10,12],8], 11=>[[17,12],8],
+    12=>[[23,29],8], 27=>[[31,8],2]
+  }.freeze
+
+  def self.cerulean_door_contact(player, direction)
+    return nil unless $game_map && kanto_current? &&
+      $game_map.map_id == kanto_map_id(39)
+    return nil if $game_temp && $game_temp.in_battle
+    return nil if defined?(pbMapInterpreterRunning?) && pbMapInterpreterRunning?
+    delta = {2=>[0,1],4=>[-1,0],6=>[1,0],8=>[0,-1]}[direction]
+    return nil unless delta
+    from = [player.x,player.y]
+    target = [from[0]+delta[0],from[1]+delta[1]]
+    CERULEAN_INTERIOR_DOORS.each do |id,source|
+      event = $game_map.events[id]
+      next unless event && event.trigger == 1 &&
+        cerulean_door_transfer?(event.list,kanto_map_id(source))
+      next unless [event.x,event.y] == target ||
+        (id == 7 && target == [14,28])
+      canonical = CERULEAN_DOOR_STEPS[id] == [from,direction] ||
+        (id == 7 && from == [14,29] && direction == 8)
+      return [event,from,target,canonical]
+    end
+    nil
+  end
+end
+
+module BlueKantoPilot::CeruleanDoorContact
+  def move_generic(dir, turn_enabled = true)
+    contact = turn_enabled && !moving? && !jumping? &&
+      BlueKantoPilot.cerulean_door_contact(self,dir)
+    city = $game_map if contact
+    result = super
+    if contact && $game_map.equal?(city)
+      event,from,target,canonical = contact
+      # A native step onto the tile or a bump from the exact original
+      # doorstep can start the same player-touch event. Never open walls
+      # from arbitrary blocked neighbours, or bypass a running interpreter.
+      if ([x,y] == target || (canonical && [x,y] == from && direction == dir)) &&
+          !(defined?(pbMapInterpreterRunning?) && pbMapInterpreterRunning?)
+        event.start unless event.starting
+      end
+    end
+    result
+  end
+end
+Game_Player.prepend(BlueKantoPilot::CeruleanDoorContact)
+
 # This menu is visible ONLY in the isolated pilot with its local stop manifest.
 MenuHandlers.add(:pause_menu, :blue_kanto_experimental, {
   "name"=>BlueKantoPilot.t("Kanto Test Mode (experimental)", "Testes Kanto (experimental)"),

@@ -185,6 +185,27 @@ module KantoNativeCheck
     report
   end
 
+  # Prove the normal engine movement dispatches each door, including the
+  # canonical front/back doorstep, rather than just inspecting its command.
+  def self.cerulean_native_door_contact_proof(city, component, id, destination)
+    $map_factory.setup(city)
+    event = $game_map.events[id]
+    from,dir = BlueKantoPilot::CERULEAN_DOOR_STEPS.fetch(id)
+    require!(component.key?(from), "Cerulean original doorstep disconnected #{id}:#{from.inspect}")
+    $game_player.moveto(*from)
+    $game_player.direction = dir if $game_player.respond_to?(:direction=)
+    $game_map.events.each_value { |e| e.clear_starting }
+    passable = $game_player.passable?(*from,dir)
+    $game_player.move_generic(dir,true)
+    require!(event.starting, "Cerulean native movement did not start event #{id} from #{from.inspect}")
+    landing = north_transfer!(event,destination)
+    receipt = {"event"=>id,"from"=>from,"direction"=>dir,"passable"=>passable,
+      "player_after"=>[$game_player.x,$game_player.y],"event_started"=>true,
+      "destination"=>destination,"landing"=>landing}
+    $game_map.events.each_value { |e| e.clear_starting }
+    receipt
+  end
+
   def self.cerulean_interiors_proof(battle_calls, losses_remaining)
     city = BlueKantoPilot.kanto_map_id(39)
     mapping = (43..48).to_h { |id| [id,BlueKantoPilot.kanto_map_id(id)] }
@@ -211,6 +232,8 @@ module KantoNativeCheck
       if ![3,27].include?(id)
         require!(north_event_reachable?(city_component,ev),"K02-C city door unreachable #{id}")
       end
+      contact_component = [3,27].include?(id) ? opening_component(city,exits[source][3]) : city_component
+      contact_receipt = cerulean_native_door_contact_proof(city,contact_component,id,mapping[source])
       interior = opening_component(mapping[source],landing)
       return_ids.each do |eid|
         event = $game_map.events[eid]
@@ -235,7 +258,8 @@ module KantoNativeCheck
         north_callback!($game_map.events[1],"BlueKantoPilot.cerulean_bike_exchange")
       end
       witnesses << {"city_event"=>id,"source"=>source,"landing"=>landing,
-                    "reachable_cells"=>interior.length,"returns"=>return_ids}
+                    "reachable_cells"=>interior.length,"returns"=>return_ids,
+                    "native_door_contact"=>contact_receipt}
     end
     [3,27].each do |id|
       source = doors[id][0]
