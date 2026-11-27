@@ -1490,8 +1490,9 @@ module KantoNativeCheck
       begin
         sprite = Sprite_Character.new(viewport,$game_player)
         2.times { sprite.update }
-        visible = BlueKantoPilot.overworld_visible_height(sprite.bitmap,
-          sprite.instance_variable_get(:@cw),sprite.instance_variable_get(:@ch))
+        rect = sprite.src_rect
+        bounds = BlueKantoPilot.overworld_frame_bounds(sprite.bitmap,rect.x,rect.y,rect.width,rect.height)
+        visible = bounds && bounds[1]-bounds[0]+1
         require!(visible && (visible * sprite.zoom_y - gary_height).abs < 0.01 &&
           (sprite.zoom_x - sprite.zoom_y).abs < 0.01,
           "Actual rendered player sprite does not match Gary")

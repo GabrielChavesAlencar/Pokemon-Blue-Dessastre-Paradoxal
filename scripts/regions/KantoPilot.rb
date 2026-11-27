@@ -29,8 +29,8 @@ module BlueKantoPilot
     top ? [top,bottom] : nil
   end
 
-  # Measure the tallest visible frame, once per charset. A constant scale
-  # across all 16 poses prevents the avatar pulsing while walking.
+  # Measure all frames for the NPC reference. The player itself uses the
+  # active source rectangle: real Red frames vary from 46 to 50 opaque pixels.
   def self.overworld_visible_height(bitmap, frame_width, frame_height)
     return nil unless bitmap && frame_width.to_i > 0 && frame_height.to_i > 0
     return nil unless bitmap.respond_to?(:get_pixel) &&
@@ -2179,13 +2179,21 @@ module BlueKantoPilot::PlayerOverworldScale
     # and current save region; NPCs, other regions and collision stay intact.
     if @character && @character.equal?($game_player) && BlueKantoPilot.kanto_current?
       sheet = respond_to?(:bitmap) ? bitmap : nil
-      if sheet && @cw && @ch && @character.respond_to?(:character_name)
-        key = [@character.character_name, sheet.width, sheet.height, @cw, @ch]
+      if sheet && @cw && @ch && @character.respond_to?(:character_name) &&
+         respond_to?(:src_rect) && src_rect
+        rect = src_rect
+        key = [@character.character_name, sheet.object_id, sheet.width, sheet.height]
         if @blue_kanto_visible_key != key
-          @blue_kanto_visible_height = BlueKantoPilot.overworld_visible_height(sheet, @cw, @ch)
+          @blue_kanto_frame_bounds = {}
           @blue_kanto_visible_key = key
         end
-        factor = BlueKantoPilot.player_overworld_zoom(@blue_kanto_visible_height)
+        frame = [rect.x,rect.y,rect.width,rect.height]
+        unless @blue_kanto_frame_bounds.key?(frame)
+          @blue_kanto_frame_bounds[frame] = BlueKantoPilot.overworld_frame_bounds(sheet,*frame)
+        end
+        bounds = @blue_kanto_frame_bounds[frame]
+        visible = bounds && bounds[1]-bounds[0]+1
+        factor = BlueKantoPilot.player_overworld_zoom(visible)
         @blue_kanto_original_zoom = [zoom_x, zoom_y]
         self.zoom_x = zoom_x * factor
         self.zoom_y = zoom_y * factor

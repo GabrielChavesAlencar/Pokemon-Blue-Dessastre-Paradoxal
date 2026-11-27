@@ -77,6 +77,10 @@ module KantoIntegratedCheck
       (gary_sprite.zoom_y-1.0).abs < 0.01 &&
       (player_sprite.zoom_x-player_sprite.zoom_y).abs < 0.01,
       "Gary changed or player aspect ratio distorted")
+    # Preserve the engine's tile/feet anchor; the sprite's alpha padding
+    # may differ by pose. Require the feet to remain within two native pixels.
+    require!((player["foot_offset"]-reference["foot_offset"]).abs <= 2.0,
+      "Integrated player feet drifted from Gary: #{values.inspect}")
     old_zoom = [1.0,40.0/player["frame_height"]].min
     report = {"label"=>label,"capture_npc_px"=>80,"capture_player_px"=>62,
       "capture_factor"=>80.0/62,"player"=>player,"gary"=>reference,

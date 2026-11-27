@@ -28,13 +28,14 @@ class TestBitmap
   end
   def get_pixel(x,y)
     local_y = y % @frame_height
-    Struct.new(:alpha).new(x % 32 < 12 && local_y >= @frame_height - @visible ? 255 : 0)
+    visible = @visible.is_a?(Array) ? @visible[(x/32)%@visible.length] : @visible
+    Struct.new(:alpha).new(x % 32 < 12 && local_y >= @frame_height - visible ? 255 : 0)
   end
 end
 
 class Sprite_Character
   attr_accessor :zoom_x, :zoom_y, :ox, :oy
-  attr_reader :base_updates, :bitmap
+  attr_reader :base_updates, :bitmap, :src_rect
   def initialize(character)
     @character = character
     @base_updates = 0
@@ -47,6 +48,7 @@ class Sprite_Character
     @cw = 32
     @ch = frame
     @bitmap = TestBitmap.new(frame,visible)
+    @src_rect = Struct.new(:x,:y,:width,:height).new(0,0,@cw,@ch)
   end
   def update
     @base_updates += 1
@@ -98,6 +100,18 @@ sprite.update
 check(sprite.zoom_x == 1.0 && sprite.zoom_y == 1.0, "equal visible avatar changed")
 check(sprite.ox == 16 && sprite.oy == 32, "feet pivot changed")
 check(sprite.base_updates == 4, "native animation update skipped")
+# Reproduce the actual integrated failure: active 46px pose in 50px sheet.
+$game_player.character_name = "varying"
+sprite.change_sheet(64,[46,50])
+sprite.update
+check((46*sprite.zoom_y-32).abs < 0.01, "46px frame used tallest frame zoom")
+sprite.src_rect.x = 32
+sprite.update
+check((50*sprite.zoom_y-32).abs < 0.01, "walking frame was not normalized")
+sprite.src_rect.x = 0
+sprite.update
+check((46*sprite.zoom_y-32).abs < 0.01, "active frame cache did not restore")
+check(sprite.ox == 16 && sprite.oy == 32, "native feet pivot changed")
 
 npc = Sprite_Character.new(Object.new)
 npc.update
@@ -260,6 +274,7 @@ class KantoOverworldPlayerScaleTests(unittest.TestCase):
         self.assertIn("KANTO_1605_NATIVE_PLAYER_SCALE_REGRESSION_OK", result.stdout)
         self.assertIn("KANTO_GARY_VISIBLE_PLAYER_SCALE_FIXTURE_OK", result.stdout)
         self.assertIn("KANTO_PLAYER_SCREENSHOT_62_TO_80_OK", result.stdout)
+        print(result.stdout.strip())
 
 
 if __name__ == "__main__":
