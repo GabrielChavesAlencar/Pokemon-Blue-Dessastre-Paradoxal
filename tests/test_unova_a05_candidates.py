@@ -96,6 +96,40 @@ class MapIDA05Tests(unittest.TestCase):
         self.assertFalse(r["unova_maps_installed"])
         self.assertFalse(r["mapid_reservation_confirmed"])
 
+    def test_android_manifest_adds_exclusions_without_certifying_free_ids(self):
+        baseline, _ = self.make_a04()
+        manifest = self.root / "update.json"
+        entry = {"sha256": "a" * 64}
+        manifest.write_text(json.dumps({
+            "schema": 1, "channel": "multiregion", "revision": "b" * 40,
+            "files": {"Data/MapInfos.rxdata": entry, "Data/Map596.rxdata": entry,
+                      "Data/Map599.rxdata": entry, "Graphics/Map500.rxdata": entry},
+        }), encoding="utf-8")
+        result = a05.audit(self.project, baseline, android_manifest=manifest)
+        self.assertEqual(result["a04_observed_candidate_collisions"], [518])
+        self.assertEqual(result["android_manifest_candidate_collisions"], [596, 599])
+        self.assertEqual(result["cross_platform_candidate_collisions"], [518, 596, 599])
+        self.assertEqual(result["android_manifest"]["tracked_map_count"], 2)
+        self.assertIsNone(result["verified_free_mapids"])
+        self.assertFalse(result["can_reserve_mapids"])
+
+    def test_android_hub_manifest_and_duplicate_map_paths_are_rejected(self):
+        baseline, _ = self.make_a04()
+        manifest = self.root / "update.json"
+        entry = {"sha256": "a" * 64}
+        release = {
+            "schema": 1, "channel": "hub", "revision": "b" * 40,
+            "files": {"Data/MapInfos.rxdata": entry, "Data/Map596.rxdata": entry},
+        }
+        manifest.write_text(json.dumps(release), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "multirregional"):
+            a05.audit(self.project, baseline, android_manifest=manifest)
+        release["channel"] = "multiregion"
+        release["files"]["data/map0596.rxdata"] = entry
+        manifest.write_text(json.dumps(release), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "duplicada"):
+            a05.audit(self.project, baseline, android_manifest=manifest)
+
     def test_04_legacy_short_ids_not_mistaken_for_free(self):
         r=a05.audit(self.project)
         self.assertEqual(r["historical_b04_legacy_omissions"],31)

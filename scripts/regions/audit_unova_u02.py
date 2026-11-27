@@ -68,7 +68,7 @@ def audit_zip(source: Path) -> dict:
         if len(members) > MAX_ENTRIES:
             fail("entradas demais no ZIP")
         for info in members:
-            parts = safe_parts(info.filename)
+            parts = safe_parts(info.orig_filename)
             key = "/".join(parts).casefold()
             if key in seen:
                 fail("entrada duplicada por caixa ou caminho: " + info.filename[:90])

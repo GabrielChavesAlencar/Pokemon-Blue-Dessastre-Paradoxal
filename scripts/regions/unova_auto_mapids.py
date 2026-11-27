@@ -425,6 +425,8 @@ def pretty(result: dict) -> str:
                 str(plan.get("candidate_count","DESCONHECIDO"))+"/82",
             "  Conflitos observados no snapshot: "+
                 str(plan.get("observed_snapshot_conflicts","DESCONHECIDO")),
+            "  IDs em faixa literal de outro instalador: "+
+                str(plan.get("installer_literal_band_overlap_count","DESCONHECIDO")),
             "  Simulacoes negativas: "+str(len(plan.get("synthetic_cases",[])))+
                 " (SINTETICAS, sem criar jogos)",
             "  Instalacao QA isolada criada? Nao — apenas plano em memoria",

@@ -40,6 +40,7 @@ NEEDED=(
  "scripts/regions/pilot_hoenn.py",
  "scripts/regions/install_hoenn.py",
  "scripts/regions/install_sinnoh_qa_copy.py",
+ "scripts/regions/sinnoh_shared.py",
  "scripts/regions/audit_sinnoh_b05_mapid_planning.py",
  "server/ruby_marshal.py",
  "data/regions/unova-a05-mapid-candidates.json",
@@ -79,7 +80,7 @@ class StandaloneBatTests(unittest.TestCase):
         self.assertIn("python",self.prefix.casefold())
         self.assertIn("exit /b",self.prefix)
 
-    def test_02_contains_all_twenty_nine_dependency_files(self):
+    def test_02_contains_all_dependency_files(self):
         self.assertEqual(set(self.files),set(NEEDED))
 
     def test_03_embedded_files_same_as_repository(self):
