@@ -69,6 +69,18 @@ def BlueKantoPilot.gary_overworld_height
   overworld_visible_height(TestBitmap.new(48,32),32,48)
 end
 check(BlueKantoPilot.gary_overworld_height == 32, "Gary alpha reference wrong")
+# Build 1606 screenshot: 80px NPC and 62px player at 2x screen zoom.
+# Model the native 50 opaque pixels in a 64px padded frame. Previous
+# 40px cap rendered 62.5px; correct alpha ratio yields 80px, not 103px.
+capture = TestBitmap.new(64,50)
+visible = BlueKantoPilot.overworld_visible_height(capture,32,64)
+old_render = visible * (40.0/64) * 2
+corrected = visible * BlueKantoPilot.player_overworld_zoom(visible,40) * 2
+check((old_render-62).abs <= 1 && (corrected-80).abs <= 1,
+  "screenshot 62->80 regression not fixed")
+check(BlueKantoPilot.overworld_frame_bounds(capture,0,0,32,64) == [14,63],
+  "opaque frame bounds do not exclude padding")
+puts "KANTO_PLAYER_SCREENSHOT_62_TO_80_OK"
 check(BlueKantoPilot.player_overworld_zoom(nil) == 1.0, "missing player evidence must use native zoom")
 check(BlueKantoPilot.player_overworld_zoom(16,nil) == 1.0, "missing Gary evidence must use native zoom")
 
@@ -247,6 +259,7 @@ class KantoOverworldPlayerScaleTests(unittest.TestCase):
         self.assertIn("KANTO_K02B_INTEGRATED_SCALE_OK", result.stdout)
         self.assertIn("KANTO_1605_NATIVE_PLAYER_SCALE_REGRESSION_OK", result.stdout)
         self.assertIn("KANTO_GARY_VISIBLE_PLAYER_SCALE_FIXTURE_OK", result.stdout)
+        self.assertIn("KANTO_PLAYER_SCREENSHOT_62_TO_80_OK", result.stdout)
 
 
 if __name__ == "__main__":

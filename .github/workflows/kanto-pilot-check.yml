@@ -547,6 +547,11 @@ jobs:
               if(-not (Test-Path $nativeAudio)){throw "Integrated Kanto F6 native AudioFile probe missing"}
               if(-not ((Get-Content $nativeAudio -Raw) -match "PASS_NATIVE_AUDIOFILE_DISPATCH_NOT_AUDIBLE")){throw "Integrated F6 BGM/ME engine dispatch failed"}
               Get-Content $nativeAudio
+              $integratedScale="$game/Data/blue-kanto-gary-scale-integrated.txt"
+              if(-not (Test-Path $integratedScale)){throw 'Integrated Gary/player actual sprite proof missing'}
+              $scaleText=Get-Content $integratedScale -Raw
+              if($scaleText -notmatch 'KANTO_GARY_VISIBLE_PLAYER_SCALE_INTEGRATED_OK:new_game' -or $scaleText -notmatch 'KANTO_GARY_VISIBLE_PLAYER_SCALE_INTEGRATED_OK:save_reload'){throw 'Integrated player scale new game/save reload proof missing'}
+              Get-Content $integratedScale
               Get-Content "$game/Data/blue-kanto-integrated-proof.txt"
               exit 0
             }

@@ -13,6 +13,22 @@ module BlueKantoPilot
   PILOT_OVERWORLD_SCALE = File.file?("Kanto pilot.json")
   INTEGRATED_KANTO = !PILOT_OVERWORLD_SCALE && File.file?("Data/blue-kanto-install.json")
 
+  # User capture (build 1606): NPC 80px, player 62px, feet aligned.
+  # The target is the actual NPC height, not 1.29 multiplied a second time
+  # after normalization. This also works at different screen zoom levels.
+  def self.overworld_frame_bounds(bitmap, x, y, width, height)
+    return nil unless bitmap && width.to_i > 0 && height.to_i > 0 &&
+      x >= 0 && y >= 0 && x+width <= bitmap.width && y+height <= bitmap.height
+    top = nil
+    bottom = nil
+    height.times do |row|
+      next unless width.times.any? { |column| bitmap.get_pixel(x+column,y+row).alpha > 0 }
+      top ||= row
+      bottom = row
+    end
+    top ? [top,bottom] : nil
+  end
+
   # Measure the tallest visible frame, once per charset. A constant scale
   # across all 16 poses prevents the avatar pulsing while walking.
   def self.overworld_visible_height(bitmap, frame_width, frame_height)
@@ -22,17 +38,9 @@ module BlueKantoPilot
     tallest = 0
     4.times do |row|
       4.times do |column|
-        top = nil
-        bottom = nil
-        frame_height.times do |y|
-          visible = frame_width.times.any? do |x|
-            bitmap.get_pixel(column * frame_width + x, row * frame_height + y).alpha > 0
-          end
-          next unless visible
-          top ||= y
-          bottom = y
-        end
-        tallest = [tallest, bottom - top + 1].max if top
+        bounds = overworld_frame_bounds(bitmap,column*frame_width,row*frame_height,
+          frame_width,frame_height)
+        tallest = [tallest, bounds[1]-bounds[0]+1].max if bounds
       end
     end
     tallest > 0 ? tallest : nil
