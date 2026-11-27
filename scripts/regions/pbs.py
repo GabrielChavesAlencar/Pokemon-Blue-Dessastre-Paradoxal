@@ -83,6 +83,7 @@ TRAINERS.update({
 # Phase 08: source IDs, names and event anchors audited in the pinned FRLG kit.
 # Team data are copied from the source PBS; no levels or moves are fabricated.
 TRAINERS.update({
+    **{f"RIVAL1,Blue,{v}": ("RIVAL", "Blue", v) for v in (41, 42, 43)},
     **{f"{kind},{name}": (dest, name, 0)
        for kind, dest, names in (
            ("BUGCATCHER", "BUGCATCHER", ("Keigo", "Elijah")),

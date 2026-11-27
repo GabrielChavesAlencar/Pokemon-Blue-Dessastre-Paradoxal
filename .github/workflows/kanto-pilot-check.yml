@@ -306,6 +306,10 @@ jobs:
               if(-not (Test-Path $vermilionProof)){throw 'K03-B native Vermilion proof missing'}
               Write-Host ("KANTO_K03B_NATIVE_VERMILION_REPORT:" + (Get-Content $vermilionProof -Raw).Trim())
               Write-Host 'KANTO_K03B_NATIVE_VERMILION_SAVE_RELOAD_OK'
+              $anneProof="$pilot/Data/blue-kanto-k03c-proof.txt"
+              if(-not (Test-Path $anneProof)){throw 'K03-C native S.S. Anne proof missing'}
+              Write-Host ("KANTO_K03C_NATIVE_SS_ANNE_REPORT:" + (Get-Content $anneProof -Raw).Trim())
+              Write-Host 'KANTO_K03C_BOARDING_CAPTAIN_CUT_SAVE_RELOAD_OK'
               $corridorTrace="$pilot/Data/blue-kanto-k03a-trace.txt"
               $corridorProof="$pilot/Data/blue-kanto-k03a-proof.txt"
               if(-not (Test-Path $corridorTrace) -or -not (Test-Path $corridorProof)){throw 'K03-A native corridor proof missing'}
@@ -680,12 +684,24 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'K03-B real 152 to 156 migration proof failed'}
           python scripts/regions/qa_k00_migration.py --police-hotfix
           if($LASTEXITCODE -ne 0){throw 'Cerulean police real 156 to 156 migration proof failed'}
+          python scripts/regions/qa_k00_migration.py --from-156
+          if($LASTEXITCODE -ne 0){throw 'K03-C real 156 to 156 migration proof failed'}
       - name: Preservar recibo do hotfix Cerulean
         if: always() && hashFiles('.blue-work/cerulean-police-migration-proof.json') != ''
         uses: actions/upload-artifact@v4
         with:
           name: kanto-cerulean-police-migration-proof
           path: .blue-work/cerulean-police-migration-proof.json
+          include-hidden-files: true
+          if-no-files-found: error
+      - name: Preservar recibos K03-C do navio e migracao
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k03c-ss-anne-proofs
+          path: |
+            .blue-work/k03c-migration-proof.json
+            .blue-work/kanto-pilot/Data/blue-kanto-k03c-proof.txt
           include-hidden-files: true
           if-no-files-found: error
       - name: Preservar recibo K03-A da migracao
@@ -744,7 +760,9 @@ jobs:
               $scaleText=Get-Content $integratedScale -Raw
               if($scaleText -notmatch 'KANTO_GARY_VISIBLE_PLAYER_SCALE_INTEGRATED_OK:new_game' -or $scaleText -notmatch 'KANTO_GARY_VISIBLE_PLAYER_SCALE_INTEGRATED_OK:save_reload'){throw 'Integrated player scale new game/save reload proof missing'}
               Get-Content $integratedScale
-              Get-Content "$game/Data/blue-kanto-integrated-proof.txt"
+              $integratedProof=Get-Content "$game/Data/blue-kanto-integrated-proof.txt" -Raw
+              if($integratedProof -notmatch '(?m)^KANTO_K03C_INTEGRATED_CUT_POLICY_OK\r?$' -or $integratedProof -notmatch '(?m)^KANTO_K03C_INTEGRATED_CUT_DIAGNOSTIC:'){throw 'K03-C integrated Cut receipt missing'}
+              Write-Host $integratedProof
               exit 0
             }
             if(Test-Path "$game/Data/blue-kanto-integrated-error.txt"){break}

@@ -2484,6 +2484,10 @@ module KantoNativeCheck
              "Misty original FRLG team differs from Staryu/Starmie")
     # Native Cerulean quest proof begins after confirming Cascade cannot
     # substitute for Bill; leave the existing badge checks intact below.
+    # A legacy permit or a ticket before Cascade cannot bypass the harbor.
+    BlueKantoPilot.progress["pilot_ss_ticket"] = true
+    require!(!BlueKantoPilot.ss_anne_boarding_allowed?, "K03-C ticket bypassed Cascade")
+    BlueKantoPilot.progress.delete("pilot_ss_ticket")
     misty_map = BlueKantoPilot.kanto_map_id(42)
     $map_factory.setup(misty_map)
     north_callback!($game_map.events[1],
@@ -2511,6 +2515,11 @@ module KantoNativeCheck
     BlueKantoPilot.ticketmaster
     require!(!BlueKantoPilot.progress["pilot_ss_ticket"],
              "Harbor issued a ticket without Bill's Route 25 quest")
+    require!(!BlueKantoPilot.ss_anne_boarding_allowed?, "K03-C Cascade bypassed Bill")
+    $map_factory.setup(BlueKantoPilot.kanto_map_id(76))
+    north_callback!($game_map.events[2], "BlueKantoPilot.captain")
+    require!(!BlueKantoPilot.captain, "K03-C captain granted Cut before Bill")
+    $map_factory.setup(misty_map)
     require!(!BlueKantoPilot.cerulean_house_open?, "K02-C house opened before Bill")
     legacy_door_report = cerulean_legacy_door_proof
     north_report = north_story(battle_calls, losses_remaining)
@@ -2521,6 +2530,90 @@ module KantoNativeCheck
     BlueKantoPilot.ticketmaster
     require!(BlueKantoPilot.progress["pilot_ss_ticket"] == true,
              "Vermilion ticket missing after Bill's quest")
+    require!(BlueKantoPilot.ss_anne_boarding_allowed?, "K03-C legitimate boarding refused")
+    # Native compiled teams and source touch anchors; battle results are
+    # controlled, while the engine collision graph uses the installed RXDATA.
+    anne_previous_map = $game_map.map_id
+    require!(!BlueKantoPilot.captain, "K03-C remote captain invocation accepted")
+    require!(!BlueKantoPilot.ss_anne_captain_access?, "K03-C captain stairs bypass rival")
+    [41,42,43].zip([:CHARMELEON,:WARTORTLE,:IVYSAUR]).each do |version,evolution|
+      row = GameData::Trainer.get(:BLUE_KANTO_RIVAL,"Blue",version)
+      require!(row.pokemon.map { |pk| pk[:species] } == [:PIDGEOTTO,:RATICATE,:KADABRA,evolution],
+        "K03-C original rival roster #{version} differs")
+      require!(row.to_trainer.party.length == 4, "K03-C rival team cannot compile")
+    end
+    $map_factory.setup(BlueKantoPilot.kanto_map_id(76))
+    require!(!BlueKantoPilot.captain, "K03-C Cut awarded before rival")
+    # Keep the rival map identity independent of the later Surge can pair.
+    anne_rival_map = BlueKantoPilot.kanto_map_id(75)
+    $map_factory.setup(anne_rival_map)
+    [22,26,27].zip([31,32,33]).each do |id,x|
+      ev = $game_map.events[id]
+      north_callback!(ev,"BlueKantoPilot.ss_anne_rival")
+      require!([ev.x,ev.y,ev.trigger] == [x,20,1],"K03-C source rival lane differs")
+    end
+    state = BlueKantoPilot.progress
+    inserted_legacy = !state["pilot_wins"].include?("Blue")
+    state["pilot_wins"] << "Blue" if inserted_legacy
+    calls = battle_calls.length
+    losses_remaining["Blue"] = 1
+    require!(!BlueKantoPilot.ss_anne_rival && !BlueKantoPilot.ss_anne_captain_access?,
+      "K03-C rival defeat or name-only victory opened stairs")
+    require!(BlueKantoPilot.ss_anne_rival && BlueKantoPilot.ss_anne_captain_access?,
+      "K03-C rival retry did not open stairs")
+    require!(BlueKantoPilot.ss_anne_rival &&
+      battle_calls[calls..-1] == [[:BLUE_KANTO_RIVAL,"Blue",41]]*2,
+      "K03-C rival version or repeat differs")
+    state["pilot_wins"].delete("Blue") if inserted_legacy
+    require!(BlueKantoPilot::SS_ANNE_RIVAL_EVENTS.all? { |id| $game_self_switches[[anne_rival_map,id,"A"]] },
+      "K03-C rival completion not synchronized")
+    # The ordinary source transfer events must be physically reachable
+    # from their actual landings. No QA teleport is accepted as a link.
+    sequence = [72,74,75,76].map { |id| BlueKantoPilot.kanto_map_id(id) }
+    city = BlueKantoPilot.kanto_map_id(64)
+    city_anchor = k03a_report.fetch("vermilion_center_landing")
+    city_comp = opening_component(city,city_anchor)
+    harbor_entries = [9,29,30].zip([26,27,28]).map do |id,x|
+      event = $game_map.events[id]
+      north_callback!(event,"BlueKantoPilot.harbor_gate(#{sequence.first}, 9, 7)")
+      require!([event.x,event.y,event.trigger] == [x,35,1] &&
+        north_event_reachable?(city_comp,event), "K03-C city harbor approach inaccessible #{id}")
+      [id,x,35]
+    end
+    city_return = k03a_chain([sequence.first,city],[9,16],city_anchor)
+    require!(city_return, "K03-C harbor cannot return to the Vermilion Center approach")
+    anne_out = k03a_chain(sequence,[9,7],[4,8])
+    anne_back = k03a_chain(sequence.reverse,[4,8],[9,16])
+    require!(anne_out && anne_back, "K03-C physical harbor/captain roundtrip missing")
+    anne_deck = k03a_chain([72,74,75,78].map { |id| BlueKantoPilot.kanto_map_id(id) },[9,7],[58,3])
+    anne_deck_back = k03a_chain([78,75,74,72].map { |id| BlueKantoPilot.kanto_map_id(id) },[58,3],[9,16])
+    anne_b1 = k03a_chain([72,74,77].map { |id| BlueKantoPilot.kanto_map_id(id) },[9,7],[19,16])
+    anne_b1_back = k03a_chain([77,74,72].map { |id| BlueKantoPilot.kanto_map_id(id) },[19,16],[9,16])
+    require!(anne_deck && anne_deck_back && anne_b1 && anne_b1_back, "K03-C deck/B1F roundtrip missing")
+    anne_report = {"city_entries"=>harbor_entries,"city_return"=>city_return,
+      "captain_out"=>anne_out,"captain_back"=>anne_back,"deck_out"=>anne_deck,
+      "deck_back"=>anne_deck_back,"b1_out"=>anne_b1,"b1_back"=>anne_b1_back,
+      "rival_versions"=>[41,42,43],"rival_defeat_retry"=>true}
+    $map_factory.setup(BlueKantoPilot.kanto_map_id(76))
+    north_callback!($game_map.events[2], "BlueKantoPilot.captain")
+    anne_cut = [:HM01, :HMCUT].find { |id| GameData::Item.exists?(id) }
+    require!(anne_cut, "K03-C native Cut HM missing")
+    anne_bag = $bag
+    anne_add = anne_bag.method(:add)
+    begin
+      anne_bag.define_singleton_method(:add) { |item, qty=1| item == anne_cut ? false : anne_add.call(item,qty) }
+      require!(!BlueKantoPilot.captain, "K03-C failed Cut delivery marked success")
+      require!(!BlueKantoPilot.progress["field_events"]["KANTO"].include?("SS_ANNE_CAPTAIN"),
+        "K03-C failed Cut delivery set completion")
+    ensure
+      anne_bag.singleton_class.send(:remove_method, :add)
+    end
+    require!(BlueKantoPilot.captain, "K03-C legitimate Cut delivery failed")
+    anne_quantity = $bag.quantity(anne_cut)
+    require!(anne_quantity == 1, "K03-C initial Cut quantity not one")
+    require!(BlueKantoPilot.captain && $bag.quantity(anne_cut) == anne_quantity,
+      "K03-C repeat captain duplicated Cut")
+    $map_factory.setup(anne_previous_map)
     # Lt. Surge grants exactly one Thunder Badge after a legitimate victory.
     surge = GameData::Trainer.get(:BLUE_KANTO_LEADER_SURGE, "Lt. Surge")
     require!(surge.pokemon.length == 3, "Lt. Surge original FRLG roster missing")
@@ -3175,6 +3268,15 @@ module KantoNativeCheck
     require!($game_map.map_id == lab, "Pilot did not reload its map")
     require!(BlueKantoPilot.progress["pilot_ss_ticket"] == true, "S.S. Ticket permit did not survive reload")
     north_state = BlueKantoPilot.progress
+    require!(north_state["field_events"]["KANTO"].count("SS_ANNE_CAPTAIN") == 1 &&
+      $bag.quantity(anne_cut) == anne_quantity, "K03-C Cut grant lost or duplicated after reload")
+    require!(north_state["pilot_wins"].include?(BlueKantoPilot::SS_ANNE_RIVAL_KEY) &&
+      BlueKantoPilot::SS_ANNE_RIVAL_EVENTS.all? { |id| $game_self_switches[[anne_rival_map,id,"A"]] },
+      "K03-C rival victory or self switches lost after reload")
+    anne_report["save_reload"] = true
+    anne_report["cut_quantity"] = anne_quantity
+    File.write("Data/blue-kanto-k03c-proof.txt",anne_report.inspect)
+    puts "KANTO_K03C_BOARDING_CAPTAIN_CUT_SAVE_RELOAD_OK"
     require!(%w[pilot_cerulean_rival pilot_nugget_bridge_awarded pilot_bill_agreed pilot_bill_helped pilot_bill_ticket pilot_ss_ticket].all? { |key| north_state[key] },
              "K00-C quest flags lost after native save/reload")
     north_keys = ["KANTO_CERULEAN_RIVAL","KANTO_042_001","KANTO_042_011","KANTO_042_016"] +

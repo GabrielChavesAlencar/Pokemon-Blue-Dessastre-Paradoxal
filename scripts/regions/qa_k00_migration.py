@@ -26,9 +26,9 @@ if "--from-151" not in sys.argv and "--from-152" not in sys.argv:
 if "--from-142" in sys.argv:
     NEW |= {"53", "54", "55"}
 POLICE_HOTFIX = "--police-hotfix" in sys.argv
-if POLICE_HOTFIX:
+if POLICE_HOTFIX or "--from-156" in sys.argv:
     NEW.clear()
-LABEL = "cerulean-police-migration" if POLICE_HOTFIX else "k03b-migration" if "--from-152" in sys.argv else "k03a-migration" if "--from-151" in sys.argv else "k00-migration" if "--from-142" in sys.argv else "k02c-migration"
+LABEL = "cerulean-police-migration" if POLICE_HOTFIX else "k03c-migration" if "--from-156" in sys.argv else "k03b-migration" if "--from-152" in sys.argv else "k03a-migration" if "--from-151" in sys.argv else "k00-migration" if "--from-142" in sys.argv else "k02c-migration"
 REPORT = ROOT / (".blue-work/" + LABEL + "-proof.json")
 WORK = ROOT / (".blue-work/" + LABEL + "-ci")
 
@@ -80,6 +80,27 @@ def run():
         del infos[mid]
         hashes.pop(relative.as_posix(), None)
     installer.atomic(game / "Data/MapInfos.rxdata", serialize(infos))
+    if "--from-156" in sys.argv:
+        # Reconstruct a pre-K03-C ship using real current map geometry.
+        # Remove ONLY the new story events and PBS variants from the copy.
+        second = Path(f"Data/Map{old['75']:03d}.rxdata")
+        ship = load(game / second)
+        for event_id in (22,23,26,27):
+            ship.attrs["@events"].pop(event_id, None)
+        installer.atomic(game / second, serialize(ship, EVENT_CLASSES))
+        hashes[second.as_posix()] = installer.digest(game / second)
+        trainers = Path("PBS/trainers_kanto.txt")
+        rows = (game / trainers).read_text(encoding="utf-8-sig").splitlines()
+        removed = {"[BLUE_KANTO_RIVAL,Blue,41]", "[BLUE_KANTO_RIVAL,Blue,42]", "[BLUE_KANTO_RIVAL,Blue,43]"}
+        kept, skip = [], False
+        for line in rows:
+            if line.strip().startswith("["):
+                skip = line.strip() in removed
+            if not skip:
+                kept.append(line)
+        installer.atomic(game / trainers, ("\n".join(kept)+"\n").encode("utf-8"))
+        hashes[trainers.as_posix()] = installer.digest(game / trainers)
+        check(installer.outdated_current_ss_anne(game,old), "Legacy ship gate not detected")
     proof["maps"] = old
     proof["installed_sha256"] = hashes
     installer.atomic(game / proof_path, (json.dumps(proof, indent=2) + "\n").encode())
@@ -192,6 +213,7 @@ if __name__ == "__main__":
     REPORT.write_text(json.dumps(report, indent=2), encoding="utf-8")
     print("KANTO_K00_MIGRATION_REPORT:" + json.dumps(report, sort_keys=True))
     marker = ("KANTO_CERULEAN_POLICE_REAL_156_TO_156_MIGRATION_FIXTURE_OK" if POLICE_HOTFIX
+              else "KANTO_K03C_REAL_156_TO_156_MIGRATION_FIXTURE_OK" if "--from-156" in sys.argv
               else "KANTO_K03B_REAL_152_TO_156_MIGRATION_FIXTURE_OK" if "--from-152" in sys.argv
               else "KANTO_K03B_REAL_151_TO_156_MIGRATION_FIXTURE_OK" if "--from-151" in sys.argv
               else "KANTO_K00_REAL_RXDATA_MIGRATION_FIXTURE_OK" if "--from-142" in sys.argv

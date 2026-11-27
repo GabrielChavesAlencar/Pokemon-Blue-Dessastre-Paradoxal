@@ -38,7 +38,7 @@ class KantoReleaseGateTests(unittest.TestCase):
         self.assertTrue(result["ci_preflight_passed"])
         self.assertEqual(result["map_count"],156)
         self.assertEqual(result["preview_maps"],35)
-        self.assertEqual(result["trainers"],162)
+        self.assertEqual(result["trainers"],163)
         self.assertEqual(result["wild_locations"],28)
         self.assertEqual(result["wild_methods"],99)
         self.assertEqual(result["wild_species"],68)
@@ -71,7 +71,18 @@ class KantoReleaseGateTests(unittest.TestCase):
             self.clone(root)
             self.patch_json(root,"site/public/data/kanto.json",
                             lambda d:d["locations"].pop())
-            with self.assertRaisesRegex(ValueError,"156 maps/162 grouped trainers"):
+            with self.assertRaisesRegex(ValueError,"156 maps/163 grouped trainers"):
+                release_gate.inspect(root)
+
+    def test_ship_rival_wrong_team_rejected_even_with_correct_count(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder)
+            self.clone(root)
+            def corrupt(d):
+                rival=next(t for t in d["trainers"] if t["id"]=="kanto-blue-ss-anne")
+                rival["variants"][0]["team"][3]["species"]="IVYSAUR"
+            self.patch_json(root,"site/public/data/kanto.json",corrupt)
+            with self.assertRaisesRegex(ValueError,"S.S. Anne rival team"):
                 release_gate.inspect(root)
 
     def test_forged_playable_status_rejected_before_manual_qa(self):

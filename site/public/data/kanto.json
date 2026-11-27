@@ -2173,6 +2173,7 @@
       "status": "experimental",
       "methods": [],
       "trainers": [
+        "kanto-blue-ss-anne",
         "kanto-brooks",
         "kanto-lamar",
         "kanto-dale",
@@ -7421,6 +7422,150 @@
             {
               "species": "NIDORANfE",
               "level": 15
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-blue-ss-anne",
+      "name": "Gary (S.S. Anne)",
+      "role": "Rival de Kanto",
+      "location": "kanto-ss-anne-2f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": "BULBASAUR",
+          "team": [
+            {
+              "species": "PIDGEOTTO",
+              "level": 19,
+              "moves": [
+                "TACKLE",
+                "QUICKATTACK",
+                "GUST",
+                "SANDATTACK"
+              ]
+            },
+            {
+              "species": "RATICATE",
+              "level": 16,
+              "moves": [
+                "TACKLE",
+                "QUICKATTACK",
+                "HYPERFANG",
+                "TAILWHIP"
+              ]
+            },
+            {
+              "species": "KADABRA",
+              "level": 18,
+              "moves": [
+                "CONFUSION",
+                "DISABLE",
+                "KINESIS",
+                "TELEPORT"
+              ]
+            },
+            {
+              "species": "CHARMELEON",
+              "level": 20,
+              "moves": [
+                "SCRATCH",
+                "EMBER",
+                "METALCLAW",
+                "GROWL"
+              ]
+            }
+          ]
+        },
+        {
+          "starter": "CHARMANDER",
+          "team": [
+            {
+              "species": "PIDGEOTTO",
+              "level": 19,
+              "moves": [
+                "TACKLE",
+                "QUICKATTACK",
+                "GUST",
+                "SANDATTACK"
+              ]
+            },
+            {
+              "species": "RATICATE",
+              "level": 16,
+              "moves": [
+                "TACKLE",
+                "QUICKATTACK",
+                "HYPERFANG",
+                "TAILWHIP"
+              ]
+            },
+            {
+              "species": "KADABRA",
+              "level": 18,
+              "moves": [
+                "CONFUSION",
+                "DISABLE",
+                "KINESIS",
+                "TELEPORT"
+              ]
+            },
+            {
+              "species": "WARTORTLE",
+              "level": 20,
+              "moves": [
+                "BUBBLE",
+                "BITE",
+                "WATERGUN",
+                "WITHDRAW"
+              ]
+            }
+          ]
+        },
+        {
+          "starter": "SQUIRTLE",
+          "team": [
+            {
+              "species": "PIDGEOTTO",
+              "level": 19,
+              "moves": [
+                "TACKLE",
+                "QUICKATTACK",
+                "GUST",
+                "SANDATTACK"
+              ]
+            },
+            {
+              "species": "RATICATE",
+              "level": 16,
+              "moves": [
+                "TACKLE",
+                "QUICKATTACK",
+                "HYPERFANG",
+                "TAILWHIP"
+              ]
+            },
+            {
+              "species": "KADABRA",
+              "level": 18,
+              "moves": [
+                "CONFUSION",
+                "DISABLE",
+                "KINESIS",
+                "TELEPORT"
+              ]
+            },
+            {
+              "species": "IVYSAUR",
+              "level": 20,
+              "moves": [
+                "VINEWHIP",
+                "POISONPOWDER",
+                "SLEEPPOWDER",
+                "LEECHSEED"
+              ]
             }
           ]
         }

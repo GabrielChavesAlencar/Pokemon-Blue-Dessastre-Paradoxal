@@ -333,6 +333,7 @@ SILPH_GRUNT_FLOORS = {
 
 STARTERS = {1: "BULBASAUR", 2: "CHARMANDER", 3: "SQUIRTLE",
             11: "BULBASAUR", 12: "CHARMANDER", 13: "SQUIRTLE",
+            41: "BULBASAUR", 42: "CHARMANDER", 43: "SQUIRTLE",
             51: "BULBASAUR", 52: "CHARMANDER", 53: "SQUIRTLE"}
 
 
@@ -408,6 +409,9 @@ def export(preview: Path):
         if kind == "RIVAL" and int(version) in (31, 32, 33):
             key, role = "CERULEAN_CITY", "Rival de Kanto"
             trainer_id, shown_name = slug("blue_cerulean"), "Gary (Cerulean)"
+        elif kind == "RIVAL" and int(version) in (41, 42, 43):
+            key, role = "SS_ANNE_2F", "Rival de Kanto"
+            trainer_id, shown_name = slug("blue_ss_anne"), "Gary (S.S. Anne)"
         elif kind == "ROCKET" and int(version) == 6:
             key, role = "CERULEAN_CITY", "Equipe Rocket"
             trainer_id, shown_name = slug("rocket_cerulean_house"), "Grunt (Cerulean)"

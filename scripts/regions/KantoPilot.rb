@@ -1301,6 +1301,7 @@ module BlueKantoPilot
     # Both Silph Co. and Viridian have a boss named Giovanni. A legacy
     # Silph name-only victory must never mark the *gym* Giovanni as beaten.
     if wins.include?(key) || (key != CERULEAN_RIVAL_KEY && key != CERULEAN_ROCKET_KEY &&
+        key != SS_ANNE_RIVAL_KEY &&
         type != :BLUE_KANTO_LEADER_GIOVANNI && wins.include?(name))
       # Older saves may have Miguel defeated but still use his first page.
       # Both paths must offer the missing one-time prize.
@@ -1493,35 +1494,91 @@ module BlueKantoPilot
     bill_reward
   end
 
+  # All three native harbor entrances must enforce the same conditions as
+  # the clerk. Bill's ticket alone cannot bypass the Cascade requirement.
+  def self.ss_anne_boarding_allowed?
+    kanto_current? &&
+      BlueRegions.local_achievements(progress, "KANTO").include?("CASCADE") &&
+      !!(progress["pilot_ss_ticket"] || bill_ticket_in_bag?)
+  end
+
   def self.harbor_gate(map_id, x, y)
     return false unless kanto_current?
-    unless progress["pilot_ss_ticket"] || bill_ticket_in_bag?
-      pbMessage(BlueKantoPilot.t("You need the S.S. Ticket to enter the harbor. Speak to the clerk.", "O acesso ao porto exige o S.S. Ticket. Fale com o atendente."))
-      return
+    unless ss_anne_boarding_allowed?
+      pbMessage(t("You need the Cascade Badge and S.S. Ticket to enter the harbor.",
+                  "O acesso ao porto exige a Cascade Badge e o S.S. Ticket."))
+      return false
     end
     pbFadeOutIn { BlueRegionTravel.move_to([map_id, x, y, 2]) }
+    true
+  end
+
+  SS_ANNE_RIVAL_KEY = "KANTO_SS_ANNE_RIVAL".freeze
+  SS_ANNE_RIVAL_EVENTS = [22,23,26,27].freeze
+
+  def self.ss_anne_rival
+    return false unless ss_anne_boarding_allowed? && $game_map &&
+      $game_map.map_id == kanto_map_id(75) && RIVAL_VERSIONS.key?(starter)
+    unless progress.fetch("pilot_wins", []).include?(SS_ANNE_RIVAL_KEY)
+      pbMessage(t("Gary: Ready for another battle?", "Gary: Pronto para outra batalha?"))
+      return false unless battle(:BLUE_KANTO_RIVAL, "Blue", SS_ANNE_RIVAL_KEY,
+        RIVAL_VERSIONS.fetch(starter) + 30)
+      return false unless progress.fetch("pilot_wins", []).include?(SS_ANNE_RIVAL_KEY)
+      pbMessage(t("Gary: The captain knows Cut!", "Gary: O capitão conhece Cut!"))
+    end
+    SS_ANNE_RIVAL_EVENTS.each do |id|
+      $game_self_switches[[$game_map.map_id,id,"A"]] = true if $game_map.events[id]
+    end
+    $game_map.need_refresh = true
+    true
+  end
+
+  def self.ss_anne_captain_access?
+    return false unless ss_anne_boarding_allowed?
+    # Preserve a captain completion from the already published legacy map.
+    progress.fetch("pilot_wins", []).include?(SS_ANNE_RIVAL_KEY) ||
+      Array(progress.fetch("field_events", {})["KANTO"]).include?("SS_ANNE_CAPTAIN")
+  end
+
+  def self.ss_anne_captain_entry?
+    return true if ss_anne_captain_access?
+    pbMessage(t("Challenge Gary before visiting the captain.",
+                "Enfrente Gary antes de visitar o capitão."))
+    false
   end
 
   # The captain's original scripts are not executed in Blue. Give the audited
   # Cut HM once, using the item ID actually available in the installed game.
   def self.captain
+    return false unless kanto_current? && $game_map &&
+      $game_map.map_id == kanto_map_id(76) && $bag
     events = (progress["field_events"]["KANTO"] ||= [])
     if events.include?("SS_ANNE_CAPTAIN")
       pbMessage(BlueKantoPilot.t("Captain: Use Cut to clear paths where you have permission.", "Capitão: Use Cut para abrir caminhos onde tiver permissão."))
-      return
+      return true
     end
+    return false unless ss_anne_captain_access?
     item = [:HM01, :HMCUT].find { |candidate| GameData::Item.exists?(candidate) }
     unless item
       pbMessage(BlueKantoPilot.t("HM Cut hasn't been added to this version of Blue yet.", "O HM Cut ainda não está cadastrado nesta versão do Blue."))
       return
     end
-    unless $bag.add(item, 1)
+    # Existing local HM ownership (including legacy PC storage) must not
+    # produce another copy. Failed delivery must leave the quest retryable.
+    cut_ids = [:HM01, :HMCUT].select { |id| GameData::Item.exists?(id) }
+    pc = $PokemonGlobal.respond_to?(:pcItemStorage) ? $PokemonGlobal.pcItemStorage : nil
+    owned = cut_ids.any? { |id| $bag.has?(id) } ||
+      (pc && pc.respond_to?(:items) && pc.items.any? { |entry|
+        entry.is_a?(Array) && cut_ids.include?(entry[0]) && entry[1].to_i > 0
+      })
+    unless owned || $bag.add(item, 1)
       pbMessage(BlueKantoPilot.t("Captain: Make room in your Bag for HM Cut.", "Capitão: Libere espaço na Bolsa para receber o HM Cut."))
-      return
+      return false
     end
     events << "SS_ANNE_CAPTAIN"
-    BlueMusic.kanto_me_play("obtained_item")
+    BlueMusic.kanto_me_play("obtained_item") unless owned
     pbMessage(BlueKantoPilot.t("The captain gave you HM Cut! The Cascade Badge lets you use it in Kanto.", "O Capitão entregou o HM Cut! A Cascade Badge permite usá-lo em Kanto."))
+    true
   end
 
   # Ground items preserve FRLG EventID and quantity, but all ownership and
