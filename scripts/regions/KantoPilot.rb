@@ -2393,30 +2393,34 @@ module BlueKantoPilot
       side.character_name.to_s.empty? == open
   end
 
-  # Replace the single authored police script with a native Show Text
-  # command on the visible page. The generic mobile script-eval error no
-  # longer applies to this dialogue; no script or transfer is introduced.
+  # Native text is now authored directly into both on-disk guard pages.
+  # Convert the same two legacy pages in cached saves as well, so a
+  # subsequent refresh cannot restore the old Ruby callback on JoiPlay.
   def self.sync_cerulean_police_dialogue(map)
     return unless map && kanto_current? && map.map_id == kanto_map_id(39) && kanto_map_id(43)
-    id = cerulean_house_open? ? 25 : 13
-    guard = map.events[id]
-    return unless guard && guard.trigger == 0 && !guard.character_name.to_s.empty?
-    commands = guard.list
-    return unless commands && commands.length == 2 && commands.last.code == 0
-    op = commands.first
-    return unless (op.code == 355 && op.parameters[0].to_s == "BlueKantoPilot.cerulean_police") ||
-      op.code == 101
     pt = defined?(BlueLocale) && BlueLocale.enabled?
-    message = if cerulean_house_open?
-      pt ? "Pode passar. A investigação continua." : "You may pass. The investigation continues."
-    else
-      pt ? "A Equipe Rocket roubou esta casa. Estamos investigando." : "Team Rocket robbed this house. We are investigating."
+    [13,25].each do |id|
+      guard = map.events[id]
+      next unless guard
+      message = if id == 25
+        pt ? "Pode passar. A investigação continua." : "You may pass. The investigation continues."
+      else
+        pt ? "A Equipe Rocket roubou esta casa. Estamos investigando." : "Team Rocket robbed this house. We are investigating."
+      end
+      authored = guard.instance_variable_get(:@event)
+      lists = authored && authored.respond_to?(:pages) ? authored.pages.map { |page| page.list } : []
+      lists << guard.list
+      lists.compact.each do |commands|
+        next unless commands.length == 2 && commands.last.code == 0
+        op = commands.first
+        next unless (op.code == 355 && op.parameters[0].to_s == "BlueKantoPilot.cerulean_police") || op.code == 101
+        next if op.code == 101 && op.parameters == [message]
+        native = op.dup
+        native.code = 101
+        native.parameters = [message]
+        commands[0] = native
+      end
     end
-    return if op.code == 101 && op.parameters == [message]
-    native = op.dup
-    native.code = 101
-    native.parameters = [message]
-    commands[0] = native
   end
 
   # A save or an already-cached neighbouring map may retain the pre-K02-C

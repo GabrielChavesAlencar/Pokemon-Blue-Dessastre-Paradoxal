@@ -148,6 +148,30 @@ puts "KANTO_K02C_MESSAGE_PREPEND_RESTORE_OK"
             event.attrs["@pages"][0].attrs["@list"][0].attrs["@code"] = 355
             self.assertIsNone(source_cerulean_furniture(event, source, eid))
 
+    def test_cerulean_police_gate_rejects_legacy_script_on_either_page(self):
+        from cerulean_doors import verify_cerulean_police
+        def obj(**attrs):
+            return RubyObject("fixture", {"@" + k: v for k, v in attrs.items()})
+        events = {}
+        for eid, active_index in ((13, 0), (25, 1)):
+            pages = []
+            for index in (0, 1):
+                active = index == active_index
+                pages.append(obj(trigger=0, through=not active,
+                    graphic=obj(character_name=b"guard" if active else b""),
+                    condition=obj(self_switch_valid=bool(index), self_switch_ch=b"A"),
+                    list=([obj(code=101, parameters=[b"Police"])] if active else []) +
+                         [obj(code=0, parameters=[])]))
+            events[eid] = obj(pages=pages)
+        verify_cerulean_police(events)
+        for eid, index in ((13, 0), (25, 1)):
+            command = events[eid].attrs["@pages"][index].attrs["@list"][0]
+            command.attrs["@code"] = 355
+            with self.assertRaisesRegex(ValueError, "police"):
+                verify_cerulean_police(events)
+            command.attrs["@code"] = 101
+        verify_cerulean_police(events)
+
     def test_02_source_trainer_bindings_are_local_and_unique(self):
         self.assertEqual(len(TRAINERS[53]), 6)
         self.assertEqual(len(TRAINERS[54]), 9)
