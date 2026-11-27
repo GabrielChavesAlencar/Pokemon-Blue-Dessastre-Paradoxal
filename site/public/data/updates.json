@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b994d183fbb305fa8b5424cd342628c1bf51ce0a",
+      "date": "2026-11-27T11:25:28-03:00",
+      "title": "docs: indexar roadmap Codex de Johto no README",
+      "category": "Documentação"
+    },
+    {
+      "sha": "1b8a8ae922953781c90fedef3432b6318a564713",
+      "date": "2026-11-27T11:25:18-03:00",
+      "title": "docs(johto): roadmap Codex para campanha integral Windows e Android",
+      "category": "Documentação"
+    },
+    {
       "sha": "549eea9eff18d0a916aaafefe8c90fce400b85f2",
       "date": "2026-11-27T11:14:31-03:00",
       "title": "docs: linkar roteiro operacional Unova no README",

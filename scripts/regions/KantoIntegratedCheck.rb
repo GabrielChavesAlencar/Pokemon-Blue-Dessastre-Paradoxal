@@ -441,7 +441,9 @@ module KantoIntegratedCheck
     require!(BlueRegions.local_achievements($PokemonGlobal.blue_regions,"KANTO").include?("BOULDER"),
              "Local Kanto badge did not survive reload")
     File.write("Data/blue-kanto-integrated-proof.txt",
-               "Two-way transfer, native PC gift and Legendary deposit, Boulder HM and unique badge, same-save reload OK; League simulated only in CI")
+               "Two-way transfer, native PC gift and Legendary deposit, Boulder HM and unique badge, same-save reload OK; League simulated only in CI\n" +
+               "KANTO_K03C_INTEGRATED_CUT_DIAGNOSTIC:#{cut_diagnostic.inspect}\n" +
+               "KANTO_K03C_INTEGRATED_CUT_POLICY_OK\n")
     stage("completed")
   end
 end
