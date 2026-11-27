@@ -586,7 +586,7 @@ module KantoNativeCheck
     $game_map.events.each_value { |event| event.refresh }
     require!([26,37,38].all? { |id| $game_self_switches[[city,id,"A"]] &&
              $game_map.events[id].character_name.to_s.empty? },"K02-C Rocket pages not hidden")
-    {"manual_gameplay"=>false,"witnesses"=>witnesses,"bicycle"=>1,"voucher"=>0,
+    {"manual_gameplay"=>false,"witnesses"=>witnesses,"police_after_bill"=>police,"bicycle"=>1,"voucher"=>0,
      "tm28"=>$bag.quantity(:TM28),"rocket_retry"=>true,"voucher_fixture"=>true,
      "native_bike_handlers"=>true,"regional_bag_staging"=>true,"required_actor_sprites"=>true,
      "native_trade_transaction"=>true,"trade_native_slot_read"=>true,"trade_animation_tested"=>false,"atlas_bitmap_loaded"=>true,
@@ -3002,6 +3002,26 @@ module KantoNativeCheck
              "K02-C reward/quest persistence failed")
     interiors_report["save_reload"] = true
     interiors_report["legacy_door_reload"] = legacy_door_report
+    before_police = legacy_door_report.fetch("police")
+    after_police = interiors_report.fetch("police_after_bill")
+    require!(!before_police["open"] && before_police["visible"] == 13 &&
+      after_police["open"] && after_police["visible"] == 25 && after_police["stale_cache_tested"] &&
+      [before_police,after_police].all? { |p| !p.fetch("native_messages").empty? },
+      "Cerulean native police receipt missing")
+    require!($game_self_switches[[BlueKantoPilot.kanto_map_id(39),13,"A"]] &&
+      $game_self_switches[[BlueKantoPilot.kanto_map_id(39),25,"A"]],
+      "Cerulean police page flags lost after save reload")
+    require!(interiors_report.fetch("witnesses").length == 8 &&
+      interiors_report.fetch("witnesses").all? { |w|
+        w.fetch("native_door_contact").fetch("destination_loaded") &&
+        w.fetch("native_returns").length == w.fetch("returns").length &&
+        w.fetch("native_returns").all? { |e| e.fetch("destination_loaded") } } &&
+      legacy_door_report.fetch("native_public_contacts_before_bill").length == 5 &&
+      legacy_door_report.fetch("native_public_contacts_before_bill").all? { |e|
+        e.fetch("native_return").fetch("destination_loaded") },
+      "Cerulean roundtrip receipt incomplete")
+    File.write("Data/blue-kanto-cerulean-regression.txt",
+      "KANTO_CERULEAN_POLICE_BEFORE_AFTER_BILL_OK\nKANTO_CERULEAN_NATIVE_ROUNDTRIP_OK\n")
     File.write("Data/blue-kanto-k02c-native-proof.txt", interiors_report.inspect)
     puts "KANTO_K02C_NATIVE_INTERIORS_REPORT:#{interiors_report.inspect}"
     puts "KANTO_K02C_INTERIORS_BIKE_ROCKET_SAVE_RELOAD_OK"
