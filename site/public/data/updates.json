@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d8de56f515b5ef5610b9e82673620bfcaf051fcb",
+      "date": "2026-11-27T12:47:56-03:00",
+      "title": "fix(kanto): recover legacy JoiPlay guard dialogues and Cerulean door contact (#369)",
+      "category": "Correções"
+    },
+    {
+      "sha": "5107df9fad7e52c1ad0e739da1995e076784d5f0",
+      "date": "2026-11-27T12:40:38-03:00",
+      "title": "fix(kanto): recover exact JoiPlay legacy guard callbacks and stale Cerulean doors on contact",
+      "category": "Correções"
+    },
+    {
+      "sha": "e7b47190ceb53ea79b46391f6e433a66e189d5bd",
+      "date": "2026-11-27T12:36:15-03:00",
+      "title": "fix(android): audit Cerulean files on same revision and expose JoiPlay event diagnostics",
+      "category": "Correções"
+    },
+    {
       "sha": "9cfff472d2af9d9278dc962f5a72e038ed5deb37",
       "date": "2026-11-27T12:15:52-03:00",
       "title": "fix(kanto): Cerulean police native dialogue on Android (#368)",
