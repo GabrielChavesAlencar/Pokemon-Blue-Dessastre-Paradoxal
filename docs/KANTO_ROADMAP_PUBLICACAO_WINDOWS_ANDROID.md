@@ -1,6 +1,6 @@
 # Kanto — roadmap de conclusão e publicação sincronizada Windows/Android
 
-**Data de referência:** 26/11/2026 (Brasília)  
+**Data de referência:** 27/11/2026 (Brasília)  
 **Escopo:** Kanto no jogo principal do Pokémon Blue — Dessastre Paradoxal, não um piloto separado.  
 **Regra de entrega solicitada pelo proprietário:** cada mudança perceptível ao jogador deve produzir uma versão Windows e uma versão Android antes de iniciar outra funcionalidade. Não acumular várias entregas inéditas aguardando publicação.
 
@@ -110,7 +110,7 @@ bloqueios: []
 
 Estados: PENDING, IN_PROGRESS, CI_PASS, MERGED, BLOCKED_RELEASE, PUBLISHED_BOTH, BLOCKED_ENV, QA_FAIL, QA_PASS, DELIVERED_WITH_QA_PENDING, ACCEPTED. Somente preencher com dados verificados; não usar o exemplo como recibo. Se uma build falhar depois de publicada a outra, manter as tags antigas rastreáveis e registrar novo par corrigido; não apagar releases de usuários para simular sincronia.
 
-## 3. Inventário exato de mapas ausentes (62)
+## 3. Inventário histórico de mapas ausentes (62 na baseline de 145)
 
 IDs abaixo são **IDs da fonte FRLG**, não IDs de destino no Blue nem coordenadas de teleporte. O importador deve preservar a ordem estável dos IDs existentes, verificar MapInfos/Data/PBS de todas as regiões, alocar somente IDs livres, persistir mapa fonte→destino, rever dependências de tilesets/gráficos e manter saves. Não importar switches/scripts estrangeiros cegamente.
 
@@ -213,9 +213,15 @@ Manter em cada entrega: total de mapas catalogados/preview/ausentes (meta audita
 
 A estabilização técnica K00 foi publicada nas versões Windows 1595 e Android 77. O projeto avançou até K03-A, que incluiu o corredor das Rotas 5 e 6, a passagem subterrânea e a creche. O par verificado desse lote foi Windows 1609 e Android 162, ambos na revisão funcional `734bc1ff`. As provas nativas incluem migração, depósito e retirada na creche e recuperação da partida de teste. [Registro de K00 e K03-A](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/342#issuecomment-7207633159).
 
-A auditoria atual da fonte confirmou **152/207 mapas catalogados (73,43%)**, dos quais 35 estão em prévia, e **55 mapas de conteúdo ausentes**. A Barra 2 permanece **1/16**. A tabela da seção 3 registra o inventário inicial de 145 mapas. [Catálogo atual](../data/regions/kanto-source.json).
+O [PR #365](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/pull/365) corrigiu o guarda antes/depois de Bill e as oito portas/retornos nativos. O par verificado anterior permanece Windows 1613 e Android 180, revisão funcional `f450acfe30583ae8814483fc9319ce5dbd3c0b3a`. A QA física de Cerulean foi explicitamente adiada pelo proprietário; não está aprovada e a issue #250 permanece aberta.
 
-A recorrência nas portas de Cerulean é a prioridade antes de K03-B. O [PR #364](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/pull/364) cobre o contato com as oito portas originais, a recuperação do mapa em partidas antigas e a verificação das transferências no pacote Android. O teste gráfico deve entrar e sair dos interiores em uma partida migrada, antes e depois da missão de Bill. No JoiPlay, deve também verificar a atualização incremental pelo canal multirregional e salvar e reabrir a partida. Com a correção publicada nas duas plataformas e o gate de Cerulean resolvido, o próximo sublote de conteúdo é **K03-B**, com o Clube de Fãs, voucher e interiores de Vermilion.
+O [PR #366](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/pull/366) concluiu tecnicamente K03-B: fonte 068 (Fan Club), 069/070 (casas) e 071 (pescador), voucher único, Old Rod, oito transferências nativas e persistência. A alocação limpa usa MapIDs 596–599, sem tocar nos 152 anteriores nem nas reservas Sinnoh 452–595; migrações reais de catálogo testadas. HEAD `1bc222059e78be6cde9c393f50b1ac37b44247dc`: 12/12 workflows e 23/23 jobs aprovados, inclusive [Kanto nativo](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/46000313709), [JoiPlay sem JSON](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/46000313885) e [Android integrado](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/46000313975). Merge `0775249822993ce73279ba50de7dfe99f4807dd4`.
+
+**Estado K03-B: MERGED / BLOCKED_RELEASE até verificação da dupla publicação.** [Windows 1614 (workflow)](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/46002287397) e [Android 186 (workflow)](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/46002287544) foram iniciados na mesma revisão funcional. Não considerar assets, hashes ou patches aprovados até conferir os recibos e os metadados das releases. QA física Windows/JoiPlay e áudio audível continuam BLOCKED_ENV.
+
+O catálogo integrado agora contém **156/207 mapas (75,36%)**, 35 em prévia, 121 fora da prévia (incluindo a exceção de encontros da Rota 23) e **51 ausentes**. A Barra 2 permanece **1/16**; não confundir CI com aceite integral. A seção 3 mantém o inventário histórico de 145 mapas. [Catálogo atual](../data/regions/kanto-source.json).
+
+O próximo sublote é **K03-C — S.S. Anne, rival, capitão e Cut**. Não iniciar antes da verificação das duas publicações e do gate de QA física aplicável ou autorização explícita do proprietário para adiá-lo. Preservar saves, MapIDs, Gary, balanceamento, HMs e esmeraldas. Testar no Windows/JoiPlay atualizado: entrada/saída dos quatro interiores, recusa/aceite dos presentes, voucher único e troca na Bike Shop de Cerulean, Old Rod e save/reload, além dos fluxos de Cerulean pendentes.
 
 ## Referências
 
