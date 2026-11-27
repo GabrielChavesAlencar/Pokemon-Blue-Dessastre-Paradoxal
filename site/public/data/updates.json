@@ -2,6 +2,42 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f450acfe30583ae8814483fc9319ce5dbd3c0b3a",
+      "date": "2026-11-27T08:55:15-03:00",
+      "title": "Fix Cerulean police after Bill and native door roundtrips (#365)",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "5fdd4164b593d3864dff36b5b9a76b25a03fc252",
+      "date": "2026-11-27T08:47:52-03:00",
+      "title": "Fix faithful guard fixture and require native police/roundtrip receipts after save reload",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "9e58c8029c1cd9cb90b33970b843cf4f3ffdabf8",
+      "date": "2026-11-27T08:40:13-03:00",
+      "title": "Require native police dialogue and stale cached guard refresh after S.S. Ticket",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "c8232396f6c452bbcba9936108d7105b4e206519",
+      "date": "2026-11-27T08:39:54-03:00",
+      "title": "Fix Cerulean native return contact and synchronize Bill police pages and dialogue",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "e058b62f31e56c15983e3fd8b5d04fa05fb3b783",
+      "date": "2026-11-27T08:33:00-03:00",
+      "title": "Probe native return door contact even on blocked steps and log collision witnesses",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "e730c9596cf5660c5ebf88ddca964f7e20463b59",
+      "date": "2026-11-27T08:22:24-03:00",
+      "title": "Test native Cerulean entrance and return interpreter before and after Bill",
+      "category": "Melhorias"
+    },
+    {
       "sha": "5f1eca09bdbdda7493525dffe176f1895b17e7d2",
       "date": "2026-11-27T07:04:53-03:00",
       "title": "Merge pull request #364 from GabrielChavesAlencar/fix/cerulean-native-door-contact",
