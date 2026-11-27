@@ -44,11 +44,11 @@ module BlueSinnohSharedEvents
   end
 
   module PreserveAuthoredMaps
-    def compile_all(*args, &block)
+    def main(*args, &block)
       return super unless BlueSinnohSharedEvents.map_ids
       paths = Dir.glob("Data/Map[0-9][0-9][0-9].rxdata")
       paths.concat(%w[Data/MapInfos.rxdata Data/Tilesets.rxdata Data/map_connections.dat])
-      originals = paths.to_h { |path| [path, File.binread(path)] }
+      originals = paths.select { |path| File.file?(path) }.to_h { |path| [path, File.binread(path)] }
       begin
         super
       ensure
