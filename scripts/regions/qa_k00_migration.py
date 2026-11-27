@@ -25,7 +25,10 @@ if "--from-151" not in sys.argv and "--from-152" not in sys.argv:
     NEW |= {"43", "44", "45", "46", "47", "48"}
 if "--from-142" in sys.argv:
     NEW |= {"53", "54", "55"}
-LABEL = "k03b-migration" if "--from-152" in sys.argv else "k03a-migration" if "--from-151" in sys.argv else "k00-migration" if "--from-142" in sys.argv else "k02c-migration"
+POLICE_HOTFIX = "--police-hotfix" in sys.argv
+if POLICE_HOTFIX:
+    NEW.clear()
+LABEL = "cerulean-police-migration" if POLICE_HOTFIX else "k03b-migration" if "--from-152" in sys.argv else "k03a-migration" if "--from-151" in sys.argv else "k00-migration" if "--from-142" in sys.argv else "k02c-migration"
 REPORT = ROOT / (".blue-work/" + LABEL + "-proof.json")
 WORK = ROOT / (".blue-work/" + LABEL + "-ci")
 
@@ -82,6 +85,20 @@ def run():
     installer.atomic(game / proof_path, (json.dumps(proof, indent=2) + "\n").encode())
     installer.atomic(game / installer.READY_GATE,
                      installer.ready_gate_bytes({int(k): v for k, v in old.items()}))
+    # Reconstruct the prior published guard pages on the same real map IDs.
+    # Ownership hashes are recorded for these legacy bytes, not fabricated saves.
+    if POLICE_HOTFIX:
+        city_rel = Path(f"Data/Map{current['39']:03d}.rxdata")
+        city = load(game / city_rel)
+        for event_id, index in ((13, 0), (25, 1)):
+            command = city.attrs["@events"][event_id].attrs["@pages"][index].attrs["@list"][0]
+            check(command.attrs["@code"] == 101, "Expected native guard in current build")
+            command.attrs["@code"] = 355
+            command.attrs["@parameters"] = [b"BlueKantoPilot.cerulean_police"]
+        installer.atomic(game / city_rel, serialize(city, EVENT_CLASSES))
+        hashes[city_rel.as_posix()] = installer.digest(game / city_rel)
+        installer.atomic(game / proof_path, (json.dumps(proof, indent=2) + "\n").encode())
+        check(installer.broken_current_cerulean(game, old), "Legacy guard migration not detected")
     # Use Map300 if it really belongs to the old registry, else the actual
     # allocated Pallet slot. Never treat a foreign Map300 as Kanto.
     drift_id = 300 if 300 in old.values() else old["5"]
@@ -162,7 +179,8 @@ def run():
             "foreign_maps_preserved": len(foreign), "synthetic_save_preserved": True,
             "foreign_rejected": True, "rollback_hashes_equal": True,
             "idempotent": True, "original_game_preserved": True,
-            "recovered_maps": sorted(recovered)}
+            "recovered_maps": sorted(recovered),
+            "legacy_guard_pages_rebuilt": POLICE_HOTFIX}
 
 
 if __name__ == "__main__":
@@ -173,7 +191,8 @@ if __name__ == "__main__":
         raise
     REPORT.write_text(json.dumps(report, indent=2), encoding="utf-8")
     print("KANTO_K00_MIGRATION_REPORT:" + json.dumps(report, sort_keys=True))
-    marker = ("KANTO_K03B_REAL_152_TO_156_MIGRATION_FIXTURE_OK" if "--from-152" in sys.argv
+    marker = ("KANTO_CERULEAN_POLICE_REAL_156_TO_156_MIGRATION_FIXTURE_OK" if POLICE_HOTFIX
+              else "KANTO_K03B_REAL_152_TO_156_MIGRATION_FIXTURE_OK" if "--from-152" in sys.argv
               else "KANTO_K03B_REAL_151_TO_156_MIGRATION_FIXTURE_OK" if "--from-151" in sys.argv
               else "KANTO_K00_REAL_RXDATA_MIGRATION_FIXTURE_OK" if "--from-142" in sys.argv
               else "KANTO_K03B_REAL_145_TO_156_MIGRATION_FIXTURE_OK")

@@ -3097,7 +3097,7 @@ module KantoNativeCheck
         e.fetch("native_return").fetch("destination_loaded") },
       "Cerulean roundtrip receipt incomplete")
     File.write("Data/blue-kanto-cerulean-regression.txt",
-      "KANTO_CERULEAN_POLICE_BEFORE_AFTER_BILL_OK\nKANTO_CERULEAN_NATIVE_ROUNDTRIP_OK\n")
+      "KANTO_CERULEAN_POLICE_BEFORE_AFTER_BILL_OK\nKANTO_CERULEAN_NATIVE_ROUNDTRIP_OK\nKANTO_CERULEAN_POLICE_PACKAGED_NATIVE_AND_CACHE_REFRESH_OK\n")
     File.write("Data/blue-kanto-k02c-native-proof.txt", interiors_report.inspect)
     puts "KANTO_K02C_NATIVE_INTERIORS_REPORT:#{interiors_report.inspect}"
     puts "KANTO_K02C_INTERIORS_BIKE_ROCKET_SAVE_RELOAD_OK"
