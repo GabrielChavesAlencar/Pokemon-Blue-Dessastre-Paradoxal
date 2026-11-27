@@ -2,6 +2,42 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0775249822993ce73279ba50de7dfe99f4807dd4",
+      "date": "2026-11-27T09:52:26-03:00",
+      "title": "K03-B: Vermilion native interiors, regional gifts and safe migration (#366)",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "1bc222059e78be6cde9c393f50b1ac37b44247dc",
+      "date": "2026-11-27T09:38:13-03:00",
+      "title": "Accept verified 156-map Kanto install in regional start gate and prove JoiPlay no-JSON compatibility",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "b6d4d1b43f825255d33b20ae0decfec311eee3ad",
+      "date": "2026-11-27T09:25:01-03:00",
+      "title": "Fix remaining stale map scope and portable bundle assertions without weakening native gates",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "31583d5627944753927e4d67749340f13340f7b0",
+      "date": "2026-11-27T09:14:12-03:00",
+      "title": "Pin original Fan Club and fisherman events, native doorstep contacts and standalone bundle parity",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "f59c793b68e23f109df0f7ca083330ca338a8381",
+      "date": "2026-11-27T09:13:45-03:00",
+      "title": "Reserve Sinnoh IDs and reconcile 156-map music, portal and legacy contracts",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "ebae4e4a8e655bfbdb7a8693ce3274402a2b15d2",
+      "date": "2026-11-27T09:06:55-03:00",
+      "title": "K03-B stage four Vermilion interiors, source-gated gifts, native transactions and 152-to-156 migration",
+      "category": "Melhorias"
+    },
+    {
       "sha": "f450acfe30583ae8814483fc9319ce5dbd3c0b3a",
       "date": "2026-11-27T08:55:15-03:00",
       "title": "Fix Cerulean police after Bill and native door roundtrips (#365)",
