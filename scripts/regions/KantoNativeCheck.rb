@@ -237,6 +237,14 @@ module KantoNativeCheck
     contact = BlueKantoPilot.cerulean_door_contact($game_player,dir)
     require!(contact && contact[0].id == 7 && contact[3],
       "Legacy Cerulean doorway did not self-recover")
+    # Reproduce the screenshot: player already stands on the door tile,
+    # without a move_generic event. The independent contact must dispatch.
+    $game_player.moveto(13,28)
+    $game_map.events.each_value { |e| e.clear_starting }
+    require!(BlueKantoPilot.cerulean_mobile_contact($game_player,8) &&
+      $game_map.events[7].starting, "JoiPlay standing-door contact failed")
+    $game_map.events[7].clear_starting
+    $game_player.moveto(*from)
     require!([$game_player.x,$game_player.y] == from,
       "Legacy doorstep recovery moved player")
     $game_player.moveto(*position)
@@ -472,7 +480,17 @@ module KantoNativeCheck
     puts "KANTO_CERULEAN_POLICE_BEFORE_AFTER_BILL_OK"
     city_component = opening_component(city,[22,20])
     require!($game_map.events[13].character_name.to_s.empty? &&
+             $game_map.events[13].through &&
              !$game_map.events[25].character_name.to_s.empty?, "K02-C police did not move")
+    ticket = BlueKantoPilot.bill_ticket_item
+    require!(ticket && $bag.has?(ticket) && $bag.remove(ticket,1), "Police real ticket fixture missing")
+    BlueKantoPilot.cerulean_mobile_refresh
+    require!(!$game_map.events[13].character_name.to_s.empty? &&
+      $game_map.events[25].character_name.to_s.empty?, "Police failed to block without physical ticket")
+    require!($bag.add(ticket,1), "Police ticket restore failed")
+    BlueKantoPilot.cerulean_mobile_refresh
+    require!($game_map.events[13].character_name.to_s.empty? &&
+      !$game_map.events[25].character_name.to_s.empty?, "Police failed to move on bag ticket change")
     # Source receipts: city event => [interior source, native landing, exits].
     doors = {3=>[44,[3,2],[2,3]],7=>[43,[5,8],[5]],8=>[46,[4,7],[3]],
              9=>[48,[3,7],[3,4]],10=>[44,[3,8],[2,3]],11=>[45,[4,7],[1]],
@@ -1139,6 +1157,7 @@ module KantoNativeCheck
     BlueKantoPilot.bill_request
     require!(state["pilot_bill_agreed"], "Bill request not recorded")
     require!(BlueKantoPilot.bill_computer, "Bill restoration failed")
+    require!(!BlueKantoPilot.cerulean_house_open?, "Guard moved before real S.S. Ticket")
     $game_map.events.each_value { |event| event.refresh }
     north_callback!($game_map.events[8],"BlueKantoPilot.bill_reward")
     d = north_component(cottage,landing)
@@ -1155,6 +1174,7 @@ module KantoNativeCheck
     # Reconstruct the old digital-permit state in this disposable native
     # game, and prove one-time conversion using the actual Bag.
     require!($bag.remove(ticket_item,1), "K00 legacy ticket fixture removal failed")
+    require!(!BlueKantoPilot.cerulean_house_open?, "Digital flag opened police gate without actual ticket")
     state.delete("pilot_bill_ticket_item_granted")
     require!(state["pilot_bill_ticket"] && state["pilot_ss_ticket"], "Legacy permission lost")
     require!(BlueKantoPilot.bill_reward && BlueKantoPilot.bill_reward &&
@@ -3123,7 +3143,7 @@ module KantoNativeCheck
         e.fetch("native_return").fetch("destination_loaded") },
       "Cerulean roundtrip receipt incomplete")
     File.write("Data/blue-kanto-cerulean-regression.txt",
-      "KANTO_CERULEAN_POLICE_BEFORE_AFTER_BILL_OK\nKANTO_CERULEAN_NATIVE_ROUNDTRIP_OK\nKANTO_CERULEAN_POLICE_PACKAGED_NATIVE_AND_CACHE_REFRESH_OK\nKANTO_CERULEAN_PHYSICAL_LEGACY_DIALOGUE_AND_DOOR_RECOVERY_OK\n")
+      "KANTO_CERULEAN_POLICE_BEFORE_AFTER_BILL_OK\nKANTO_CERULEAN_NATIVE_ROUNDTRIP_OK\nKANTO_CERULEAN_POLICE_PACKAGED_NATIVE_AND_CACHE_REFRESH_OK\nKANTO_CERULEAN_PHYSICAL_LEGACY_DIALOGUE_AND_DOOR_RECOVERY_OK\nKANTO_CERULEAN_REAL_TICKET_AND_STANDING_DOOR_OK\n")
     File.write("Data/blue-kanto-k02c-native-proof.txt", interiors_report.inspect)
     puts "KANTO_K02C_NATIVE_INTERIORS_REPORT:#{interiors_report.inspect}"
     puts "KANTO_K02C_INTERIORS_BIKE_ROCKET_SAVE_RELOAD_OK"

@@ -238,13 +238,16 @@ Dir.mktmpdir("kanto-cerulean-android-") do |folder|
     BlueKantoPilot.bill_request
     check(BlueKantoPilot.bill_computer, "Bill not restored via PC")
     check($PokemonGlobal.blue_regions["pilot_bill_helped"], "Bill quest flag missing")
+    check(!BlueKantoPilot.cerulean_house_open?, "Guard opened before ticket")
     check(BlueKantoPilot.bill_reward, "Bill did not grant S.S. Ticket")
+    check(BlueKantoPilot.cerulean_house_open?, "Guard did not open with ticket")
     check($granted_items.count([:BLUE_KANTO_SSTICKET, 1]) == 1, "Bill ticket duplicated/missing")
     check(BlueKantoPilot.bill_reward, "Bill's post-quest talk failed")
     check($granted_items.count([:BLUE_KANTO_SSTICKET, 1]) == 1, "Bill ticket duplicated on talk")
     state = $PokemonGlobal.blue_regions
     state.delete("pilot_bill_ticket_item_granted")
     $granted_items.delete([:BLUE_KANTO_SSTICKET,1])
+    check(!BlueKantoPilot.cerulean_house_open?, "Digital permission bypassed ticket gate")
     $ticket_bag_full = true
     check(BlueKantoPilot.bill_reward && state["pilot_ss_ticket"] &&
           !state["pilot_bill_ticket_item_granted"], "Full bag revoked old permit")

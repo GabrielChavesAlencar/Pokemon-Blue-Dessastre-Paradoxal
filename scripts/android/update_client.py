@@ -619,7 +619,7 @@ def cerulean_integrity(root, installed, manifest):
 
 def cerulean_logs(root):
     for name in ("Data/blue-mobile-build.txt", "Data/blue-android-runtime.txt",
-                 "Data/blue-android-event-error.txt", "errorlog.txt"):
+                 "Data/blue-android-event-error.txt", "Data/blue-android-cerulean-runtime.txt", "errorlog.txt"):
         path = _local_target(root, name)
         print("\n--- " + name + " ---")
         if not path.is_file():
