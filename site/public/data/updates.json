@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "49a1e15190e4daec044b72c4da32e7a02b240162",
+      "date": "2026-11-27T11:35:00-03:00",
+      "title": "docs: vincula roadmap de Hoenn ao README",
+      "category": "Documentação"
+    },
+    {
+      "sha": "13b5ef746de79460e509525304cb8e7486097c94",
+      "date": "2026-11-27T11:34:51-03:00",
+      "title": "docs(hoenn): roteiro Codex H00-H24 para campanha integral Windows e Android",
+      "category": "Documentação"
+    },
+    {
       "sha": "b994d183fbb305fa8b5424cd342628c1bf51ce0a",
       "date": "2026-11-27T11:25:28-03:00",
       "title": "docs: indexar roadmap Codex de Johto no README",
