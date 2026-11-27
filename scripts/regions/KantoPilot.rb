@@ -2472,8 +2472,10 @@ module BlueKantoPilot
     target = [from[0]+delta[0],from[1]+delta[1]]
     CERULEAN_INTERIOR_DOORS.each do |id,source|
       event = $game_map.events[id]
-      next unless event && event.trigger == 1 &&
-        cerulean_door_transfer?(event.list,kanto_map_id(source))
+      next unless event.is_a?(Game_Event) && event.respond_to?(:trigger) &&
+        event.respond_to?(:list) && event.respond_to?(:x) && event.respond_to?(:y) &&
+        event.respond_to?(:start) && event.respond_to?(:starting) &&
+        event.trigger == 1 && cerulean_door_transfer?(event.list,kanto_map_id(source))
       next unless [event.x,event.y] == target ||
         (id == 7 && target == [14,28])
       canonical = CERULEAN_DOOR_STEPS[id] == [from,direction] ||
