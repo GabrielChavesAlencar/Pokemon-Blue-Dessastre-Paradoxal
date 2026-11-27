@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3e30767495173d5f273de02e2e4d96a8d6d97e95",
+      "date": "2026-11-27T00:16:11-03:00",
+      "title": "Document the verified shared Sinnoh Windows installation",
+      "category": "Melhorias"
+    },
+    {
       "sha": "3fbc798fed47b3f62df6f765737c4c8cecefbbbd",
       "date": "2026-11-27T00:09:39-03:00",
       "title": "Update Sinnoh source audits for the unified title",
