@@ -49,8 +49,6 @@ jobs:
           python scripts/regions/audit_unova_e08_readiness.py
           python scripts/regions/audit_unova_sp04_npcs.py
           python scripts/regions/unova_sp05_cheren_pilot.py
-      - name: Conferir geometria original do corredor de abertura
-        run: python -m unittest discover -s tests -p 'test_unova_original_opening.py' -v
           python scripts/regions/audit_unova_u07_events.py --simulate-demo
           python scripts/regions/audit_unova_g01_state_schema.py --check
           python scripts/regions/audit_unova_g01_chapter_machine.py --check
@@ -158,6 +156,8 @@ jobs:
           python -m py_compile scripts/regions/audit_unova_a14_sandbox.py
           python -m py_compile scripts/regions/unova_auto_mapids.py
 
+      - name: Conferir geometria original do corredor de abertura
+        run: python -m unittest discover -s tests -p 'test_unova_original_opening.py' -v
       - name: Empacotar RUN_UNOVA_MAPIDS.bat para download como ZIP
         uses: actions/upload-artifact@v4
         with:
