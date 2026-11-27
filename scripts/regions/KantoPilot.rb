@@ -2738,18 +2738,28 @@ module BlueKantoPilot
       cerulean_mobile_trace("contact blocked=#{blocker} from=#{[player.x,player.y].inspect} dir=#{dir}")
       return false
     end
+    # Essentials changes logical x/y before the walking animation settles.
+    # A native player-touch event may be queued on the actual door tile
+    # during that animation. Do not force the animation or a transfer.
+    # Never queue from the adjacent doorstep until movement has stopped.
+    if player.moving?
+      standing = CERULEAN_DOOR_STEPS.any? { |id,(from,door_dir)|
+        dy = door_dir == 8 ? -1 : 1
+        door_dir == dir && [player.x,player.y] == [from[0],from[1]+dy] } ||
+        (dir == 8 && [player.x,player.y] == [14,28])
+      return false unless standing
+    end
     contact = cerulean_door_contact(player,dir)
     if contact && contact[3]
       event = contact[0]
       event.start unless event.starting
-      cerulean_mobile_trace("door=#{event.id} from=#{contact[1].inspect} dir=#{dir} started=#{event.starting}")
-      return true
+      cerulean_mobile_trace("door=#{event.id} from=#{contact[1].inspect} dir=#{dir} moving=#{player.moving?} started=#{event.starting}")
+      return !!event.starting
     end
     false
   end
 
   def self.cerulean_mobile_contact_blocker(player)
-    return :moving if player.moving?
     return :jumping if player.jumping?
     return :interpreter if defined?(pbMapInterpreterRunning?) && pbMapInterpreterRunning?
     if $game_temp

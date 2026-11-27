@@ -241,16 +241,12 @@ module KantoNativeCheck
     # without a move_generic event. The independent contact must dispatch.
     $game_player.moveto(13,28)
     $game_map.events.each_value { |e| e.clear_starting }
-    # The native test executes from the debug bootstrap, not the map input
-    # loop. Complete any pending movement and model a closed menu before
-    # sending input; never bypass a running interpreter/transfer.
-    deadline = System.uptime + 3
-    while ($game_player.moving? || $game_player.jumping?) && System.uptime < deadline
-      Graphics.update
-      $game_player.update
-    end
-    require!(!pbMapInterpreterRunning? && !$game_temp.player_transferring,
-      "Standing-door fixture interpreter or transfer busy")
+    # Native CI 46031491604 confirmed logical position [13,28] and
+    # event 7 while moving? was still true after 3 seconds. Exercise that
+    # actual state: the player-touch event must queue without forcing
+    # real_x/real_y, animation, interpreter state or a transfer.
+    require!(!pbMapInterpreterRunning? && !$game_temp.player_transferring &&
+      !$game_player.jumping?, "Standing-door fixture interpreter/transfer/jump busy")
     old_menu = $game_temp.menu_calling
     old_message = $game_temp.message_window_showing
     begin
@@ -264,11 +260,15 @@ module KantoNativeCheck
       blocker = BlueKantoPilot.cerulean_mobile_contact_blocker($game_player)
       probe = BlueKantoPilot.cerulean_door_contact($game_player,8)
       context = {"blocker"=>blocker,"pos"=>[$game_player.x,$game_player.y],
+        "moving"=>$game_player.moving?, "jumping"=>$game_player.jumping?,
         "event"=>probe && probe[0].id,"canonical"=>probe && probe[3],
         "actual_door"=>[$game_map.events[7].x,$game_map.events[7].y],
         "commands"=>$game_map.events[7].list.map(&:code)}
       require!(BlueKantoPilot.cerulean_mobile_contact($game_player,8) &&
         $game_map.events[7].starting, "JoiPlay standing-door contact failed: #{context.inspect}")
+      require!(!$game_temp.player_transferring && !pbMapInterpreterRunning?,
+        "Standing-door contact bypassed native interpreter")
+      puts "KANTO_CERULEAN_STANDING_DOOR_QUEUED:#{context.inspect}"
       $game_map.events[7].clear_starting
     ensure
       $game_temp.menu_calling = old_menu
