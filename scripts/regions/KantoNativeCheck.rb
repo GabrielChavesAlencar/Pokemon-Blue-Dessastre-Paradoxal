@@ -276,27 +276,46 @@ module KantoNativeCheck
              "Cerulean return missing #{map_id}/#{id}")
     target = [event.x,event.y]
     steps = {2=>[0,1],4=>[-1,0],6=>[1,0],8=>[0,-1]}
+    # An impassable door tile can still trigger native player-touch on a
+    # blocked step, as on the city doors. Do not exclude that input path.
     candidates = steps.filter_map do |dir,(dx,dy)|
       from = [target[0]-dx,target[1]-dy]
       next unless component.key?(from)
       $game_player.moveto(*from)
-      next unless $game_player.passable?(*from,dir)
-      [from,dir]
+      [from,dir,$game_player.passable?(*from,dir)]
     end
-    require!(!candidates.empty?, "Cerulean return has no passable native approach #{map_id}/#{id}")
-    candidates.sort_by! { |from,_dir| component.fetch(from) }
-    from,dir = candidates.first
-    $game_player.moveto(*from)
-    $game_map.events.each_value { |e| e.clear_starting }
-    $game_player.move_generic(dir,true)
-    deadline = System.uptime + 3
-    until event.starting || System.uptime >= deadline
-      Graphics.update
-      $game_player.update
-      break if pbMapInterpreterRunning? || $game_temp.player_transferring
+    candidates.sort_by! { |from,_dir,passable| [passable ? 0 : 1,component.fetch(from)] }
+    context = {"map"=>map_id,"event"=>id,"target"=>target,"anchor"=>anchor,
+      "dimensions"=>[$game_map.width,$game_map.height],"trigger"=>event.trigger,
+      "candidates"=>candidates,"reachable_cells"=>component.length}
+    puts "KANTO_CERULEAN_RETURN_APPROACH:#{context.inspect}"
+    require!(!candidates.empty?, "Cerulean return has no reachable adjacent tile: #{context.inspect}")
+    attempts = []
+    selected = nil
+    candidates.each do |from,dir,passable|
+      $game_player.moveto(*from)
+      $game_map.events.each_value { |e| e.clear_starting }
+      $game_player.move_generic(dir,true)
+      deadline = System.uptime + 3
+      until event.starting || System.uptime >= deadline
+        break if pbMapInterpreterRunning? || $game_temp.player_transferring
+        break unless $game_player.moving? || $game_player.jumping?
+        Graphics.update
+        $game_player.update
+      end
+      attempts << [from,dir,passable,[$game_player.x,$game_player.y],event.starting]
+      if event.starting
+        selected = [from,dir,passable]
+        break
+      end
+      require!(!pbMapInterpreterRunning? && !$game_temp.player_transferring,
+        "Unexpected interpreter or transfer during Cerulean return: #{context.inspect} #{attempts.inspect}")
+      require!($game_map.events.values.none? { |e| e.starting },
+        "Unexpected event started during Cerulean return: #{context.inspect} #{attempts.inspect}")
     end
-    require!(event.starting, "Cerulean native return did not start #{map_id}/#{id}: from=#{from.inspect}, direction=#{dir}, observed=#{[$game_player.x,$game_player.y].inspect}")
-    receipt = cerulean_native_started_transfer!(event,city,from,dir,true)
+    require!(selected, "Cerulean native return did not start: #{context.inspect} attempts=#{attempts.inspect}")
+    from,dir,passable = selected
+    receipt = cerulean_native_started_transfer!(event,city,from,dir,passable)
     require!(receipt["landing"] == expected,"Cerulean return changed landing #{map_id}/#{id}")
     receipt.merge("interior_map"=>map_id,"interior_anchor"=>anchor)
   end
