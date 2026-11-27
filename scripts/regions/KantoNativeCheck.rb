@@ -559,10 +559,31 @@ module KantoNativeCheck
     daycare = BlueKantoPilot.kanto_map_id(58)
     require!(daycare && daycare != route, "K03-A Day Care registry missing")
     anchor = corridor["outbound"].find { |leg| leg["to_map"] == route }["to_xy"]
-    component = opening_component(route,anchor)
-    door = $game_map.events[1]
-    require!(door && [door.x,door.y] == [23,25] && door.trigger == 1 &&
-      north_event_reachable?(component,door), "K03-A original Day Care door inaccessible")
+    city = BlueKantoPilot.kanto_map_id(39)
+    city_anchor = corridor["outbound"].first["from_xy"]
+    city_component = opening_component(city,city_anchor)
+    # Route 5 has directional terrain and multiple original north seams.
+    # A single successful Underground route is not a witness for the creche.
+    entries = opening_crossings(city,city_component,route).map(&:last).uniq
+    require!(entries.include?(anchor), "K03-A corridor entry no longer reachable")
+    chosen = nil
+    entries.each do |entry|
+      component = opening_component(route,entry,[],false,true)
+      door = $game_map.events[1]
+      identity = door && [door.x,door.y] == [23,25] && door.trigger == 1 &&
+        Array(door.list).any? { |op| op.code == 201 && op.parameters[1] == daycare }
+      reachable = identity && north_event_reachable?(component,door)
+      k03a_trace("KANTO_K03A_DAYCARE_APPROACH",{"entry"=>entry,"component"=>component.length,
+        "door"=>door && [door.id,door.x,door.y,door.trigger],
+        "identity"=>identity,"reachable"=>reachable,
+        "nearby"=>component.keys.select { |x,y| (x-23).abs+(y-25).abs <= 3 }})
+      if reachable
+        chosen = [entry,door]
+        break
+      end
+    end
+    require!(chosen, "K03-A original Day Care door inaccessible from all verified north seams")
+    anchor,door = chosen
     landing = north_transfer!(door,daycare)
     require!(landing == [4,7], "K03-A Day Care arrival differs")
     inside = opening_component(daycare,landing)
@@ -574,7 +595,17 @@ module KantoNativeCheck
     exit_event = $game_map.events[1]
     require!(north_event_reachable?(inside,exit_event), "K03-A Day Care exit inaccessible")
     back = north_transfer!(exit_event,route)
-    require!(back == [23,26] && opening_component(route,back).key?(anchor), "K03-A Day Care return disconnected")
+    require!(back == [23,26], "K03-A Day Care return landing differs")
+    returned = opening_component(route,back,[],false,true)
+    return_seams = opening_crossings(route,returned,city)
+    # A downhill ledge need not be reversible; the return must reach an
+    # actual city seam or the existing Underground entrance, not a teleport.
+    underground_entry = corridor["outbound"].find { |leg| leg["from_map"] == route }["from_xy"]
+    require!(!return_seams.empty? || returned.keys.any? { |x,y|
+      (x-underground_entry[0]).abs+(y-underground_entry[1]).abs <= 1 },
+      "K03-A Day Care return disconnected from existing corridor")
+    k03a_trace("KANTO_K03A_DAYCARE_RETURN",{"landing"=>back,"component"=>returned.length,
+      "city_seams"=>return_seams,"underground_entry"=>underground_entry})
     $map_factory.setup(daycare)
     $game_player.moveto(*witness["standing"])
     baseline = "K03 A Day Care Baseline"
