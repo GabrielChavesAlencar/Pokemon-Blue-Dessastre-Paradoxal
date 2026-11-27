@@ -729,7 +729,7 @@ def inspect(game: Path, *, candidate=False) -> dict:
         "BlueKantoPilot.victory_couple" not in first_scripts(213,16)):
         raise ValueError("Victory Road's Ray/Tyra double battle was split or discarded")
 
-    # MAN-02: the source-proven 122 line-of-sight trainers require Event Touch,
+    # MAN-02: source-proven line-of-sight trainers require Event Touch,
     # with a non-triggering second page selected by self-switch A after victory.
     sight_count = 0
     for original, profiles in trainer_specs.items():
@@ -740,6 +740,8 @@ def inspect(game: Path, *, candidate=False) -> dict:
                 raise ValueError(f"Trainer {original}/{event_id} missing win-state page")
             sight = bool(re.search(r"(?i)(?:trainer|sight)\((\d+)\)",
                                    text(event.attrs["@name"])))
+            if original == 79 and not sight:
+                raise ValueError(f"Route 11 trainer {event_id} lost its source sight range")
             expected_trigger = 2 if sight else 0
             if pages[0].attrs["@trigger"] != expected_trigger:
                 raise ValueError(f"Trainer {original}/{event_id} has wrong sight trigger")
@@ -778,8 +780,10 @@ def inspect(game: Path, *, candidate=False) -> dict:
                 if original != 42 or event_id not in (11, 16):
                     if "pbNoticePlayer(get_self)" not in script:
                         raise ValueError(f"Trainer {original}/{event_id} will not alert the player")
-    if sight_count != (147 if candidate else 137):  # K03-E adds ten source sight trainers.
-        raise ValueError(f"Source-proven trainer sight count changed: {sight_count}")
+    # Both the isolated candidate and the active catalogue add the same ten.
+    expected_sight_count = 137 + (len(ROUTE11_TRAINERS) if active else 0)
+    if sight_count != expected_sight_count:
+        raise ValueError(f"Source-proven trainer sight count changed: {sight_count}; expected {expected_sight_count}")
 
     # Route connections are bidirectional, but transfer events are directed.
     # Check reachability both from and back to Pallet to avoid accepting
