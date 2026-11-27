@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4c0ae1e82ab81d22f632db9a09fb24e8b8a1577c",
+      "date": "2026-11-27T11:47:33-03:00",
+      "title": "docs: link Kalos Codex roadmap from README",
+      "category": "Documentação"
+    },
+    {
+      "sha": "1de4d712bd197194fa155942047a8e2d4a86254e",
+      "date": "2026-11-27T11:47:27-03:00",
+      "title": "docs(kalos): add executable 32-phase Windows and Android roadmap",
+      "category": "Documentação"
+    },
+    {
       "sha": "543ea28002d6e60329d82d95b7bfc4059c09f7d9",
       "date": "2026-11-27T11:41:05-03:00",
       "title": "docs(sinnoh): add executable roadmap to full shared-world gameplay and releases",
