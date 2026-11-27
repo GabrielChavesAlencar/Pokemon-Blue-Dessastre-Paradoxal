@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "543ea28002d6e60329d82d95b7bfc4059c09f7d9",
+      "date": "2026-11-27T11:41:05-03:00",
+      "title": "docs(sinnoh): add executable roadmap to full shared-world gameplay and releases",
+      "category": "Documentação"
+    },
+    {
       "sha": "49a1e15190e4daec044b72c4da32e7a02b240162",
       "date": "2026-11-27T11:35:00-03:00",
       "title": "docs: vincula roadmap de Hoenn ao README",
