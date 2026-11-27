@@ -2,6 +2,30 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0af524d5ff55baac96a41fe1022531da2bb0ab47",
+      "date": "2026-11-26T22:31:57-03:00",
+      "title": "Merge pull request #363 from GabrielChavesAlencar/fix/kanto-cerulean-door-reload",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "23e8189b25d7eca4240166eeb68557ef397423c6",
+      "date": "2026-11-26T22:22:46-03:00",
+      "title": "test(kanto): persist legacy door recovery in mandatory native proof",
+      "category": "Testes"
+    },
+    {
+      "sha": "c95452bf3f2dd8992a39b5afc211ebddf11406b6",
+      "date": "2026-11-26T22:13:17-03:00",
+      "title": "test(kanto): regress cached Cerulean doors and native public approaches before Bill",
+      "category": "Testes"
+    },
+    {
+      "sha": "ee92ccca5be0b5d27b8243fe3e1205959b0f167c",
+      "date": "2026-11-26T22:13:05-03:00",
+      "title": "fix(kanto): restore Cerulean doors from verified map when continuing legacy saves",
+      "category": "Correções"
+    },
+    {
       "sha": "2964ac133ce21e7b0bf151206c5069ed8b3da691",
       "date": "2026-11-26T21:51:12-03:00",
       "title": "Merge pull request #362 from GabrielChavesAlencar/fix/kanto-gary-visible-player-height",
