@@ -937,7 +937,7 @@ module BlueKantoPilot
     end
     # No foreign switches 87 or event scripts are executed.
     progress["pilot_bill_helped"] = true
-    sync_cerulean_quest_pages(kanto_map_id(39))
+    sync_cerulean_guard_cache
     map_id = $game_map.map_id
     [3, 4, 8].each do |event_id|
       next unless $game_map.events[event_id]
@@ -985,6 +985,7 @@ module BlueKantoPilot
       progress["pilot_bill_ticket_item_granted"] = true
       progress["pilot_bill_ticket"] = true
       progress["pilot_ss_ticket"] = true
+      sync_cerulean_guard_cache
       pbMessage(t("Bill: Have fun aboard the S.S. Anne!",
                   "Bill: Divirta-se a bordo do S.S. Anne!"))
       return true
@@ -995,6 +996,7 @@ module BlueKantoPilot
       # requires the native item for all newly published Kanto packages.
       progress["pilot_bill_ticket"] = true
       progress["pilot_ss_ticket"] = true
+      sync_cerulean_guard_cache
       pbMessage(t("Bill: Your digital S.S. Anne boarding pass is ready!",
                   "Bill: Sua passagem digital para o S.S. Anne está pronta!"))
       return true
@@ -1009,6 +1011,7 @@ module BlueKantoPilot
     progress["pilot_bill_ticket_item_granted"] = true
     progress["pilot_bill_ticket"] = true
     progress["pilot_ss_ticket"] = true
+    sync_cerulean_guard_cache
     BlueMusic.kanto_me_play("obtained_item") if defined?(BlueMusic)
     pbMessage(t("Bill: Thanks for helping! Take this S.S. Ticket for Vermilion.",
                 "Bill: Obrigado pela ajuda! Leve este S.S. Ticket para Vermilion."))
@@ -1021,7 +1024,8 @@ module BlueKantoPilot
   # verified local quest unlocks the original front and rear doors.
   CERULEAN_ROCKET_KEY = "KANTO_039_026".freeze
   def self.cerulean_house_open?
-    kanto_current? && !!progress["pilot_bill_helped"]
+    kanto_current? && !!(progress["pilot_bill_helped"] ||
+      progress["pilot_bill_ticket"] || progress["pilot_ss_ticket"])
   end
 
   def self.cerulean_house_entry?
@@ -2332,6 +2336,53 @@ module BlueKantoPilot
     changed
   end
 
+  # Synchronize cached maps even when the switches were already written
+  # while Bill's cottage was the active map. No save files are rewritten.
+  def self.sync_cerulean_guard_cache
+    city = kanto_map_id(39)
+    return unless city
+    sync_cerulean_quest_pages(city)
+    maps = $map_factory && $map_factory.respond_to?(:maps) ? $map_factory.maps : [$game_map]
+    Array(maps).each do |map|
+      sync_loaded_cerulean_map(map) if map && map.map_id == city
+    end
+  end
+
+  def self.cerulean_guard_pages_stale?(map)
+    return false unless map && kanto_current? && map.map_id == kanto_map_id(39) && kanto_map_id(43)
+    front,side = map.events[13],map.events[25]
+    return true unless front && side
+    open = cerulean_house_open?
+    front.character_name.to_s.empty? != open ||
+      side.character_name.to_s.empty? == open
+  end
+
+  # Replace the single authored police script with a native Show Text
+  # command on the visible page. The generic mobile script-eval error no
+  # longer applies to this dialogue; no script or transfer is introduced.
+  def self.sync_cerulean_police_dialogue(map)
+    return unless map && kanto_current? && map.map_id == kanto_map_id(39) && kanto_map_id(43)
+    id = cerulean_house_open? ? 25 : 13
+    guard = map.events[id]
+    return unless guard && guard.trigger == 0 && !guard.character_name.to_s.empty?
+    commands = guard.list
+    return unless commands && commands.length == 2 && commands.last.code == 0
+    op = commands.first
+    return unless (op.code == 355 && op.parameters[0].to_s == "BlueKantoPilot.cerulean_police") ||
+      op.code == 101
+    pt = defined?(BlueLocale) && BlueLocale.enabled?
+    message = if cerulean_house_open?
+      pt ? "Pode passar. A investigação continua." : "You may pass. The investigation continues."
+    else
+      pt ? "A Equipe Rocket roubou esta casa. Estamos investigando." : "Team Rocket robbed this house. We are investigating."
+    end
+    return if op.code == 101 && op.parameters == [message]
+    native = op.dup
+    native.code = 101
+    native.parameters = [message]
+    commands[0] = native
+  end
+
   # A save or an already-cached neighbouring map may retain the pre-K02-C
   # Game_Event table even after the installer added the six interiors.
   # Refreshing its old pages cannot create the missing doors. Only reload a
@@ -2351,6 +2402,15 @@ module BlueKantoPilot
     stale = destinations.keys.select do |id|
       event = map.events[id]
       !event || event.trigger != 1 || !cerulean_door_transfer?(event.list,destinations[id])
+    end
+    # Older cached maps can retain donor police scripts even when all
+    # eight doors already exist. Require both original adapted guard pages.
+    [13,25].each do |id|
+      guard = map.events[id]
+      next if guard && (guard.character_name.to_s.empty? ||
+        Array(guard.list).any? { |op| op.code == 101 ||
+          (op.code == 355 && op.parameters[0].to_s == "BlueKantoPilot.cerulean_police") })
+      stale << id
     end
     return false if stale.empty?
     path = format("Data/Map%03d.rxdata",map.map_id)
@@ -2378,16 +2438,20 @@ module BlueKantoPilot
     return unless map
     reloaded = reload_stale_cerulean_doors(map)
     changed = sync_cerulean_quest_pages(map.map_id)
-    return unless reloaded || changed
-    map.need_refresh = true
-    map.events.each_value { |event| event.refresh }
+    if reloaded || changed || cerulean_guard_pages_stale?(map)
+      map.need_refresh = true
+      map.events.each_value { |event| event.refresh }
+    end
+    sync_cerulean_police_dialogue(map)
   end
 end
 
 module BlueKantoPilot::CeruleanQuestMapSetup
   def setup(map_id, *args)
     BlueKantoPilot.sync_cerulean_quest_pages(map_id)
-    super
+    result = super
+    BlueKantoPilot.sync_cerulean_police_dialogue(self)
+    result
   end
 end
 Game_Map.prepend(BlueKantoPilot::CeruleanQuestMapSetup) if defined?(Game_Map)
@@ -2460,9 +2524,24 @@ module BlueKantoPilot
     12=>[[23,29],8], 27=>[[31,8],2]
   }.freeze
 
+  # Original interior exits and their corresponding authored interior
+  # entry landings. Match exact event, map, adjacent landing and city
+  # transfer; never allow arbitrary wall collision to become a warp.
+  CERULEAN_RETURN_STEPS = {
+    43=>{5=>[[5,8],2,[13,29]]},
+    44=>{2=>[[3,8],2,[10,12]],3=>[[3,2],8,[10,8]]},
+    45=>{1=>[[4,7],2,[17,12]]},
+    46=>{3=>[[4,7],2,[15,18]]},
+    47=>{2=>[[4,7],2,[23,29]]},
+    48=>{3=>[[4,2],8,[31,8]],4=>[[3,7],2,[30,12]]}
+  }.freeze
+
   def self.cerulean_door_contact(player, direction)
-    return nil unless $game_map && kanto_current? &&
-      $game_map.map_id == kanto_map_id(39)
+    return nil unless $game_map && kanto_current?
+    city = kanto_map_id(39)
+    current = $game_map.map_id
+    source = CERULEAN_RETURN_STEPS.keys.find { |id| kanto_map_id(id) == current } unless current == city
+    return nil unless current == city || source
     return nil unless $game_map.respond_to?(:events)
     return nil if $game_temp && $game_temp.respond_to?(:in_battle) && $game_temp.in_battle
     return nil if defined?(pbMapInterpreterRunning?) && pbMapInterpreterRunning?
@@ -2470,6 +2549,18 @@ module BlueKantoPilot
     return nil unless delta
     from = [player.x,player.y]
     target = [from[0]+delta[0],from[1]+delta[1]]
+    if source
+      CERULEAN_RETURN_STEPS.fetch(source).each do |id,(landing,dir,city_landing)|
+        next unless from == landing && direction == dir
+        event = $game_map.events[id]
+        next unless event.is_a?(Game_Event) && event.trigger == 1 &&
+          [event.x,event.y] == target &&
+          Array(event.list).any? { |op| op.code == 201 &&
+            op.parameters[0,4] == [0,city,*city_landing] }
+        return [event,from,target,true]
+      end
+      return nil
+    end
     CERULEAN_INTERIOR_DOORS.each do |id,source|
       event = $game_map.events[id]
       next unless event.is_a?(Game_Event) && event.respond_to?(:trigger) &&
