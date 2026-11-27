@@ -13,12 +13,14 @@ from install_sinnoh_qa_copy import jsonc
 from stage_sinnoh_shared_qa import run_native_probe, engine_output
 from unova_opening_stage import ROOT, MAP_INFOS, TILESETS, write_overlay, OUTPUT
 from unova_original_opening import checksum
+from server.ruby_marshal import loads
+from stage import serialize
 
 WORK = ROOT / ".blue-work/unova/ci"
 GAME = WORK / "game"
 PROBE = "Data/unova-opening-native-check.rb"
-INPUT = "Data/unova-opening-native-input.json"
-RESULT = "Data/unova-opening-native-result.json"
+INPUT = "Data/unova-opening-native-input.dat"
+RESULT = "Data/unova-opening-native-result.dat"
 ERROR = "Data/unova-opening-native-error.txt"
 
 
@@ -26,6 +28,17 @@ def only_ci():
     if os.name != "nt" or os.environ.get("GITHUB_ACTIONS") != "true":
         raise ValueError("A execução nativa exige um runner Windows do GitHub Actions.")
     no_symlink_ancestors(GAME)
+
+
+def convert_strings(value, conversion, source_type):
+    if isinstance(value, source_type):
+        return conversion(value)
+    if isinstance(value, (list, tuple)):
+        return [convert_strings(child, conversion, source_type) for child in value]
+    if isinstance(value, dict):
+        return {convert_strings(key, conversion, source_type): convert_strings(child, conversion, source_type)
+                for key, child in value.items()}
+    return value
 
 
 def patch_main(source, *, compile_only):
@@ -46,11 +59,10 @@ def patch_main(source, *, compile_only):
         return source.replace(compiler, compiler + "    exit\n")
     return source.replace(compiler, "").replace(ready, ready + f'''
     begin
-      require "json"
       load "{PROBE}"
-      config = JSON.parse(File.binread("{INPUT}"))
+      config = Marshal.load(File.binread("{INPUT}"))
       report = UnovaOpeningNativeCheck.run(config)
-      File.binwrite("{RESULT}", JSON.generate(report))
+      File.binwrite("{RESULT}", Marshal.dump(report))
     rescue Exception => error
       pbPrintException(error)
     end
@@ -95,12 +107,13 @@ def run(android_manifest):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(raw)
     (GAME / PROBE).write_bytes((ROOT / "scripts/regions/UnovaOpeningNativeCheck.rb").read_bytes())
-    (GAME / INPUT).write_text(json.dumps(config), encoding="utf-8")
+    scenario = {key: config[key] for key in ("spawn", "map_ids", "doors", "journey")}
+    (GAME / INPUT).write_bytes(serialize(convert_strings(scenario, str.encode, str)))
     result = run_native_probe(GAME, lambda source: patch_main(source, compile_only=False), timeout=240)
     if result.returncode != 0 or not (GAME / RESULT).is_file():
         raise ValueError(f"Game.exe não confirmou o corredor QA (saída {result.returncode}).\n"
                          + diagnostic(result))
-    proof = json.loads((GAME / RESULT).read_bytes())
+    proof = convert_strings(loads((GAME / RESULT).read_bytes()), bytes.decode, bytes)
     if (proof["windows_game_exe"] is not True or len(proof["doors"]) != len(config["doors"])
             or proof["visited_map_ids"] != sorted(config["map_ids"].values())):
         raise ValueError("Resultado nativo incompleto.")
