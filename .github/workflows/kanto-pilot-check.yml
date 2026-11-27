@@ -45,6 +45,10 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Active Kanto pilot build failed'}
           python scripts/regions/build_k04_geometry.py
           if($LASTEXITCODE -ne 0){throw 'K04 isolated geometry and transfer validation failed'}
+          python -m unittest discover -s tests -p 'test_kanto_k04*.py'
+          if($LASTEXITCODE -ne 0){throw 'K04 adapter unit tests failed'}
+          python scripts/regions/build_k04_gameplay.py
+          if($LASTEXITCODE -ne 0){throw 'K04 isolated native gameplay staging failed'}
           python scripts/regions/release_gate.py --pilot .blue-work/kanto-release-pilot
           if($LASTEXITCODE -ne 0){throw 'Active Kanto release gate failed'}
           python scripts/regions/export_kanto.py --preview .blue-work/kanto-release-pilot --output .blue-work/kanto-release-site.json
@@ -149,6 +153,7 @@ jobs:
           path: |
             .blue-work/kanto-k04-source.json
             .blue-work/kanto-k04-geometry-proof.json
+            .blue-work/kanto-k04-gameplay-proof.json
           include-hidden-files: true
           if-no-files-found: error
       - name: Preservar recibo K02-C da fonte e migracao isolada
