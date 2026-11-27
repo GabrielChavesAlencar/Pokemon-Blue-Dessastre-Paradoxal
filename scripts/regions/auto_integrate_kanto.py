@@ -181,6 +181,7 @@ def integrate(project: Path = ROOT, game: Path | None = None,
                              ((target_count == 145 and old_count == 142) or
                               (target_count == 151 and old_count in (142, 145)) or
                               (target_count == 152 and old_count in (142, 145, 151)) or
+                              (target_count == 156 and old_count in (142, 145, 151, 152)) or
                               (target_count == old_count and target_count >= 151 and
                                "Cerulean door" in str(err))) and
                              (game / KANTO_MARKER).is_file())

@@ -18,12 +18,14 @@ from audit import ROOT, load, inventory
 from stage import serialize
 from pilot import EVENT_CLASSES
 
-NEW = {"58"}
-if "--from-151" not in sys.argv:
+NEW = {"68","69","70","71"}
+if "--from-152" not in sys.argv:
+    NEW.add("58")
+if "--from-151" not in sys.argv and "--from-152" not in sys.argv:
     NEW |= {"43", "44", "45", "46", "47", "48"}
 if "--from-142" in sys.argv:
     NEW |= {"53", "54", "55"}
-LABEL = "k03a-migration" if "--from-151" in sys.argv else "k00-migration" if "--from-142" in sys.argv else "k02c-migration"
+LABEL = "k03b-migration" if "--from-152" in sys.argv else "k03a-migration" if "--from-151" in sys.argv else "k00-migration" if "--from-142" in sys.argv else "k02c-migration"
 REPORT = ROOT / (".blue-work/" + LABEL + "-proof.json")
 WORK = ROOT / (".blue-work/" + LABEL + "-ci")
 
@@ -52,7 +54,7 @@ def run():
     proof_path = Path("Data/blue-kanto-install.json")
     proof = json.loads((game / proof_path).read_text("utf-8"))
     current = dict(proof["maps"])
-    check(len(current) == 152 and NEW <= current.keys(), "Unexpected current registry")
+    check(len(current) == 156 and NEW <= current.keys(), "Unexpected current registry")
     old = {key: value for key, value in current.items() if key not in NEW}
     infos, native_maps = inventory(game)
     foreign = {mid: path for mid, path in native_maps.items()
@@ -99,7 +101,7 @@ def run():
     installer.build(installer.SOURCE, game, pilot,
                     existing={int(k): v for k, v in old.items()})
     files, mapping, _ = installer.manifest(pilot, game, migration=legacy)
-    check(len(mapping) == 152 and all(mapping[int(k)] == v for k, v in old.items()),
+    check(len(mapping) == 156 and all(mapping[int(k)] == v for k, v in old.items()),
           "Published MapIDs changed")
     check(not (set(mapping.values()) & set(foreign)), "Foreign map ID collision")
     check(len(set(mapping.values()) - set(old.values())) == len(NEW), "Unexpected new IDs")
@@ -139,7 +141,7 @@ def run():
     check(result["status"] == "migrated", "Migration not committed")
     recovered = {p.replace(chr(92), "/") for p in result["recovered_legacy_maps"]}
     check({drift_rel.as_posix(), missing_rel.as_posix()} <= recovered, "Recovery not reported")
-    check(installer.verify_installed(game)["maps"] == 152, "Final verification failed")
+    check(installer.verify_installed(game)["maps"] == 156, "Final verification failed")
     check(snapshot(game, protected) == protected_before, "Protected files changed")
     final = snapshot(game, touched + protected)
     check(installer.sync_runtime(game, True)["status"] == "runtime_current",
@@ -152,7 +154,7 @@ def run():
         raise AssertionError("Duplicate installation accepted")
     check(snapshot(game, touched + protected) == final, "Second install changed files")
     check(snapshot(original, protected[:-1]) == original_protected, "Original game changed")
-    return {"status": "PASS", "fixture": f"reconstructed_{len(old)}_from_real_152_rxdata",
+    return {"status": "PASS", "fixture": f"reconstructed_{len(old)}_from_real_156_rxdata",
             "historical_install": False, "physical_gameplay": False,
             "revision": os.environ.get("GITHUB_SHA"),
             "old_maps": len(old), "new_maps": len(mapping), "preserved_map_ids": len(old),
@@ -171,7 +173,8 @@ if __name__ == "__main__":
         raise
     REPORT.write_text(json.dumps(report, indent=2), encoding="utf-8")
     print("KANTO_K00_MIGRATION_REPORT:" + json.dumps(report, sort_keys=True))
-    marker = ("KANTO_K03A_REAL_151_TO_152_MIGRATION_FIXTURE_OK" if "--from-151" in sys.argv
+    marker = ("KANTO_K03B_REAL_152_TO_156_MIGRATION_FIXTURE_OK" if "--from-152" in sys.argv
+              else "KANTO_K03B_REAL_151_TO_156_MIGRATION_FIXTURE_OK" if "--from-151" in sys.argv
               else "KANTO_K00_REAL_RXDATA_MIGRATION_FIXTURE_OK" if "--from-142" in sys.argv
-              else "KANTO_K03A_REAL_145_TO_152_MIGRATION_FIXTURE_OK")
+              else "KANTO_K03B_REAL_145_TO_156_MIGRATION_FIXTURE_OK")
     print(marker)

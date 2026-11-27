@@ -218,7 +218,7 @@ class KantoInstallerTest(unittest.TestCase):
 
     def test_only_exact_published_catalogs_can_migrate_to_151(self):
         from audit import KANTO, json_file
-        base = set(json_file(KANTO)["maps"]) - {"43","44","45","46","47","48","58"}
+        base = set(json_file(KANTO)["maps"]) - {"43","44","45","46","47","48","58","68","69","70","71"}
         extra = {"43", "44", "45", "46", "47", "48"}
         north = {"53", "54", "55"}
         self.assertEqual(len(base), 145)
@@ -233,6 +233,10 @@ class KantoInstallerTest(unittest.TestCase):
             self.assertTrue(installer.known_legacy_catalog(target, prior))
         self.assertFalse(installer.known_legacy_catalog(target, target - {"53"}))
         self.assertFalse(installer.known_legacy_catalog(target, target))
+        expanded = target | {"68","69","70","71"}
+        self.assertTrue(installer.known_legacy_catalog(expanded, target))
+        self.assertTrue(installer.known_legacy_catalog(expanded, base))
+        self.assertFalse(installer.known_legacy_catalog(expanded, expanded - {"68"}))
 
     def test_legacy_drift_is_recoverable_but_foreign_map_is_rejected(self):
         from server.ruby_marshal import RubyObject

@@ -75,6 +75,7 @@ KANTO_PHASE14_SOURCE_IDS = (16, 17, *range(209, 222))
 KANTO_CERULEAN_NORTH_SOURCE_IDS = (53, 54, 55)
 KANTO_CERULEAN_INTERIOR_SOURCE_IDS = (43, 44, 45, 46, 47, 48)
 KANTO_DAY_CARE_SOURCE_IDS = (58,)  # append after all 151 published slots
+KANTO_VERMILION_INTERIOR_SOURCE_IDS = (68, 69, 70, 71)  # append after 152
 
 
 def stable_source_order(wanted):
@@ -83,7 +84,8 @@ def stable_source_order(wanted):
               *KANTO_PHASE11_LATE_SOURCE_IDS,
               *KANTO_PHASE12_SOURCE_IDS, *KANTO_PHASE13_SOURCE_IDS,
               *KANTO_PHASE14_SOURCE_IDS, *KANTO_CERULEAN_NORTH_SOURCE_IDS,
-              *KANTO_CERULEAN_INTERIOR_SOURCE_IDS, *KANTO_DAY_CARE_SOURCE_IDS)
+              *KANTO_CERULEAN_INTERIOR_SOURCE_IDS, *KANTO_DAY_CARE_SOURCE_IDS,
+              *KANTO_VERMILION_INTERIOR_SOURCE_IDS)
     result = [source for source in stable if source in chosen]
     result.extend(sorted(chosen - set(stable)))
     return result

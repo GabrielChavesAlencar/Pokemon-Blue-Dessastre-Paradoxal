@@ -20,9 +20,9 @@ class KantoPilotAuditTests(unittest.TestCase):
         root = REGIONS.parents[1]
         manifest = json.loads((root / "data/regions/kanto-source.json").read_text("utf-8"))
         order = stable_source_order({int(k) for k in manifest["maps"]})
-        self.assertEqual(len(order), 152)
+        self.assertEqual(len(order), 156)
         self.assertEqual(tuple(order[:13]), PILOT_V1_SOURCE_IDS)
-        self.assertEqual(len(set(order)), 152)
+        self.assertEqual(len(set(order)), 156)
         self.assertEqual(order[13:25], [26,27,32,33,34,36,37,38,39,40,41,42])
         self.assertEqual(order[25:40], [56,59,60,61,63,64,65,66,67,72,74,75,76,77,78])
         self.assertEqual(order[40:51], [111,114,115,117,118,119,120,121,122,123,124])
@@ -39,7 +39,8 @@ class KantoPilotAuditTests(unittest.TestCase):
         self.assertEqual(order[127:142], [16,17,*range(209,222)])
         self.assertEqual(order[142:145], [53,54,55])
         self.assertEqual(order[145:151], [43,44,45,46,47,48])
-        self.assertEqual(order[151:], [58])
+        self.assertEqual(order[151:152], [58])
+        self.assertEqual(order[152:], [68,69,70,71])
         self.assertEqual(manifest["preview_only"], sorted([
             111,117,118,119,120,121,122,123,
             141,142,143,164,165,
@@ -57,7 +58,7 @@ class KantoPilotAuditTests(unittest.TestCase):
     def test_portal_matches_audited_kanto_rosters(self):
         root = REGIONS.parents[1]
         data = json.loads((root / "site/public/data/kanto.json").read_text("utf-8"))
-        self.assertEqual(len(data["locations"]), 152)
+        self.assertEqual(len(data["locations"]), 156)
         self.assertEqual(len(data["trainers"]), 162)
         leaders = {row["name"]: row for row in data["trainers"] if row["leader"]}
         self.assertIn("Blaine", leaders)

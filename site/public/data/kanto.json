@@ -2121,6 +2121,34 @@
       ]
     },
     {
+      "id": "kanto-vermilion-interior-68",
+      "name": "Vermilion — interior 68",
+      "status": "experimental",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-vermilion-house-a",
+      "name": "Casa de Vermilion A",
+      "status": "experimental",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-vermilion-house-b",
+      "name": "Casa de Vermilion B",
+      "status": "experimental",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-vermilion-interior-71",
+      "name": "Vermilion — interior 71",
+      "status": "experimental",
+      "methods": [],
+      "trainers": []
+    },
+    {
       "id": "kanto-vermilion-harbor",
       "name": "Porto de Vermilion",
       "status": "experimental",

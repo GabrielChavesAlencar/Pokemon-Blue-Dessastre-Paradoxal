@@ -1144,6 +1144,42 @@ module BlueKantoPilot
     true
   end
 
+  # The builder only emits this callback at a source-witnessed NPC.
+  # Key items remain in the regional vault; flags survive save/reload.
+  def self.vermilion_gift(source, event_id, item)
+    return false unless kanto_current? && $game_map && $bag &&
+      [68,69,70,71].include?(source) && $game_map.map_id == kanto_map_id(source) &&
+      [:BIKEVOUCHER,:OLDROD].include?(item) && defined?(GameData::Item) &&
+      GameData::Item.exists?(item) && GameData::Item.get(item).is_key_item?
+    event = $game_map.events[event_id]
+    expected = "BlueKantoPilot.vermilion_gift(#{source}, #{event_id}, :#{item})"
+    return false unless event && event.trigger == 0 &&
+      Array(event.list).any? { |op| op.code == 355 && op.parameters[0].to_s == expected }
+    key = item == :BIKEVOUCHER ? "pilot_vermilion_voucher" : "pilot_vermilion_old_rod"
+    if progress[key] || $bag.has?(item) ||
+       (item == :BIKEVOUCHER && (progress["pilot_cerulean_bike_exchanged"] || $bag.has?(:BICYCLE)))
+      progress[key] = true
+      pbMessage(t("I hope you enjoy your gift!", "Espero que aproveite o presente!"))
+      return true
+    end
+    if item == :BIKEVOUCHER
+      return false unless pbConfirmMessage(t("Would you like to hear about my favorite Pokémon?",
+        "Quer ouvir sobre meu Pokémon favorito?"))
+      pbMessage(t("I love Rapidash! Please take this Bike Voucher.",
+        "Eu adoro Rapidash! Aceite este vale-bicicleta."))
+    else
+      return false unless pbConfirmMessage(t("Would you like to try fishing?",
+        "Quer experimentar pescar?"))
+    end
+    return false if $bag.respond_to?(:can_add?) && !$bag.can_add?(item,1)
+    return false unless $bag.add(item,1)
+    progress[key] = true
+    pbMessage(item == :BIKEVOUCHER ?
+      t("You received a Bike Voucher!", "Você recebeu um vale-bicicleta!") :
+      t("You received an Old Rod!", "Você recebeu uma Vara Velha!"))
+    true
+  end
+
   def self.cerulean_bike_exchange
     return false unless kanto_current? && $game_map &&
       $game_map.map_id == kanto_map_id(43) && $bag && defined?(GameData::Item)

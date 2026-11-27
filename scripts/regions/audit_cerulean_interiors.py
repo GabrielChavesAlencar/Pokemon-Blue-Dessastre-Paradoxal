@@ -84,8 +84,8 @@ def run():
     receipt = ROOT / ".blue-work/kanto-k02c-source.json"
     catalog = json_file(KANTO)
     wanted = set(map(int, catalog["maps"]))
-    prior = wanted - set(map(int, ADDITIONS)) - {58}
-    if len(prior) != 145 or len(wanted) != 152 or catalog["maps"].get("58") != "DAY_CARE" or any(catalog["maps"].get(k) != v for k,v in ADDITIONS.items()):
+    prior = wanted - set(map(int, ADDITIONS)) - {58,68,69,70,71}
+    if len(prior) != 145 or len(wanted) != 156 or catalog["maps"].get("58") != "DAY_CARE" or any(catalog["maps"].get(k) != v for k,v in ADDITIONS.items()):
         raise ValueError("K02-C requires intact 151-map baseline plus Day Care")
     expanded = catalog
     if stable_source_order(wanted)[:145] != stable_source_order(prior):
