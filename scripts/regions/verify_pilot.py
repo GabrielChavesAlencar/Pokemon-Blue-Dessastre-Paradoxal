@@ -281,7 +281,33 @@ def inspect(game: Path, *, candidate=False) -> dict:
             raise ValueError(f"Interior {inside}: missing entry from {outer}/{entry}")
         if mapping[outer] not in event_transfers(inside, exit_id):
             raise ValueError(f"Interior {inside}: missing return to {outer}/{entry}")
-    if 23 in mapping:
+    if candidate:
+        # The opt-in isolated migration must prove the audited corridor,
+        # not merely bypass the historical 156-map prohibition.
+        from k03e_contract import MAPS, WARPS
+        if not set(MAPS).issubset(mapping) or set(MAPS) & preview_only:
+            raise ValueError("K03-E missing functional source maps")
+        for (source, eid), (dest, x, y, direction) in WARPS.items():
+            event = maps[mapping[source]].attrs["@events"].get(eid)
+            if event is None:
+                raise ValueError(f"K03-E missing source door {source}/{eid}")
+            page = event.attrs["@pages"][0].attrs
+            transfers = [
+                op.attrs["@parameters"][:5] for op in page["@list"]
+                if op.attrs["@code"] == 201
+            ]
+            if (page["@trigger"] != 1 or
+                    transfers != [[0, mapping[dest], x, y, direction]] or
+                    event_transfers(source, eid) != {mapping[dest]}):
+                raise ValueError(f"K03-E unsafe native transfer {source}/{eid}")
+        if 80 in mapping:
+            raise ValueError("K03-E Route 11 gatehouse is outside audited scope")
+        rows = (game / "PBS/map_connections_kanto.txt").read_text(
+            encoding="utf-8-sig").splitlines()
+        seam = f"{mapping[64]},East,0,{mapping[79]},West,0"
+        if seam not in {row.split("#", 1)[0].strip() for row in rows}:
+            raise ValueError("K03-E missing original Vermilion/Route 11 seam")
+    elif 23 in mapping:
         raise ValueError("Diglett Cave was imported before its source audit")
 
     # A unique Viridian Mart shopkeeper now anchors the Pallet <-> Viridian
