@@ -148,7 +148,21 @@ module KantoNativeCheck
       require!(!$game_map.events[13].character_name.to_s.empty?,
         "Cerulean stale police fixture not reproduced")
     end
+    # Verify the distributed RXDATA before any runtime patch, then simulate
+    # the old cached Ruby page and a refresh after repair.
+    authored = load_data(format("Data/Map%03d.rxdata",city))
+    [13,25].each do |id|
+      pages = authored.events[id].pages
+      active = pages[id == 13 ? 0 : 1]
+      require!(active.list.map(&:code) == [101,0], "Cerulean packaged police still evaluates script")
+      cached = $game_map.events[id].instance_variable_get(:@event)
+      require!(cached && cached.respond_to?(:pages), "Cerulean cached police page unavailable")
+      old = cached.pages[id == 13 ? 0 : 1].list.first
+      old.code = 355
+      old.parameters = ["BlueKantoPilot.cerulean_police"]
+    end
     BlueKantoPilot.sync_loaded_cerulean_map($game_map)
+    [13,25].each { |id| $game_map.events[id].refresh }
     front,side = $game_map.events[13],$game_map.events[25]
     visible,hidden = open ? [side,front] : [front,side]
     require!(!visible.character_name.to_s.empty? && hidden.character_name.to_s.empty? &&
@@ -178,6 +192,7 @@ module KantoNativeCheck
     result = {"open"=>open,"visible"=>visible.id,"hidden"=>hidden.id,
       "front"=>[front.x,front.y],"side"=>[side.x,side.y],"native_messages"=>messages,
       "stale_cache_tested"=>open,"manual_gameplay"=>false}
+    puts "KANTO_CERULEAN_POLICE_PACKAGED_NATIVE_AND_CACHE_REFRESH_OK"
     puts "KANTO_CERULEAN_POLICE_NATIVE_REPORT:#{result.inspect}"
     result
   end
