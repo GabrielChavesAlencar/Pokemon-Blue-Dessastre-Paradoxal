@@ -19,7 +19,6 @@ GAME = WORK / "game"
 PROBE = "Data/unova-opening-native-check.rb"
 INPUT = "Data/unova-opening-native-input.json"
 RESULT = "Data/unova-opening-native-result.json"
-COMPILED = "Data/unova-opening-base-compiled.txt"
 ERROR = "Data/unova-opening-native-error.txt"
 
 
@@ -44,11 +43,7 @@ def patch_main(source, *, compile_only):
     end
 ''' + plugins)
     if compile_only:
-        return source.replace(compiler, compiler + f'''
-    GameData::Species.load
-    File.binwrite("{COMPILED}", "UNOVA_QA_BASE_COMPILED")
-    exit
-''')
+        return source.replace(compiler, compiler + "    exit\n")
     return source.replace(compiler, "").replace(ready, ready + f'''
     begin
       require "json"
@@ -56,7 +51,7 @@ def patch_main(source, *, compile_only):
       config = JSON.parse(File.binread("{INPUT}"))
       report = UnovaOpeningNativeCheck.run(config)
       File.binwrite("{RESULT}", JSON.generate(report))
-    rescue StandardError, ScriptError => error
+    rescue Exception => error
       pbPrintException(error)
     end
     exit
@@ -74,15 +69,16 @@ def isolate_profile():
 
 def run(android_manifest):
     only_ci()
-    previous_outputs = (INPUT, RESULT, COMPILED, ERROR)
+    previous_outputs = (INPUT, RESULT, ERROR)
     if not (GAME / "Game.exe").is_file() or any((GAME / name).exists() for name in previous_outputs):
         raise ValueError("A cópia descartável precisa ser uma instalação nova de CI.")
     isolate_profile()
     compiled = run_native_probe(GAME, lambda source: patch_main(source, compile_only=True), timeout=360)
-    marker = GAME / COMPILED
-    if compiled.returncode != 0 or not marker.is_file() or marker.read_bytes() != b"UNOVA_QA_BASE_COMPILED":
+    if (compiled.returncode != 0 or b"Successfully compiled all game data" not in compiled.stdout
+            or not (GAME / "Data/species.dat").is_file()):
         raise ValueError(f"Compilação da base QA falhou (saída {compiled.returncode}).\n"
                          + diagnostic(compiled))
+    print("A engine compilou a base QA. Preparando a execução do corredor.", flush=True)
     config = write_overlay(ROOT, GAME, android_manifest)
     expected_base = {MAP_INFOS: config["baselines"]["windows_mapinfos_sha256"],
                      TILESETS: config["base_tilesets_sha256"]}
