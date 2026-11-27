@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c37778eed3819fe589b9ce7d02b474e7289456a3",
+      "date": "2026-11-27T10:11:05-03:00",
+      "title": "docs: record verified Windows 1614 and Android 186 publication receipts",
+      "category": "Documentação"
+    },
+    {
       "sha": "2a81212d8cad2f8c4f0f18817741b35f01f4e489",
       "date": "2026-11-27T09:53:21-03:00",
       "title": "docs: record K03-B merge, 156-map coverage and pending dual publication",
