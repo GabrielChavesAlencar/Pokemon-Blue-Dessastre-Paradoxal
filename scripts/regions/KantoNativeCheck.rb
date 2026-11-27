@@ -178,8 +178,15 @@ module KantoNativeCheck
       require!(witness, "Cerulean public door has no native step #{id}")
       [id,[event.x,event.y],witness[0]]
     end
+    public_returns = {7=>[5,[13,29]],8=>[3,[15,18]],10=>[2,[10,12]],
+                      11=>[1,[17,12]],12=>[2,[23,29]]}
     public_contacts = [7,8,10,11,12].map do |id|
-      cerulean_native_door_contact_proof(city,component,id,BlueKantoPilot.kanto_map_id(doors.fetch(id)))
+      destination = BlueKantoPilot.kanto_map_id(doors.fetch(id))
+      entry = cerulean_native_door_contact_proof(city,component,id,destination)
+      eid,expected = public_returns.fetch(id)
+      returned = cerulean_native_return_proof(destination,entry.fetch("landing"),eid,city,expected)
+      require!(!BlueKantoPilot.cerulean_house_open?, "Cerulean return unexpectedly unlocked Bill gate")
+      entry.merge("native_return"=>returned)
     end
     $map_factory.setup(city)
     $game_player.moveto(*position)
@@ -209,6 +216,13 @@ module KantoNativeCheck
       "moving"=>$game_player.moving?,"jumping"=>$game_player.jumping?}
     $game_player.move_generic(dir,true)
     require!(event.starting, "Cerulean native movement did not start event: #{context.inspect}; after=#{[$game_player.x,$game_player.y].inspect}")
+    cerulean_native_started_transfer!(event,destination,from,dir,passable)
+  end
+
+  # Both the entrance and the interior return must run the real interpreter.
+  # Only the final scene/spriteset application is replaced in headless CI.
+  def self.cerulean_native_started_transfer!(event,destination,from,dir,passable)
+    id = event.id
     landing = north_transfer!(event,destination)
     player_after = [$game_player.x,$game_player.y]
     interpreter = pbMapInterpreter
@@ -251,6 +265,40 @@ module KantoNativeCheck
       "player_after"=>player_after,"event_started"=>true,
       "native_interpreter_transfer"=>requested,"destination_loaded"=>true,
       "destination"=>destination,"landing"=>landing,"manual_scene_transfer"=>false}
+  end
+
+  # Probe all source-authored return doors from a reachable interior tile.
+  # Never call event.start or synthesize command 201 in this test.
+  def self.cerulean_native_return_proof(map_id,anchor,id,city,expected)
+    component = opening_component(map_id,anchor)
+    event = $game_map.events[id]
+    require!(event && north_transfer!(event,city) == expected,
+             "Cerulean return missing #{map_id}/#{id}")
+    target = [event.x,event.y]
+    steps = {2=>[0,1],4=>[-1,0],6=>[1,0],8=>[0,-1]}
+    candidates = steps.filter_map do |dir,(dx,dy)|
+      from = [target[0]-dx,target[1]-dy]
+      next unless component.key?(from)
+      $game_player.moveto(*from)
+      next unless $game_player.passable?(*from,dir)
+      [from,dir]
+    end
+    require!(!candidates.empty?, "Cerulean return has no passable native approach #{map_id}/#{id}")
+    candidates.sort_by! { |from,_dir| component.fetch(from) }
+    from,dir = candidates.first
+    $game_player.moveto(*from)
+    $game_map.events.each_value { |e| e.clear_starting }
+    $game_player.move_generic(dir,true)
+    deadline = System.uptime + 3
+    until event.starting || System.uptime >= deadline
+      Graphics.update
+      $game_player.update
+      break if pbMapInterpreterRunning? || $game_temp.player_transferring
+    end
+    require!(event.starting, "Cerulean native return did not start #{map_id}/#{id}: from=#{from.inspect}, direction=#{dir}, observed=#{[$game_player.x,$game_player.y].inspect}")
+    receipt = cerulean_native_started_transfer!(event,city,from,dir,true)
+    require!(receipt["landing"] == expected,"Cerulean return changed landing #{map_id}/#{id}")
+    receipt.merge("interior_map"=>map_id,"interior_anchor"=>anchor)
   end
 
   def self.cerulean_interiors_proof(battle_calls, losses_remaining)
@@ -304,10 +352,17 @@ module KantoNativeCheck
         require!(opening_action_witness(interior,$game_map.events[1]),"K02-C bike owner unreachable")
         north_callback!($game_map.events[1],"BlueKantoPilot.cerulean_bike_exchange")
       end
+      return_receipts = return_ids.map do |eid|
+        cerulean_native_return_proof(mapping[source],landing,eid,city,exits[source].fetch(eid))
+      end
       witnesses << {"city_event"=>id,"source"=>source,"landing"=>landing,
                     "reachable_cells"=>interior.length,"returns"=>return_ids,
-                    "native_door_contact"=>contact_receipt}
+                    "native_door_contact"=>contact_receipt,
+                    "native_returns"=>return_receipts}
     end
+    require!(witnesses.length == 8 && witnesses.all? { |w| w["native_returns"].length == w["returns"].length },
+             "Cerulean native entry/return evidence incomplete")
+    puts "KANTO_CERULEAN_NATIVE_ROUNDTRIP_OK:#{witnesses.map { |w| [w["city_event"],w["native_returns"].map { |e| e["event"] }] }.inspect}"
     [3,27].each do |id|
       source = doors[id][0]
       landing = exits[source][3]
