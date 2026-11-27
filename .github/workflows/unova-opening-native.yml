@@ -23,9 +23,12 @@ jobs:
       GALLIUM_DRIVER: llvmpipe
       ALSOFT_DRIVERS: 'null'
       PYTHONUTF8: '1'
-      GIT_CONFIG_COUNT: '1'
+      PYTHONPATH: ${{ github.workspace }}
+      GIT_CONFIG_COUNT: '2'
       GIT_CONFIG_KEY_0: http.sslBackend
       GIT_CONFIG_VALUE_0: openssl
+      GIT_CONFIG_KEY_1: core.longpaths
+      GIT_CONFIG_VALUE_1: 'true'
       GIT_TERMINAL_PROMPT: '0'
     steps:
       - uses: actions/checkout@v4
