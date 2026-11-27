@@ -2,9 +2,27 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "fe7565bd54aa208aacd3598b5b7d4132e52c676c",
+      "date": "2026-11-27T20:25:00-03:00",
+      "title": "Merge pull request #377 from GabrielChavesAlencar/codex/unova-original-opening",
+      "category": "Novidades"
+    },
+    {
       "sha": "93e166f3fdceab1570b49bdce1e0affac69f23c5",
       "date": "2026-11-27T20:19:42-03:00",
       "title": "Merge pull request #376 from GabrielChavesAlencar/codex/unova-f01-mapids-windows-android",
+      "category": "Novidades"
+    },
+    {
+      "sha": "49ea56f01612321529ea1fc92a4710c637bfd3ef",
+      "date": "2026-11-27T20:15:00-03:00",
+      "title": "Fix Unova geometry workflow step placement",
+      "category": "Novidades"
+    },
+    {
+      "sha": "d1f15974033b6c0a71616306025954d7b1d4acfb",
+      "date": "2026-11-27T20:12:42-03:00",
+      "title": "Author seven original RMXP maps for Unova opening QA",
       "category": "Novidades"
     },
     {
