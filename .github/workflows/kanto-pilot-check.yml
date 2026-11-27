@@ -731,17 +731,31 @@ jobs:
           Get-ChildItem -LiteralPath $mesaFolder -Recurse -File -Filter '*.dll' |
             Where-Object { $_.FullName -match '[\\/]x64[\\/]' } |
             ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $candidate }
-          $proc=Start-Process -FilePath "$candidate/Game.exe" -WorkingDirectory $candidate -WindowStyle Hidden -PassThru -RedirectStandardOutput ".blue-work/kanto-k03e-integrated-out.txt" -RedirectStandardError ".blue-work/kanto-k03e-integrated-err.txt"
-          $handle=$proc.Handle
-          if(-not $proc.WaitForExit(180000)){
-            Stop-Process -Id $proc.Id -ErrorAction SilentlyContinue
-            Get-Content ".blue-work/kanto-k03e-integrated-err.txt","$candidate/Data/blue-kanto-error.txt" -ErrorAction SilentlyContinue | Select-Object -Last 100
-            throw 'K03-E integrated native test timed out'
-          }
+          # Native compilation may end the first MKXP process before Main
+          # runs (job 140709871431). Use the established integrated two-boot
+          # protocol, but permit a second boot only after actual compilation.
           $proof="$candidate/Data/blue-kanto-k03e-proof.txt"
-          if(-not (Test-Path $proof)){
-            Get-Content ".blue-work/kanto-k03e-integrated-out.txt",".blue-work/kanto-k03e-integrated-err.txt","$candidate/Data/blue-kanto-error.txt" -ErrorAction SilentlyContinue | Select-Object -Last 100
-            throw 'K03-E integrated native proof missing'
+          $failure="$candidate/Data/blue-kanto-error.txt"
+          if((Test-Path $proof) -or (Test-Path $failure)){throw 'K03-E stale native receipt'}
+          for($attempt=1;$attempt -le 2;$attempt++){
+            $out=".blue-work/kanto-k03e-integrated-out-$attempt.txt"
+            $err=".blue-work/kanto-k03e-integrated-err-$attempt.txt"
+            $proc=Start-Process -FilePath "$candidate/Game.exe" -WorkingDirectory $candidate -WindowStyle Hidden -PassThru -RedirectStandardOutput $out -RedirectStandardError $err
+            $handle=$proc.Handle
+            if(-not $proc.WaitForExit(180000)){
+              Stop-Process -Id $proc.Id -ErrorAction SilentlyContinue
+              Get-Content $out,$err,$failure,"$candidate/errorlog.txt" -ErrorAction SilentlyContinue | Select-Object -Last 100
+              throw 'K03-E integrated native test timed out'
+            }
+            Write-Host "K03-E native boot $attempt exit=$($proc.ExitCode)"
+            if(Test-Path $failure){break}
+            if(Test-Path $proof){break}
+            if($attempt -ne 1 -or -not (Select-String -Path $out -Pattern 'Successfully compiled all game data' -Quiet)){break}
+            Write-Host 'KANTO_K03E_INTEGRATED_COMPILE_BOOT_RESTART'
+          }
+          if((Test-Path $failure) -or -not (Test-Path $proof)){
+            Get-Content ".blue-work/kanto-k03e-integrated-out-*.txt",".blue-work/kanto-k03e-integrated-err-*.txt",$failure,"$candidate/errorlog.txt" -ErrorAction SilentlyContinue | Select-Object -Last 150
+            throw 'K03-E integrated native proof missing or failed'
           }
           $receipt=(Get-Content $proof -Raw).Trim()
           if($receipt -notmatch '"integrated_main"=>true'){throw 'K03-E receipt is not integrated'}
@@ -756,8 +770,9 @@ jobs:
             .blue-work/kanto-k03e-migration-proof.json
             .blue-work/kanto-k03e-migration-ci/game/Data/blue-kanto-k03e-proof.txt
             .blue-work/kanto-k03e-migration-ci/game/Data/blue-kanto-error.txt
-            .blue-work/kanto-k03e-integrated-out.txt
-            .blue-work/kanto-k03e-integrated-err.txt
+            .blue-work/kanto-k03e-integrated-out-*.txt
+            .blue-work/kanto-k03e-integrated-err-*.txt
+            .blue-work/kanto-k03e-migration-ci/game/errorlog.txt
           include-hidden-files: true
           if-no-files-found: error
       - name: K00 - provar migracao 142 a 145 em copia descartavel com RXDATA real
