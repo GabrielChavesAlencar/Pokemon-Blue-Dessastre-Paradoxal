@@ -2614,38 +2614,95 @@ module KantoNativeCheck
     require!(BlueKantoPilot.captain && $bag.quantity(anne_cut) == anne_quantity,
       "K03-C repeat captain duplicated Cut")
     $map_factory.setup(anne_previous_map)
-    # Lt. Surge grants exactly one Thunder Badge after a legitimate victory.
+    # K03-D: native gym geometry, ordered cans, loss/retry and persistence.
     surge = GameData::Trainer.get(:BLUE_KANTO_LEADER_SURGE, "Lt. Surge")
-    require!(surge.pokemon.length == 3, "Lt. Surge original FRLG roster missing")
     require!(surge.pokemon.map { |pokemon| pokemon[:species] } == [:VOLTORB,:PIKACHU,:RAICHU],
              "Lt. Surge team differs from the pinned FRLG source")
-    # The locked gym must be inaccessible until two adjacent cans are activated.
+    surge_map_id = BlueKantoPilot.kanto_map_id(67)
+    state = BlueKantoPilot.progress
+    crystal_before_surge = BlueRegions.crystal_total(state, 2)
+    require!(!BlueKantoPilot.surge_can(4), "K03-D remote can accepted")
     BlueKantoPilot.battle(:BLUE_KANTO_LEADER_SURGE, "Lt. Surge", "KANTO_067_005")
     require!(battle_calls.none? { |row| row[1] == "Lt. Surge" },
-             "Surge could be challenged while the gym puzzle was locked")
-    surge_destination = BlueKantoPilot.experimental_stops.find { |label, _point| label.include?("Surge") }
-    require!(surge_destination, "Surge gym stop unavailable")
-    surge_map_id = surge_destination[1][0]
-    $map_factory.setup(surge_map_id)
-    $game_player.moveto(5, 18)
+             "K03-D remote challenge accepted")
+    # Inspect city source transfers and native Cut callbacks before testing
+    # the gym. Collision witnesses are not keyboard-driven play.
+    vermilion = BlueKantoPilot.kanto_map_id(64)
+    city_comp = opening_component(vermilion,k03a_report.fetch("vermilion_center_landing"))
+    cut_trees = $game_map.events.values.select { |ev| BlueKantoPilot.cut_tree_obstacle?(ev) }
+    require!(!cut_trees.empty? && cut_trees.all? { |ev| passive_field_event?(ev) },
+      "K03-D Vermilion native Cut callbacks missing")
+    trees = cut_trees.map { |ev| {"event_id"=>ev.id,"xy"=>[ev.x,ev.y],
+      "reachable"=>!!opening_action_witness(city_comp,ev)} }
+    require!(trees.any? { |row| row["reachable"] }, "K03-D no accessible Cut tree in Vermilion")
+    door = $game_map.events.values.find { |ev| ev.trigger == 1 &&
+      ev.list.any? { |op| op.code == 201 && op.parameters[0] == 0 && op.parameters[1] == surge_map_id } }
+    require!(door, "K03-D native gym door missing")
+    gym_landing = north_transfer!(door,surge_map_id)
+    door_id = door.id
+    door_before_cut = north_event_reachable?(city_comp,door)
+    locked_comp = opening_component(surge_map_id,gym_landing)
+    require!(!north_event_reachable?(locked_comp,$game_map.events[5]),
+      "K03-D leader reachable while locks closed")
     pairs = BlueKantoPilot.surge_pairs
-    require!(!pairs.empty?, "No adjacent trash cans in Surge gym")
-    first, second = pairs.first
-    BlueKantoPilot.progress["pilot_surge_solution"] = [first, second]
+    require!(!pairs.empty? && pairs.all? { |pair| pairs.include?(pair.reverse) },
+      "K03-D missing reversible neighboring cans")
+    require!(pairs.flatten.uniq.sort == BlueKantoPilot::SURGE_CANS.sort,
+      "K03-D some source cans cannot hold a key")
+    first, second = pairs.first.reverse
+    wrong = BlueKantoPilot::SURGE_CANS.find { |id| ![first,second].include?(id) }
+    require!(wrong, "K03-D missing wrong-can fixture")
+    [first,second,wrong].each do |id|
+      ev = $game_map.events[id]
+      north_callback!(ev,"BlueKantoPilot.surge_can(#{id})")
+      require!(opening_action_witness(locked_comp,ev),"K03-D inaccessible can #{id}")
+    end
+    state["pilot_surge_solution"] = [first,second]
+    BlueKantoPilot.surge_can(wrong)
+    require!(!state["pilot_surge_first"] && !BlueKantoPilot.surge_unlocked?,
+      "K03-D wrong first can unlocked puzzle")
     BlueKantoPilot.surge_can(first)
-    require!(BlueKantoPilot.progress["pilot_surge_first"], "First Surge lock not triggered")
+    require!(state["pilot_surge_first"] && !BlueKantoPilot.surge_unlocked?,
+      "K03-D first key unlocked both locks")
+    BlueKantoPilot.surge_can(wrong)
+    require!(!state["pilot_surge_first"] && !state["pilot_surge_solution"] &&
+      !BlueKantoPilot.surge_unlocked?, "K03-D wrong second key did not reset")
+    BlueKantoPilot.battle(:BLUE_KANTO_LEADER_SURGE, "Lt. Surge", "KANTO_067_005")
+    require!(battle_calls.none? { |row| row[1] == "Lt. Surge" },
+      "K03-D locked local challenge accepted")
+    state["pilot_surge_solution"] = [first,second]
+    BlueKantoPilot.surge_can(first)
     BlueKantoPilot.surge_can(second)
-    require!(BlueKantoPilot.progress["pilot_surge_unlocked"], "Surge puzzle did not unlock")
-    require!($game_self_switches[[surge_map_id, 8, "A"]] == true,
-             "Surge gym barrier did not receive its local self switch")
-    BlueKantoPilot.battle(:BLUE_KANTO_LEADER_SURGE, "Lt. Surge", "KANTO_067_005")
-    require!(BlueRegions.local_achievements(BlueKantoPilot.progress,"KANTO") ==
-             ["BOULDER","CASCADE","THUNDER"], "Thunder Badge was not awarded uniquely")
-    BlueKantoPilot.battle(:BLUE_KANTO_LEADER_SURGE, "Lt. Surge", "KANTO_067_005")
-    require!(battle_calls.count { |row| row[1] == "Lt. Surge" } == 1,
-             "Surge battle repeated after victory")
-    require!(BlueRegions.crystal_total(BlueKantoPilot.progress, 2) == 5,
-             "Three Kanto milestones were double-counted or omitted")
+    require!(BlueKantoPilot.surge_unlocked? && BlueKantoPilot::SURGE_LOCKS.all? { |id|
+      $game_self_switches[[surge_map_id,id,"A"]] }, "K03-D lock switches not synchronized")
+    open_comp = opening_component(surge_map_id,gym_landing)
+    leader = $game_map.events[5]
+    require!(north_event_reachable?(open_comp,leader),"K03-D leader inaccessible after puzzle")
+    exit_event = $game_map.events.values.find { |ev| north_event_reachable?(open_comp,ev) &&
+      ev.list.any? { |op| op.code == 201 && op.parameters[0] == 0 && op.parameters[1] == vermilion } }
+    require!(exit_event,"K03-D gym return door missing")
+    surge_report = {"gym"=>surge_map_id,"door"=>door_id,"landing"=>gym_landing,
+      "city_cut_trees"=>trees,"door_reachable_before_cut"=>door_before_cut,
+      "locked_component"=>locked_comp.length,"open_component"=>open_comp.length,
+      "pairs"=>pairs,"wrong_can_reset"=>true,"return"=>north_transfer!(exit_event,vermilion)}
+    losses_remaining["Lt. Surge"] = 1
+    require!(!BlueKantoPilot.battle(:BLUE_KANTO_LEADER_SURGE,"Lt. Surge","KANTO_067_005") &&
+      !BlueKantoPilot.sync_trainer_event("KANTO_067_005","Lt. Surge",5) &&
+      !BlueRegions.local_achievements(state,"KANTO").include?("THUNDER") &&
+      BlueRegions.crystal_total(state,2) == crystal_before_surge,
+      "K03-D defeat awarded badge, crystal or victory")
+    require!(BlueKantoPilot.battle(:BLUE_KANTO_LEADER_SURGE,"Lt. Surge","KANTO_067_005") &&
+      BlueKantoPilot.sync_trainer_event("KANTO_067_005","Lt. Surge",5),
+      "K03-D retry failed")
+    require!(BlueRegions.local_achievements(state,"KANTO") == ["BOULDER","CASCADE","THUNDER"],
+      "K03-D Thunder Badge missing")
+    BlueKantoPilot.battle(:BLUE_KANTO_LEADER_SURGE,"Lt. Surge","KANTO_067_005")
+    require!(battle_calls.count { |row| row[1] == "Lt. Surge" } == 2 &&
+      BlueRegions.crystal_total(state,2) == crystal_before_surge+1,
+      "K03-D repeated battle or duplicate crystal")
+    surge_report["defeat_retry"] = true
+    surge_report["crystal_delta"] = 1
+    puts "KANTO_K03D_NATIVE_SURGE_REPORT:#{surge_report.inspect}"
 
     # MAN-01: the two-way Rival's House doors use REAL map transfers.
     # MAN-02: Rick starts as a Sight(5) Event Touch trainer, and on a
@@ -3273,6 +3330,15 @@ module KantoNativeCheck
     require!(north_state["pilot_wins"].include?(BlueKantoPilot::SS_ANNE_RIVAL_KEY) &&
       BlueKantoPilot::SS_ANNE_RIVAL_EVENTS.all? { |id| $game_self_switches[[anne_rival_map,id,"A"]] },
       "K03-C rival victory or self switches lost after reload")
+    require!(north_state["pilot_surge_unlocked"] &&
+      north_state["pilot_wins"].include?("KANTO_067_005") &&
+      BlueKantoPilot::SURGE_LOCKS.all? { |id| $game_self_switches[[surge_map_id,id,"A"]] } &&
+      $game_self_switches[[surge_map_id,5,"A"]] &&
+      BlueRegions.local_achievements(north_state,"KANTO").count("THUNDER") == 1,
+      "K03-D puzzle, victory or badge lost after reload")
+    surge_report["save_reload"] = true
+    File.write("Data/blue-kanto-k03d-proof.txt",surge_report.inspect)
+    puts "KANTO_K03D_SURGE_THUNDER_SAVE_RELOAD_OK"
     anne_report["save_reload"] = true
     anne_report["cut_quantity"] = anne_quantity
     File.write("Data/blue-kanto-k03c-proof.txt",anne_report.inspect)
