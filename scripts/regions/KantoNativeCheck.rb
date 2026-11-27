@@ -135,6 +135,56 @@ module KantoNativeCheck
 
   # K02-C: actual installed native events and directional collision checks.
   # The route proof is not a manual input session; battles remain controlled.
+  def self.cerulean_legacy_door_proof
+    city = BlueKantoPilot.kanto_map_id(39)
+    $map_factory.setup(city)
+    $game_player.moveto(22,20)
+    require!(!BlueKantoPilot.cerulean_house_open?, "Cerulean legacy fixture must precede Bill")
+    doors = BlueKantoPilot::CERULEAN_INTERIOR_DOORS
+    old_event_ids = $game_map.events.keys.sort
+    position = [$game_player.x,$game_player.y]
+    party = $player.party.map { |p| [p.species,p.level,p.personalID] }
+    progress = BlueKantoPilot.progress
+    snapshot = Marshal.dump(progress)
+    # Simulate a pre-K02-C cached map: public services remain but the new
+    # interior events do not exist in the saved native Game_Map event table.
+    doors.keys.each { |id| $game_map.events.delete(id) }
+    require!([4,5,6].all? { |id| $game_map.events[id] }, "Legacy public services fixture missing")
+    BlueKantoPilot.sync_loaded_cerulean_map($game_map)
+    require!($game_map.events.keys.sort == old_event_ids, "Legacy Cerulean events not restored")
+    doors.each do |id,source|
+      event = $game_map.events[id]
+      require!(event && event.trigger == 1 &&
+        BlueKantoPilot.cerulean_door_transfer?(event.list,BlueKantoPilot.kanto_map_id(source)),
+        "Legacy Cerulean door not restored #{id}")
+    end
+    require!(!BlueKantoPilot.reload_stale_cerulean_doors($game_map), "Current map reloaded unnecessarily")
+    require!([$game_player.x,$game_player.y] == position &&
+      $player.party.map { |p| [p.species,p.level,p.personalID] } == party &&
+      Marshal.dump(progress) == snapshot && !BlueKantoPilot.cerulean_house_open?,
+      "Legacy Cerulean repair changed position, party or quest")
+    # Verify the five unrestricted front doors from the same center landing
+    # before Bill. A mere neighbouring tile does not prove a walkable door.
+    component = opening_component(city,position)
+    approaches = [7,8,10,11,12].map do |id|
+      event = $game_map.events[id]
+      steps = {2=>[0,1],4=>[-1,0],6=>[1,0],8=>[0,-1]}
+      witness = steps.find do |dir,(dx,dy)|
+        from = [event.x-dx,event.y-dy]
+        next false unless component.key?(from)
+        $game_player.moveto(*from)
+        $game_player.passable?(*from,dir)
+      end
+      require!(witness, "Cerulean public door has no native step #{id}")
+      [id,[event.x,event.y],witness[0]]
+    end
+    $game_player.moveto(*position)
+    report = {"restored"=>doors.keys,"public_approaches"=>approaches,"guarded_house"=>!BlueKantoPilot.cerulean_house_open?,"position"=>position,"party_preserved"=>true,"idempotent"=>true,"manual_gameplay"=>false}
+    puts "KANTO_CERULEAN_LEGACY_DOORS_REPORT:#{report.inspect}"
+    puts "KANTO_CERULEAN_LEGACY_DOORS_RELOAD_OK"
+    report
+  end
+
   def self.cerulean_interiors_proof(battle_calls, losses_remaining)
     city = BlueKantoPilot.kanto_map_id(39)
     mapping = (43..48).to_h { |id| [id,BlueKantoPilot.kanto_map_id(id)] }
@@ -2067,6 +2117,7 @@ module KantoNativeCheck
     require!(!BlueKantoPilot.progress["pilot_ss_ticket"],
              "Harbor issued a ticket without Bill's Route 25 quest")
     require!(!BlueKantoPilot.cerulean_house_open?, "K02-C house opened before Bill")
+    legacy_door_report = cerulean_legacy_door_proof
     north_report = north_story(battle_calls, losses_remaining)
     interiors_report = cerulean_interiors_proof(battle_calls, losses_remaining)
     k03a_report = k03a_corridor_proof(north_report,battle_calls,losses_remaining)
@@ -2754,6 +2805,7 @@ module KantoNativeCheck
              $bag.quantity(:TM28)==interiors_report["tm28"],
              "K02-C reward/quest persistence failed")
     interiors_report["save_reload"] = true
+    interiors_report["legacy_door_reload"] = legacy_door_report
     File.write("Data/blue-kanto-k02c-native-proof.txt", interiors_report.inspect)
     puts "KANTO_K02C_NATIVE_INTERIORS_REPORT:#{interiors_report.inspect}"
     puts "KANTO_K02C_INTERIORS_BIKE_ROCKET_SAVE_RELOAD_OK"

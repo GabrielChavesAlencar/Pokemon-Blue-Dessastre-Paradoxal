@@ -2332,10 +2332,53 @@ module BlueKantoPilot
     changed
   end
 
+  # A save or an already-cached neighbouring map may retain the pre-K02-C
+  # Game_Event table even after the installer added the six interiors.
+  # Refreshing its old pages cannot create the missing doors. Only reload a
+  # proven current Cerulean RXDATA, before sprites are created. Never touch
+  # save files, MapIDs, player coordinates, quest flags or unrelated maps.
+  CERULEAN_INTERIOR_DOORS = {3=>44,7=>43,8=>46,9=>48,10=>44,11=>45,12=>47,27=>48}.freeze
+
+  def self.cerulean_door_transfer?(commands, destination)
+    destination && Array(commands).any? { |op| op.code == 201 &&
+      op.parameters[0] == 0 && op.parameters[1] == destination }
+  end
+
+  def self.reload_stale_cerulean_doors(map)
+    return false unless map && kanto_current? && map.map_id == kanto_map_id(39)
+    destinations = CERULEAN_INTERIOR_DOORS.transform_values { |source| kanto_map_id(source) }
+    return false unless destinations.values.all? && destinations.values.uniq.length == 6
+    stale = destinations.keys.select do |id|
+      event = map.events[id]
+      !event || event.trigger != 1 || !cerulean_door_transfer?(event.list,destinations[id])
+    end
+    return false if stale.empty?
+    path = format("Data/Map%03d.rxdata",map.map_id)
+    return false unless File.file?(path)
+    authored = load_data(path)
+    # The on-disk map must already contain ALL eight verified transfers.
+    # An incomplete installation cannot be fixed by inventing a warp.
+    return false unless authored.respond_to?(:events) &&
+      destinations.all? { |id,destination| authored.events[id] &&
+        authored.events[id].pages.any? { |page| page.trigger == 1 &&
+          cerulean_door_transfer?(page.list,destination) } } &&
+      destinations.values.all? { |id| File.file?(format("Data/Map%03d.rxdata",id)) }
+    display = [map.display_x,map.display_y] if map.respond_to?(:display_x) && map.respond_to?(:display_y)
+    map.setup(map.map_id)
+    if display && map.respond_to?(:display_x=) && map.respond_to?(:display_y=)
+      map.display_x,map.display_y = display
+    end
+    puts "KANTO_CERULEAN_STALE_DOORS_RELOADED:#{stale.inspect}"
+    true
+  end
+
   # A save may restore an existing map without calling setup again.
   # Refresh through the engine's existing chain only after flags change.
   def self.sync_loaded_cerulean_map(map)
-    return unless map && sync_cerulean_quest_pages(map.map_id)
+    return unless map
+    reloaded = reload_stale_cerulean_doors(map)
+    changed = sync_cerulean_quest_pages(map.map_id)
+    return unless reloaded || changed
     map.need_refresh = true
     map.events.each_value { |event| event.refresh }
   end
