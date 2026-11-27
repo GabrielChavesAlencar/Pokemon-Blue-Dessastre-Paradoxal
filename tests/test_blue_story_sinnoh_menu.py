@@ -1,4 +1,4 @@
-"""Blue-Story native menu for opt-in Sinnoh J12-E QA copy, no manual BAT.
+"""Blue-Story starts the managed campaign. Explicit QA tools remain isolated.
 
 These tests use temporary synthetic folders and never access Game.exe or saves.
 """
@@ -44,31 +44,20 @@ class BlueStorySinnohMenuTests(unittest.TestCase):
             {"main_game_modified":False,"r09_native_qa_executed":0}
         )) as prep,patch.object(ui.installer,"install_copy",side_effect=self.fake_install) as copy:
             return ui.prepare(self.root,self.root/"game",self.receipt),prep,copy
-    def test_01_built_in_menu_shows_named_sinnoh_button(self):
-        self.assertIn('Text="Testar piloto Sinnoh"',self.csharp)
-        self.assertIn('Text="Jogar campanha"',self.csharp)
-    def test_02_requires_explicit_menu_choice_not_auto_install(self):
-        self.assertIn('sinnoh.Click+=delegate { selection.TrySetResult("sinnoh"); };',self.csharp)
-        self.assertIn('if(chosen=="sinnoh") {',self.csharp)
-        self.assertIn('string chosen=await selection.Task;',self.csharp)
-        # A source-only update opens the menu, even with incomplete Kanto.
-        self.assertGreater(self.csharp.index('string chosen=await selection.Task;'),
-                           self.csharp.index('else await Task.Run((Action)PrepareSourceOnly);'))
-        # Full regional install is ONLY called after choosing the campaign.
-        self.assertLess(self.csharp.index('string chosen=await selection.Task;'),
-                        self.csharp.index('title.Text="Verificando a instalacao da campanha..."'))
-    def test_03_sinnoh_option_precedes_johto_missing_prompt(self):
-        self.assertLess(self.csharp.index('if(chosen=="sinnoh")'),
-                        self.csharp.index('if(!Hub && !JohtoReady()'))
-    def test_04_not_shown_in_battle_hub(self):
-        self.assertIn('if(!Hub) {\n                                title.Text="Escolha como deseja jogar";',self.csharp)
-        self.assertIn('if(Hub)throw new Exception("Sinnoh experimental',self.csharp)
-    def test_05_uses_bundled_portable_python_not_system_python(self):
-        self.assertIn('string python=Runtime("python","python.exe");',self.csharp)
-        self.assertIn('"scripts/windows/launch_sinnoh_pilot.py"',self.csharp)
-    def test_06_launches_only_qa_copy_launcher(self):
-        self.assertIn('scripts/windows/sinnoh_qa_supervisor.py',self.csharp)
-        self.assertNotIn('Process.Start(new ProcessStartInfo(Path.Combine(game,"Game.exe"))',self.csharp[:self.csharp.index('if(chosen=="sinnoh")')])
+    def test_story_opens_one_managed_game_after_preparing_it(self):
+        self.assertNotIn('Text="Jogar campanha"',self.csharp)
+        self.assertNotIn('Text="Testar piloto Sinnoh"',self.csharp)
+        self.assertNotIn('Escolha como deseja jogar',self.csharp)
+        self.assertNotIn('PrepareSourceOnly',self.csharp)
+        self.assertNotIn('launch_sinnoh_pilot.py',self.csharp)
+        self.assertNotIn('sinnoh_qa_supervisor.py',self.csharp)
+        launch='Process.Start(new ProcessStartInfo(Path.Combine(game,"Game.exe"))'
+        self.assertEqual(self.csharp.count(launch),1)
+        self.assertLess(self.csharp.index('await Task.Run((Action)Prepare);'),self.csharp.index(launch))
+        self.assertIn('Run(python,install.ToArray(),pathExtra);',self.csharp)
+        self.assertIn('if(Hub)install.Add("--hub-only")',self.csharp)
+        self.assertIn('Kanto NAO instalado: ',self.csharp)
+
     def test_07_python_receipt_has_no_native_approval(self):
         info,prep,copy=self.simulate()
         self.assertFalse(info["main_game_modified"])
@@ -128,60 +117,10 @@ class BlueStorySinnohMenuTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,"MapInfos"):
                 ui.prepare(self.root,self.root/"game",self.receipt)
             install.assert_not_called()
-    def test_18_one_click_supervisor_waits_and_closes(self):
-        self.assertIn('scripts/windows/sinnoh_qa_supervisor.py',self.csharp)
-        self.assertIn('"--project-root",Root,"--qa-dir",qa',self.csharp)
-        self.assertIn('await Task.Run(delegate {',self.csharp)
-        self.assertIn('form.Close();return;',self.csharp)
-        self.assertNotIn('experimental.WaitForExit()',self.csharp)
     def test_19_release_is_not_published_on_pr(self):
         self.assertIn("pull_request:",self.pipeline)
-        self.assertIn("if: github.event_name != 'pull_request'",self.pipeline)
-    def test_20_menu_retains_regular_game_option(self):
-        self.assertIn('campaign.Click+=delegate { selection.TrySetResult("campaign"); };',self.csharp)
-        self.assertIn('if(!Hub && !JohtoReady())',self.csharp)
-        self.assertIn('string game=Path.Combine(Root,"game");var process=Process.Start',self.csharp)
-    def test_21_reparse_points_rejected_by_exe(self):
-        self.assertIn('FileAttributes.ReparsePoint',self.csharp)
-    def test_22_experimental_copy_not_implicitly_downloaded(self):
-        self.assertNotIn('install_sinnoh_experimental_windows.py","--install"',self.csharp)
-        self.assertIn('"--project-root",Root,"--game-dir",game',self.csharp)
+        self.assertIn("if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'",self.pipeline)
 
-    def test_23_kanto_142_of_145_cannot_block_sinnoh_menu(self):
-        # Previous behavior performed install_game.py before the menu; the
-        # protected Kanto 142/145 state raised ValueError and blocked Sinnoh.
-        before=self.csharp.index('else await Task.Run((Action)PrepareSourceOnly);')
-        menu=self.csharp.index('string chosen=await selection.Task;')
-        sinnoh=self.csharp.index('if(chosen=="sinnoh") {')
-        main=self.csharp.index('title.Text="Verificando a instalacao da campanha..."')
-        self.assertLess(before,menu)
-        self.assertLess(menu,sinnoh)
-        self.assertLess(sinnoh,main)
-    def test_24_source_only_branch_never_runs_kanto_installer(self):
-        source=self.csharp.index('if(sourceOnly) {')
-        back=self.csharp.index('StageEmbeddedJohto();',source)
-        install=self.csharp.index('var install=new List<string>{"scripts/install_game.py","--apply"};')
-        self.assertLess(source,back)
-        self.assertLess(back,install)
-        self.assertIn('return;',self.csharp[source:back])
-        self.assertIn('static void PrepareSourceOnly() { Prepare(true); }',self.csharp)
-    def test_25_main_campaign_still_runs_all_regional_install_checks(self):
-        main=self.csharp.index('title.Text="Verificando a instalacao da campanha..."')
-        self.assertIn('await Task.Run((Action)Prepare);',self.csharp[main:main+600])
-        self.assertIn('static void Prepare() { Prepare(false); }',self.csharp)
-        self.assertIn('Run(python,install.ToArray(),pathExtra);',self.csharp)
-    def test_26_blue_battle_hub_still_uses_full_prepare(self):
-        self.assertIn('if(Hub)await Task.Run((Action)Prepare);',self.csharp)
-    def test_27_kanto_verification_error_is_not_suppressed_for_campaign(self):
-        self.assertIn('if(!Hub && !experimentalSelected)',self.csharp)
-        self.assertIn('Kanto NAO instalado: ',self.csharp)
-        self.assertIn('Em caso de mapa incompleto, a campanha sera bloqueada',self.csharp)
-    def test_28_sinnoh_qa_launch_still_requires_proof_and_saves_isolation(self):
-        self.assertIn('PrepareSinnohTestCopy',self.csharp)
-        self.assertIn('INICIAR_SINNOH_EXPERIMENTAL.bat',self.csharp)
-        self.assertIn('SINNOH_PRIVATE_EXPERIMENTAL_COPY_NOT_APPROVED',self.csharp)
-        self.assertIn('main_game_modified',self.csharp)
-        self.assertIn('native_qa_cases_approved',self.csharp)
 
     def test_29_show_actual_python_code2_failure_in_dialog(self):
         self.assertIn('var tail=new Queue<string>();',self.csharp)
@@ -189,17 +128,8 @@ class BlueStorySinnohMenuTests(unittest.TestCase):
         self.assertIn('Motivo: ',self.csharp)
         self.assertIn('while(tail.Count>5)tail.Dequeue();',self.csharp)
 
-    def test_32_supervisor_failure_restores_visible_blue_story_window(self):
-        self.assertIn('if(experimentalSelected)form.WindowState=FormWindowState.Normal;',self.csharp)
 
-    def test_31_no_external_bat_is_needed_for_restarting_sinnoh_qa(self):
-        self.assertNotIn('Process.Start(new ProcessStartInfo(bat)',self.csharp)
-        self.assertIn('Run(python,new[]{"scripts/windows/sinnoh_qa_supervisor.py"',self.csharp)
 
-    def test_30_repair_must_not_bypass_native_kanto_gate(self):
-        self.assertIn('if(!Hub && !experimentalSelected)',self.csharp)
-        self.assertIn('if(sourceOnly) {',self.csharp)
-        self.assertIn('Run(python,install.ToArray(),pathExtra);',self.csharp)
 
     def test_fresh_base_is_provisioned_after_sinnoh_selection(self):
         game=self.root/"game"

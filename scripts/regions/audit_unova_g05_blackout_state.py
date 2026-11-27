@@ -75,7 +75,8 @@ STATE_FIELDS={"scope","version","current","position","native_checkpoint","checkp
  "mechanics_by_region","active_mechanics","heals","blackouts"}
 RUBY={
  "respawn":(
-  "REGIONS = %w[DECADES KANTO JOHTO HOENN].freeze",
+  "REGIONS = %w[DECADES KANTO JOHTO HOENN SINNOH].freeze",
+  'when "SINNOH" then sinnoh_map_ids.include?(map_id)',
   "def self.state","def self.checkpoint","def self.region_map?(region, map_id)",
   "def self.real_center?(region, id)","def self.remember!",
   "def self.before_blackout!","fallback(current)","return unless valid?(candidate)",

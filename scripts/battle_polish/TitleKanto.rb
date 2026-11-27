@@ -240,7 +240,6 @@ module BlueKantoTitle
   SINNOH_LABEL = "Testar Sinnoh".freeze
   LAUNCHER = "KANTO_JOGAR_EXPERIMENTAL.bat".freeze
   JOHTO_LAUNCHER = "JOHTO_JOGAR_EXPERIMENTAL.bat".freeze
-  SINNOH_LAUNCHER = "SINNOH_JOGAR_EXPERIMENTAL.bat".freeze
 
   # J12-E: the generated Sinnoh QA is already a separate running Game.exe.
   # It is NOT the old "Sinnoh pilot.json" format, so never attempt to launch a
@@ -495,19 +494,19 @@ module BlueKantoTitle
     ordered << :blue_test_kanto
     ordered << :blue_test_johto
     ordered << :blue_test_hoenn
-    ordered << :blue_test_sinnoh
+    ordered << :blue_test_sinnoh if sinnoh_experimental_copy?
     ordered.concat(indices.reject { |idx| ordered.include?(idx) })
     ordered
   end
 
-  # Main Decades New Game: verified Kanto and Hoenn installations share the
-  # native game and save profile. Unverified pilots remain isolated.
+  # Main New Game uses the shared world for integrated regions.
+  # Sinnoh QA remains accessible only via the explicit Testar Sinnoh command.
   START_REGIONS = [
     ["Decades", :decades],
     ["Kanto", :kanto],
     ["Johto (piloto experimental)", :johto],
     ["Hoenn (piloto experimental)", :hoenn],
-    ["Sinnoh (piloto experimental)", :sinnoh],
+    ["Sinnoh (instalação necessária)", :sinnoh],
     ["Unova (indisponível)", :unavailable],
     ["Kalos (indisponível)", :unavailable],
     ["Alola (indisponível)", :unavailable],
@@ -526,6 +525,7 @@ module BlueKantoTitle
             BlueRegionStart.johto_spawn
     johto_release = johto && BlueRegionStart.respond_to?(:johto_install_proof) &&
                     BlueRegionStart.johto_install_proof
+    sinnoh = defined?(BlueRegionStart) && BlueRegionStart.respond_to?(:sinnoh_spawn) && BlueRegionStart.sinnoh_spawn
     START_REGIONS.map do |name, region|
       label = if region == :johto && johto
                 # Same main game and shared save as Kanto/Hoenn.
@@ -536,6 +536,8 @@ module BlueKantoTitle
                 "Kanto (instalação necessária)"
               elsif region == :hoenn && hoenn
                 "Hoenn"
+              elsif region == :sinnoh && sinnoh
+                "Sinnoh"
               else
                 name
               end
@@ -585,6 +587,12 @@ module BlueKantoTitle
         # installation is verified. It retains its own independent save.
         return :launched if launch_hoenn
         pbMessage(_INTL("Hoenn ainda não está integrada nesta instalação. Coloque o ZIP original de Hoenn na pasta do projeto e execute a atualização Blue-Story.exe. Seus saves de Decades/Kanto não foram modificados."))
+      when :sinnoh
+        if defined?(BlueRegionStart) && BlueRegionStart.respond_to?(:sinnoh_spawn) &&
+           BlueRegionStart.sinnoh_spawn && BlueRegionStart.request_initial("SINNOH")
+          return :integrated
+        end
+        pbMessage(_INTL("Para instalar Sinnoh neste jogo, coloque os dois ZIPs de origem junto ao Blue-Story.exe e abra o inicializador novamente."))
       when :cancel then return :cancel
       when :unavailable
         pbMessage(_INTL("Essa região ainda não tem uma campanha jogável instalada. Nenhum save foi alterado."))
@@ -619,20 +627,6 @@ module BlueKantoTitle
     script = File.expand_path("../" + JOHTO_LAUNCHER, game_dir)
     root = File.dirname(script)
     return nil unless File.file?(script) && File.file?(File.join(root, "scripts/regions/pilot_johto.py"))
-    [script, root]
-  end
-
-  # Sinnoh must have an independent, project-owned pilot before it is launchable.
-  # Never fall back to Kanto/Johto or start the unmodified main game.
-  def self.sinnoh_launcher
-    game_dir = File.expand_path(Dir.pwd)
-    return nil unless File.file?(File.join(game_dir, "Game.exe"))
-    return nil if pilot?
-    direct = regional_pilot("sinnoh", "Sinnoh", "SinnohQA", "blue-sinnoh-compiled.txt")
-    return direct if direct
-    script = File.expand_path("../" + SINNOH_LAUNCHER, game_dir)
-    root = File.dirname(script)
-    return nil unless File.file?(script) && File.file?(File.join(root, "scripts/regions/pilot_sinnoh.py"))
     [script, root]
   end
 
@@ -760,29 +754,7 @@ module BlueKantoTitle
       end
       return :blue_sinnoh_local_new_game
     end
-    unless windows?
-      pbMessage(_INTL("O teste de Sinnoh pelo menu inicial estará disponível no Windows."))
-      return false
-    end
-    target = sinnoh_launcher
-    unless target
-      pbMessage(_INTL("Sinnoh ainda não tem um piloto instalado. É preciso preparar os mapas de Twinleaf, Rota 201 e Sandgem antes de testar."))
-      return false
-    end
-    return false unless pbConfirmMessage(_INTL("Abrir o Sinnoh experimental com saves separados? O menu principal será fechado."))
-    script, root = target
-    begin
-      pid = if File.extname(script).casecmp?(".exe")
-              Process.spawn([script, script], :chdir => root)
-            else
-              Process.spawn("cmd.exe", "/d", "/c", script, :chdir => root)
-            end
-      Process.detach(pid)
-      true
-    rescue SystemCallError, ArgumentError, NotImplementedError => error
-      pbMessage(_INTL("Não foi possível iniciar Sinnoh: {1}", error.message))
-      false
-    end
+    false
   end
 
   module Scene

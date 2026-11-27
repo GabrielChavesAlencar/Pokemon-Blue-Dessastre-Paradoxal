@@ -206,11 +206,11 @@ def audit(root: Path = ROOT, source: Path | None = None,
     registry = validate_registry(root)
     title = (root / "scripts/battle_polish/TitleKanto.rb").read_text("utf-8")
     if not all(token in title for token in (
-        'SINNOH_LABEL = "Testar Sinnoh"',
-        'SINNOH_LAUNCHER = "SINNOH_JOGAR_EXPERIMENTAL.bat"',
-        'pilot_sinnoh.py', 'Sinnoh pilot.json', 'ordered << :blue_test_sinnoh',
+        '["Sinnoh (instalação necessária)", :sinnoh]',
+        'BlueRegionStart.request_initial("SINNOH")',
+        'ordered << :blue_test_sinnoh if sinnoh_experimental_copy?',
     )):
-        raise ValueError("O menu Testar Sinnoh não está conectado ao carregador seguro")
+        raise ValueError("Sinnoh não está vinculada ao Novo Jogo compartilhado e ao perfil QA isolado")
     if source:
         source = source.expanduser().absolute()
         if source == root.absolute() or source == (root / "game").absolute() or (
@@ -240,7 +240,7 @@ def audit(root: Path = ROOT, source: Path | None = None,
     ])
     return {
         "schema": 1, "region": "SINNOH", "mode": "READ_ONLY",
-        "registry": registry, "title_option": "WIRED_NO_REAL_PILOT",
+        "registry": registry, "title_option": "SHARED_NEW_GAME",
         "source": candidate, "native": native, "unmapped_id_collisions": overlaps,
         "rights_verified": False, "map_installation_verified": False,
         "native_gameplay_verified": False, "phase_00_fully_approved": False,

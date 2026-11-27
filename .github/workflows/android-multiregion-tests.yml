@@ -4,8 +4,17 @@ on:
     branches: [main]
     paths:
       - 'scripts/android/**'
+      - 'scripts/regions/sinnoh_shared.py'
+      - 'scripts/regions/sinnoh_source_download.py'
+      - 'scripts/install_game.py'
+      - 'scripts/launch_game.py'
+      - 'scripts/battle_polish/RegionStart.rb'
+      - 'scripts/battle_polish/RegionTravel.rb'
+      - 'tests/test_android_multiregion.py'
       - 'tests/test_android_updates.py'
       - 'tests/test_multiregion_release_pagination.py'
+      - 'tests/test_sinnoh_shared_install.py'
+      - 'tests/region_start_android_no_json_runtime.rb'
       - 'site/**'
       - '.github/workflows/android-multiregion-tests.yml'
   push:
@@ -39,12 +48,16 @@ jobs:
         run: python -m py_compile scripts/android/package.py scripts/android/update_client.py scripts/android/publish_updates.py
       - name: Testar ZIP compartilhado, mapas e canais isolados
         run: python -m unittest discover -s tests -p test_android_multiregion.py -v
+      - name: Testar instalação compartilhada e preservação dos mapas de Sinnoh
+        run: python -m unittest discover -s tests -p test_sinnoh_shared_install.py -v
       - name: Testar atualizacao Android incremental e ZIP completo com backups
         run: python -m unittest discover -s tests -p test_android_updates.py -v
       - name: Reproduzir Novo Jogo no runtime JoiPlay sem JSON
         run: |
           ruby -c scripts/battle_polish/RegionStart.rb
+          ruby -c scripts/regions/SinnohSharedEvents.rb
           ruby tests/region_start_android_no_json_runtime.rb scripts/battle_polish/RegionStart.rb
+          ruby tests/sinnoh_shared_events_runtime.rb
       - name: Compilar site antes dos testes de publicacao
         run: npm run build --prefix site
       - name: Testar site de downloads e verificação real de release

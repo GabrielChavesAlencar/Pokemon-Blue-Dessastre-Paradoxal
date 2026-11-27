@@ -55,6 +55,9 @@ def install(project,game,hub_only=False,allow_kanto_missing=False,skip_kanto=Fal
             print('[JOHTO EDITOR] Aviso: editor nao instalado:',error,flush=True)
     game=game.resolve();ensure_base(project,game)
     assert_no_legacy_sinnoh_shared(game)
+    from sinnoh_shared import recover as recover_sinnoh
+    if recover_sinnoh(project,game):
+        print('[SINNOH] Instalação interrompida revertida.',flush=True)
     state_path=project/'.blue-work/installation.json'
     state=json.loads(state_path.read_text(encoding='utf8')) if state_path.is_file() else {}
     if state and state.get('game')!=str(game):raise ValueError('Estado de instalacao pertence a outra pasta do jogo.')
@@ -151,6 +154,16 @@ def install(project,game,hub_only=False,allow_kanto_missing=False,skip_kanto=Fal
                 if result.get('changed'):
                     # New Ruby plugin and regional PBS must be compiled by the
                     # native Game.exe before trainer battles can be tested.
+                    run([sys.executable,'scripts/launch_game.py','--game-dir',game,'--prepare-only'],project,env)
+        if not skip_kanto:
+            from sinnoh_shared import integrate as integrate_sinnoh
+            try:
+                result = integrate_sinnoh(project, game)
+                print('[SINNOH] Instalação compartilhada:', result['status'], flush=True)
+            except (OSError, ValueError, KeyError, TypeError) as error:
+                print('[SINNOH] Integração bloqueada:', error, flush=True)
+            else:
+                if result['changed']:
                     run([sys.executable,'scripts/launch_game.py','--game-dir',game,'--prepare-only'],project,env)
         print('[OK] Instalado. Abra ABRIR_JOGO.bat para a campanha ou HUB_DE_BATALHA.bat para o Hub.')
     print('As listas de musica compartilhadas do projeto foram aplicadas; cada batalha sorteia uma faixa da categoria.')

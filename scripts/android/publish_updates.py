@@ -14,7 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from scripts.android.update_client import (MARKER, CHANNELS, safe_path, sha256_file,
                                          sha256_bytes, _patchable_immutables,
-                                         _old_patch_files)
+                                         _old_patch_files, _preserve_shared_sinnoh)
 
 
 def from_archive(path: Path, channel: str):
@@ -50,6 +50,13 @@ def from_archive(path: Path, channel: str):
                     meta != {"sha256": sha256_bytes(archive.read(root + name)),
                              "size": archive.getinfo(root + name).file_size}):
                 raise ValueError("Source ZIP file differs from hash manifest: " + name)
+        if "Data/blue-sinnoh-shared-qa.txt" in marker["files"]:
+            raise ValueError("A cópia Android QA de Sinnoh não pode ser publicada.")
+        if {"Data/blue-sinnoh-shared.json","Data/blue-sinnoh-shared.txt"} & marker["files"].keys():
+            if channel != "multiregion":
+                raise ValueError("Sinnoh exige o canal Android multirregional.")
+            from scripts.android.package import verify_sinnoh
+            verify_sinnoh(lambda name: archive.read(root+name))
     return marker, root
 
 
@@ -95,6 +102,7 @@ def publish(archive_path: Path, channel: str, previous_path: Path | None = None,
         previous = verified_previous(path, channel)
         if not previous:
             continue
+        _preserve_shared_sinnoh(previous["files"], current["files"])
         earlier = previous["revision"]
         if earlier in seen or earlier == revision:
             continue

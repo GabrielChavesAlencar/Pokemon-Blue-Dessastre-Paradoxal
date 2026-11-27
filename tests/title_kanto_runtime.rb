@@ -34,17 +34,19 @@ $notices = 0
 # Isolated UI fixture: no game saves are created by the title picker.
 module BlueRegionStart
   class << self
-    attr_accessor :integrated, :johto_integrated
+    attr_accessor :integrated, :johto_integrated, :sinnoh_integrated
     attr_reader :requests
     def request_initial(region)
       return false if region == "KANTO" && !integrated
       return false if region == "JOHTO" && !johto_integrated
+      return false if region == "SINNOH" && !sinnoh_integrated
       (@requests ||= []) << region
       true
     end
     def kanto_integrated?; !!integrated; end
     def johto_spawn; johto_integrated ? [674,6,7] : nil; end
     def johto_install_proof; nil; end
+    def sinnoh_spawn; sinnoh_integrated ? [452,9,8] : nil; end
   end
 end
 require File.expand_path(ARGV.fetch(0))
@@ -55,7 +57,7 @@ scene = PokemonLoad_Scene.new
 scene.queue = [1]
 $region_choices = [0] # Novo Jogo -> Decades
 scene.pbStartScene(original, true, nil, nil, 0)
-require_check(scene.displayed == [" <- My Save -> ", "New Game", "Testar Kanto", "Testar Johto", "Testar Hoenn", "Testar Sinnoh", "Options", "Quit Game"],
+require_check(scene.displayed == [" <- My Save -> ", "New Game", "Testar Kanto", "Testar Johto", "Testar Hoenn", "Options", "Quit Game"],
               "Kanto/Johto test options have wrong positions after Continue")
 require_check(scene.pbChoose(original, 0) == 1, "New Game index changed")
 require_check(scene.last_continue == 0, "Continue slot arrows were remapped")
@@ -71,11 +73,11 @@ require_check(scene.pbChoose(original, 0) == -2, "Next save-slot arrow changed")
 # slot and the ORIGINAL handler index must be preserved.
 gift = [" <- Save 2 -> ", "Mystery Gift", "New Game", "Options", "Quit Game"]
 scene2 = PokemonLoad_Scene.new
-scene2.queue = [1, 6]
+scene2.queue = [1, 5]
 $region_choices = [0] # Preserve original New Game handler after Mystery Gift reordering
 scene2.pbStartScene(gift, true, nil, nil, 0)
 require_check(scene2.displayed == [" <- Save 2 -> ", "New Game", "Testar Kanto", "Testar Johto",
-                                   "Testar Hoenn", "Testar Sinnoh", "Mystery Gift", "Options", "Quit Game"],
+                                   "Testar Hoenn", "Mystery Gift", "Options", "Quit Game"],
               "Mystery Gift broke title menu order")
 require_check(scene2.pbChoose(gift, 0) == 2, "New Game handler no longer maps to original")
 require_check(scene2.pbChoose(gift, 0) == 1, "Mystery Gift handler no longer maps to original")
@@ -86,7 +88,7 @@ scene3 = PokemonLoad_Scene.new
 scene3.queue = [0]
 $region_choices = [0]
 scene3.pbStartScene(fresh, false, nil, nil, 0)
-require_check(scene3.displayed == ["New Game", "Testar Kanto", "Testar Johto", "Testar Hoenn", "Testar Sinnoh", "Options", "Quit Game"],
+require_check(scene3.displayed == ["New Game", "Testar Kanto", "Testar Johto", "Testar Hoenn", "Options", "Quit Game"],
               "No-save title order is invalid")
 require_check(scene3.pbChoose(fresh, -1) == 0, "No-save New Game changed")
 
@@ -109,7 +111,7 @@ scene.queue = [3, 1]
 $region_choices = [0] # Choose Decades after returning from unavailable pilot
 require_check(scene.pbChoose(original, 0) == 1, "Johto unavailable must return to normal title")
 
-# Hoenn occupies the slot between Johto and Sinnoh.
+# Hoenn retains its explicit title shortcut.
 BlueKantoTitle.define_singleton_method(:launch_hoenn) { true }
 scene.queue = [4]
 require_check(scene.pbChoose(original, 0) == 3, "Hoenn success did not cleanly quit main game")
@@ -118,20 +120,11 @@ scene.queue = [4, 1]
 $region_choices = [0] # Choose Decades after returning from unavailable pilot
 require_check(scene.pbChoose(original, 0) == 1, "Unavailable Hoenn must return to title")
 
-# Sinnoh is the sixth option and must keep the original Quit/New Game indices.
-BlueKantoTitle.define_singleton_method(:launch_sinnoh) { true }
-scene.queue = [5]
-require_check(scene.pbChoose(original, 0) == 3, "Sinnoh pilot success did not cleanly quit main game")
-BlueKantoTitle.define_singleton_method(:launch_sinnoh) { false }
-scene.queue = [5, 1]
-$region_choices = [0] # Choose Decades after returning from unavailable pilot
-require_check(scene.pbChoose(original, 0) == 1, "Unavailable Sinnoh must return to title")
-
 # New Game must choose a region BEFORE touching SaveData. The old shortcuts
 # remain available and may not change Continue / Mystery Gift navigation.
 require_check(BlueKantoTitle::START_REGIONS.map(&:first) == [
   "Decades", "Kanto", "Johto (piloto experimental)",
-  "Hoenn (piloto experimental)", "Sinnoh (piloto experimental)",
+  "Hoenn (piloto experimental)", "Sinnoh (instalação necessária)",
   "Unova (indisponível)", "Kalos (indisponível)",
   "Alola (indisponível)", "Galar (indisponível)",
   "Paldea (indisponível)", "Hisui (indisponível)", "Voltar ao menu"
@@ -169,23 +162,37 @@ scene.queue = [1]
 require_check(scene.pbChoose(original, 0) == 1, "Unavailable shared Johto did not ask again")
 require_check($last_region_options[2].include?("instalação necessária"), "Uninstalled Johto claimed to be integrated")
 
-# Hoenn/Sinnoh retain their explicitly selected isolated fallback modes.
-[[:launch_hoenn, 3], [:launch_sinnoh, 4]].each do |method, choice|
-  BlueKantoTitle.define_singleton_method(method) { true }
-  $region_choices = [choice]
-  scene.queue = [1]
-  require_check(scene.pbChoose(original, 0) == 3, "#{method} must exit after starting isolated pilot")
-  require_check($last_region_options.length == 12, "Region list was not displayed")
-end
+# Hoenn retains its isolated fallback while the shared game is unavailable.
+BlueKantoTitle.define_singleton_method(:launch_hoenn) { true }
+$region_choices = [3]
+scene.queue = [1]
+require_check(scene.pbChoose(original, 0) == 3, "Hoenn fallback must start its isolated pilot")
+require_check($last_region_options.length == 12, "Region list was not displayed")
+
+isolated_sinnoh_launch = BlueKantoTitle.method(:launch_sinnoh)
+BlueKantoTitle.define_singleton_method(:launch_sinnoh) { raise "Sinnoh pilot must not be launched from New Game" }
+$region_choices = [4, 0]
+scene.queue = [1]
+require_check(scene.pbChoose(original, 0) == 1, "Unavailable Sinnoh did not ask again")
+require_check($last_region_options[4] == "Sinnoh (instalação necessária)", "Uninstalled Sinnoh claimed to be integrated")
+
+BlueRegionStart.sinnoh_integrated = true
+$region_choices = [4]
+scene.queue = [1]
+require_check(scene.pbChoose(original, 0) == 1, "Integrated Sinnoh must use native Game.exe")
+require_check(BlueRegionStart.requests.last == "SINNOH", "Shared Sinnoh session choice was not recorded")
+require_check($last_region_options[4] == "Sinnoh", "Installed Sinnoh label is incorrect")
+BlueRegionStart.sinnoh_integrated = false
+BlueKantoTitle.define_singleton_method(:launch_sinnoh, isolated_sinnoh_launch)
 BlueKantoTitle.define_singleton_method(:launch_johto) { false }
 $region_choices = [5, 0]
 scene.queue = [1]
 require_check(scene.pbChoose(original, 0) == 1, "Future region silently started")
 $region_choices = [11]
-scene.queue = [1, 6]
+scene.queue = [1, 5]
 require_check(scene.pbChoose(original, 0) == 2, "Cancel region choice did not return to title")
 $region_choices = [-1]
-scene.queue = [1, 7]
+scene.queue = [1, 6]
 require_check(scene.pbChoose(original, 0) == 3, "Close region picker did not return to title")
 # A pilot must still open its OWN New Game directly with no nested selector.
 
@@ -200,7 +207,7 @@ Dir.mktmpdir("blue-title-") do |folder|
     require_check(isolated.pbChoose(original, 0) == 1, "Pilot New Game no longer works")
     require_check(BlueKantoTitle.launcher.nil?, "Pilot may recursively launch another pilot")
     require_check(BlueKantoTitle.johto_launcher.nil?, "Kanto pilot may launch Johto recursively")
-    require_check(BlueKantoTitle.sinnoh_launcher.nil?, "Kanto pilot may launch Sinnoh recursively")
+    require_check(!BlueKantoTitle.launch_sinnoh, "Kanto pilot may launch Sinnoh recursively")
   end
 end
 
@@ -220,19 +227,14 @@ Dir.mktmpdir("blue-title-root-") do |root|
       require_check(files == [File.join(root, "KANTO_JOGAR_EXPERIMENTAL.bat"), root],
                     "Pilot launcher escaped the project root")
       require_check(BlueKantoTitle.johto_launcher.nil?, "Johto must not reuse Kanto launcher")
-      require_check(BlueKantoTitle.sinnoh_launcher.nil?, "Sinnoh must not reuse Kanto launcher")
+      require_check(!BlueKantoTitle.command_order(original, true).include?(:blue_test_sinnoh), "Main title offers a separate Sinnoh")
       File.write(File.join(root, "JOHTO_JOGAR_EXPERIMENTAL.bat"), "@echo off")
       File.write(File.join(root, "scripts/regions/pilot_johto.py"), "# isolated Johto pilot")
       require_check(BlueKantoTitle.johto_launcher == [File.join(root, "JOHTO_JOGAR_EXPERIMENTAL.bat"), root],
                     "Johto launcher must use only its own project-owned pilot")
       File.write(File.join(root, "SINNOH_JOGAR_EXPERIMENTAL.bat"), "@echo off")
-      require_check(BlueKantoTitle.sinnoh_launcher.nil?, "Sinnoh needs its own Python pilot, not only a BAT")
       File.write(File.join(root, "scripts/regions/pilot_sinnoh.py"), "# isolated Sinnoh pilot")
-      require_check(BlueKantoTitle.sinnoh_launcher == [File.join(root, "SINNOH_JOGAR_EXPERIMENTAL.bat"), root],
-                    "Sinnoh launcher must use only its project-owned pilot")
-      File.write("Sinnoh pilot.json", "{}")
-      require_check(BlueKantoTitle.sinnoh_launcher.nil?, "Sinnoh pilot may launch itself recursively")
-      File.delete("Sinnoh pilot.json")
+      require_check(!BlueKantoTitle.launch_sinnoh, "Main title may launch a separate Sinnoh")
       hoenn = File.join(root, ".blue-work", "hoenn-pilot")
       FileUtils.mkdir_p(File.join(hoenn, "Data"))
       File.write(File.join(hoenn, "Game.exe"), "pilot")

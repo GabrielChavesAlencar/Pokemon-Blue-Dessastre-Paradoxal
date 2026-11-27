@@ -34,5 +34,3 @@ def verify_cerulean_doors(native: bytes, mapping: dict) -> None:
                 op.attrs.get("@parameters", [])[:4] == [0, mapping[source], *landing]
                 for op in page.attrs.get("@list", [])) for page in pages):
             raise ValueError(f"Cerulean door {event_id} missing native transfer in installed map")
-
-

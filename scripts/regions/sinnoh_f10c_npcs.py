@@ -53,6 +53,8 @@ def authored_sheet(role):
               "galactic_grunt":((166,169,178),(66,85,124),(63,154,158)),
               "galactic_mars":((159,168,180),(85,83,121),(190,54,64)),
               "galactic_jupiter":((159,168,180),(116,67,146),(146,66,171)),
+              "galactic_saturn":((159,168,180),(53,108,150),(57,105,174)),
+              "f12d_cynthia":((43,43,55),(230,206,113),(235,212,124)),
               "galactic_rescue":((117,133,91),(210,164,70),(97,75,55)),
               "galactic_honey_man":((118,112,72),(208,178,65),(172,166,150))}
     shirt,accent,hair=palettes[role]
@@ -70,6 +72,10 @@ def authored_sheet(role):
                 rect(11,9+bob,21,15+bob,skin)
                 if direction in (0,1):rect(12,11+bob,14,13+bob,ink)
                 if direction in (0,2):rect(18,11+bob,20,13+bob,ink)
+            if role=="f12d_cynthia":
+                rect(7,5+bob,11,25+bob,hair);rect(21,5+bob,25,25+bob,hair)
+                rect(9,4+bob,23,8+bob,hair);rect(8,7+bob,10,11+bob,ink)
+                rect(22,7+bob,24,11+bob,ink)
             if role=="gym_roark":
                 rect(8,3+bob,24,8+bob,ink);rect(9,4+bob,23,7+bob,(207,85,49))
                 rect(11,9+bob,21,10+bob,ink)

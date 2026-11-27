@@ -10,20 +10,41 @@ from prepare_restore import Marshal,RubyString,dump
 def prepare(project,game):
     # Guard BEFORE lab.install or Scripts.rxdata/compile writes.
     assert_no_legacy_sinnoh_shared(game)
+    recovery=game/'Data/.blue-sinnoh-install.json'
+    if recovery.exists() or recovery.is_symlink():
+        raise ValueError('Execute o instalador Blue-Story para recuperar a instalação interrompida de Sinnoh.')
     spec=importlib.util.spec_from_file_location('blue_campaign_plugins',project/'scripts/battle_lab/launch.py')
     lab=importlib.util.module_from_spec(spec);spec.loader.exec_module(lab)
     lab.install(project,game)
     target=game/'Data/Scripts.rxdata';rows=Marshal(target.read_bytes()).read()
     marker='# BLUE_CAMPAIGN_COMPILE_REQUEST'
+    local_sinnoh=(game/'Data/blue-sinnoh-shared-local.txt').is_file()
+    protection='# BLUE_CAMPAIGN_PRESERVE_SINNOH_MAPS'
     changed=False
     for row in rows:
         if row[1]!=b'Main':continue
         code=zlib.decompress(row[2]).decode('utf8')
-        if marker in code:break
-        needle='PluginManager.runPlugins'
-        if code.count(needle)!=1:raise ValueError('Bootstrap Main nao reconhecido.')
-        prefix="if File.file?('Data/blue-compile-request.txt') "+marker+"\n      $DEBUG = true\n      File.delete('Data/blue-compile-request.txt')\n    end\n    "
-        row[2]=RubyString(zlib.compress(code.replace(needle,prefix+needle).encode('utf8')))
+        updated=code
+        if marker not in updated:
+            needle='PluginManager.runPlugins'
+            if updated.count(needle)!=1:raise ValueError('Bootstrap Main nao reconhecido.')
+            prefix="if File.file?('Data/blue-compile-request.txt') "+marker+"\n      $DEBUG = true\n      File.delete('Data/blue-compile-request.txt')\n    end\n    "
+            updated=updated.replace(needle,prefix+needle)
+        if local_sinnoh and protection not in updated:
+            needle='    Compiler.main'
+            if updated.count(needle)!=1:raise ValueError('Compilador da campanha nao reconhecido.')
+            # Invoke the installed compiler chain after all plugins have loaded.
+            guard=f'''    blue_campaign_compile = proc do
+{needle}
+    end
+    if defined?(BlueSinnohSharedEvents)
+      BlueSinnohSharedEvents.preserve_authored_maps(&blue_campaign_compile)
+    else
+      blue_campaign_compile.call
+    end {protection}'''
+            updated=updated.replace(needle,guard)
+        if updated==code:break
+        row[2]=RubyString(zlib.compress(updated.encode('utf8')))
         from datetime import datetime,timezone
         backup=project/'.blue-backups'/('campaign-launch-'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ'))
         backup.mkdir(parents=True);shutil.copy2(target,backup/target.name)

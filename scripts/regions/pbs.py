@@ -213,12 +213,24 @@ def read_blocks(path, selected=None):
     return blocks
 
 
-def catalogue(game, prefix):
+def catalogue(game, prefix, overlays=None):
     keys = set()
     for path in (game / "PBS").glob(prefix + "*.txt"):
         for line in path.read_text(encoding="utf-8-sig", errors="replace").splitlines():
             if header := HEADER.fullmatch(line.strip()):
                 keys.add(header[1])
+    fragment={"trainer_types":"PBS/trainer_types_sinnoh_story.txt",
+              "items":"PBS/items_sinnoh_workskey.txt"}.get(prefix)
+    if overlays is not None and fragment in overlays:
+        if (game/fragment).exists() or (game/fragment).is_symlink():
+            raise ValueError("SINNOH_REGIONAL_CATALOGUE_PATH_COLLISION")
+        folded={k.casefold() for k in keys}
+        for line in overlays[fragment].decode("utf-8-sig").splitlines():
+            if header := HEADER.fullmatch(line.strip()):
+                key=header[1]
+                if key.casefold() in folded:
+                    raise ValueError("SINNOH_REGIONAL_CATALOGUE_ID_COLLISION")
+                keys.add(key);folded.add(key.casefold())
     return keys
 
 

@@ -179,7 +179,11 @@ def build(blobs,mapping,components,occupied,types,species,existing,root=f.ROOT,o
         gyms[i].update(installed=True,map_id=mapping[GYM_SPECS[prior][0]])
     local=exact_leader_type(types,aliases)
     if not local or any(s not in species for s,l in team) or (local,leader,version) in existing:
-        report["blocker"]="local_"+leader.lower()+"_type_species_or_pbs_collision";return blobs,mapping,components,report,b""
+        report["blocker"]="local_"+leader.lower()+"_type_species_or_pbs_collision"
+        report["type_matches"]=[t for t in aliases if t in types]
+        report["missing_species"]=[s for s,l in team if s not in species]
+        report["trainer_identity_collision"]=bool(local and (local,leader,version) in existing)
+        return blobs,mapping,components,report,b""
     infos=conn.read_marshal(blobs["Data/MapInfos.rxdata"],"F11A_INFOS")
     mid=allocate(mapping,occupied,infos)
     if mid is None:
@@ -284,4 +288,4 @@ def append(blobs,mapping,components,occupied,base,root=f.ROOT,overworlds=None,le
             fields=[v.strip() for v in header.split(",")]
             if len(fields) in (2,3) and (len(fields)==2 or fields[2].isdigit()):
                 existing.add((fields[0],fields[1],int(fields[2]) if len(fields)==3 else 0))
-    return build(blobs,mapping,components,occupied,f.catalogue(base,"trainer_types"),f.catalogue(base,"pokemon"),existing,root,overworlds,base,leader,allow_authored)
+    return build(blobs,mapping,components,occupied,f.catalogue(base,"trainer_types",blobs),f.catalogue(base,"pokemon"),existing,root,overworlds,base,leader,allow_authored)

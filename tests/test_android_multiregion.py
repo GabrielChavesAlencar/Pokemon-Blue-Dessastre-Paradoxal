@@ -74,12 +74,34 @@ class MultiRegionPackagingTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,"KantoPilot"):
                 mobile.compiled_region(b"fixture", "KantoPilot.rb", b"def self.test; true; end")
 
+    def test_sinnoh_qa_requires_johto_boot_markers_and_all_maps(self):
+        self._write(mobile.JOHTO_QA_PROOF,json.dumps({
+            "region":"JOHTO", "status":"EXPERIMENTAL_PRIVATE_UNVERIFIED",
+            "source_bundle_sha256":"74e727875803f70b3c0598b6b88fe5d79717df849ba1b888fae0583c09202a49",
+            "native_gameplay_verified":False, "map_ids":list(range(600,700))}).encode())
+        for rel in (mobile.JOHTO_QA_BOOT, "PBS/trainers_johto.txt",
+                    "PBS/trainer_types_johto.txt", "PBS/map_metadata_johto_main.txt",
+                    *(f"Data/Map{i:03d}.rxdata" for i in range(600,700))):
+            self._write(rel,b"fixture")
+        read = lambda rel: (self.game/rel).read_bytes()
+        with patch.object(mobile,"compiled_region") as compile_check:
+            with self.assertRaises(FileNotFoundError):
+                mobile.verify_johto_qa(read)
+            self._write(mobile.JOHTO_QA_READY,b"BLUE_JOHTO_PRIVATE_PREVIEW_V1,100,674,6,7,600,10,26,600,10,25")
+            mobile.verify_johto_qa(read)
+            compile_check.assert_called_once_with(b"fixture compiled plugins","Boot.rb",b"fixture")
+            with patch.object(mobile,"verify_regions"), self.assertRaisesRegex(ValueError,"prévia privada de Johto"):
+                mobile.build(self.game,self.output,self.revision,"multiregion")
+            (self.game/"Data/Map699.rxdata").unlink()
+            with self.assertRaises(FileNotFoundError):
+                mobile.verify_johto_qa(read)
+
     def test_shared_zip_contains_manifests_and_separate_update_channel(self):
         with patch.object(mobile,"verify_regions",return_value=({"maps":142},{"maps":199})), \
              patch.object(mobile,"compiled_mobile",return_value="b"*64), \
              patch.object(mobile,"verify_archive") as verify:
             result=mobile.build(self.game,self.output,self.revision,"multiregion")
-            verify.assert_called_once_with(self.output,self.revision,"b"*64,"multiregion")
+        verify.assert_called_once_with(self.output,self.revision,"b"*64,"multiregion",sinnoh_qa=False)
         self.assertGreater(result["bytes"],0)
         with zipfile.ZipFile(self.output) as archive:
             root="Pokemon-Blue-Android/"

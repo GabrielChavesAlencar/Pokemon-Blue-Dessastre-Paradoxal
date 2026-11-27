@@ -219,13 +219,25 @@ module KantoNativeCheck
     interpreter.setup_starting_event
     require!(interpreter.running? && interpreter.instance_variable_get(:@event_id) == id,
       "Cerulean main interpreter selected another event instead of door #{id}")
-    interpreter.update
+    # The compiler can add a door animation and a native wait before code
+    # 201. Give the event its usual frames without synthesizing a transfer.
+    deadline = System.uptime + 3
+    loop do
+      interpreter.update
+      break if $game_temp.player_transferring || !interpreter.running? || System.uptime >= deadline
+      Graphics.update
+      $game_player.update
+      $game_map.update
+    end
     requested = [$game_temp.player_new_map_id,$game_temp.player_new_x,$game_temp.player_new_y]
     require!($game_temp.player_transferring && requested == [destination,*landing],
-      "Cerulean native interpreter failed to request transfer #{id}:#{requested.inspect}")
-    # The headless runner has no map spriteset: end only the pending visual
-    # transition, then load the exact requested native map and landing.
-    interpreter.clear
+      "Cerulean native interpreter failed to request transfer #{id}:#{requested.inspect}; " +
+      "index=#{interpreter.instance_variable_get(:@index)}, " +
+      "commands=#{event.list.map(&:code).inspect}, menu=#{$game_temp.menu_calling}, " +
+      "message=#{$game_temp.message_window_showing}, transition=#{$game_temp.transition_processing}")
+    # A spriteset is unavailable in this probe. Close the event and load
+    # the map and coordinates requested by its native transfer command.
+    interpreter.command_end
     $game_temp.player_transferring = false
     if $game_temp.transition_processing
       $game_temp.transition_processing = false

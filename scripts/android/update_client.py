@@ -228,7 +228,24 @@ def _old_patch_files(info, updated_files):
     return old
 
 
+def _preserve_shared_sinnoh(old, new):
+    # A shared save can be standing on a Sinnoh map when JoiPlay is closed.
+    marker = "Data/blue-sinnoh-shared.txt"
+    if marker not in old:
+        return
+    required = {marker, "Data/blue-sinnoh-shared.json"}
+    required.update(f"Data/Map{mid:03d}.rxdata" for mid in range(442, 600) if f"Data/Map{mid:03d}.rxdata" in old)
+    required.update(name for name in old if
+                    name.startswith("Plugins/ZZZZZ Blue Sinnoh Shared/") or
+                    (name.startswith(("Graphics/","Audio/")) and
+                     name.rsplit("/",1)[-1].startswith(("SNQA_","SNSH_"))) or
+                    (name.startswith("PBS/") and "_sinnoh" in name))
+    if not required <= set(new):
+        raise ValueError("A atualização removeria Sinnoh de um save compartilhado.")
+
+
 def _verify_paths(old, new, patch):
+    _preserve_shared_sinnoh(old, new)
     changed = patch.get("changed")
     removed = patch.get("removed", [])
     if not isinstance(changed, dict) or not isinstance(removed, list):
@@ -492,6 +509,7 @@ def apply_full_archive(root, installed, manifest, archive_path):
     """
     if installed["channel"] != manifest["channel"]:
         raise ValueError("Cannot change Android update channels.")
+    _preserve_shared_sinnoh(installed["files"], manifest["files"])
     if not root.is_dir() or root.is_symlink() or root.parent == root:
         raise ValueError("Invalid installed game directory.")
     with zipfile.ZipFile(archive_path) as archive:
@@ -568,6 +586,8 @@ def main(argv=None):
                         help="Explicit fallback: download full ZIP but replace only changed files, no backup.")
     args = parser.parse_args(argv)
     root = args.game_dir.expanduser().resolve()
+    if (root / "Data/blue-sinnoh-shared-qa.txt").is_file():
+        raise ValueError("A cópia de QA de Sinnoh não recebe atualizações do canal público.")
     info = read_installed(root)
     release, manifest = remote_update(info)
     verify_forward_revision(info["revision"], manifest["revision"])

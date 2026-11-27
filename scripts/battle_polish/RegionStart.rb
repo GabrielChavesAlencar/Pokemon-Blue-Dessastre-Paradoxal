@@ -362,11 +362,36 @@ module BlueRegionStart
 
   # This is an in-memory request, not a save flag: the game only commits the
   # chosen starting region after the native new-game values are initialized.
+  def self.sinnoh_shared_points
+    path = "Data/blue-sinnoh-shared.txt"
+    return nil unless File.file?(path) && !File.symlink?(path) && File.size(path) < 2048
+    return nil unless defined?(BlueSinnohSharedEvents) && BlueSinnohSharedEvents.ready?
+    return nil unless File.file?("Data/blue-sinnoh-shared.json") &&
+      !File.exist?("Data/blue-compile-request.txt") && !File.exist?("sinnoh-experimental-qa.json")
+    header, *rows = File.readlines(path, chomp: true)
+    return nil unless header == "BLUE_SINNOH_SHARED_V1" && rows.length == 4 &&
+      rows.all? { |line| line.match?(/\A[0-9]+(?:,[0-9]+)*\z/) }
+    start, arrival, agent, ids = rows.map { |line| line.split(",").map(&:to_i) }
+    return nil unless ids.length == 144 && ids == ids.sort.uniq &&
+      ids.all? { |id| (442..599).cover?(id) && pbRgssExists?(sprintf("Data/Map%03d.rxdata",id)) }
+    return nil unless [start, arrival, agent].all? { |point| point.length == 3 && ids.include?(point[0]) }
+    distance = (arrival[1]-agent[1]).abs + (arrival[2]-agent[2]).abs
+    return nil unless arrival[0] == agent[0] && (1..4).cover?(distance)
+    [start, arrival + [2], agent]
+  rescue StandardError, LoadError
+    nil
+  end
+
+  def self.sinnoh_spawn
+    sinnoh_shared_points&.first
+  end
+
   def self.request_initial(region)
-    return false unless ["DECADES", "KANTO", "JOHTO", "HOENN"].include?(region)
+    return false unless %w[DECADES KANTO JOHTO HOENN SINNOH].include?(region)
     return false if region == "KANTO" && !kanto_integrated?
     return false if region == "HOENN" && !hoenn_integrated?
     return false if region == "JOHTO" && !johto_spawn
+    return false if region == "SINNOH" && !sinnoh_spawn
     @requested_initial = region
     @title_region_chosen = true
     true
@@ -376,7 +401,8 @@ module BlueRegionStart
     region == "DECADES" ||
       (region == "KANTO" && !kanto_spawn.nil?) ||
       (region == "JOHTO" && !johto_spawn.nil?) ||
-      (region == "HOENN" && !hoenn_spawn.nil?)
+      (region == "HOENN" && !hoenn_spawn.nil?) ||
+      (region == "SINNOH" && !sinnoh_spawn.nil?)
   end
 
   def self.choose_initial
@@ -386,6 +412,7 @@ module BlueRegionStart
     return "KANTO" if @requested_initial == "KANTO" && kanto_integrated?
     return "HOENN" if @requested_initial == "HOENN" && hoenn_integrated?
     return "JOHTO" if @requested_initial == "JOHTO" && johto_spawn
+    return "SINNOH" if @requested_initial == "SINNOH" && sinnoh_spawn
     "DECADES"
   end
 
@@ -403,6 +430,8 @@ module BlueRegionStart
     destinations["Kanto"] = ["KANTO", kanto] if kanto
     destinations["Johto"] = ["JOHTO", johto] if johto
     destinations["Hoenn"] = ["HOENN", hoenn] if hoenn
+    sinnoh = sinnoh_spawn
+    destinations["Sinnoh"] = ["SINNOH", sinnoh] if sinnoh
     return nil if destinations.length == 1
 
     choice = pbMessage(_INTL("Em qual região você quer começar o Modo História?"),
@@ -451,6 +480,7 @@ module BlueRegionStart
             when "KANTO" then kanto_spawn
             when "JOHTO" then johto_spawn
             when "HOENN" then hoenn_spawn
+            when "SINNOH" then sinnoh_spawn
             end
     region = "DECADES" unless region == "DECADES" || spawn
     if region == "DECADES"

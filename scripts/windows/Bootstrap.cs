@@ -50,63 +50,11 @@ internal static class Bootstrap {
                     var title=new Label { Text="Preparando sua instalacao...",Left=24,Top=20,Width=612,Height=38,Font=new Font("Segoe UI",15) };
                     var info=new Label { Text="Conferindo a versao atual da main.",Left=24,Top=68,Width=612,Height=112,Font=new Font("Segoe UI",10) };
                     var bar=new ProgressBar { Left=24,Top=188,Width=612,Height=19,Style=ProgressBarStyle.Marquee };
-                    // Visible AFTER preparation. The original campaign remains
-                    // the default; Sinnoh requires an explicit user click.
-                    var campaign=new Button { Text="Jogar campanha",Left=24,Top=225,Width=177,Height=35,Visible=false };
-                    var sinnoh=new Button { Text="Testar piloto Sinnoh",Left=211,Top=225,Width=251,Height=35,Visible=false };
-                    var close=new Button { Text="Fechar",Left=472,Top=225,Width=164,Height=35,Visible=false };
-                    var selection=new TaskCompletionSource<string>();
-                    campaign.Click+=delegate { selection.TrySetResult("campaign"); };
-                    sinnoh.Click+=delegate { selection.TrySetResult("sinnoh"); };
-                    close.Click+=delegate { selection.TrySetResult("cancel"); };
-                    form.FormClosed+=delegate { selection.TrySetResult("cancel"); };
-                    form.Controls.AddRange(new Control[]{title,info,bar,campaign,sinnoh,close});
+                    form.Controls.AddRange(new Control[]{title,info,bar});
                     Status=delegate(string s) { if(!form.IsDisposed)form.BeginInvoke((Action)delegate { info.Text=s; }); };
                     form.Shown+=async delegate {
-                        bool experimentalSelected=false;
                         try {
-                            // The Sinnoh QA choice MUST be available before the
-                            // Kanto/Hoenn/Johto main-game installer runs. A partially
-                            // installed Kanto (e.g. 142/145 maps) must not hide the
-                            // isolated Sinnoh test option or cause map overwrites.
-                            if(Hub)await Task.Run((Action)Prepare);
-                            else await Task.Run((Action)PrepareSourceOnly);
-                            if(!Hub) {
-                                title.Text="Escolha como deseja jogar";
-                                info.Text="Campanha principal: Decades/Kanto/Hoenn/Johto.\n"+
-                                    "Testar piloto Sinnoh: gera e abre uma COPIA EXPERIMENTAL separada, sem importar saves.\n"+
-                                    "Sinnoh ainda nao passou nos testes nativos (R07/R08/R09 pendentes).";
-                                bar.Visible=false;
-                                campaign.Visible=true;sinnoh.Visible=true;close.Visible=true;
-                                string chosen=await selection.Task;
-                                campaign.Visible=false;sinnoh.Visible=false;close.Visible=false;
-                                if(chosen=="cancel") { form.Close();return; }
-                                bar.Visible=true;bar.Style=ProgressBarStyle.Marquee;
-                                if(chosen=="sinnoh") {
-                                    experimentalSelected=true;
-                                    title.Text="Preparando piloto experimental Sinnoh...";
-                                    string qa=await Task.Run((Func<string>)PrepareSinnohTestCopy);
-                                    title.Text="Abrindo Sinnoh na copia isolada...";
-                                    info.Text="Ambiente: "+qa+"\n"+
-                                        "Nunca confunda a copia QA com a campanha principal. A compilacao nativa ainda precisa ser verificada.";
-                                    // Supervisiona o MESMO QA: compilacao inicial, recuperacao
-                                    // verificada e no maximo um reinicio. Nunca abre outro piloto.
-                                    string python=Runtime("python","python.exe");
-                                    form.WindowState=FormWindowState.Minimized;
-                                    await Task.Run(delegate {
-                                        Run(python,new[]{"scripts/windows/sinnoh_qa_supervisor.py",
-                                            "--project-root",Root,"--qa-dir",qa},Path.GetDirectoryName(python));
-                                    });
-                                    form.Close();return;
-                                }
-                                // Only the main campaign runs full installation and
-                                // regional Kanto checks. Sinnoh above uses a read-only
-                                // baseline and its own isolated QA directory.
-                                title.Text="Verificando a instalacao da campanha...";
-                                info.Text="Conferindo Kanto, Hoenn e Johto na instalacao principal.\n"+
-                                    "Em caso de mapa incompleto, a campanha sera bloqueada sem sobrescrever arquivos.";
-                                await Task.Run((Action)Prepare);
-                            }
+                            await Task.Run((Action)Prepare);
                             if(!Hub && !JohtoReady() && JohtoFilesPresent()) {
                                 title.Text="Johto encontrada, mas precisa de reparo";
                                 bar.Style=ProgressBarStyle.Continuous;
@@ -157,15 +105,12 @@ internal static class Bootstrap {
                             form.WindowState=FormWindowState.Minimized;
                             await Task.Run(delegate { process.WaitForExit(); });form.Close();
                         } catch(Exception error) {
-                            // Supervised QA may have minimized the window while Game.exe ran.
-                            // Restore it so a fail-closed diagnostic is actually visible.
-                            if(experimentalSelected)form.WindowState=FormWindowState.Normal;
                             bar.Style=ProgressBarStyle.Continuous;
                             title.Text=Hub?"A instalacao precisa de atencao":"A instalacao nao terminou";
                             info.Text=error.Message+"\nLog: "+LogPath;
                             // Never claim "ready" when optional Kanto did not import:
                             // inspect the status emitted by the downloaded Python.
-                            if(!Hub && !experimentalSelected) {
+                            if(!Hub) {
                                 string regional=Path.Combine(Root,".blue-work","kanto-install-status.json");
                                 try {
                                     if(File.Exists(regional)) {
@@ -178,7 +123,7 @@ internal static class Bootstrap {
                                     }
                                 } catch(Exception) { /* Show the original error on invalid diagnostic. */ }
                             }
-                            MessageBox.Show(form,info.Text,experimentalSelected?"Blue-Story - piloto Sinnoh bloqueado":"Pokemon Blue - instalacao incompleta",
+                            MessageBox.Show(form,info.Text,"Pokemon Blue - instalacao incompleta",
                                             MessageBoxButtons.OK,MessageBoxIcon.Warning);
                         }
                     };
@@ -187,48 +132,6 @@ internal static class Bootstrap {
             }
             return 0;
         } catch(Exception error) { if(LogPath!=null)File.AppendAllText(LogPath,error+Environment.NewLine);if(Array.IndexOf(args,"--prepare-only")<0 && Array.IndexOf(args,"--runtime-test")<0)MessageBox.Show(error.Message,"Pokemon Blue");return 1; }
-    }
-    // The Blue-Story menu prepares Sinnoh without requiring the user to run
-    // a separate BAT/PowerShell command. A new QA copy is always created, never
-    // a silent install into the main game or a reused foreign-region save.
-    static string PrepareSinnohTestCopy() {
-        if(Hub)throw new Exception("Sinnoh experimental so pode ser iniciada pelo Blue-Story.");
-        string game=Path.Combine(Root,"game");
-        // The Python Sinnoh entrypoint provisions a fresh managed base only
-        // after explicit selection; an existing installation remains read-only.
-        string python=Runtime("python","python.exe");
-        string git=Runtime("git",Path.Combine("cmd","git.exe"));
-        string receipt=Path.Combine(Root,".blue-work","blue-story-sinnoh-launch.json");
-        if(File.Exists(receipt))File.Delete(receipt); // Only our own stale receipt.
-        Environment.SetEnvironmentVariable("BLUE_STORY_LAUNCHER_DIR",AppDomain.CurrentDomain.BaseDirectory);
-        Say("[SINNOH QA] Procurando ZIPs de Sinnoh junto ao Blue-Story, em Downloads e no cache privado.");
-        Say("[SINNOH QA] Criando nova copia experimental. Original e saves intactos.");
-        Run(python,new[]{"scripts/windows/launch_sinnoh_pilot.py",
-            "--project-root",Root,"--game-dir",game,"--receipt",receipt},
-            Path.GetDirectoryName(git));
-        if(!File.Exists(receipt))
-            throw new Exception("Sinnoh: instalador nao entregou recibo da copia experimental.");
-        var result=Json.Deserialize<Dictionary<string,object>>(File.ReadAllText(receipt,Encoding.UTF8));
-        object mode,dir,unmodified,qa;
-        if(!result.TryGetValue("mode",out mode) ||
-           Convert.ToString(mode)!="SINNOH_PRIVATE_EXPERIMENTAL_COPY_NOT_APPROVED" ||
-           !result.TryGetValue("qa_directory",out dir) ||
-           !result.TryGetValue("main_game_modified",out unmodified) ||
-           !(unmodified is bool) || (bool)unmodified ||
-           !result.TryGetValue("native_qa_cases_approved",out qa) ||
-           Convert.ToInt32(qa)!=0)
-            throw new Exception("Sinnoh: recibo invalido ou tentativa de alterar o jogo principal.");
-        string work=Path.GetFullPath(Path.Combine(Root,".blue-work")).TrimEnd(Path.DirectorySeparatorChar);
-        string folder=Path.GetFullPath(Convert.ToString(dir));
-        if(!folder.StartsWith(work+Path.DirectorySeparatorChar,StringComparison.OrdinalIgnoreCase) ||
-           !Path.GetFileName(folder).StartsWith("game-sinnoh-experimental-",StringComparison.OrdinalIgnoreCase) ||
-           !Directory.Exists(folder) ||
-           (File.GetAttributes(folder)&FileAttributes.ReparsePoint)!=0 ||
-           !File.Exists(Path.Combine(folder,"INICIAR_SINNOH_EXPERIMENTAL.bat")) ||
-           !File.Exists(Path.Combine(folder,"sinnoh-experimental-qa.json")))
-            throw new Exception("Sinnoh: caminho ou pacote da copia experimental invalido.");
-        Say("[SINNOH QA] Piloto pronto para TENTATIVA de inicio em copia isolada: "+folder);
-        return folder;
     }
     static string FindRoot() {
         string folder=AppDomain.CurrentDomain.BaseDirectory;
@@ -373,7 +276,9 @@ internal static class Bootstrap {
         return "Decades: instalado | "+
           RegionalStatus("kanto-install-status.json","Kanto")+" | "+
           RegionalStatus("hoenn-main-install-status.json","Hoenn")+" | "+
-          RegionalStatus("johto-main-install-status.json","Johto");
+          RegionalStatus("johto-main-install-status.json","Johto")+" | Sinnoh: "+
+          (File.Exists(Path.Combine(Root,"game","Data","blue-sinnoh-shared.txt"))?
+            "mapas integrados":"aguardando ZIPs de origem");
     }
     // Optional PERSONAL build: append the exact original private Johto ZIP and
     // a 16-byte footer ["BLUEJH12", ZIP byte length as little-endian Int64] to
@@ -461,9 +366,7 @@ internal static class Bootstrap {
         Say("[JOHTO] ZIP privado encontrado ao lado do Blue-Story.exe; preparado automaticamente antes do Game.exe.");
     }
 
-    static void PrepareSourceOnly() { Prepare(true); }
-    static void Prepare() { Prepare(false); }
-    static void Prepare(bool sourceOnly) {
+    static void Prepare() {
         foreach(var p in Process.GetProcessesByName("Game"))try { if(String.Equals(p.MainModule.FileName,Path.Combine(Root,"game","Game.exe"),StringComparison.OrdinalIgnoreCase))throw new Exception("Feche o jogo antes de atualizar a instalacao."); }catch(System.ComponentModel.Win32Exception){}
         string marker=Path.Combine(Root,".blue-work","launcher-revision.txt");
         Say("Conferindo a ultima versao da main...");string revision;
@@ -485,13 +388,6 @@ internal static class Bootstrap {
             string cache=Path.GetFullPath(Path.Combine(Root,".blue-work"))+Path.DirectorySeparatorChar;
             if(Path.GetFullPath(stage).StartsWith(cache,StringComparison.OrdinalIgnoreCase) && Path.GetFileName(stage)=="source-"+revision)Directory.Delete(stage,true);
             if(Path.GetFullPath(zip).StartsWith(cache,StringComparison.OrdinalIgnoreCase) && Path.GetFileName(zip)=="source-"+revision+".zip")File.Delete(zip);
-        }
-        if(sourceOnly) {
-            // Download public source only. Running install_game.py here would
-            // check/repair Kanto before the user can select the Sinnoh pilot.
-            // Do NOT touch game/Data, plugins, Game.exe or saves.
-            Say("[MENU] Codigo pronto; escolha campanha ou piloto Sinnoh isolado.");
-            return;
         }
         StageEmbeddedJohto();
         StageAdjacentJohto();

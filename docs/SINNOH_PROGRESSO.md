@@ -1,9 +1,17 @@
 # Sinnoh — acompanhamento de progresso
 
 **Projeto:** Pokémon Blue: Dessastre Paradoxal  
-**Última atualização:** 17/11/2026  
+**Última atualização:** 26/11/2026<br>
 **Fonte de verdade:** [data/regions/sinnoh-progress.json](../data/regions/sinnoh-progress.json).  
 **Critério:** esta página separa entregáveis de código/documentação de fases que já rodam no jogo. **Barra cheia de preparação NÃO significa Sinnoh jogável.**
+
+## Integração no Blue-Story
+
+A instalação local do Blue-Story no Windows integrou os 144 mapas de Sinnoh na reserva 452–595, após os 152 mapas de Kanto. No Game.exe da instalação principal, **Novo Jogo → Sinnoh** abriu o quarto do protagonista e o Agente Regional em Twinleaf Town completou as oito viagens de ida e volta entre Sinnoh e Decades, Kanto, Johto e Hoenn. O instalador abre diretamente o jogo principal. [Reserva dos MapIDs](../data/regions/sinnoh-shared-mapids.json) · [PR #339](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/pull/339).
+
+Na cópia multirregional de QA, o Game.exe compilou os 144 mapas, abriu o quarto inicial e encontrou um único agente em Twinleaf. O teste automatizado no motor completou as oito viagens e reabriu a partida de QA preservando a posição, a equipe, a bolsa e o progresso de Sinnoh. Em outra partida, iniciada em Kanto, a viagem manteve Kanto como região inicial e permitiu gravar o primeiro marco de Sinnoh. O ZIP local de QA passou pelas verificações do inventário, dos plugins compilados, do CRC dos arquivos e do SHA-256. A execução Android ainda requer um dispositivo ou emulador com JoiPlay e o plugin RPG Maker.
+
+O F12D2 de Pastoria está na montagem. O trecho norte da Rota 210 agora usa o MapID reservado no mundo compartilhado. Os três pontos de terreno da fase foram conferidos no mapa 482. Windworks ainda depende de acesso de QA e a sequência de Cynthia, Psyduck e os lagos permanece em validação. A publicação continua condicionada à campanha dentro do escopo aprovado, ao teste de viagens e atualização no JoiPlay e à aprovação dos direitos dos recursos. [Acompanhamento da expansão](../data/regions/sinnoh-expansion-progress.json).
 
 ## Barra E — novas entregas diretas pelo ChatGPT na main
 

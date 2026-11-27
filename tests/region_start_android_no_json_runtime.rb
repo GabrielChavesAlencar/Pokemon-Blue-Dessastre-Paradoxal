@@ -30,6 +30,25 @@ Dir.mktmpdir("blue-joiplay-no-json") do |directory|
     FileUtils.mkdir_p("PBS")
     FileUtils.mkdir_p("Plugins/ZZZZZ Blue Hoenn Pilot")
 
+    # Sinnoh shares the same game only after the real runtime and all maps
+    # are present. The title must not interpret a private QA copy as shared.
+    check(!BlueRegionStart.request_initial("SINNOH"), "missing Sinnoh unlocked")
+    Object.const_set(:BlueSinnohSharedEvents, Module.new)
+    BlueSinnohSharedEvents.define_singleton_method(:ready?) { true }
+    ids = (442..585).to_a
+    File.write("Data/blue-sinnoh-shared.json", "{}")
+    File.write("Data/blue-sinnoh-shared.txt", "BLUE_SINNOH_SHARED_V1\n442,3,6\n443,2,3\n443,2,4\n#{ids.join(',')}\n")
+    ids.each { |id| File.write(sprintf("Data/Map%03d.rxdata",id), "map") }
+    check(BlueRegionStart.request_initial("SINNOH"), "Sinnoh blocked without JSON")
+    check(BlueRegionStart.choose_initial == "SINNOH", "Sinnoh fallback chose Decades")
+    check(BlueRegionStart.sinnoh_shared_points == [[442,3,6],[443,2,3,2],[443,2,4]], "wrong Sinnoh travel points")
+    File.delete("Data/Map585.rxdata")
+    check(!BlueRegionStart.sinnoh_spawn, "Sinnoh stayed open with a missing map")
+    File.write("Data/Map585.rxdata", "map")
+    File.write("sinnoh-experimental-qa.json", "{}")
+    check(!BlueRegionStart.sinnoh_spawn, "isolated QA authorized shared Sinnoh")
+    File.delete("sinnoh-experimental-qa.json")
+
     # The full 199-map verified installation has an independent compact
     # registry and readied markers written by install_hoenn.py.
     maps = {}

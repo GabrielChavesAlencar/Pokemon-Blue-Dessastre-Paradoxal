@@ -1686,6 +1686,35 @@ raise "foreign region exposed" if BlueSinnohQATeleport.available?
                             self.assertEqual(sum(x["count"] for x in trial["edit_attribution"]),trial["unique_edits"])
                         print("SINNOH_F12D3_ROCK_COST_NETWORK_REPORT "+json.dumps(network,sort_keys=True),flush=True)
                         print("SINNOH_REAL_F12D3_ROCK_COST_NETWORK_AUDITED_OK",flush=True)
+                        import sinnoh_f12d_integrated as integrated
+                        payload,story,plugin=integrated.compile_story(chased,expanded,expanded_comps,cr,ext,onr,Path(os.environ["BLUE_SINNOH_PRIVATE_SOURCE"]),ROOT,{"GALACTIC_ADMIN"},{"GOLBAT","BRONZOR","TOXICROAK","PURUGLY"},{"SECRETPOTION"},set())
+                        self.assertEqual(chased,snapshot)
+                        self.assertFalse(story["runtime_install_enabled"])
+                        self.assertFalse(story["native_verified"])
+                        self.assertEqual(story["new_maps"],0)
+                        self.assertEqual(story["new_portals"],0)
+                        self.assertEqual(set(story["lake_contracts"]),{"VALOR","VERITY","ACUITY"})
+                        self.assertIsNone(story["geometry"]["budget"])
+                        self.assertTrue(story["mission_prepared"],"F12D3 integrated fixture regression: "+str(story.get("reason")))
+                        if story["mission_prepared"]:
+                            self.assertEqual(len([k for k in story["locations"] if k.startswith("PSYDUCK_")]),4)
+                            self.assertEqual(story["geometry"]["witness"]["fixture_passed"],True)
+                            self.assertEqual(len(story["pre_chase_graph_checks"]),3)
+                            self.assertEqual(story["geometry_delta_count"],71)
+                            self.assertEqual(story["lake_sequence_seed"][0],expanded["SINNOH_CELESTIC_TOWN"])
+                            self.assertEqual(set(story["lake_independent_legs"]),set(integrated.ORDER))
+                            self.assertEqual(set(story["lake_local_previews"]),set(integrated.ORDER))
+                            self.assertEqual(story["valor_rock_reference_cells"],204)
+                            self.assertIn(story["valor_rock_threshold_cells"],(0,1))
+                            self.assertEqual(story["lake_payloads"],list(integrated.ORDER[:len(story["lake_payloads"])]))
+                            if story["lake_payloads"]:
+                                self.assertTrue(integrated.complete_lake_sequence(story["lake_sequence_checks"]))
+                            self.assertIn("CYNTHIA",story["locations"])
+                            self.assertTrue(payload and plugin)
+                        else:
+                            self.assertFalse(payload or plugin)
+                        print("SINNOH_F12D_INTEGRATED_GAMEPLAY_REPORT "+json.dumps(story,sort_keys=True),flush=True)
+                        print("SINNOH_REAL_F12D_INTEGRATED_GAMEPLAY_CHECKED_OK",flush=True)
                         print("SINNOH_REAL_F12D3_GATED_ALIGNMENT_EVIDENCE_PRESERVED_OK",flush=True)
                         print("SINNOH_REAL_F12D3_ROUTE210_RECOVERY_EVIDENCE_PRESERVED_OK",flush=True)
                     else:
@@ -3455,6 +3484,571 @@ puts "F12D3_STAGED_TRANSACTION_FIXTURE_OK"
         self.assertEqual(n.SYMBOLS[123],"SINNOH_HEARTHOME_CITY")
         self.assertNotIn(22,n.SYMBOLS)
 
+    def test_f12d_integrated_activation_requires_all_proofs(self):
+        import hashlib
+        import sinnoh_f12d_integrated as i
+        payload={"Data/Map473.rxdata":b"fixture"}
+        story={"status":"F12D_INTEGRATED_GAMEPLAY_FIXTURE","mission_prepared":True,
+            "new_maps":0,"new_portals":0,"progression_gate":{"model_verified":True},
+            "pre_chase_graph_checks":[{"symbol":s} for s in ("SINNOH_TWINLEAF_TOWN","SINNOH_PASTORIA_CITY","SINNOH_VALOR_LAKEFRONT")],
+            "locations":{k:{} for k in ("CYNTHIA","PSYDUCK_1","PSYDUCK_2","PSYDUCK_3","PSYDUCK_4")},
+            "payload_hashes":{k:hashlib.sha256(v).hexdigest() for k,v in payload.items()}}
+        engine={"reference_match":True};item={"local_catalog_valid":True}
+        self.assertTrue(i.activation_allowed(story,payload,b"ruby",engine,item))
+        self.assertTrue(i.activation_allowed(story,payload,b"ruby",engine,{"authored_candidate":True}))
+        self.assertFalse(i.activation_allowed(story,payload,b"ruby",{},item))
+        self.assertFalse(i.activation_allowed(story,payload,b"ruby",engine,{}))
+        self.assertFalse(i.activation_allowed(story,{"Data/Map473.rxdata":b"tampered"},b"ruby",engine,item))
+        self.assertFalse(i.activation_allowed(dict(story,pre_chase_graph_checks=[]),payload,b"ruby",engine,item))
+
+    def test_post_chase_verity_entry_recognizes_only_exact_existing_gate(self):
+        import sinnoh_f10b7_field_audit as gates
+        import sinnoh_private_visual as pv
+        from build_johto_events import ruby,event_page,command
+        mapping={"SINNOH_VERITY_LAKEFRONT":451,"SINNOH_LAKE_VERITY":447}
+        page=event_page(warp=(447,44,42),touch=True)
+        ops=page.attrs["@list"]
+        transfer=ops[0];transfer.attrs["@indent"]=1;transfer.attrs["@parameters"][4]=8
+        ending=command(0);ending.attrs["@indent"]=1
+        page.attrs["@list"]=[command(111,12,b"BlueSinnohPilot.lake_entry_allowed?"),transfer,ending,command(412),command(0)]
+        event=ruby("RPG::Event",id=99,name=b"SN_LAKEFRONT_TO_LAKE_1",x=10,y=2,pages=[page])
+        self.assertEqual(gates.verified_verity_entry(event,451,mapping),(10,2,447,44,42,8,transfer.attrs["@parameters"][5]))
+        self.assertIsNone(gates.verified_verity_entry(event,452,mapping))
+        transfer.attrs["@parameters"][2]=45
+        self.assertIsNone(gates.verified_verity_entry(event,451,mapping))
+        transfer.attrs["@parameters"][2]=44
+        page.attrs["@list"][0].attrs["@parameters"][1]=b"true"
+        self.assertIsNone(gates.verified_verity_entry(event,451,mapping))
+
+    def test_private_regional_catalogue_missing_types_are_additive(self):
+        import tempfile
+        from pathlib import Path
+        import sinnoh_regional_catalogue as r
+        from pbs import catalogue
+        with tempfile.TemporaryDirectory() as d:
+            base=Path(d);pbs=base/"PBS";pbs.mkdir()
+            tt=pbs/"trainer_types.txt";it=pbs/"items.txt"
+            tt.write_text("[LEADER_Brock]\nName = Gym Leader\n","utf-8")
+            it.write_text("[BICYCLE]\nName = Bicycle\n","utf-8")
+            before=(tt.read_bytes(),it.read_bytes())
+            delta,report=r.prepare(base,{})
+            self.assertEqual(len(report["generated_trainer_types"]),10)
+            self.assertTrue(report["works_key_prepared"])
+            self.assertFalse(report["compiled_catalog_verified"])
+            self.assertEqual(report["unresolved"],[])
+            self.assertEqual((tt.read_bytes(),it.read_bytes()),before)
+            self.assertIn("BLUE_SINNOH_LEADER_ROARK",catalogue(base,"trainer_types",delta))
+            self.assertIn("WORKSKEY",catalogue(base,"items",delta))
+            self.assertNotIn("WORKSKEY",catalogue(base,"items"))
+            with self.assertRaises(ValueError):r.prepare(base,delta)
+            tt.write_text("[LEADER_ROARK]\nName = Gym Leader\n[LEADER_Roark]\nName = Gym Leader\n","utf-8")
+            _,report=r.prepare(base,{})
+            self.assertIn("Roark",report["unresolved"])
+
+    def test_f12d_integrated_pinned_decades_compile_only_profile(self):
+        import hashlib
+        import copy
+        import sinnoh_f12d_integrated as i
+        methods={n:("different" if n=="passable?" else "match") for n in i.PLAYER_METHOD_REFS}
+        engine={"game_player_script_count":2,"reference_match":False,
+            "matched_scripts":{"terrain_tag":1,"game_map":1,"game_character":1,"game_player":0},
+            "game_player_methods":methods,
+            "game_player_declarations":[{"script_index":n,"script_sha256":h,"methods":methods if n==46 else {}} for n,h in i.DECADES_PLAYER_DECLARATIONS],
+            "game_player_method_history":{n:[{"script_index":46,"status":s,
+                "method_sha1":i.DECADES_PASSABLE_SHA1 if n=="passable?" else i.PLAYER_METHOD_REFS[n]}] for n,s in methods.items()}}
+        self.assertTrue(i.known_decades_profile(engine))
+        payload={"Data/Map473.rxdata":b"fixture"}
+        story={"status":"F12D_INTEGRATED_GAMEPLAY_FIXTURE","mission_prepared":True,
+            "new_maps":0,"new_portals":0,"progression_gate":{"model_verified":True},
+            "pre_chase_graph_checks":[{"symbol":s} for s in ("SINNOH_TWINLEAF_TOWN","SINNOH_PASTORIA_CITY","SINNOH_VALOR_LAKEFRONT")],
+            "locations":{k:{} for k in ("CYNTHIA","PSYDUCK_1","PSYDUCK_2","PSYDUCK_3","PSYDUCK_4")},
+            "payload_hashes":{k:hashlib.sha256(v).hexdigest() for k,v in payload.items()}}
+        item={"authored_candidate":True}
+        self.assertFalse(i.activation_allowed(story,payload,b"ruby",engine,item))
+        self.assertTrue(i.private_compile_candidate_allowed(story,payload,b"ruby",engine,item))
+        for field in ("game_player_methods","game_player_method_history","game_player_declarations","matched_scripts"):
+            invalid=copy.deepcopy(engine);invalid[field]={}
+            self.assertFalse(i.private_compile_candidate_allowed(story,payload,b"ruby",invalid,item))
+        invalid=copy.deepcopy(engine);invalid["game_player_method_history"]["passable?"][0]["method_sha1"]="0"*40
+        self.assertFalse(i.private_compile_candidate_allowed(story,payload,b"ruby",invalid,item))
+        self.assertFalse(i.private_compile_candidate_allowed(dict(story,pre_chase_graph_checks=[]),payload,b"ruby",engine,item))
+        self.assertFalse(i.private_compile_candidate_allowed(story,payload,b"ruby",engine,{}))
+
+    def test_f12d_native_compiler_boundary_keeps_original_and_strict_gate(self):
+        import zlib
+        main_source=b"def boot\n    PluginManager.runPlugins\n    Compiler.main\nend\n"
+        raw=b"\x04\x08"+exp.dump([[1,b"Main",exp.RubyString(zlib.compress(main_source))]])
+        rows=exp.Marshal(exp.patch_bootstrap(raw,"abc123abc123",f12d_integrated=True)).read()
+        main=zlib.decompress(rows[0][2]).decode("utf-8")
+        self.assertIn("Compiler.method(:compile_all)",main)
+        self.assertIn("blue_sinnoh_restore.call",main)
+        self.assertNotIn("POST_COMPILE_EXIT_RETRY",main)
+        self.assertIn("FOREIGN_REQUESTS_ISOLATED",main)
+        self.assertIn("Data/blue-verify-request.txt",main)
+        self.assertLess(main.index("FOREIGN_REQUESTS_ISOLATED"),main.index("PluginManager.runPlugins"))
+        self.assertIn("CORE_COMPILED_AND_RESTORED",main)
+        self.assertIn("raise \"Sinnoh F12D: core did not compile fresh PBS\"",main)
+        self.assertLess(main.index("CORE_COMPILED_AND_RESTORED"),main.index("COMPILER_RETURNED"))
+        self.assertLess(main.index("COMPILER_RETURNED"),main.index("VERIFY_ENTERED"))
+        self.assertLess(main.index("TRANSACTION_PROBE_OK"),main.index("ALL_VERIFIERS_PASSED"))
+        self.assertIn("Compiler.singleton_class.send(:define_method, :compile_all, blue_sinnoh_core)",main)
+
+    def test_f12d_surf_route_native_guard_preserves_dry_mask(self):
+        source=(ROOT/"scripts/regions/SinnohF12DIntegrated.rb").read_text("utf-8")
+        self.assertIn("SURF_ROUTES=__SURF_ROUTES__.freeze",source)
+        self.assertIn("p.passable?(ax,ay,dir)",source)
+        self.assertIn("raw.events.values",source)
+        self.assertIn("return false unless BlueSinnohF12DIntegrated.runtime_surf_step_allowed?(a,b,true)",source)
+        self.assertIn("SINNOH_F12D_NATIVE_SURF_MAP_COLLISION_OK",source)
+        self.assertIn("Sinnoh Surf native dry approach",source)
+        self.assertIn("count+dry_count==2*(route.length-1)",source)
+        self.assertIn("[a,b].each do |cell|",source)
+        guard=exp.private_visual.movement_plugin({529:[".#."]}).decode("utf-8")
+        self.assertIn('return if cell=="#" && target!="surf"',guard)
+        self.assertIn("runtime_surf_step_allowed?(current,facing)",guard)
+        self.assertIn('turn_generic(dir,true) if origin=="walk" && target=="surf"',guard)
+        if shutil.which("ruby"):
+            template=source.replace("__LOCATIONS__","{}").replace("__SPECS__","{}")
+            for key in ("__EDIT_CELLS__","__CHASE_LANES__","__CELESTIC_LANES__"):
+                template=template.replace(key,"[]")
+            template=template.replace("__SURF_ROUTES__",'{529=>[[0,0,"walk"],[1,0,"surf"],[2,0,"surf"],[3,0,"walk"]]}').replace("__NORTH_ROCK_EDGES__","[]").replace("__SURF_DRY_PORTALS__","{}")
+            code=(ROOT/"scripts/regions/SinnohF12D3Transaction.rb").read_text("utf-8")+"\n"+template
+            fixture=code+'''
+m=BlueSinnohF12DIntegrated
+def m.surf_permission(s,bag,party,selected=nil); s; end
+a,b,c,d=[529,0,0],[529,1,0],[529,2,0],[529,3,0]
+raise "board" unless m.surf_step_allowed?(:allowed,nil,[],false,a,b,true)
+raise "walk water" if m.surf_step_allowed?(:allowed,nil,[],false,a,b)
+raise "already surfing" if m.surf_step_allowed?(:allowed,nil,[],true,a,b,true)
+raise "travel" unless m.surf_step_allowed?(:allowed,nil,[],true,b,c)
+raise "landing" unless m.surf_step_allowed?(:allowed,nil,[],true,c,d)
+raise "return" unless m.surf_step_allowed?(:allowed,nil,[],false,d,c,true)
+[:hm,:badge,:pokemon,:unavailable].each do |reason|
+  raise "denied #{reason}" if m.surf_step_allowed?(reason,nil,[],false,a,b,true)
+  raise "denied step #{reason}" if m.surf_step_allowed?(reason,nil,[],true,b,c)
+end
+raise "wall" if m.surf_step_allowed?(:allowed,nil,[],true,c,[529,2,1])
+raise "diagonal" if m.surf_step_allowed?(:allowed,nil,[],true,b,d)
+raise "foreign map" if m.surf_step_allowed?(:allowed,nil,[],true,b,[511,2,0])
+'''
+            # Pass the full fixture via stdin; Windows process command-line
+            # length is not a supported transport for a growing Ruby module.
+            run=subprocess.run([shutil.which("ruby"),"-"],input=fixture,capture_output=True,text=True,encoding="utf-8",timeout=30)
+            self.assertEqual(run.returncode,0,run.stderr)
+
+    def test_f12d_surf_compile_context_restores_native_globals_on_failure(self):
+        if not shutil.which("ruby"):self.skipTest("Ruby unavailable")
+        template=(ROOT/"scripts/regions/SinnohF12DIntegrated.rb").read_text("utf-8")
+        for key in ("__LOCATIONS__","__SPECS__","__SURF_ROUTES__","__SURF_DRY_PORTALS__","__NORTH_ROCK_EDGES__"):
+            template=template.replace(key,"{}")
+        for key in ("__EDIT_CELLS__","__CHASE_LANES__","__CELESTIC_LANES__"):
+            template=template.replace(key,"[]")
+        code=(ROOT/"scripts/regions/SinnohF12D3Transaction.rb").read_text("utf-8")+"\n"+template
+        fixture=code+'''
+class Game_Variables < Hash; end
+class Game_Switches < Hash; end
+class Game_SelfSwitches < Hash; end
+class Game_Temp; end
+class PokemonGlobalMetadata; end
+class GameStats; end
+m=BlueSinnohF12DIntegrated
+$game_variables=nil;$game_switches=:existing_switches
+$game_self_switches=:existing_self_switches;$game_temp=:existing_temp
+$PokemonGlobal=:existing_global;$stats=:existing_stats
+original=[$game_variables,$game_switches,$game_self_switches,$game_temp,$PokemonGlobal,$stats]
+result=m.with_native_surf_pokemon_context do
+  raise "variables" unless $game_variables.is_a?(Game_Variables)
+  raise "switches" unless $game_switches.is_a?(Game_Switches)
+  raise "self switches" unless $game_self_switches.is_a?(Game_SelfSwitches)
+  raise "temp" unless $game_temp.is_a?(Game_Temp)
+  raise "global" unless $PokemonGlobal.is_a?(PokemonGlobalMetadata)
+  raise "stats" unless $stats.is_a?(GameStats)
+  $game_variables[1]=123
+  :passed
+end
+raise "return" unless result==:passed
+raise "restore success" unless original==[$game_variables,$game_switches,$game_self_switches,$game_temp,$PokemonGlobal,$stats]
+begin
+  m.with_native_surf_pokemon_context { raise "constructor failure" }
+rescue RuntimeError => e
+  raise unless e.message=="constructor failure"
+else
+  raise "swallowed failure"
+end
+raise "restore error" unless original==[$game_variables,$game_switches,$game_self_switches,$game_temp,$PokemonGlobal,$stats]
+'''
+        run=subprocess.run([shutil.which("ruby"),"-"],input=fixture,capture_output=True,text=True,encoding="utf-8",timeout=30)
+        self.assertEqual(run.returncode,0,run.stderr)
+
+    def test_f12d_barrier_pages_keep_event_indicators_refresh_chain(self):
+        if not shutil.which("ruby"):self.skipTest("Ruby unavailable")
+        template=(ROOT/"scripts/regions/SinnohF12DIntegrated.rb").read_text("utf-8")
+        template=template.replace("__LOCATIONS__",'{ "PSYDUCK_1"=>[482,57,25,301] }')
+        for key in ("__SPECS__","__SURF_ROUTES__","__SURF_DRY_PORTALS__"):
+            template=template.replace(key,"{}")
+        for key in ("__EDIT_CELLS__","__CHASE_LANES__","__CELESTIC_LANES__","__NORTH_ROCK_EDGES__"):
+            template=template.replace(key,"[]")
+        fixture=(ROOT/"scripts/regions/SinnohF12D3Transaction.rb").read_text("utf-8")+"\n"+template+'''
+class Game_Event
+  attr_reader :calls
+  def refresh
+    @calls=(@calls || 0)+1
+  end
+end
+class Game_Map
+  attr_reader :map_id, :events, :switch_when_built
+  attr_accessor :need_refresh
+  def setup(id)
+    @map_id=id
+    @switch_when_built=$game_self_switches[[id,301,"A"]]
+    @events={301=>Game_Event.new}
+  end
+end
+class Scene_Map
+  def createSpritesets; :scene; end
+end
+class Game_Player; end
+module BlueSinnohF12DIntegrated
+  def self.state; $barrier_state; end
+end
+raise unless BlueSinnohF12DIntegrated.bind_pages!
+class Game_Event
+  alias event_indicator_e_refresh refresh
+  def refresh; event_indicator_e_refresh; end
+end
+$game_self_switches=Hash.new(false)
+$game_map=Game_Map.new
+$barrier_state={"current"=>"SINNOH","sinnoh_f12d_quest"=>%w[PASTORIA ROUTE_213 VALOR_BATTLE],
+  "sinnoh_f12d3_quest"=>%w[SECRETPOTION_RECEIVED]}
+$game_self_switches[[482,301,"A"]]=true
+$game_map.setup(482)
+raise "wrong page at load" if $game_map.switch_when_built
+$barrier_state["sinnoh_f12d3_quest"] << "PSYDUCK_CLEARED"
+raise unless Scene_Map.new.createSpritesets==:scene
+raise unless $game_self_switches[[482,301,"A"]] && $game_map.need_refresh && $game_map.events[301].calls==1
+Scene_Map.new.createSpritesets
+raise unless $game_map.events[301].calls==1
+'''
+        run=subprocess.run([shutil.which("ruby"),"-"],input=fixture,capture_output=True,text=True,encoding="utf-8",timeout=30)
+        self.assertEqual(run.returncode,0,run.stderr)
+
+    def test_f12d_surf_pickup_candidate_uses_native_regional_receipt(self):
+        source=(ROOT/"scripts/regions/SinnohF12DIntegrated.rb").read_text("utf-8")
+        self.assertIn('BlueRegions.record_sinnoh_hm(next_s,"SURF",:HM03,next_bag,true)',source)
+        self.assertIn('bag.quantity(:HM03)==0',source)
+        self.assertIn('SINNOH_F12D_NATIVE_SURF_PICKUP_TRANSACTION_OK',source)
+        self.assertIn('BlueSinnohF12DIntegrated.surf_permission',source)
+        self.assertIn('Marshal.load(Marshal.dump([next_pair[:state],next_pair[:bag]]))',source)
+        self.assertIn('surf_permission(s,borrowed,[candidate],candidate)==:hm',source)
+        self.assertIn('surf_permission(saved,bag,[incompatible],incompatible)==:pokemon',source)
+        self.assertIn('surf_step_allowed?(s,borrowed,[candidate],false,a,b,true)',source)
+        self.assertIn('SURF_ROUTES.length==2',source)
+        workflow=(ROOT/".github/workflows/kanto-pilot-check.yml").read_text("utf-8")
+        for marker in ("SINNOH_F12D_NATIVE_SURF_PICKUP_TRANSACTION_OK",
+                       "SINNOH_F12D_NATIVE_LAKE_SURF_TERRAIN_REFERENCE_OK",
+                       "SINNOH_F12D_NATIVE_SURF_MAP_COLLISION_OK",
+                       "SINNOH_F12D_NATIVE_SURF_MAP_COLLISION_MAP",
+                       "SINNOH_F12D_NATIVE_SURF_SHORE_JUMP_MAP",
+                       "SINNOH_F12D_NATIVE_SURF_FULL_ROUTE_MAP"):
+            self.assertIn(marker,workflow)
+        self.assertIn('2*row["steps"]',workflow)
+        self.assertIn('$expected.shore',workflow)
+        self.assertIn('$expected.steps',workflow)
+        self.assertIn('pickup.get("runtime_route_count")==len(surf_maps)',workflow)
+        self.assertIn('$collision.Count -ne 1 -or $shore.Count -ne 1',workflow)
+
+    def test_f12d_lake_surf_path_requires_water_mode_and_never_opens_dry_graph(self):
+        import sinnoh_f12d_integrated as i
+        self.assertEqual(i.lake_surface_mode(((0,),(0,)),(0,)),"walk")
+        for tag in (5,6):
+            self.assertEqual(i.lake_surface_mode(((15,),(tag,)),(0,)),"surf")
+        for shape,pri in ((((15,),(0,)),(0,)),(((15,),(16,)),(0,)),
+                          (((15,0),(6,0)),(0,1)),(((15,),(6,)),(1,))):
+            self.assertIsNone(i.lake_surface_mode(shape,pri))
+        modes={(0,0):"walk",(1,0):"surf",(2,0):"walk"}
+        self.assertIsNone(i.lake_surface_path(modes,(0,0),(2,0)))
+        self.assertEqual(i.lake_surface_path(modes,(0,0),(2,0),True),[(0,0),(1,0),(2,0)])
+        self.assertIsNone(i.lake_surface_path(modes,(0,0),(1,0),True))
+        del modes[(1,0)]
+        self.assertIsNone(i.lake_surface_path(modes,(0,0),(2,0),True))
+
+    def test_f12d_empty_lake_alignment_requires_unique_physical_interval(self):
+        import sinnoh_f12d_integrated as integrated
+        build=lambda offset: (offset,)
+        self.assertEqual(integrated.unique_empty_lake_alignment([3,4],[0,1],build,lambda r:r==(3,)),((3,),1))
+        self.assertEqual(integrated.unique_empty_lake_alignment([3,4],[0,1],build,lambda r:True),(None,3))
+        self.assertEqual(integrated.unique_empty_lake_alignment([3],[0],build,lambda r:False),(None,0))
+        self.assertEqual(integrated.unique_empty_lake_alignment([], [0],build,lambda r:True),(None,0))
+
+    def test_f12d_accepts_a_serialized_lake_sequence_that_requires_surf(self):
+        import sinnoh_f12d_integrated as integrated
+
+        mid=500
+        mapping={"SINNOH_ROUTE_201":mid}
+        tiles=copy.deepcopy(self.tiles)
+        tiles[1].attrs.update({"@passages":j11c.table1([0,0,15]),
+            "@terrain_tags":j11c.table1([0,0,5]),"@priorities":j11c.table1([0,0,0])})
+        world=read_marshal(self.empty["Data/Map442.rxdata"],"SYNTHETIC_LAKE")
+        world.attrs.update({"@width":5,"@height":2,"@tileset_id":1,"@events":{}})
+        def map_bytes(second_row):
+            cells=[1,2,1,1,1]+second_row+[0]*20
+            world.attrs["@data"]=RubyData("Table",struct.pack("<5I30H",3,5,2,3,30,*cells))
+            return serialize(world)
+
+        path="Data/Map500.rxdata"
+        data={path:map_bytes([0]*5),"Data/Tilesets.rxdata":serialize(tiles),
+            "PBS/map_connections.txt":b"","Data/map_connections.dat":serialize([])}
+        seed=(mid,0,0)
+        locations={key:{"map_id":mid,"stand":[x,0]} for x,key in enumerate(integrated.ORDER,2)}
+        routes={mid:[[0,0,"walk"],[1,0,"surf"],[2,0,"walk"]]}
+        geometry={"maps":{"test":{"map_id":mid,"start":[0,0],"goal":[2,0],"water_steps":1,
+            "surf_candidate":True,"path_sha256":integrated.witness_hash([[0,0],[1,0],[2,0]]),
+            "path_geometry_sha256":integrated.witness_hash([
+                (((0,),(0,)),(0,)),(((15,),(5,)),(0,)),(((0,),(0,)),(0,))])}}}
+
+        def recover(blobs,proof=geometry,paths=routes):
+            with patch.object(integrated.tp,"build",return_value=[]):
+                return integrated.recover_lake_seams(blobs,mapping,{},ROOT,{"edge_candidates":[]},
+                    seed,locations,(),{},proof,paths)[2]
+
+        report=recover(data)
+        self.assertEqual(report["reason"],"complete_original_sequence_fixture_proved")
+        self.assertTrue(report["serialized_legs"]["VALOR"]["return"])
+        self.assertFalse(report["serialized_legs"]["VALOR"]["dry_forward"])
+        self.assertEqual(recover(data,{},{})["reason"],"complete_original_sequence_not_proved")
+        bypass={**data,path:map_bytes([1]*5)}
+        self.assertEqual(recover(bypass)["reason"],"serialized_original_sequence_not_proved")
+        occupied,_=integrated.add_event(data,mid,(1,0),"OCCUPIED_WATER","")
+        self.assertEqual(recover(occupied)["reason"],"complete_original_sequence_not_proved")
+
+        changed_tiles=copy.deepcopy(tiles)
+        changed_tiles[1].attrs["@terrain_tags"]=j11c.table1([0,0,6])
+        with self.assertRaisesRegex(ValueError,"F12D_SURF_WITNESS_TERRAIN"):
+            recover({**data,"Data/Tilesets.rxdata":serialize(changed_tiles)})
+
+    def test_f12d_conditional_surf_uses_actual_shores_not_portal_endpoints(self):
+        import sinnoh_f12d_integrated as i
+        # Endpoints may be automatic portal arrival components. They cannot
+        # stand in for the two dry shores that are actually jumped between.
+        route=[[0,0,"walk"],[1,0,"walk"],[2,0,"surf"],[3,0,"surf"],
+               [4,0,"walk"],[5,0,"walk"]]
+        index={529:{(0,0):8,(1,0):1,(4,0):2,(5,0):9}}
+        rows=i.conditional_surf_shores({529:route},index,{(529,0,0),(529,5,0)})
+        self.assertEqual(len(rows),1)
+        self.assertEqual(rows[0]["components"],[1,2])
+        self.assertEqual(rows[0]["from"],[1,0])
+        self.assertEqual(rows[0]["to"],[4,0])
+        self.assertEqual(rows[0]["reason"],"matched_aquatic_run")
+        rows=i.conditional_surf_shores({529:route},index,{(529,4,0)})
+        self.assertEqual(rows[0]["reason"],"occupied_shore_or_water")
+        rows=i.conditional_surf_shores({529:route},{529:{(1,0):1}},set())
+        self.assertEqual(rows[0]["reason"],"missing_dry_shore_component")
+        with self.assertRaises(ValueError):
+            i.conditional_surf_shores({529:[[0,0,"walk"],[2,0,"surf"],[3,0,"walk"]]},index,set())
+
+    def test_f12d_valor_rock_npc_occupancy_preserves_terrain_and_blocks_cell(self):
+        import sinnoh_f10b7_field_audit as g
+        # NPC placement must be evaluated by component continuity, not fail
+        # because the underlying ordinary Rock tile is occupied.
+        self.assertTrue(g.valor_rock_mask_allowed(False,True,False,False))
+        self.assertTrue(g.valor_rock_mask_allowed(False,True,False,True))
+        masks={(0,0):0,(1,0):0,(2,0):0}
+        ix,groups=g.index_components(set(masks)-{(1,0)},masks)
+        self.assertNotIn((1,0),ix)
+        self.assertNotEqual(ix[(0,0)],ix[(2,0)])
+        self.assertFalse(g.valor_rock_mask_allowed(True,True,False,True))
+        self.assertFalse(g.valor_rock_mask_allowed(True,True,True,False))
+        self.assertTrue(g.valor_rock_mask_allowed(True,True,True,True))
+        self.assertTrue(g.valor_rock_mask_allowed(True,False,False,False))
+
+    def test_f12d_lake_reference_repairs_are_exact_and_reciprocal(self):
+        import sinnoh_f12d_integrated as i
+        import sinnoh_f10b7_field_audit as g
+        stale={25:{"@width":20,"@height":15},26:{"@width":20,"@height":15}}
+        self.assertEqual(i.original_lake_reference_destination(214,6,(45,22,26,45,6,0,0),stale),215)
+        self.assertEqual(i.original_lake_reference_destination(215,2,(46,6,25,46,22,0,0),stale),214)
+        self.assertEqual(i.original_lake_reference_destination(216,2,(46,6,25,46,22,0,0),stale),25)
+        with self.assertRaises(ValueError):i.original_lake_reference_destination(214,6,(45,22,26,44,6,0,0),stale)
+        with self.assertRaises(ValueError):i.original_lake_reference_destination(215,2,(46,6,25,46,22,0,0),{25:{"@width":64,"@height":56}})
+        self.assertEqual(g.ORIGINAL_LAKE_EVENT_CONTRACTS[214,6,215],(45,22,45,6))
+        self.assertEqual(g.ORIGINAL_LAKE_EVENT_CONTRACTS[215,2,214],(46,6,46,22))
+        self.assertEqual(g.ORIGINAL_LAKE_EVENT_CONTRACTS[195,2,196],(10,2,44,42))
+        self.assertEqual(g.ORIGINAL_LAKE_EVENT_CONTRACTS[196,1,195],(44,43,10,3))
+        self.assertIn((196,195),g.ORIGINAL_LAKE_PAIRS)
+        source=(ROOT/"scripts/regions/sinnoh_f12d_integrated.py").read_text("utf-8")
+        self.assertIn("exact_existing_verity_forward_preserved",source)
+        self.assertIn("source_contract_coordinates_unproved",source)
+
+    def test_f12d_preserved_lake_transfer_uses_exact_geometry_not_fade(self):
+        import sinnoh_f12d_integrated as i
+        from build_johto_events import ruby,event_page
+        page=event_page(warp=(451,10,3),touch=True)
+        page.attrs["@through"]=True
+        event=ruby("RPG::Event",id=1,name=b"Existing return",x=44,y=43,pages=[page])
+        expected=(44,43,451,10,3,8,1)
+        got=i.preserved_lake_transfer([event],447,{},expected)
+        self.assertIsNotNone(got)
+        self.assertEqual(got[:5],expected[:5])
+        self.assertIsNone(i.preserved_lake_transfer([event],447,{},(44,43,451,11,3,8,1)))
+        self.assertIsNone(i.preserved_lake_transfer([event,event],447,{},expected))
+        page.attrs["@through"]=False
+        self.assertIsNone(i.preserved_lake_transfer([event],447,{},expected))
+
+    def test_f12d_northern_original_rock_never_opens_mask_or_special_terrain(self):
+        import sinnoh_f12d_integrated as i
+        rock=((0,),(4,))
+        self.assertTrue(i.original_rock_shape(rock,rock,(0,),(0,)))
+        self.assertFalse(i.original_rock_shape(rock,((1,),(4,)),(0,),(0,)))
+        self.assertFalse(i.original_rock_shape(rock,rock,(1,),(0,)))
+        self.assertFalse(i.original_rock_shape(((0,),(5,)),((0,),(5,)),(0,),(0,)))
+        self.assertFalse(i.original_rock_shape(((0,),(4,)),((0,),(0,)),(0,),(0,)))
+
+    def test_f12d_northern_original_transfer_requires_pinned_donor_contract(self):
+        import sinnoh_f10b7_field_audit as g
+        import sinnoh_f12d_integrated as i
+        self.assertEqual(g.NORTH_LAKE_DONOR_EVENTS,{(82,82,156),(156,1,82)})
+        self.assertIsNone(g.original_lake_contract((82,82,156)))
+        self.assertIsNone(g.original_lake_contract((82,81,156),{(82,81,156):(1,2,3,4)}))
+        report={"candidate_records":[{"source_id":82,"event_id":82,"target_source_ids":[156],"from":[500,1,2],"to":[480,3,4]}]}
+        receipt=i.north_portal_contracts(report)
+        self.assertEqual(receipt,{(82,82,156):(1,2,3,4)})
+        self.assertEqual(g.original_lake_contract((82,82,156),receipt),(1,2,3,4))
+        self.assertIsNone(g.original_lake_contract((156,1,82),receipt))
+        self.assertEqual(g.original_lake_contract((214,6,215),receipt),(45,22,45,6))
+        source=(ROOT/"scripts/regions/sinnoh_f12d_integrated.py").read_text("utf-8")
+        self.assertIn("for key in ORDER if full_lake_sequence else ():",source)
+        self.assertIn("complete_bidirectional_sequence_required",source)
+
+    def test_f12d_integrated_missing_item_and_player_methods(self):
+        import tempfile
+        import hashlib
+        from pathlib import Path
+        import sinnoh_f12d_integrated as i
+        import sinnoh_f12d3_secretpotion_catalogue as c
+        with tempfile.TemporaryDirectory() as temp:
+            base=Path(temp);(base/"PBS").mkdir()
+            (base/"PBS/items.txt").write_text("[POTION]\nName = Potion\nPocket = 1\n","utf-8")
+            delta,report=c.prepare_missing(base,{})
+            self.assertEqual(set(delta),{c.FRAGMENT})
+            self.assertTrue(report["authored_candidate"])
+            self.assertIn(b"Flags = KeyItem",delta[c.FRAGMENT])
+            self.assertFalse((base/c.FRAGMENT).exists())
+            self.assertEqual(c.prepare_missing(base,{c.FRAGMENT:c.DEFINITION})[0],{})
+            (base/"PBS/items.txt").write_bytes(c.DEFINITION)
+            self.assertEqual(c.prepare_missing(base,{})[0],{})
+        raw=b"  def move_generic(dir)\n    nil\n  end"
+        expected={"move_generic":hashlib.sha1(raw).hexdigest()}
+        self.assertEqual(i.player_method_receipt(raw,expected),{"move_generic":"match"})
+        self.assertEqual(i.player_method_receipt(raw.replace(b"nil",b"true"),expected),{"move_generic":"different"})
+
+    def test_f12d_integrated_two_player_declarations_in_load_order(self):
+        import hashlib
+        import zlib
+        import sinnoh_f12d_integrated as i
+        move=b"  def move_generic(dir)\n    nil\n  end"
+        turn=b"  def turn_generic(dir)\n    nil\n  end"
+        expected={"move_generic":hashlib.sha1(move).hexdigest(),"turn_generic":hashlib.sha1(turn).hexdigest()}
+        first=b"class Game_Player < Game_Character\n"+move+b"\n"+turn+b"\nend"
+        second=b"class Game_Player\n"+move.replace(b"nil",b"true")+b"\nend\nclass Other\n"+turn.replace(b"nil",b"true")+b"\nend"
+        effective,history,decls=i.effective_player_receipt([(4,first),(19,second)],expected)
+        self.assertEqual(effective,{"move_generic":"different","turn_generic":"match"})
+        self.assertEqual([q["script_index"] for q in history["move_generic"]],[4,19])
+        self.assertEqual([q["script_index"] for q in history["turn_generic"]],[4])
+        self.assertEqual(len(decls),2)
+        rows=[[4,b"base",zlib.compress(first)],[19,b"extension",zlib.compress(second)]]
+        receipt=i.engine_reference_rows(rows,{"game_player":"0"*40})
+        self.assertEqual(receipt["game_player_script_count"],2)
+        self.assertEqual(len(receipt["game_player_methods"]),14)
+        self.assertFalse(receipt["reference_match"])
+        self.assertFalse(receipt["plugin_overrides_verified"])
+        self.assertFalse(receipt["local_engine_native_verified"])
+
+    def test_f12d_integrated_noncollinear_four_vertex_cut(self):
+        import sinnoh_f12d3_celestic_cut as c
+        # Four disjoint lanes with staggered eligible positions; no straight
+        # four-cell barrier can satisfy this synthetic geometry.
+        cells={(x,y) for x in range(7) for y in (1,3,5,7)}
+        ingress={(0,y) for y in (1,3,5,7)}
+        exits={(6,y) for y in (1,3,5,7)}
+        eligible={(2,1),(3,3),(4,5),(2,7)}
+        self.assertEqual(c.cuts(cells,ingress,exits,eligible),[])
+        self.assertEqual(c.minimum_vertex_cut(cells,ingress,exits,eligible),eligible)
+        self.assertEqual(c.integrated_cuts(cells,ingress,exits,eligible)[0][1],tuple(sorted(eligible)))
+        self.assertIsNone(c.minimum_vertex_cut(cells,ingress,exits,eligible-{(2,1)}))
+        cells|={(x,9) for x in range(7)}
+        self.assertIsNone(c.minimum_vertex_cut(cells,ingress|{(0,9)},exits|{(6,9)},eligible|{(3,9)}))
+
+    def test_f12d_integrated_assets_engine_and_transient_retry(self):
+        import io
+        import struct
+        import zlib
+        from urllib.error import URLError
+        import sinnoh_f12d_assets as a
+        import sinnoh_f12d_integrated as i
+        import sinnoh_source_download as dl
+        sprites=a.build()
+        self.assertEqual(len(sprites),5)
+        self.assertEqual(len(set(sprites.values())),5)
+        for raw in sprites.values():
+            self.assertEqual(raw[:8],b"\x89PNG\r\n\x1a\n")
+            self.assertEqual(struct.unpack_from(">II",raw,16),(128,128))
+        code=b"reference"
+        row=[1,b"reference",zlib.compress(code)]
+        refs={"example":i.git_blob_id(code)}
+        self.assertTrue(i.engine_reference_rows([row],refs)["reference_match"])
+        self.assertFalse(i.engine_reference_rows([row,row],refs)["reference_match"])
+        self.assertFalse(i.engine_reference_rows([row],{"example":"0"*40})["reference_match"])
+        self.assertFalse(i.engine_reference_rows([row],refs)["local_engine_native_verified"])
+        out=io.BytesIO();attempts=[];pauses=[]
+        def fetch(kind,stream):
+            attempts.append(kind);stream.write(b"partial" if len(attempts)==1 else b"verified")
+            if len(attempts)==1:raise URLError("transient")
+        dl.retry_download("maps",out,fetch=fetch,pause=pauses.append)
+        self.assertEqual(out.getvalue(),b"verified")
+        self.assertEqual(attempts,["maps","maps"])
+        self.assertEqual(pauses,[1])
+        # A runner may lose connectivity to the author redirect for a full
+        # minute. Spread bounded retries without retaining partial bytes.
+        out=io.BytesIO();attempts=[];pauses=[]
+        def unavailable(kind,stream):
+            attempts.append(kind);stream.write(b"partial")
+            raise URLError("transient")
+        with self.assertRaises(URLError):
+            dl.retry_download("maps",out,fetch=unavailable,pause=pauses.append)
+        self.assertEqual(attempts,["maps"]*5)
+        self.assertEqual(pauses,[1,8,24,45])
+        self.assertEqual(out.getvalue(),b"partial")
+        attempts=[];pauses=[]
+        def invalid(kind,stream):
+            attempts.append(kind)
+            raise ValueError("DOWNLOAD_SHA256_MISMATCH")
+        with self.assertRaises(ValueError):
+            dl.retry_download("maps",io.BytesIO(),fetch=invalid,pause=pauses.append)
+        self.assertEqual(attempts,["maps"])
+        self.assertEqual(pauses,[])
+
+    def test_f12d_integrated_authorial_paths_and_lake_contracts(self):
+        import sinnoh_f12d3_canonical_network as n
+        import sinnoh_f12d_integrated as i
+        a=(80,1,1);b=(80,2,1);c=(80,3,1);d=(80,2,2)
+        parents={b:(a,(),"local"),c:(b,(),"local"),d:(b,(),"local")}
+        plan=n.authorial_path_plan({c,d},parents,lambda p:int(p==b),lambda p:True)
+        self.assertEqual(plan[2],{b})
+        self.assertIsNone(n.authorial_path_plan({c,d},parents,lambda p:int(p==b),lambda p:False))
+        types={"GALACTIC_ADMIN"};species={"GOLBAT","BRONZOR","TOXICROAK","PURUGLY"}
+        self.assertEqual(i.lake_contract("VALOR",types,species,set())["name"],"Saturn")
+        self.assertEqual(i.lake_contract("VERITY",types,species,set())["name"],"Mars")
+        self.assertEqual(i.lake_contract("ACUITY",set(),set(),set())["kind"],"scene")
+        self.assertIsNone(i.lake_contract("VALOR",types,species,{("GALACTIC_ADMIN","Saturn",15001)}))
+        self.assertIsNone(i.lake_contract("VERITY",types,{"GOLBAT"},set()))
+        if shutil.which("ruby"):
+            code=(ROOT/"scripts/regions/SinnohF12D3Transaction.rb").read_text("utf-8")+"\n"+(ROOT/"scripts/regions/SinnohF12DIntegrated.rb").read_text("utf-8").replace("__LOCATIONS__","{}").replace("__SPECS__","{}").replace("__EDIT_CELLS__","[[473,1,1]]").replace("__CHASE_LANES__","[[472,1,0,473,1,31]]").replace("__CELESTIC_LANES__","[[473,0,14,458,3,4]]").replace("__SURF_ROUTES__","{}").replace("__NORTH_ROCK_EDGES__","[]").replace("__SURF_DRY_PORTALS__","{}")
+            fixture=code+'''\ns={"current"=>"SINNOH","sinnoh_f12d_quest"=>%w[PASTORIA ROUTE_213 VALOR_BATTLE],"sinnoh_f12d3_quest"=>%w[SECRETPOTION_RECEIVED PSYDUCK_CLEARED]}\nm=BlueSinnohF12DIntegrated\nraise unless m.lake_allowed?(s,"VALOR",["MINE"])\nraise if m.lake_allowed?(s,"VERITY",["MINE"])\nraise if m.lake_allowed?(s,"VALOR",[])\ns[m::LAKE_LEDGER]=%w[VALOR VERITY]\nraise if m.lake_allowed?(s,"ACUITY",["MINE"])\nraise unless m.lake_allowed?(s,"ACUITY",["MINE","ICICLE"])\ns=Marshal.load(Marshal.dump(s))\nraise unless m.lake_allowed?(s,"ACUITY",["MINE","ICICLE"])\nraise if m.movement_allowed?(nil,[473,2,1],[473,1,1])\nraise if m.movement_allowed?(nil,[472,1,0],[473,1,31])\nraise if m.movement_allowed?(nil,[473,0,14],[458,3,4])\nraise unless m.movement_allowed?(s,[473,0,14],[458,3,4])\nraise unless m.movement_allowed?(nil,[473,2,1],[473,2,2])\n'''
+            # Pass the full fixture via stdin; Windows process command-line
+            # length is not a supported transport for a growing Ruby module.
+            run=subprocess.run([shutil.which("ruby"),"-"],input=fixture,capture_output=True,text=True,encoding="utf-8",timeout=30)
+            self.assertEqual(run.returncode,0,run.stderr)
+
     def test_f12d3_rock_network_rejects_perimeter_and_attributes_edits(self):
         import sinnoh_f12d3_canonical_network as n
         args=[(4,5),(10,10),(3225,0,0),(462,0,0),((0,),(4,)),((0,),(4,)),0,0,".",False,False]
@@ -4494,6 +5088,17 @@ puts "SINNOH_LAB_REWARD_AND_STARTER_HIDE_OK"
         files=exp.scan_source(self.base)
         self.assertNotIn("Data/File A.rxdata",files)
         self.assertFalse(any("Saves" in x for x in files))
+    def test_private_copy_excludes_foreign_one_shot_requests(self):
+        requests=["blue-verify-request.txt","BLUE-BATTLE-LAB-REQUEST.TXT","blue-reference-export-request.txt"]
+        for name in requests:(self.base/"Data"/name).write_bytes(b"base request")
+        files=exp.scan_source(self.base)
+        self.assertFalse(any(p.casefold() in exp.PRIVATE_EXCLUDED_REQUESTS for p in files))
+        report={"profile_token":"abc123abc123","mapids":{},"save_profile":{},"file_sha256":{}}
+        dest=exp.install_copy(self.base,{},report,self.proj)
+        for name in requests:
+            self.assertEqual((self.base/"Data"/name).read_bytes(),b"base request")
+            self.assertFalse((dest/"Data"/name).exists())
+
     def test_27_only_expected_root_files_are_copied(self):
         (self.base/"private-secrets.txt").write_text("do not copy")
         files=exp.scan_source(self.base)

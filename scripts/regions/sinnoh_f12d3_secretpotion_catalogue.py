@@ -36,3 +36,25 @@ def audit(base):
             "reason":"compiled_catalog_and_geometry_pending"}
     except (OSError,UnicodeError,ValueError,TypeError):
         return {**result,"reason":"invalid_or_duplicate_local_pbs"}
+
+# Project-authored definition for the missing item, local private QA only.
+# Standard Essentials v21.1 key-item metadata (Pocket 8, Price 0).
+FRAGMENT="PBS/items_sinnoh_f12d.txt"
+DEFINITION=b"[SECRETPOTION]\nName = SecretPotion\nNamePlural = SecretPotions\nPocket = 8\nPrice = 0\nFlags = KeyItem\nDescription = A special medicine for the Psyduck on Route 210.\n"
+
+def prepare_missing(base,blobs):
+    report=audit(base)
+    if report.get("local_catalog_valid"):
+        return {},report
+    if report.get("reason")!="local_item_missing_or_ambiguous" or report.get("matches")!=0:
+        return {},report
+    if (base/FRAGMENT).exists() or FRAGMENT in blobs:
+        return {},{**report,"reason":"candidate_path_collision"}
+    import re
+    for path,raw in blobs.items():
+        if path.startswith("PBS/items") and path.endswith(".txt"):
+            if re.search(rb"(?im)^\s*\[SECRETPOTION\]\s*(?:#.*)?$",raw):
+                return {},{**report,"reason":"generated_item_collision"}
+    return {FRAGMENT:DEFINITION},{**report,"status":"AUTHORIAL_PRIVATE_ITEM_PREPARED",
+        "authored_candidate":True,"candidate_sha256":hashlib.sha256(DEFINITION).hexdigest(),
+        "reason":"compiled_key_item_identity_pending"}
