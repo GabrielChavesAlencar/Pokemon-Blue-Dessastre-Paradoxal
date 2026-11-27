@@ -19,15 +19,42 @@ sys.path.insert(0, str(ROOT))
 from scripts.android.package import compiled_region
 from server.ruby_marshal import loads, RubyObject
 from scripts.regions.kanto_wall_atlas import render_wall_atlas
+from scripts.regions.k03e_contract import MAPS as K03E_MAPS, MUSIC as K03E_MUSIC, TRAINERS as K03E_TRAINERS
 from scripts.regions.cerulean_doors import CERULEAN_DOORS, verify_cerulean_doors
 
 SOURCE_MAP_IDS = ("39", "42", "43", "44", "45", "46", "47", "48", "53", "54", "55", "58")
 EDGES = (("39", "53"), ("39", "54"), ("53", "54"))
-EXPECTED_KANTO_MAPS = 156
 EXPECTED_MUSIC_MAPS = 84
 JOURNEY = "Plugins/ZZZZ Blue Story and Presentation/Journey.rb"
 KANTO_RUNTIME = "Plugins/ZZZZZ Blue Kanto Pilot/KantoPilot.rb"
 KANTO_ATLAS = "Plugins/ZZZZZ Blue Kanto Pilot/KantoWallMap.png"
+
+
+def active_sources() -> dict:
+    path = ROOT / "data/regions/kanto-source.json"
+    maps = json.loads(path.read_text(encoding="utf-8"))["maps"]
+    promoted = {str(source): name for source, name in K03E_MAPS.items()}
+    present = maps.keys() & promoted.keys()
+    if (not present and len(maps) == 156) or (
+            len(maps) == 160 and all(maps.get(key) == name for key, name in promoted.items())):
+        return maps
+    raise ValueError("Unknown Kanto publication catalog")
+
+
+def verify_k03e(mapping: dict, edges: set, pbs: str, music_rows: list[str]) -> None:
+    if frozenset((mapping["64"], mapping["79"])) not in edges:
+        raise ValueError("K03-E Route 11/Vermilion connection absent from Android PBS")
+    for trainer_class, name in K03E_TRAINERS.values():
+        if f"[BLUE_KANTO_{trainer_class},{name},0]" not in pbs:
+            raise ValueError(f"K03-E Android trainer missing: {name}")
+    by_name = {name: source for source, name in K03E_MAPS.items()}
+    for row in K03E_MUSIC:
+        destination = str(mapping[str(by_name[row["map"]])])
+        matches = [line.split("\t") for line in music_rows
+                   if line.startswith(f"MAP\t{destination}\t")]
+        if (len(matches) != 1 or len(matches[0]) != 5 or
+                matches[0][2] != str(row["track"])):
+            raise ValueError(f"K03-E Android soundtrack missing or incorrect: {row['map']}")
 
 
 def assert_delivery(path: Path, channel: str) -> dict:
@@ -38,6 +65,9 @@ def assert_delivery(path: Path, channel: str) -> dict:
     if channel not in roots:
         raise ValueError("Unrecognized Android channel")
     root, marker = roots[channel]
+    expected_sources = active_sources()
+    promoted = len(expected_sources) == 160
+    expected_music_maps = EXPECTED_MUSIC_MAPS + (len(K03E_MUSIC) if promoted else 0)
     with ZipFile(path) as archive:
         files = set(archive.namelist())
         if len(files) != len(archive.namelist()):
@@ -47,9 +77,9 @@ def assert_delivery(path: Path, channel: str) -> dict:
         metadata = json.loads(archive.read(root + marker))
         mapping = metadata.get("maps")
         if (not isinstance(mapping, dict) or
-                len(mapping) != EXPECTED_KANTO_MAPS or
+                set(mapping) != set(expected_sources) or
                 not all(source in mapping for source in (*SOURCE_MAP_IDS,"68","69","70","71"))):
-            raise ValueError("Android ZIP lacks the 156-map Kanto/Vermilion revision")
+            raise ValueError("Android ZIP does not match the active Kanto source catalog")
         all_ids = list(mapping.values())
         if (any(type(value) is not int or value <= 0 for value in all_ids)
                 or len(set(all_ids)) != len(all_ids)):
@@ -156,13 +186,15 @@ def assert_delivery(path: Path, channel: str) -> dict:
         music = root + "Data/blue-kanto-music.txt"
         if music not in files:
             raise ValueError("Kanto map music manifest missing")
-        count = sum(line.startswith("MAP\t") for line in
-                    archive.read(music).decode("utf8").splitlines())
-        if count != EXPECTED_MUSIC_MAPS:
-            raise ValueError(f"Stale Kanto music scope: {count}, expected {EXPECTED_MUSIC_MAPS}")
-    return {"channel": channel, "kanto_maps": EXPECTED_KANTO_MAPS,
+        music_rows = archive.read(music).decode("utf8").splitlines()
+        count = sum(line.startswith("MAP\t") for line in music_rows)
+        if count != expected_music_maps:
+            raise ValueError(f"Stale Kanto music scope: {count}, expected {expected_music_maps}")
+        if promoted:
+            verify_k03e(mapping, edges, pbs, music_rows)
+    return {"channel": channel, "kanto_maps": len(expected_sources),
             "cerulean_sources": list(SOURCE_MAP_IDS),
-            "music_maps": EXPECTED_MUSIC_MAPS,
+            "music_maps": expected_music_maps,
             "compiled_journey": True, "compiled_cerulean_gary": True,
             "compiled_kanto_ss_ticket": True, "compiled_cerulean_bike_items": True,
             "compiled_cerulean_dig_machine": True, "cerulean_city_doors": 8,
