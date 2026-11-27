@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import copy
 import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -49,6 +51,17 @@ class KantoMusicPhaseOneTests(unittest.TestCase):
         file = self.game / item["game_path"]
         file.parent.mkdir(parents=True,exist_ok=True)
         file.write_bytes(b"synthetic fixture, no soundtrack recording")
+
+    def test_direct_cli_works_without_repo_on_pythonpath(self):
+        result = subprocess.run(
+            [sys.executable, "-I", str(ROOT / "scripts/music/compile_kanto_music.py"),
+             "--game", str(self.game)],
+            cwd=self.project, capture_output=True, text=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        report = json.loads(result.stdout)
+        self.assertEqual(report["source_maps"], len(self.source["maps"]))
+        self.assertEqual(report["status"], "dry_run")
 
     def test_145_actual_ids_and_35_previews_are_scoped_but_not_playing(self):
         content, report = self.compile()

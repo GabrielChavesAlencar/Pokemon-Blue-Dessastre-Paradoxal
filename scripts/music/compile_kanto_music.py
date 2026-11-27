@@ -10,11 +10,18 @@ import argparse
 import hashlib
 import json
 import os
+import sys
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+if __package__ in (None, ""):
+    # Actions and Windows launchers run this file directly.
+    sys.path.insert(0, str(ROOT))
+
+from scripts.regions.k03e_contract import MAPS, MUSIC, candidate_manifest as expected_manifest
+
 OUTPUT = Path("Data/blue-kanto-music.txt")
 MAGIC = "BLUE_KANTO_MUSIC_V1"
 ME_ENABLED_PHASE4 = frozenset({"obtained_pokemon", "obtained_item", "healed",
@@ -91,7 +98,6 @@ def compile_bytes(project: Path, game: Path, mapping: dict, *, candidate_manifes
     """Pure compilation; checks all actual MapXXX.rxdata files, writes nothing."""
     rules, source, catalog = _rules(project)
     maps = source.get("maps")
-    from scripts.regions.k03e_contract import MAPS, MUSIC, candidate_manifest as expected_manifest
     if (not isinstance(maps, dict) or maps.get("58") != "DAY_CARE" or
             not {"68", "69", "70", "71"} <= maps.keys()):
         raise ValueError("Kanto source map catalog changed unexpectedly")
