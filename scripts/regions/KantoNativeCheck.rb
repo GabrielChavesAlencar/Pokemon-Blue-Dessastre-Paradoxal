@@ -200,8 +200,15 @@ module KantoNativeCheck
     $game_player.direction = dir if $game_player.respond_to?(:direction=)
     $game_map.events.each_value { |e| e.clear_starting }
     passable = $game_player.passable?(*from,dir)
+    contact = BlueKantoPilot.cerulean_door_contact($game_player,dir)
+    context = {"event"=>id,"from"=>from,"direction"=>dir,
+      "map"=> $game_map.map_id,"region"=>BlueKantoPilot.kanto_current?,
+      "event_class"=>event.class.to_s,"trigger"=>event.trigger,
+      "contact"=>!!contact,"canonical"=>!!(contact && contact[3]),
+      "interpreter_running"=>pbMapInterpreterRunning?,
+      "moving"=>$game_player.moving?,"jumping"=>$game_player.jumping?}
     $game_player.move_generic(dir,true)
-    require!(event.starting, "Cerulean native movement did not start event #{id} from #{from.inspect}")
+    require!(event.starting, "Cerulean native movement did not start event: #{context.inspect}; after=#{[$game_player.x,$game_player.y].inspect}")
     landing = north_transfer!(event,destination)
     player_after = [$game_player.x,$game_player.y]
     interpreter = pbMapInterpreter

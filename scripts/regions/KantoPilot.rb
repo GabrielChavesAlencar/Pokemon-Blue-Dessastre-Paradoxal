@@ -2489,8 +2489,15 @@ end
 module BlueKantoPilot::CeruleanDoorContact
   def move_generic(dir, turn_enabled = true)
     contact = turn_enabled && BlueKantoPilot.cerulean_door_contact(self,dir)
-    contact = nil if contact && ((respond_to?(:moving?) && moving?) ||
-      (respond_to?(:jumping?) && jumping?))
+    # Canonical doorstep interaction is an event, not walking into a wall.
+    # Dispatch before generic movement (which can reject the step, jump or
+    # defer the event until the end of its animation).
+    if contact && contact[3]
+      event = contact[0]
+      turn_generic(dir,true)
+      event.start unless event.starting
+      return
+    end
     city = $game_map if contact
     result = super
     if contact && $game_map.equal?(city)
