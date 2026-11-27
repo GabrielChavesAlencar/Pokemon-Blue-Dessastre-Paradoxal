@@ -15,6 +15,7 @@ from pathlib import Path
 from audit import ROOT, KANTO, json_file, inventory, allocate_kanto_ids, load
 from export_kanto import LOCATION_NAMES
 from server.ruby_marshal import RubyObject, text
+from cerulean_doors import verify_cerulean_doors
 from pilot import OUTPUT, SOURCE, PILOT_META, TYPES, build, pilot_is_current, revised_path
 from verify_pilot import inspect
 
@@ -386,6 +387,26 @@ def known_legacy_catalog(wanted, previous):
     return False
 
 
+def broken_current_cerulean(game, mapping):
+    """Allow a same-catalogue rebuild only for a demonstrably broken city.
+
+    The usual legacy_proof checks still validate ownership, map names and
+    hashes; apply_install retains its backup/rollback and stable allocation.
+    """
+    if (not isinstance(mapping, dict) or
+            any(type(v) is not int or not 0 < v < 1000 for v in mapping.values()) or
+            not all(k in mapping for k in ("39", "43", "44", "45", "46", "47", "48"))):
+        return False
+    city = game / "Data" / f"Map{mapping['39']:03}.rxdata"
+    if not city.is_file() or city.is_symlink():
+        return False
+    try:
+        verify_cerulean_doors(city.read_bytes(), mapping)
+    except (ValueError, OSError):
+        return True
+    return False
+
+
 def legacy_proof(game):
     """Verify an exact published predecessor before transactional migration."""
     path = game / "Data/blue-kanto-install.json"
@@ -397,7 +418,8 @@ def legacy_proof(game):
     wanted = {str(k) for k in json_file(KANTO)["maps"]}
     if (proof.get("schema") != 1 or proof.get("source") != "Essentials FRLG 21.1" or
             not isinstance(mapping, dict) or
-            not known_legacy_catalog(wanted, set(mapping)) or
+            not (known_legacy_catalog(wanted, set(mapping)) or
+                 (set(mapping) == wanted and broken_current_cerulean(game, mapping))) or
             any(type(v) is not int or not 0 < v < 1000 for v in mapping.values()) or
             len(set(mapping.values())) != len(mapping) or
             marker.read_text(encoding="ascii").strip() !=
@@ -467,6 +489,8 @@ def verify_installed(game):
     missing = [str(p.relative_to(game)) for p in files if not p.is_file()]
     if missing:
         raise ValueError(f"Kanto main installation missing {len(missing)} files; first: {missing[:5]}")
+    if "43" in mapping:
+        verify_cerulean_doors((game / "Data" / f"Map{mapping['39']:03}.rxdata").read_bytes(), mapping)
     return {"status": "integrated_files_ready_for_native_QA",
             "maps": expected, "kanto_start": [mapping["7"],25,7],
             "decades_save_modified": False, "game_exe_tested": False}

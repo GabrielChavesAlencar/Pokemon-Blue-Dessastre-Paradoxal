@@ -19,6 +19,7 @@ sys.path.insert(0, str(ROOT))
 from scripts.android.package import compiled_region
 from server.ruby_marshal import loads, RubyObject
 from scripts.regions.kanto_wall_atlas import render_wall_atlas
+from scripts.regions.cerulean_doors import CERULEAN_DOORS, verify_cerulean_doors
 
 SOURCE_MAP_IDS = ("39", "42", "43", "44", "45", "46", "47", "48", "53", "54", "55", "58")
 EDGES = (("39", "53"), ("39", "54"), ("53", "54"))
@@ -27,38 +28,6 @@ EXPECTED_MUSIC_MAPS = 84
 JOURNEY = "Plugins/ZZZZ Blue Story and Presentation/Journey.rb"
 KANTO_RUNTIME = "Plugins/ZZZZZ Blue Kanto Pilot/KantoPilot.rb"
 KANTO_ATLAS = "Plugins/ZZZZZ Blue Kanto Pilot/KantoWallMap.png"
-
-
-# Exact source-authored city event identity, coordinates and remapped
-# transfer landings; this checks RXDATA bytes shipped to the player.
-CERULEAN_DOORS = {
-    3: ("44", (10, 9), (3, 2)),
-    7: ("43", (13, 28), (5, 8)),
-    8: ("46", (15, 17), (4, 7)),
-    9: ("48", (30, 11), (3, 7)),
-    10: ("44", (10, 11), (3, 8)),
-    11: ("45", (17, 11), (4, 7)),
-    12: ("47", (23, 28), (4, 7)),
-    27: ("48", (31, 9), (4, 2)),
-}
-
-
-def verify_cerulean_doors(native: bytes, mapping: dict) -> None:
-    city = loads(native)
-    events = city.attrs.get("@events") if isinstance(city, RubyObject) else None
-    if not isinstance(events, dict):
-        raise ValueError("Cerulean city RXDATA has no event table")
-    for event_id, (source, xy, landing) in CERULEAN_DOORS.items():
-        event = events.get(event_id)
-        if (not isinstance(event, RubyObject) or
-                (event.attrs.get("@x"), event.attrs.get("@y")) != xy):
-            raise ValueError(f"Cerulean door {event_id} missing or moved in installed map")
-        pages = event.attrs.get("@pages", [])
-        if not any(page.attrs.get("@trigger") == 1 and any(
-                op.attrs.get("@code") == 201 and
-                op.attrs.get("@parameters", [])[:4] == [0, mapping[source], *landing]
-                for op in page.attrs.get("@list", [])) for page in pages):
-            raise ValueError(f"Cerulean door {event_id} missing native transfer in installed map")
 
 
 def assert_delivery(path: Path, channel: str) -> dict:

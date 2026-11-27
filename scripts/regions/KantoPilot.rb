@@ -2463,7 +2463,8 @@ module BlueKantoPilot
   def self.cerulean_door_contact(player, direction)
     return nil unless $game_map && kanto_current? &&
       $game_map.map_id == kanto_map_id(39)
-    return nil if $game_temp && $game_temp.in_battle
+    return nil unless $game_map.respond_to?(:events)
+    return nil if $game_temp && $game_temp.respond_to?(:in_battle) && $game_temp.in_battle
     return nil if defined?(pbMapInterpreterRunning?) && pbMapInterpreterRunning?
     delta = {2=>[0,1],4=>[-1,0],6=>[1,0],8=>[0,-1]}[direction]
     return nil unless delta

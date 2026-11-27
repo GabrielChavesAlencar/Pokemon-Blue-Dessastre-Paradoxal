@@ -178,8 +178,12 @@ module KantoNativeCheck
       require!(witness, "Cerulean public door has no native step #{id}")
       [id,[event.x,event.y],witness[0]]
     end
+    public_contacts = [7,8,10,11,12].map do |id|
+      cerulean_native_door_contact_proof(city,component,id,BlueKantoPilot.kanto_map_id(doors.fetch(id)))
+    end
+    $map_factory.setup(city)
     $game_player.moveto(*position)
-    report = {"restored"=>doors.keys,"public_approaches"=>approaches,"guarded_house"=>!BlueKantoPilot.cerulean_house_open?,"position"=>position,"party_preserved"=>true,"idempotent"=>true,"manual_gameplay"=>false}
+    report = {"restored"=>doors.keys,"public_approaches"=>approaches,"native_public_contacts_before_bill"=>public_contacts,"guarded_house"=>!BlueKantoPilot.cerulean_house_open?,"position"=>position,"party_preserved"=>true,"idempotent"=>true,"manual_gameplay"=>false}
     puts "KANTO_CERULEAN_LEGACY_DOORS_REPORT:#{report.inspect}"
     puts "KANTO_CERULEAN_LEGACY_DOORS_RELOAD_OK"
     report
@@ -199,11 +203,35 @@ module KantoNativeCheck
     $game_player.move_generic(dir,true)
     require!(event.starting, "Cerulean native movement did not start event #{id} from #{from.inspect}")
     landing = north_transfer!(event,destination)
-    receipt = {"event"=>id,"from"=>from,"direction"=>dir,"passable"=>passable,
-      "player_after"=>[$game_player.x,$game_player.y],"event_started"=>true,
-      "destination"=>destination,"landing"=>landing}
-    $game_map.events.each_value { |e| e.clear_starting }
-    receipt
+    player_after = [$game_player.x,$game_player.y]
+    interpreter = pbMapInterpreter
+    require!(!interpreter.running? && !$game_temp.player_transferring,
+      "Cerulean native interpreter not idle before door #{id}")
+    # Let the actual main interpreter select the started event and execute
+    # its original event commands (including the guarded conditional).
+    interpreter.setup_starting_event
+    require!(interpreter.running? && interpreter.instance_variable_get(:@event_id) == id,
+      "Cerulean main interpreter selected another event instead of door #{id}")
+    interpreter.update
+    requested = [$game_temp.player_new_map_id,$game_temp.player_new_x,$game_temp.player_new_y]
+    require!($game_temp.player_transferring && requested == [destination,*landing],
+      "Cerulean native interpreter failed to request transfer #{id}:#{requested.inspect}")
+    # The headless runner has no map spriteset: end only the pending visual
+    # transition, then load the exact requested native map and landing.
+    interpreter.clear
+    $game_temp.player_transferring = false
+    if $game_temp.transition_processing
+      $game_temp.transition_processing = false
+      Graphics.transition(0)
+    end
+    $map_factory.setup(requested[0])
+    $game_player.moveto(requested[1],requested[2])
+    require!($game_map.map_id == destination && [$game_player.x,$game_player.y] == landing,
+      "Cerulean transfer destination could not be loaded #{id}")
+    {"event"=>id,"from"=>from,"direction"=>dir,"passable"=>passable,
+      "player_after"=>player_after,"event_started"=>true,
+      "native_interpreter_transfer"=>requested,"destination_loaded"=>true,
+      "destination"=>destination,"landing"=>landing,"manual_scene_transfer"=>false}
   end
 
   def self.cerulean_interiors_proof(battle_calls, losses_remaining)
