@@ -30,7 +30,7 @@ class SinnohPreflightTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             report = audit(root=ROOT, game_data=Path(tmp) / "missing-game-data")
         self.assertEqual(report["mode"], "READ_ONLY")
-        self.assertEqual(report["title_option"], "WIRED_NO_REAL_PILOT")
+        self.assertEqual(report["title_option"], "SHARED_NEW_GAME")
         self.assertEqual(report["technical_phases_approved"], 0)
         self.assertFalse(report["map_installation_verified"])
         self.assertIn("Fonte real de Sinnoh não fornecida", report["blockers"])

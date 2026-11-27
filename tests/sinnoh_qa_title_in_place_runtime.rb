@@ -113,7 +113,7 @@ Dir.mktmpdir("blue-sinnoh-qa-title-") do |home|
       $new_game_choices = [4, BlueKantoTitle::START_REGIONS.length - 1]
       assert(BlueKantoTitle.choose_start_region == :cancel,
              "missing shared Sinnoh must return to the region menu")
-      assert($messages.any? { |m| m.include?("ainda não foi integrada ao jogo principal") },
+      assert($messages.any? { |m| m.include?("coloque os dois ZIPs de origem junto ao Blue-Story.exe") },
              "missing shared Sinnoh must explain installation")
       BlueRegionStart.instance_variable_set(:@ready, true)
       assert(BlueKantoTitle.start_region_names[4] == "Sinnoh",
