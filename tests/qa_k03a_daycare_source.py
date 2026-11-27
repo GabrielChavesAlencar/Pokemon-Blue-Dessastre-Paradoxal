@@ -7,6 +7,7 @@ claim that the Day Care mechanic is implemented.
 from pathlib import Path
 import json
 import re
+import struct
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -55,6 +56,26 @@ def describe(source):
                                                    if k.endswith("_valid") and v)})
             rows.append({"id": eid, "xy": [attrs["@x"], attrs["@y"]], "pages": pages})
         return rows
+    # Exact source tile stack/passages around the original entrance; no
+    # modifications and no assumption that a zero passage alone proves movement.
+    def table(value):
+        raw = value.data
+        _, width, height, depth, count = struct.unpack_from("<5I", raw)
+        return width, height, depth, struct.unpack_from(f"<{count}H", raw, 20)
+    route = maps[56]
+    tilesets = load(source / "Data/Tilesets.rxdata")
+    tileset = tilesets[route["@tileset_id"]].attrs
+    width,height,depth,cells = table(route["@data"])
+    passages = table(tileset["@passages"])[3]
+    priorities = table(tileset["@priorities"])[3]
+    tags = table(tileset["@terrain_tags"])[3]
+    approach = []
+    for y in range(23,30):
+        for x in range(20,27):
+            ids_at = [cells[x+width*(y+height*z)] for z in range(depth)]
+            approach.append({"xy":[x,y],"tiles":[{"id":tid,
+                "passage":passages[tid],"priority":priorities[tid],"terrain":tags[tid]}
+                for tid in ids_at]})
     events = {mid: inspect(mid) for mid in ids}
     def transfers(origin, target):
         result = []
@@ -74,7 +95,8 @@ def describe(source):
     report = {"status": "SOURCE_IDENTIFIED", "source_id": 58, "name": name,
               "size": [maps[58]["@width"], maps[58]["@height"]],
               "entrance": entrance, "return": exit_rows, "events": events[58],
-              "catalogued": True, "physical_gameplay": False}
+              "catalogued": True, "physical_gameplay": False,
+              "route5_source_approach": approach, "route5_tileset": route["@tileset_id"]}
     report["direct_reciprocal_transfers"] = bool(entrance and exit_rows)
     report["mechanic_api_observed"] = any(p["daycare_api_tokens"] for e in events[58] for p in e["pages"])
     return report

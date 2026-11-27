@@ -582,6 +582,25 @@ module KantoNativeCheck
         break
       end
     end
+    # Native collision report for the exact authored doorstep and surrounding
+    # approach. Do not guess at wall/ledge tiles or open them by force.
+    unless chosen
+      $map_factory.setup(route)
+      $game_map.events.each_value { |ev| ev.refresh }
+      rows = []
+      (23..29).each do |y|
+        (20..26).each do |x|
+          $game_player.moveto(x,y)
+          terrain = $game_map.terrain_tag(x,y)
+          events = $game_map.events.values.select { |ev| ev.x == x && ev.y == y }
+          rows << {"xy"=>[x,y],"tiles"=>(0..2).map { |z| $game_map.data[x,y,z] },
+            "terrain"=>terrain.id.to_s,"ledge"=>terrain.ledge,
+            "passable"=>[2,4,6,8].map { |dir| [dir,$game_player.passable?(x,y,dir)] }.to_h,
+            "events"=>events.map { |ev| [ev.id,ev.name,ev.trigger,ev.through,ev.tile_id,ev.character_name] }}
+        end
+      end
+      k03a_trace("KANTO_K03A_DAYCARE_NATIVE_COLLISION",rows)
+    end
     require!(chosen, "K03-A original Day Care door inaccessible from all verified north seams")
     anchor,door = chosen
     landing = north_transfer!(door,daycare)
@@ -1685,6 +1704,45 @@ module KantoNativeCheck
     require!($player.character_ID == 1 && !$game_player.character_name.empty? &&
              !$game_player.transparent, "Kanto sprite is not visible before the first step")
     require!(BlueKantoPilot.progress["pilot_profile_pending"], "Pilot missed character and name selection")
+    # Measure the actual installed protagonist and Gary art in the native engine.
+    gary_height = BlueKantoPilot.gary_overworld_height
+    require!(gary_height && gary_height > 0, "Gary Oak Lab visible height unavailable")
+    player_path = pbResolveBitmap("Graphics/Characters/#{$game_player.character_name}")
+    require!(player_path, "Player charset unavailable")
+    player_bitmap = Bitmap.new(player_path)
+    begin
+      player_height = BlueKantoPilot.overworld_visible_height(player_bitmap,
+        player_bitmap.width / 4, player_bitmap.height / 4)
+      require!(player_height && player_height > 0, "Player visible height unavailable")
+      factor = BlueKantoPilot.player_overworld_zoom(player_height)
+      require!((player_height * factor - gary_height).abs < 0.01,
+        "Player and Gary visible heights diverged")
+      # Exercise the actual Sprite_Character hook, not just the ratio helper.
+      viewport = Viewport.new(0,0,Graphics.width,Graphics.height)
+      sprite = nil
+      begin
+        sprite = Sprite_Character.new(viewport,$game_player)
+        2.times { sprite.update }
+        rect = sprite.src_rect
+        bounds = BlueKantoPilot.overworld_frame_bounds(sprite.bitmap,rect.x,rect.y,rect.width,rect.height)
+        visible = bounds && bounds[1]-bounds[0]+1
+        require!(visible && (visible * sprite.zoom_y - gary_height).abs < 0.01 &&
+          (sprite.zoom_x - sprite.zoom_y).abs < 0.01,
+          "Actual rendered player sprite does not match Gary")
+        report = "KANTO_GARY_VISIBLE_PLAYER_SCALE_REPORT:#{{'gary_charset'=>BlueKantoPilot.cerulean_rival_graphic,
+          'gary_height'=>gary_height,'player_charset'=>$game_player.character_name,
+          'player_height'=>visible,'zoom'=>sprite.zoom_y,
+          'rendered_height'=>visible*sprite.zoom_y,'native_sprite'=>true}.inspect}"
+        File.write("Data/blue-kanto-gary-scale-proof.txt",report+"\nKANTO_GARY_VISIBLE_PLAYER_SCALE_OK\n")
+        puts report
+        puts "KANTO_GARY_VISIBLE_PLAYER_SCALE_OK"
+      ensure
+        sprite.dispose if sprite && !sprite.disposed?
+        viewport.dispose if viewport && !viewport.disposed?
+      end
+    ensure
+      player_bitmap.dispose
+    end
     home = $game_map.map_id
     # Phase 02: actual mkxp-z Game_Player passable? and directional move_ methods
     # in a throwaway CI run, not simulated keyboard/graphical acceptance.

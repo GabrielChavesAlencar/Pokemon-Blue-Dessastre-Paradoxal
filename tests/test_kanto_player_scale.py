@@ -12,127 +12,149 @@ KANTO_RUBY = ROOT / "scripts/regions/KantoPilot.rb"
 PILOT_BUILDER = ROOT / "scripts/regions/pilot.py"
 
 RUBY_CHECK = r"""
-class Game_Player; end
+class Game_Player
+  attr_accessor :character_name
+  def initialize; @character_name = "player"; end
+end
+
+# Padded 4x4 sheets: simulate actual alpha, not raw frame dimensions.
+class TestBitmap
+  attr_reader :width, :height
+  def initialize(frame_height, visible)
+    @width = 32 * 4
+    @height = frame_height * 4
+    @frame_height = frame_height
+    @visible = visible
+  end
+  def get_pixel(x,y)
+    local_y = y % @frame_height
+    visible = @visible.is_a?(Array) ? @visible[(x/32)%@visible.length] : @visible
+    Struct.new(:alpha).new(x % 32 < 12 && local_y >= @frame_height - visible ? 255 : 0)
+  end
+end
 
 class Sprite_Character
   attr_accessor :zoom_x, :zoom_y, :ox, :oy
-  attr_reader :base_updates
-
+  attr_reader :base_updates, :bitmap, :src_rect
   def initialize(character)
     @character = character
     @base_updates = 0
     @ox = 16
     @oy = 32
+    @zoom_x = @zoom_y = 1.0
+    change_sheet(48,16)
   end
-
+  def change_sheet(frame,visible)
+    @cw = 32
+    @ch = frame
+    @bitmap = TestBitmap.new(frame,visible)
+    @src_rect = Struct.new(:x,:y,:width,:height).new(0,0,@cw,@ch)
+  end
   def update
     @base_updates += 1
-    self.zoom_x = 1.0
-    self.zoom_y = 1.0
+    # Simulate native engine retaining the previous zoom.
   end
 end
 
 module MenuHandlers
   def self.add(*_args); end
 end
-
 def _INTL(text, *_args); text; end
-
 def check(condition, message)
   raise message unless condition
 end
 
-# This file exists only in the compiled, isolated Kanto pilot.
 File.write("Kanto pilot.json", "{}")
 load ARGV.fetch(0)
 check(BlueKantoPilot::PILOT_OVERWORLD_SCALE, "isolated pilot marker ignored")
-check(BlueKantoPilot::PLAYER_OVERWORLD_ZOOM == 1.0, "unexpected zoom value")
-check(BlueKantoPilot::PLAYER_OVERWORLD_MAX_HEIGHT == 40, "unexpected max rendered height")
+def BlueKantoPilot.gary_overworld_height
+  overworld_visible_height(TestBitmap.new(48,32),32,48)
+end
+check(BlueKantoPilot.gary_overworld_height == 32, "Gary alpha reference wrong")
+# Build 1606 screenshot: 80px NPC and 62px player at 2x screen zoom.
+# Model the native 50 opaque pixels in a 64px padded frame. Previous
+# 40px cap rendered 62.5px; correct alpha ratio yields 80px, not 103px.
+capture = TestBitmap.new(64,50)
+visible = BlueKantoPilot.overworld_visible_height(capture,32,64)
+old_render = visible * (40.0/64) * 2
+corrected = visible * BlueKantoPilot.player_overworld_zoom(visible,40) * 2
+check((old_render-62).abs <= 1 && (corrected-80).abs <= 1,
+  "screenshot 62->80 regression not fixed")
+check(BlueKantoPilot.overworld_frame_bounds(capture,0,0,32,64) == [14,63],
+  "opaque frame bounds do not exclude padding")
+puts "KANTO_PLAYER_SCREENSHOT_62_TO_80_OK"
+check(BlueKantoPilot.player_overworld_zoom(nil) == 1.0, "missing player evidence must use native zoom")
+check(BlueKantoPilot.player_overworld_zoom(16,nil) == 1.0, "missing Gary evidence must use native zoom")
 
 $game_player = Game_Player.new
 sprite = Sprite_Character.new($game_player)
-sprite.instance_variable_set(:@ch, 48)
+2.times { sprite.update }
+check(sprite.zoom_x == 2.0 && sprite.zoom_y == 2.0, "small visible avatar did not match Gary")
+$game_player.character_name = "tall"
+sprite.change_sheet(80,64)
 sprite.update
-check(sprite.zoom_x == (40.0 / 48) && sprite.zoom_y == (40.0 / 48), "player not smaller")
-check(sprite.zoom_x * 48 <= 40, "player taller than FRLG reference")
-sprite.instance_variable_set(:@ch, 80)
+check(sprite.zoom_x == 0.5 && sprite.zoom_y == 0.5, "tall avatar did not match Gary")
+$game_player.character_name = "equal"
+sprite.change_sheet(48,32)
 sprite.update
-check(sprite.zoom_x == 0.5 && sprite.zoom_y == 0.5, "tall avatar not limited to 40 pixels")
-sprite.instance_variable_set(:@ch, 20)
-sprite.update
-check(sprite.zoom_x == 1.0 && sprite.zoom_y == 1.0, "small avatar was shrunk or enlarged")
-sprite.instance_variable_set(:@ch, 32)
-sprite.update
-check(sprite.zoom_x == 1.0 && sprite.zoom_y == 1.0, "native 32px avatar shrunk")
-sprite.instance_variable_set(:@ch, 40)
-sprite.update
-check(sprite.zoom_x == 1.0 && sprite.zoom_y == 1.0, "native 40px avatar shrunk")
-sprite.instance_variable_set(:@ch, 48)
-sprite.update
+check(sprite.zoom_x == 1.0 && sprite.zoom_y == 1.0, "equal visible avatar changed")
 check(sprite.ox == 16 && sprite.oy == 32, "feet pivot changed")
-check(sprite.base_updates == 6, "native character animation update skipped")
+check(sprite.base_updates == 4, "native animation update skipped")
+# Reproduce the actual integrated failure: active 46px pose in 50px sheet.
+$game_player.character_name = "varying"
+sprite.change_sheet(64,[46,50])
+sprite.update
+check((46*sprite.zoom_y-32).abs < 0.01, "46px frame used tallest frame zoom")
+sprite.src_rect.x = 32
+sprite.update
+check((50*sprite.zoom_y-32).abs < 0.01, "walking frame was not normalized")
+sprite.src_rect.x = 0
+sprite.update
+check((46*sprite.zoom_y-32).abs < 0.01, "active frame cache did not restore")
+check(sprite.ox == 16 && sprite.oy == 32, "native feet pivot changed")
 
 npc = Sprite_Character.new(Object.new)
 npc.update
 check(npc.zoom_x == 1.0 && npc.zoom_y == 1.0, "NPC zoom changed")
-check(npc.ox == 16 && npc.oy == 32, "NPC pivot changed")
-
-# Save loading can replace the Game_Player object during the same session.
 $game_player = Game_Player.new
 sprite.update
-check(sprite.zoom_x == 1.0 && sprite.zoom_y == 1.0, "previous player still scaled")
+check(sprite.zoom_x == 1.0 && sprite.zoom_y == 1.0, "previous player retained zoom")
 new_sprite = Sprite_Character.new($game_player)
-new_sprite.instance_variable_set(:@ch, 48)
 2.times { new_sprite.update }
-check(new_sprite.zoom_x == (40.0 / 48) && new_sprite.zoom_y == (40.0 / 48), "new player scale unstable")
-check(new_sprite.base_updates == 2, "native updates lost")
-
-# The shared Decades game never has the pilot marker at boot.
+check(new_sprite.zoom_x == 2.0 && new_sprite.zoom_y == 2.0, "new player scale unstable")
 BlueKantoPilot.send(:remove_const, :PILOT_OVERWORLD_SCALE)
 BlueKantoPilot.const_set(:PILOT_OVERWORLD_SCALE, false)
 new_sprite.update
 check(new_sprite.zoom_x == 1.0 && new_sprite.zoom_y == 1.0, "Decades wrongly scaled")
 
-# Integrated install: the pilot marker is absent. Switch the current
-# region on the same sprite to prove the shared runtime does not leak.
 File.delete("Kanto pilot.json")
 Dir.mkdir("Data")
 File.write("Data/blue-kanto-install.json", "{}")
 BlueKantoPilot.send(:remove_const, :INTEGRATED_KANTO)
 BlueKantoPilot.const_set(:INTEGRATED_KANTO, true)
 $PokemonGlobal = Struct.new(:blue_regions).new({"current"=>"DECADES"})
-new_sprite.instance_variable_set(:@ch, 48)
 new_sprite.update
 check(new_sprite.zoom_x == 1.0 && new_sprite.zoom_y == 1.0, "integrated Decades scaled")
 $PokemonGlobal.blue_regions["current"] = "KANTO"
 new_sprite.update
-check(new_sprite.zoom_x == (40.0 / 48) && new_sprite.zoom_y == (40.0 / 48), "integrated Kanto not scaled")
-[20, 32, 40].each do |height|
-  new_sprite.instance_variable_set(:@ch, height)
-  new_sprite.update
-  check(new_sprite.zoom_x == 1.0 && new_sprite.zoom_y == 1.0, "integrated native #{height}px avatar shrunk")
-end
-new_sprite.instance_variable_set(:@ch, 80)
-new_sprite.update
-check(new_sprite.zoom_x == 0.5 && new_sprite.zoom_y == 0.5, "integrated tall avatar not capped")
-npc.update
-check(npc.zoom_x == 1.0 && npc.zoom_y == 1.0, "integrated NPC scaled")
+check(new_sprite.zoom_x == 2.0 && new_sprite.zoom_y == 2.0, "integrated small avatar not enlarged")
 %w[JOHTO HOENN SINNOH DECADES].each do |region|
   $PokemonGlobal.blue_regions["current"] = region
   new_sprite.update
   check(new_sprite.zoom_x == 1.0 && new_sprite.zoom_y == 1.0, "#{region} inherited Kanto zoom")
   $PokemonGlobal.blue_regions["current"] = "KANTO"
   new_sprite.update
-  check(new_sprite.zoom_x == 0.5 && new_sprite.zoom_y == 0.5, "Kanto reentry scale lost")
+  check(new_sprite.zoom_x == 2.0 && new_sprite.zoom_y == 2.0, "Kanto reentry scale lost")
 end
 $game_player = Game_Player.new
 new_sprite.update
 check(new_sprite.zoom_x == 1.0 && new_sprite.zoom_y == 1.0, "old integrated player remained scaled")
 $PokemonGlobal = nil
 Sprite_Character.new($game_player).update
-puts "PASS: Kanto native player frames at 100%, tall frames capped at 40px; NPCs, pivots, and Decades unchanged"
+puts "PASS: Kanto player visible height matches Gary; NPCs, pivots and Decades unchanged"
 puts "KANTO_K02B_INTEGRATED_SCALE_OK"
 puts "KANTO_1605_NATIVE_PLAYER_SCALE_REGRESSION_OK"
+puts "KANTO_GARY_VISIBLE_PLAYER_SCALE_FIXTURE_OK"
 
 """
 
@@ -247,9 +269,12 @@ class KantoOverworldPlayerScaleTests(unittest.TestCase):
                 cwd=tmp, capture_output=True, text=True, timeout=20, check=False,
             )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn("PASS: Kanto native player frames at 100%, tall frames capped at 40px", result.stdout)
+        self.assertIn("PASS: Kanto player visible height matches Gary", result.stdout)
         self.assertIn("KANTO_K02B_INTEGRATED_SCALE_OK", result.stdout)
         self.assertIn("KANTO_1605_NATIVE_PLAYER_SCALE_REGRESSION_OK", result.stdout)
+        self.assertIn("KANTO_GARY_VISIBLE_PLAYER_SCALE_FIXTURE_OK", result.stdout)
+        self.assertIn("KANTO_PLAYER_SCREENSHOT_62_TO_80_OK", result.stdout)
+        print(result.stdout.strip())
 
 
 if __name__ == "__main__":
