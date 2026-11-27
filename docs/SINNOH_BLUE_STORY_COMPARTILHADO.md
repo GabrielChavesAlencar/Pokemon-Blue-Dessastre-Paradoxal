@@ -1,6 +1,8 @@
 # Sinnoh no Blue-Story compartilhado
 
-O instalador do Windows procura um pacote revisado em `.blue-work/sinnoh-shared/manifest.json` após integrar as demais regiões. Para o Android, o empacotador usa a mesma instalação `game/` e o mesmo canal de atualizações `multiregion`. Com a região instalada e o código compilado, Novo Jogo pode começar em Sinnoh. O agente da cidade de chegada usa o transporte regional do Blue-Story e preserva o mesmo save, a equipe, o PC e as regras de itens-chave e HMs por região.
+No Windows, o Blue-Story.exe abre o jogo principal diretamente. O instalador procura um pacote revisado em `.blue-work/sinnoh-shared/manifest.json` após integrar as demais regiões. Para instalar Sinnoh para uso local, deixe `Sinnoh Maps.zip` e `Ultimate Gen 4 Overworlds Pack.zip` junto ao Blue-Story.exe. O instalador confere os hashes dos ZIPs e gera os mapas na instalação principal. Com a região instalada e o código compilado, escolha **Novo Jogo → Sinnoh**. O agente de Twinleaf usa o transporte regional do Blue-Story e preserva o mesmo save, a equipe, o PC e as regras de itens-chave e HMs por região.
+
+O empacotador Android usa a instalação `game/` e o canal de atualizações `multiregion`. Para publicar Sinnoh nesse canal, é preciso um pacote aprovado para distribuição e uma validação no JoiPlay.
 
 Para preparar o pacote, a revisão precisa fornecer os 144 mapas, a lista estável de MapIDs, os pontos transitáveis de início, chegada e agente, e `Plugins/ZZZZZ Blue Sinnoh Shared/SinnohSharedEvents.rb`. O módulo `BlueSinnohSharedEvents` deve confirmar em `ready?` que os catálogos e eventos usados pelo conteúdo estão compilados. O manifesto `BLUE_SINNOH_SHARED_V1` registra SHA-256 do pacote e dos índices, tilesets e conexões da base em que foi preparado. Ele só pode registrar aprovação após a revisão de mapas, direitos de distribuição e viagem Windows. A distribuição Android também exige as aprovações `joiplay_travel` e `android_distribution`.
 
@@ -16,7 +18,7 @@ O ponto de chegada e o agente devem estar no mapa exterior original `Twinleaf To
 
 ## Geração do candidato de 144 mapas
 
-Na raiz do projeto, com o jogo fechado, `python scripts/regions/prepare_sinnoh_shared.py` usa a instalação `game/` para leitura. Use `--base-game` para indicar outra instalação Blue-Story. A reserva compartilhada de Sinnoh vai de 451 a 594 para comportar os 151 mapas de Kanto em uma instalação limpa. Gere uma nova cópia de QA caso tenha usado a reserva provisória de 445 a 588. O candidato grava em `.blue-work/sinnoh-shared-candidate/world/` os RXDATA, índices, tilesets, conexões, eventos e recursos regionais. Encontros e metadados entram com validação das seções por MapID. O arquivo `candidate.json` registra hashes, IDs simbólicos e as posições calculadas de Twinleaf.
+Na raiz do projeto, com o jogo fechado, `python scripts/regions/prepare_sinnoh_shared.py` usa a instalação `game/` para leitura. Use `--base-game` para indicar outra instalação Blue-Story. A reserva compartilhada de Sinnoh vai de 452 a 595 para comportar os 152 mapas de Kanto em uma instalação limpa. Gere uma nova cópia de QA se ela tiver sido criada com a reserva anterior. O candidato grava em `.blue-work/sinnoh-shared-candidate/world/` os RXDATA, índices, tilesets, conexões, eventos e recursos regionais. Encontros e metadados entram com validação das seções por MapID. O arquivo `candidate.json` registra hashes, IDs simbólicos e as posições calculadas de Twinleaf.
 
 ## Teste em cópia descartável
 

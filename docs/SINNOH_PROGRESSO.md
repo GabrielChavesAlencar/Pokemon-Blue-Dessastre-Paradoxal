@@ -7,7 +7,7 @@
 
 ## Integração no Blue-Story
 
-A montagem de QA sobre a `main` `ccb0c9ee` gerou 144 mapas de Sinnoh. A reserva 451–594 é compatível com a instalação limpa de Kanto 151 e com a migração de instalações existentes. O Novo Jogo usa o quarto do protagonista e o transporte entre regiões passa pelo Agente Regional em Twinleaf Town. [Reserva dos MapIDs](../data/regions/sinnoh-shared-mapids.json) · [PR #339](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/pull/339).
+A instalação local do Blue-Story no Windows integrou os 144 mapas de Sinnoh na reserva 452–595, após os 152 mapas de Kanto. No Game.exe da instalação principal, **Novo Jogo → Sinnoh** abriu o quarto do protagonista e o Agente Regional em Twinleaf Town completou as oito viagens de ida e volta entre Sinnoh e Decades, Kanto, Johto e Hoenn. O instalador abre diretamente o jogo principal. [Reserva dos MapIDs](../data/regions/sinnoh-shared-mapids.json) · [PR #339](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/pull/339).
 
 Na cópia multirregional de QA, o Game.exe compilou os 144 mapas, abriu o quarto inicial e encontrou um único agente em Twinleaf. O teste automatizado no motor completou as oito viagens e reabriu a partida de QA preservando a posição, a equipe, a bolsa e o progresso de Sinnoh. Em outra partida, iniciada em Kanto, a viagem manteve Kanto como região inicial e permitiu gravar o primeiro marco de Sinnoh. O ZIP local de QA passou pelas verificações do inventário, dos plugins compilados, do CRC dos arquivos e do SHA-256. A execução Android ainda requer um dispositivo ou emulador com JoiPlay e o plugin RPG Maker.
 
