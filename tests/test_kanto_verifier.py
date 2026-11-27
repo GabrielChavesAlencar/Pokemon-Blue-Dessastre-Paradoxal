@@ -59,7 +59,16 @@ class KantoPilotAuditTests(unittest.TestCase):
         root = REGIONS.parents[1]
         data = json.loads((root / "site/public/data/kanto.json").read_text("utf-8"))
         self.assertEqual(len(data["locations"]), 156)
-        self.assertEqual(len(data["trainers"]), 162)
+        self.assertEqual(len(data["trainers"]), 163)
+        ship = next(t for t in data["trainers"] if t["id"] == "kanto-blue-ss-anne")
+        self.assertEqual(ship["location"], "kanto-ss-anne-2f")
+        self.assertEqual([v["starter"] for v in ship["variants"]],
+                         ["BULBASAUR", "CHARMANDER", "SQUIRTLE"])
+        self.assertEqual([[p["species"] for p in v["team"]] for v in ship["variants"]],
+                         [["PIDGEOTTO", "RATICATE", "KADABRA", s]
+                          for s in ("CHARMELEON", "WARTORTLE", "IVYSAUR")])
+        oak = next(t for t in data["trainers"] if t["id"] == "kanto-blue")
+        self.assertEqual(len(oak["variants"]), 3)
         leaders = {row["name"]: row for row in data["trainers"] if row["leader"]}
         self.assertIn("Blaine", leaders)
         self.assertIn("Giovanni", leaders)
