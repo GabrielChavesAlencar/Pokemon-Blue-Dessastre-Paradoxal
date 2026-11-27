@@ -2,6 +2,36 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "dc12b8dbde34bd8affee3903023fc5f1182bce8e",
+      "date": "2026-11-27T15:35:57-03:00",
+      "title": "Kanto K03-D: Cut nativo, puzzle de Lt. Surge e Thunder Badge",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "6ef28195b43d7ea85a0c5f59d92c8c13d7a18f98",
+      "date": "2026-11-27T15:22:33-03:00",
+      "title": "K03-D: retain native spritesets through post-Cut door movement",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "68c883fe712007cb9b65a4c734d832be229426c6",
+      "date": "2026-11-27T15:13:07-03:00",
+      "title": "K03-D: initialize native scene for Cut and retain exception diagnostics",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "ee260a145dca6905e2eeccc208e2fcb273e0973b",
+      "date": "2026-11-27T15:04:22-03:00",
+      "title": "K03-D: require native Cut event and actual gym door transfer",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "7a1ca1b2a3c02ce6be0e1f7ecd19d38984efc600",
+      "date": "2026-11-27T14:55:06-03:00",
+      "title": "Kanto K03-D: harden Surge puzzle, lock recovery and native badge proof",
+      "category": "Melhorias"
+    },
+    {
       "sha": "567039bf04322ca5af8f595ae53fe630e72817e4",
       "date": "2026-11-27T14:43:57-03:00",
       "title": "Kanto K03-C: S.S. Anne, rival, capitão e Cut com regressões Cerulean",
