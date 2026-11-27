@@ -50,7 +50,8 @@ def prepare(game, integrated=False):
         proof = f"""    begin
       load "{proof_file}"
       {klass}.run
-    rescue StandardError => error
+    rescue Exception => error
+      # Capture native EventScriptError as well as StandardError in CI only.
       File.write("{failure}", error.full_message)
       exit! 1
     end

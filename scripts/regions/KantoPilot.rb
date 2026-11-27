@@ -1290,7 +1290,7 @@ module BlueKantoPilot
       pbMessage(BlueKantoPilot.t("Blaine: Find the Secret Key in Pokémon Mansion before challenging me!", "Blaine: Encontre a Secret Key na Pokémon Mansion antes do desafio!"))
       return
     end
-    if type == :BLUE_KANTO_LEADER_SURGE && !progress["pilot_surge_unlocked"]
+    if type == :BLUE_KANTO_LEADER_SURGE && (!surge_gym? || !surge_unlocked?)
       pbMessage(BlueKantoPilot.t("Lt. Surge is behind the electric locks. Solve the trash can puzzle first.", "Lt. Surge aguarda atrás das trancas elétricas. Resolva o enigma das lixeiras primeiro."))
       return
     end
@@ -1414,7 +1414,35 @@ module BlueKantoPilot
 
   # The original gym used source-project global switches. The pilot uses only
   # its own Kanto state and gym-event self switches, so Decades remains safe.
+  def self.surge_gym?(map = $game_map)
+    kanto_current? && map && map.map_id == kanto_map_id(67)
+  end
+
+  def self.surge_unlocked?
+    progress["pilot_surge_unlocked"] ||
+      BlueRegions.local_achievements(progress, "KANTO").include?("THUNDER")
+  end
+
+  # Recover barrier pages on map setup or Continue, including legacy saves
+  # with Thunder already earned. Never change an unrelated map's switches.
+  def self.sync_surge_locks(map = $game_map)
+    return false unless surge_gym?(map) && $game_self_switches
+    unlocked = !!surge_unlocked?
+    changed = false
+    SURGE_LOCKS.each do |id|
+      next unless map.events[id]
+      key = [map.map_id, id, "A"]
+      next if !!$game_self_switches[key] == unlocked
+      $game_self_switches[key] = unlocked
+      map.events[id].refresh
+      changed = true
+    end
+    map.need_refresh = true if changed
+    changed
+  end
+
   def self.surge_pairs
+    return [] unless surge_gym?
     cans = SURGE_CANS.filter_map do |id|
       event = $game_map.events[id]
       [id, event.x, event.y] if event
@@ -1426,11 +1454,15 @@ module BlueKantoPilot
     end
     return [] if horizontal_or_vertical.empty?
     closest = horizontal_or_vertical.map(&:last).min
-    horizontal_or_vertical.select { |_pair, distance| distance == closest }.map(&:first)
+    # Both orders are valid: every physical can can be the first key.
+    horizontal_or_vertical.select { |_pair, distance| distance == closest }.
+      flat_map { |pair, _distance| [pair, pair.reverse] }.uniq
   end
 
   def self.surge_can(event_id)
-    if progress["pilot_surge_unlocked"]
+    return false unless surge_gym? && SURGE_CANS.include?(event_id) && $game_map.events[event_id]
+    if surge_unlocked?
+      sync_surge_locks
       pbMessage(BlueKantoPilot.t("Both electric locks have already been disabled.", "As duas trancas elétricas já foram desativadas."))
       return
     end
@@ -1439,7 +1471,11 @@ module BlueKantoPilot
       pbMessage(BlueKantoPilot.t("The mechanism isn't ready in this copy of the Gym.", "O mecanismo não está pronto nesta cópia do ginásio."))
       return
     end
-    progress["pilot_surge_solution"] ||= possible.sample
+    # Keep a valid saved sequence, but discard obsolete/corrupt selections.
+    unless possible.include?(progress["pilot_surge_solution"])
+      progress["pilot_surge_first"] = false
+      progress["pilot_surge_solution"] = possible.sample
+    end
     target = progress["pilot_surge_solution"]
     if !progress["pilot_surge_first"]
       if event_id == target[0]
@@ -1451,10 +1487,7 @@ module BlueKantoPilot
     elsif event_id == target[1]
       progress["pilot_surge_unlocked"] = true
       progress["pilot_surge_first"] = false
-      SURGE_LOCKS.each do |id|
-        $game_self_switches[[$game_map.map_id, id, "A"]] = true
-      end
-      $game_map.need_refresh = true
+      sync_surge_locks
       pbMessage(BlueKantoPilot.t("Both locks are disabled! You can now reach Lt. Surge.", "As duas trancas foram desativadas! Lt. Surge está acessível."))
     else
       progress["pilot_surge_first"] = false
@@ -2651,6 +2684,7 @@ module BlueKantoPilot::CeruleanQuestMapSetup
     result = super
     BlueKantoPilot.reload_stale_cerulean_doors(self)
     BlueKantoPilot.sync_cerulean_police_dialogue(self)
+    BlueKantoPilot.sync_surge_locks(self)
     result
   end
 end
@@ -2659,7 +2693,10 @@ Game_Map.prepend(BlueKantoPilot::CeruleanQuestMapSetup) if defined?(Game_Map)
 module BlueKantoPilot::CeruleanQuestMapLoad
   def createSpritesets(*args)
     maps = $map_factory && $map_factory.respond_to?(:maps) ? Array($map_factory.maps) : []
-    (maps + [$game_map]).compact.uniq.each { |map| BlueKantoPilot.sync_loaded_cerulean_map(map) }
+    (maps + [$game_map]).compact.uniq.each do |map|
+      BlueKantoPilot.sync_loaded_cerulean_map(map)
+      BlueKantoPilot.sync_surge_locks(map)
+    end
     super
   end
 
@@ -2667,6 +2704,7 @@ module BlueKantoPilot::CeruleanQuestMapLoad
     map = $map_factory && $map_factory.respond_to?(:maps) && args[0].is_a?(Integer) ?
       $map_factory.maps[args[0]] : nil
     BlueKantoPilot.sync_loaded_cerulean_map(map || $game_map)
+    BlueKantoPilot.sync_surge_locks(map || $game_map)
     super
   end
 end
