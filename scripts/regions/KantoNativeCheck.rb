@@ -135,8 +135,56 @@ module KantoNativeCheck
 
   # K02-C: actual installed native events and directional collision checks.
   # The route proof is not a manual input session; battles remain controlled.
+  # Verify the real active guard page and its native Show Text event.
+  # The graphical message window is deliberately not claimed as tested.
+  def self.cerulean_police_proof(city,open)
+    $map_factory.setup(city)
+    # Deliberately restore the old page while leaving the correct switches
+    # already recorded, reproducing a cached city on returning from Bill.
+    if open
+      [13,25].each { |id| $game_self_switches[[city,id,"A"]] = false }
+      [13,25].each { |id| $game_map.events[id].refresh }
+      [13,25].each { |id| $game_self_switches[[city,id,"A"]] = true }
+      require!(!$game_map.events[13].character_name.to_s.empty?,
+        "Cerulean stale police fixture not reproduced")
+    end
+    BlueKantoPilot.sync_loaded_cerulean_map($game_map)
+    front,side = $game_map.events[13],$game_map.events[25]
+    visible,hidden = open ? [side,front] : [front,side]
+    require!(!visible.character_name.to_s.empty? && hidden.character_name.to_s.empty? &&
+      hidden.through && visible.trigger == 0,"Cerulean police page/collision mismatch")
+    require!([front.x,front.y] != [side.x,side.y],"Cerulean police positions coincide")
+    require!(visible.list.map(&:code) == [101,0] &&
+      !visible.list.first.parameters.first.to_s.strip.empty?,
+      "Cerulean police dialogue still uses script evaluation")
+    # Engine interpreter must select the native guard event. Capture the
+    # underlying native message without opening a manual message window.
+    $game_map.events.each_value { |event| event.clear_starting }
+    visible.start
+    interpreter = pbMapInterpreter
+    require!(!interpreter.running? && !$game_temp.player_transferring,
+      "Cerulean police interpreter was busy")
+    interpreter.setup_starting_event
+    require!(interpreter.running? && interpreter.instance_variable_get(:@event_id) == visible.id,
+      "Cerulean native police event not selected")
+    messages = []
+    with_native_message_fixture(proc { |message,*args| messages << message.to_s; nil }) do
+      interpreter.update
+    end
+    require!(!messages.empty? && messages.all? { |m| !m.strip.empty? },
+      "Cerulean police native dialogue did not dispatch")
+    require!(!interpreter.running? && !$game_temp.player_transferring,
+      "Cerulean police dialogue did not finish")
+    result = {"open"=>open,"visible"=>visible.id,"hidden"=>hidden.id,
+      "front"=>[front.x,front.y],"side"=>[side.x,side.y],"native_messages"=>messages,
+      "stale_cache_tested"=>open,"manual_gameplay"=>false}
+    puts "KANTO_CERULEAN_POLICE_NATIVE_REPORT:#{result.inspect}"
+    result
+  end
+
   def self.cerulean_legacy_door_proof
     city = BlueKantoPilot.kanto_map_id(39)
+    police = cerulean_police_proof(city,false)
     $map_factory.setup(city)
     $game_player.moveto(22,20)
     require!(!BlueKantoPilot.cerulean_house_open?, "Cerulean legacy fixture must precede Bill")
@@ -190,7 +238,7 @@ module KantoNativeCheck
     end
     $map_factory.setup(city)
     $game_player.moveto(*position)
-    report = {"restored"=>doors.keys,"public_approaches"=>approaches,"native_public_contacts_before_bill"=>public_contacts,"guarded_house"=>!BlueKantoPilot.cerulean_house_open?,"position"=>position,"party_preserved"=>true,"idempotent"=>true,"manual_gameplay"=>false}
+    report = {"police"=>police,"restored"=>doors.keys,"public_approaches"=>approaches,"native_public_contacts_before_bill"=>public_contacts,"guarded_house"=>!BlueKantoPilot.cerulean_house_open?,"position"=>position,"party_preserved"=>true,"idempotent"=>true,"manual_gameplay"=>false}
     puts "KANTO_CERULEAN_LEGACY_DOORS_REPORT:#{report.inspect}"
     puts "KANTO_CERULEAN_LEGACY_DOORS_RELOAD_OK"
     report
@@ -326,6 +374,9 @@ module KantoNativeCheck
     require!(mapping.values.all? && mapping.values.uniq.length == 6,"K02-C missing interior registry")
     state = BlueKantoPilot.progress
     require!(BlueKantoPilot.cerulean_house_open?, "K02-C Bill did not unlock house")
+    require!(state["pilot_ss_ticket"], "Cerulean police post-Bill proof requires ticket")
+    police = cerulean_police_proof(city,true)
+    puts "KANTO_CERULEAN_POLICE_BEFORE_AFTER_BILL_OK"
     city_component = opening_component(city,[22,20])
     require!($game_map.events[13].character_name.to_s.empty? &&
              !$game_map.events[25].character_name.to_s.empty?, "K02-C police did not move")
