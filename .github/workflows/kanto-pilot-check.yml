@@ -88,6 +88,8 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Pilot build failed'}
           python scripts/regions/audit_cerulean_interiors.py
           if($LASTEXITCODE -ne 0){throw 'K02-C isolated source geometry migration failed'}
+          python scripts/regions/audit_k03e_diglett.py
+          if($LASTEXITCODE -ne 0){throw 'K03-E isolated source and geometry candidate failed'}
           $scope='.blue-work/kanto-pilot/Data/blue-kanto-music.txt'
           if(-not (Test-Path $scope)){throw 'Missing regional Kanto music scope'}
           $scopeRows=@(Get-Content $scope | Where-Object { $_ -match '^SCOPE[\t]' })
@@ -699,6 +701,14 @@ jobs:
         with:
           name: kanto-cerulean-police-migration-proof
           path: .blue-work/cerulean-police-migration-proof.json
+          include-hidden-files: true
+          if-no-files-found: error
+      - name: Preservar recibo fonte K03-E
+        if: always() && hashFiles('.blue-work/kanto-k03e-source.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k03e-source-candidate
+          path: .blue-work/kanto-k03e-source.json
           include-hidden-files: true
           if-no-files-found: error
       - name: Preservar diagnostico nativo K03-D de Cut
