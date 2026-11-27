@@ -286,6 +286,13 @@ jobs:
               $interiorProof="$pilot/Data/blue-kanto-k02c-native-proof.txt"
               if(-not (Test-Path $interiorProof)){throw 'K02-C native interior proof missing'}
               Write-Host ("KANTO_K02C_NATIVE_INTERIORS_REPORT:" + (Get-Content $interiorProof -Raw).Trim())
+              $ceruleanRegression="$pilot/Data/blue-kanto-cerulean-regression.txt"
+              if(-not (Test-Path $ceruleanRegression)){throw 'Cerulean police/roundtrip native receipt missing'}
+              $ceruleanMarkers=Get-Content $ceruleanRegression
+              foreach($marker in @('KANTO_CERULEAN_POLICE_BEFORE_AFTER_BILL_OK','KANTO_CERULEAN_NATIVE_ROUNDTRIP_OK')){
+                if($ceruleanMarkers -notcontains $marker){throw "Missing native marker: $marker"}
+              }
+              $ceruleanMarkers | Write-Host
               Write-Host 'KANTO_K02C_INTERIORS_BIKE_ROCKET_SAVE_RELOAD_OK'
               $ceruleanTrace="$pilot/Data/blue-kanto-k02d-trace.txt"
               $ceruleanProof="$pilot/Data/blue-kanto-k02d-proof.txt"

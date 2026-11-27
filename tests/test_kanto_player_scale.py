@@ -164,12 +164,20 @@ puts "KANTO_GARY_VISIBLE_PLAYER_SCALE_FIXTURE_OK"
 QUEST_PAGE_CHECK = r"""
 class Game_Player; end
 class Game_Event
-  attr_reader :calls
-  def initialize
+  Command = Struct.new(:code,:parameters)
+  attr_reader :calls,:trigger,:character_name,:list,:through
+  def initialize(map_id,id)
+    @map_id,@id = map_id,id
     @calls = 0
   end
   def refresh
     @calls += 1
+    switched = !!$game_self_switches[[@map_id,@id,"A"]]
+    visible = (@id == 13 && !switched) || (@id == 25 && switched)
+    @trigger = 0
+    @character_name = visible ? "police" : ""
+    @through = !visible
+    @list = visible ? [Command.new(355,["BlueKantoPilot.cerulean_police"]),Command.new(0,[])] : [Command.new(0,[])]
   end
 end
 class Game_Map
@@ -178,7 +186,7 @@ class Game_Map
   def setup(map_id)
     @map_id = map_id
     @flags_at_setup = $game_self_switches.dup
-    @events = {13=>Game_Event.new,25=>Game_Event.new,26=>Game_Event.new}
+    @events = [13,25,26].to_h { |id| [id,Game_Event.new(map_id,id)] }
     @events.each_value(&:refresh)
   end
 end
@@ -210,6 +218,8 @@ map = Game_Map.new
 map.setup(321)
 check(map.events[13].calls == 1,"native event refresh chain changed")
 check(!$game_self_switches[[321,13,"A"]],"police moved before Bill")
+check(map.events[13].list.map(&:code) == [101,0],"front police did not receive native text")
+check(map.events[13].character_name == "police" && map.events[25].through,"front police page incorrect")
 $PokemonGlobal.blue_regions["pilot_bill_helped"] = true
 map.setup(321)
 check(map.flags_at_setup[[321,13,"A"]] && map.flags_at_setup[[321,25,"A"]],"map setup missed police flags")
@@ -220,6 +230,19 @@ check([26,37,38].all? { |id| $game_self_switches[[321,id,"A"]] },"loaded map mis
 check(map.events[26].calls == 2 && map.need_refresh,"loaded map did not refresh")
 Scene_Map.new.createSpritesets
 check(map.events[26].calls == 2,"unchanged flags refreshed unnecessarily")
+# The switches can already be true while cached event pages are still old.
+[13,25].each { |id| $game_self_switches[[321,id,"A"]] = false }
+[13,25].each { |id| map.events[id].refresh }
+[13,25].each { |id| $game_self_switches[[321,id,"A"]] = true }
+check(map.events[13].character_name == "police","stale guard fixture failed")
+Scene_Map.new.createSpritesets
+check(map.events[13].through && map.events[13].character_name.empty?,"stale guard still blocks door")
+check(map.events[25].character_name == "police" && map.events[25].list.map(&:code) == [101,0],"side guard missing native dialogue")
+# Legacy ticket alone must reconcile the guard without granting new items.
+$PokemonGlobal.blue_regions.delete("pilot_bill_helped")
+$PokemonGlobal.blue_regions["pilot_ss_ticket"] = true
+map.setup(321)
+check(map.events[13].through && map.events[25].list.first.code == 101,"legacy ticket did not unlock guard")
 %w[DECADES JOHTO HOENN SINNOH].each do |region|
   $PokemonGlobal.blue_regions["current"] = region
   $game_self_switches.clear

@@ -135,8 +135,56 @@ module KantoNativeCheck
 
   # K02-C: actual installed native events and directional collision checks.
   # The route proof is not a manual input session; battles remain controlled.
+  # Verify the real active guard page and its native Show Text event.
+  # The graphical message window is deliberately not claimed as tested.
+  def self.cerulean_police_proof(city,open)
+    $map_factory.setup(city)
+    # Deliberately restore the old page while leaving the correct switches
+    # already recorded, reproducing a cached city on returning from Bill.
+    if open
+      [13,25].each { |id| $game_self_switches[[city,id,"A"]] = false }
+      [13,25].each { |id| $game_map.events[id].refresh }
+      [13,25].each { |id| $game_self_switches[[city,id,"A"]] = true }
+      require!(!$game_map.events[13].character_name.to_s.empty?,
+        "Cerulean stale police fixture not reproduced")
+    end
+    BlueKantoPilot.sync_loaded_cerulean_map($game_map)
+    front,side = $game_map.events[13],$game_map.events[25]
+    visible,hidden = open ? [side,front] : [front,side]
+    require!(!visible.character_name.to_s.empty? && hidden.character_name.to_s.empty? &&
+      hidden.through && visible.trigger == 0,"Cerulean police page/collision mismatch")
+    require!([front.x,front.y] != [side.x,side.y],"Cerulean police positions coincide")
+    require!(visible.list.map(&:code) == [101,0] &&
+      !visible.list.first.parameters.first.to_s.strip.empty?,
+      "Cerulean police dialogue still uses script evaluation")
+    # Engine interpreter must select the native guard event. Capture the
+    # underlying native message without opening a manual message window.
+    $game_map.events.each_value { |event| event.clear_starting }
+    visible.start
+    interpreter = pbMapInterpreter
+    require!(!interpreter.running? && !$game_temp.player_transferring,
+      "Cerulean police interpreter was busy")
+    interpreter.setup_starting_event
+    require!(interpreter.running? && interpreter.instance_variable_get(:@event_id) == visible.id,
+      "Cerulean native police event not selected")
+    messages = []
+    with_native_message_fixture(proc { |message,*args| messages << message.to_s; nil }) do
+      interpreter.update
+    end
+    require!(!messages.empty? && messages.all? { |m| !m.strip.empty? },
+      "Cerulean police native dialogue did not dispatch")
+    require!(!interpreter.running? && !$game_temp.player_transferring,
+      "Cerulean police dialogue did not finish")
+    result = {"open"=>open,"visible"=>visible.id,"hidden"=>hidden.id,
+      "front"=>[front.x,front.y],"side"=>[side.x,side.y],"native_messages"=>messages,
+      "stale_cache_tested"=>open,"manual_gameplay"=>false}
+    puts "KANTO_CERULEAN_POLICE_NATIVE_REPORT:#{result.inspect}"
+    result
+  end
+
   def self.cerulean_legacy_door_proof
     city = BlueKantoPilot.kanto_map_id(39)
+    police = cerulean_police_proof(city,false)
     $map_factory.setup(city)
     $game_player.moveto(22,20)
     require!(!BlueKantoPilot.cerulean_house_open?, "Cerulean legacy fixture must precede Bill")
@@ -178,12 +226,19 @@ module KantoNativeCheck
       require!(witness, "Cerulean public door has no native step #{id}")
       [id,[event.x,event.y],witness[0]]
     end
+    public_returns = {7=>[5,[13,29]],8=>[3,[15,18]],10=>[2,[10,12]],
+                      11=>[1,[17,12]],12=>[2,[23,29]]}
     public_contacts = [7,8,10,11,12].map do |id|
-      cerulean_native_door_contact_proof(city,component,id,BlueKantoPilot.kanto_map_id(doors.fetch(id)))
+      destination = BlueKantoPilot.kanto_map_id(doors.fetch(id))
+      entry = cerulean_native_door_contact_proof(city,component,id,destination)
+      eid,expected = public_returns.fetch(id)
+      returned = cerulean_native_return_proof(destination,entry.fetch("landing"),eid,city,expected)
+      require!(!BlueKantoPilot.cerulean_house_open?, "Cerulean return unexpectedly unlocked Bill gate")
+      entry.merge("native_return"=>returned)
     end
     $map_factory.setup(city)
     $game_player.moveto(*position)
-    report = {"restored"=>doors.keys,"public_approaches"=>approaches,"native_public_contacts_before_bill"=>public_contacts,"guarded_house"=>!BlueKantoPilot.cerulean_house_open?,"position"=>position,"party_preserved"=>true,"idempotent"=>true,"manual_gameplay"=>false}
+    report = {"police"=>police,"restored"=>doors.keys,"public_approaches"=>approaches,"native_public_contacts_before_bill"=>public_contacts,"guarded_house"=>!BlueKantoPilot.cerulean_house_open?,"position"=>position,"party_preserved"=>true,"idempotent"=>true,"manual_gameplay"=>false}
     puts "KANTO_CERULEAN_LEGACY_DOORS_REPORT:#{report.inspect}"
     puts "KANTO_CERULEAN_LEGACY_DOORS_RELOAD_OK"
     report
@@ -209,6 +264,13 @@ module KantoNativeCheck
       "moving"=>$game_player.moving?,"jumping"=>$game_player.jumping?}
     $game_player.move_generic(dir,true)
     require!(event.starting, "Cerulean native movement did not start event: #{context.inspect}; after=#{[$game_player.x,$game_player.y].inspect}")
+    cerulean_native_started_transfer!(event,destination,from,dir,passable)
+  end
+
+  # Both the entrance and the interior return must run the real interpreter.
+  # Only the final scene/spriteset application is replaced in headless CI.
+  def self.cerulean_native_started_transfer!(event,destination,from,dir,passable)
+    id = event.id
     landing = north_transfer!(event,destination)
     player_after = [$game_player.x,$game_player.y]
     interpreter = pbMapInterpreter
@@ -253,12 +315,68 @@ module KantoNativeCheck
       "destination"=>destination,"landing"=>landing,"manual_scene_transfer"=>false}
   end
 
+  # Probe all source-authored return doors from a reachable interior tile.
+  # Never call event.start or synthesize command 201 in this test.
+  def self.cerulean_native_return_proof(map_id,anchor,id,city,expected)
+    component = opening_component(map_id,anchor)
+    event = $game_map.events[id]
+    require!(event && north_transfer!(event,city) == expected,
+             "Cerulean return missing #{map_id}/#{id}")
+    target = [event.x,event.y]
+    steps = {2=>[0,1],4=>[-1,0],6=>[1,0],8=>[0,-1]}
+    # An impassable door tile can still trigger native player-touch on a
+    # blocked step, as on the city doors. Do not exclude that input path.
+    candidates = steps.filter_map do |dir,(dx,dy)|
+      from = [target[0]-dx,target[1]-dy]
+      next unless component.key?(from)
+      $game_player.moveto(*from)
+      [from,dir,$game_player.passable?(*from,dir)]
+    end
+    candidates.sort_by! { |from,_dir,passable| [passable ? 0 : 1,component.fetch(from)] }
+    context = {"map"=>map_id,"event"=>id,"target"=>target,"anchor"=>anchor,
+      "dimensions"=>[$game_map.width,$game_map.height],"trigger"=>event.trigger,
+      "candidates"=>candidates,"reachable_cells"=>component.length}
+    puts "KANTO_CERULEAN_RETURN_APPROACH:#{context.inspect}"
+    require!(!candidates.empty?, "Cerulean return has no reachable adjacent tile: #{context.inspect}")
+    attempts = []
+    selected = nil
+    candidates.each do |from,dir,passable|
+      $game_player.moveto(*from)
+      $game_map.events.each_value { |e| e.clear_starting }
+      $game_player.move_generic(dir,true)
+      deadline = System.uptime + 3
+      until event.starting || System.uptime >= deadline
+        break if pbMapInterpreterRunning? || $game_temp.player_transferring
+        break unless $game_player.moving? || $game_player.jumping?
+        Graphics.update
+        $game_player.update
+      end
+      attempts << [from,dir,passable,[$game_player.x,$game_player.y],event.starting]
+      if event.starting
+        selected = [from,dir,passable]
+        break
+      end
+      require!(!pbMapInterpreterRunning? && !$game_temp.player_transferring,
+        "Unexpected interpreter or transfer during Cerulean return: #{context.inspect} #{attempts.inspect}")
+      require!($game_map.events.values.none? { |e| e.starting },
+        "Unexpected event started during Cerulean return: #{context.inspect} #{attempts.inspect}")
+    end
+    require!(selected, "Cerulean native return did not start: #{context.inspect} attempts=#{attempts.inspect}")
+    from,dir,passable = selected
+    receipt = cerulean_native_started_transfer!(event,city,from,dir,passable)
+    require!(receipt["landing"] == expected,"Cerulean return changed landing #{map_id}/#{id}")
+    receipt.merge("interior_map"=>map_id,"interior_anchor"=>anchor)
+  end
+
   def self.cerulean_interiors_proof(battle_calls, losses_remaining)
     city = BlueKantoPilot.kanto_map_id(39)
     mapping = (43..48).to_h { |id| [id,BlueKantoPilot.kanto_map_id(id)] }
     require!(mapping.values.all? && mapping.values.uniq.length == 6,"K02-C missing interior registry")
     state = BlueKantoPilot.progress
     require!(BlueKantoPilot.cerulean_house_open?, "K02-C Bill did not unlock house")
+    require!(state["pilot_ss_ticket"], "Cerulean police post-Bill proof requires ticket")
+    police = cerulean_police_proof(city,true)
+    puts "KANTO_CERULEAN_POLICE_BEFORE_AFTER_BILL_OK"
     city_component = opening_component(city,[22,20])
     require!($game_map.events[13].character_name.to_s.empty? &&
              !$game_map.events[25].character_name.to_s.empty?, "K02-C police did not move")
@@ -304,10 +422,17 @@ module KantoNativeCheck
         require!(opening_action_witness(interior,$game_map.events[1]),"K02-C bike owner unreachable")
         north_callback!($game_map.events[1],"BlueKantoPilot.cerulean_bike_exchange")
       end
+      return_receipts = return_ids.map do |eid|
+        cerulean_native_return_proof(mapping[source],landing,eid,city,exits[source].fetch(eid))
+      end
       witnesses << {"city_event"=>id,"source"=>source,"landing"=>landing,
                     "reachable_cells"=>interior.length,"returns"=>return_ids,
-                    "native_door_contact"=>contact_receipt}
+                    "native_door_contact"=>contact_receipt,
+                    "native_returns"=>return_receipts}
     end
+    require!(witnesses.length == 8 && witnesses.all? { |w| w["native_returns"].length == w["returns"].length },
+             "Cerulean native entry/return evidence incomplete")
+    puts "KANTO_CERULEAN_NATIVE_ROUNDTRIP_OK:#{witnesses.map { |w| [w["city_event"],w["native_returns"].map { |e| e["event"] }] }.inspect}"
     [3,27].each do |id|
       source = doors[id][0]
       landing = exits[source][3]
@@ -461,7 +586,7 @@ module KantoNativeCheck
     $game_map.events.each_value { |event| event.refresh }
     require!([26,37,38].all? { |id| $game_self_switches[[city,id,"A"]] &&
              $game_map.events[id].character_name.to_s.empty? },"K02-C Rocket pages not hidden")
-    {"manual_gameplay"=>false,"witnesses"=>witnesses,"bicycle"=>1,"voucher"=>0,
+    {"manual_gameplay"=>false,"witnesses"=>witnesses,"police_after_bill"=>police,"bicycle"=>1,"voucher"=>0,
      "tm28"=>$bag.quantity(:TM28),"rocket_retry"=>true,"voucher_fixture"=>true,
      "native_bike_handlers"=>true,"regional_bag_staging"=>true,"required_actor_sprites"=>true,
      "native_trade_transaction"=>true,"trade_native_slot_read"=>true,"trade_animation_tested"=>false,"atlas_bitmap_loaded"=>true,
@@ -2877,6 +3002,26 @@ module KantoNativeCheck
              "K02-C reward/quest persistence failed")
     interiors_report["save_reload"] = true
     interiors_report["legacy_door_reload"] = legacy_door_report
+    before_police = legacy_door_report.fetch("police")
+    after_police = interiors_report.fetch("police_after_bill")
+    require!(!before_police["open"] && before_police["visible"] == 13 &&
+      after_police["open"] && after_police["visible"] == 25 && after_police["stale_cache_tested"] &&
+      [before_police,after_police].all? { |p| !p.fetch("native_messages").empty? },
+      "Cerulean native police receipt missing")
+    require!($game_self_switches[[BlueKantoPilot.kanto_map_id(39),13,"A"]] &&
+      $game_self_switches[[BlueKantoPilot.kanto_map_id(39),25,"A"]],
+      "Cerulean police page flags lost after save reload")
+    require!(interiors_report.fetch("witnesses").length == 8 &&
+      interiors_report.fetch("witnesses").all? { |w|
+        w.fetch("native_door_contact").fetch("destination_loaded") &&
+        w.fetch("native_returns").length == w.fetch("returns").length &&
+        w.fetch("native_returns").all? { |e| e.fetch("destination_loaded") } } &&
+      legacy_door_report.fetch("native_public_contacts_before_bill").length == 5 &&
+      legacy_door_report.fetch("native_public_contacts_before_bill").all? { |e|
+        e.fetch("native_return").fetch("destination_loaded") },
+      "Cerulean roundtrip receipt incomplete")
+    File.write("Data/blue-kanto-cerulean-regression.txt",
+      "KANTO_CERULEAN_POLICE_BEFORE_AFTER_BILL_OK\nKANTO_CERULEAN_NATIVE_ROUNDTRIP_OK\n")
     File.write("Data/blue-kanto-k02c-native-proof.txt", interiors_report.inspect)
     puts "KANTO_K02C_NATIVE_INTERIORS_REPORT:#{interiors_report.inspect}"
     puts "KANTO_K02C_INTERIORS_BIKE_ROCKET_SAVE_RELOAD_OK"
