@@ -209,9 +209,13 @@ P0: não abre, migração bloqueada, incompatibilidade de canal/patch, perda/cor
 
 Manter em cada entrega: total de mapas catalogados/preview/ausentes (meta auditada 207, 0, 0), quantidade de eventos/treinadores/encontros auditados e pendentes (denominadores só após inventário), progresso real das 16 etapas, status de publicação Windows/Android e QA por plataforma. Atualizar o portal a partir de evidências sem alterar histórico antigo. A issue #49 de treinadores/habitats deve ser acompanhada conforme cada lote Kanto, sem declarar toda a issue multirregional resolvida. Registrar discrepâncias de documentos antigos.
 
-### Próxima ação concreta: K00
+### Estado em 27/11 e próximo lote
 
-O par baseline 1589/73 já existe, portanto não é necessário gerar novo par apenas para iniciar esta auditoria. Instalar/atualizar nos dois ambientes e comprovar a revisão efetiva. Executar o smoke de K00, priorizando o erro Map300 no Windows e Cerulean no Android, coletar logs e corrigir somente o que falhar. Cada correção perceptível de K00 gera um novo par publicado antes de iniciar a próxima. Não avançar para expansão de conteúdo até concluir K00. Quando o ambiente físico estiver indisponível, registrar BLOCKED_ENV e indicar o teste exato que falta; não inventar QA.
+A estabilização técnica K00 foi publicada nas versões Windows 1595 e Android 77. O projeto avançou até K03-A, que incluiu o corredor das Rotas 5 e 6, a passagem subterrânea e a creche. O par verificado desse lote foi Windows 1609 e Android 162, ambos na revisão funcional `734bc1ff`. As provas nativas incluem migração, depósito e retirada na creche e recuperação da partida de teste. [Registro de K00 e K03-A](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/342#issuecomment-7207633159).
+
+A auditoria atual da fonte confirmou **152/207 mapas catalogados (73,43%)**, dos quais 35 estão em prévia, e **55 mapas de conteúdo ausentes**. A Barra 2 permanece **1/16**. A tabela da seção 3 registra o inventário inicial de 145 mapas. [Catálogo atual](../data/regions/kanto-source.json).
+
+A recorrência nas portas de Cerulean é a prioridade antes de K03-B. O [PR #364](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/pull/364) cobre o contato com as oito portas originais, a recuperação do mapa em partidas antigas e a verificação das transferências no pacote Android. O teste gráfico deve entrar e sair dos interiores em uma partida migrada, antes e depois da missão de Bill. No JoiPlay, deve também verificar a atualização incremental pelo canal multirregional e salvar e reabrir a partida. Com a correção publicada nas duas plataformas e o gate de Cerulean resolvido, o próximo sublote de conteúdo é **K03-B**, com o Clube de Fãs, voucher e interiores de Vermilion.
 
 ## Referências
 
