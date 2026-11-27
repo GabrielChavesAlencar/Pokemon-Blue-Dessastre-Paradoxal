@@ -43,6 +43,8 @@ jobs:
           # Prove the default release build first, using all inputs from this SHA.
           python scripts/regions/pilot.py --output .blue-work/kanto-release-pilot
           if($LASTEXITCODE -ne 0){throw 'Active Kanto pilot build failed'}
+          python scripts/regions/build_k04_geometry.py
+          if($LASTEXITCODE -ne 0){throw 'K04 isolated geometry and transfer validation failed'}
           python scripts/regions/release_gate.py --pilot .blue-work/kanto-release-pilot
           if($LASTEXITCODE -ne 0){throw 'Active Kanto release gate failed'}
           python scripts/regions/export_kanto.py --preview .blue-work/kanto-release-pilot --output .blue-work/kanto-release-site.json
@@ -144,7 +146,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: kanto-k04-source-inventory
-          path: .blue-work/kanto-k04-source.json
+          path: |
+            .blue-work/kanto-k04-source.json
+            .blue-work/kanto-k04-geometry-proof.json
           include-hidden-files: true
           if-no-files-found: error
       - name: Preservar recibo K02-C da fonte e migracao isolada
