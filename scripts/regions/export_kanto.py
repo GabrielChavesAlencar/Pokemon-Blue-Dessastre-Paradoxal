@@ -43,6 +43,7 @@ LOCATION_NAMES = {
     "ROUTE_24": "Rota 24 — Nugget Bridge",
     "ROUTE_25": "Rota 25 — caminho para Bill",
     "BILL_COTTAGE": "Casa do Bill",
+    "DAY_CARE": "Creche Pokémon",
     "ROUTE_5": "Rota 5",
     "UNDERGROUND_NORTH": "Passagem Subterrânea — entrada norte",
     "UNDERGROUND_TUNNEL": "Passagem Subterrânea — túnel",

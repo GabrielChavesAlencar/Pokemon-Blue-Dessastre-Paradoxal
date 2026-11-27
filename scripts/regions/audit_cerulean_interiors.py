@@ -84,16 +84,16 @@ def run():
     receipt = ROOT / ".blue-work/kanto-k02c-source.json"
     catalog = json_file(KANTO)
     wanted = set(map(int, catalog["maps"]))
-    prior = wanted - set(map(int, ADDITIONS))
-    if len(prior) != 145 or len(wanted) != 151 or any(catalog["maps"].get(k) != v for k,v in ADDITIONS.items()):
-        raise ValueError("K02-C requires exact 151-map catalogue")
+    prior = wanted - set(map(int, ADDITIONS)) - {58}
+    if len(prior) != 145 or len(wanted) != 152 or catalog["maps"].get("58") != "DAY_CARE" or any(catalog["maps"].get(k) != v for k,v in ADDITIONS.items()):
+        raise ValueError("K02-C requires intact 151-map baseline plus Day Care")
     expanded = catalog
     if stable_source_order(wanted)[:145] != stable_source_order(prior):
         raise ValueError("K02-C changed published allocation order")
     active = {int(k): v for k, v in json_file(pilot / "Kanto pilot.json")["maps"].items()}
     base_infos, base_files = inventory(ROOT / "game")
     existing = allocate_kanto_ids(prior, base_infos.keys() | base_files.keys())
-    if set(active) != wanted or len(set(active.values())) != 151 or any(active[k] != v for k,v in existing.items()):
+    if set(active) != wanted or len(set(active.values())) != len(wanted) or any(active[k] != v for k,v in existing.items()):
         raise ValueError("K02-C invalid expanded pilot or changed baseline IDs")
     _, before_files = inventory(pilot)
     before_hashes = {mid: sha(before_files[mid]) for mid in existing.values()}
@@ -141,12 +141,12 @@ def run():
         raise ValueError("K02-C baseline map bytes modified")
     if any(sha(pilot / "Data" / name) != digest for name, digest in registry_before.items()):
         raise ValueError("K02-C baseline registry modified")
-    report.update(status="GEOMETRY_FIXTURE_READY", maps=151, preserved=145,
+    report.update(status="GEOMETRY_FIXTURE_READY", maps=len(wanted), preserved=145,
                   geometry=geometry, published=False, gameplay_installed=False)
     receipt.write_text(json.dumps(report, ensure_ascii=True, indent=2), encoding="utf8")
     print("KANTO_K02C_GEOMETRY_REPORT:" + json.dumps({k:v for k,v in report.items()
           if k != "source_events"}, ensure_ascii=True), flush=True)
-    print("KANTO_K02C_151_GEOMETRY_FIXTURE_145_BASELINE_PRESERVED_OK", flush=True)
+    print("KANTO_K02C_GEOMETRY_FIXTURE_145_BASELINE_PRESERVED_OK", flush=True)
 
 
 if __name__ == "__main__":

@@ -179,7 +179,8 @@ def integrate(project: Path = ROOT, game: Path | None = None,
                 candidate = (legacy.get("schema") == 1 and
                              legacy.get("source") == "Essentials FRLG 21.1" and
                              ((target_count == 145 and old_count == 142) or
-                              (target_count == 151 and old_count in (142, 145))) and
+                              (target_count == 151 and old_count in (142, 145)) or
+                              (target_count == 152 and old_count in (142, 145, 151))) and
                              (game / KANTO_MARKER).is_file())
             except (OSError, ValueError, TypeError, AttributeError, KeyError):
                 candidate = False

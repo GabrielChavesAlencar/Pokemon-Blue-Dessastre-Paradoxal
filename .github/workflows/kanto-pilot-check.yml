@@ -4,7 +4,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-    paths: ['scripts/regions/**', 'scripts/music/**', 'scripts/battle_polish/Title.rb', 'data/kanto-music-rules.json', 'data/regions/kanto-source.json', '.github/workflows/kanto-pilot-check.yml']
+    paths: ['scripts/regions/**', 'tests/qa_k03a_daycare_source.py', 'scripts/music/**', 'scripts/battle_polish/Title.rb', 'data/kanto-music-rules.json', 'data/regions/kanto-source.json', '.github/workflows/kanto-pilot-check.yml']
   workflow_dispatch:
 permissions:
   contents: write
@@ -47,6 +47,8 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Kanto release selector regression tests failed'}
           python scripts/regions/audit_vermilion.py --output .blue-work/kanto-phase-08-audit.json
           if($LASTEXITCODE -ne 0){throw 'Kanto phase 08 source audit failed'}
+          python tests/qa_k03a_daycare_source.py
+          if($LASTEXITCODE -ne 0){throw 'K03-A Day Care source identity/transfer audit failed'}
           python scripts/regions/audit_celadon.py --output .blue-work/kanto-phase-09-audit.json
           if($LASTEXITCODE -ne 0){throw 'Kanto phase 09 source audit failed'}
           python scripts/regions/audit_celadon_core.py
@@ -80,12 +82,12 @@ jobs:
           $scope='.blue-work/kanto-pilot/Data/blue-kanto-music.txt'
           if(-not (Test-Path $scope)){throw 'Missing regional Kanto music scope'}
           $scopeRows=@(Get-Content $scope | Where-Object { $_ -match '^SCOPE[\t]' })
-          if($scopeRows.Count -ne 151){throw "Expected 151 real MapIDs; got $($scopeRows.Count)"}
+          if($scopeRows.Count -ne 152){throw "Expected 152 real MapIDs; got $($scopeRows.Count)"}
           python scripts/music/compile_kanto_music.py --game .blue-work/kanto-pilot --apply
           if($LASTEXITCODE -ne 0){throw 'Kanto regional music compiler failed'}
           $mapRows=@(Get-Content $scope | Where-Object { $_ -match '^MAP[\t]' })
           $vehicleRows=@(Get-Content $scope | Where-Object { $_ -match '^TRANSPORT[\t]' })
-          if($mapRows.Count -ne 83){throw "Fase 2: expected 83 verified map BGMs, got $($mapRows.Count)"}
+          if($mapRows.Count -ne 84){throw "Fase 2: expected 84 verified map BGMs, got $($mapRows.Count)"}
           if($vehicleRows.Count -ne 2){throw "Fase 2: expected bicycle and surf, got $($vehicleRows.Count)"}
           if(@(Get-Content $scope | Where-Object { $_ -match '^BATTLE[\t]' }).Count -ne 8){throw 'Fase 3: expected 8 regional battle/victory bindings'}
           if(@(Get-Content $scope | Where-Object { $_ -match '^ME[\t]' }).Count -ne 6){throw 'Fase 4: expected 6 confirmed ME bindings'}
@@ -97,7 +99,7 @@ jobs:
           if($meTracks.Count -ne 6){throw 'Fase 4: exactly 6 proven ME tracks are expected; unverified ME must remain absent'}
           python scripts/music/install_kanto_music.py --game .blue-work/kanto-pilot --approved
           if($LASTEXITCODE -ne 0){throw 'Fase 2 MP3 integrity failed'}
-          Write-Host 'Kanto F5: 83 maps, 2 vehicles, 8 battle, 6 ME, 5 scene BGM, 8 scene pending; 32 BGM + 6 ME installed.'
+          Write-Host 'Kanto F5: 84 maps, 2 vehicles, 8 battle, 6 ME, 5 scene BGM, 8 scene pending; 32 BGM + 6 ME installed.'
           python scripts/regions/audit_canonical.py --output .blue-work/kanto-phase-15-audit.json
           if($LASTEXITCODE -ne 0){throw 'Kanto phase 15 canonical PBS audit failed'}
           python scripts/regions/verify_pilot.py .blue-work/kanto-pilot
@@ -146,6 +148,14 @@ jobs:
           path: .blue-work/kanto-phase-08-audit.json
           if-no-files-found: warn
           retention-days: 14
+      - name: Preservar inventario K03-A Day Care
+        if: always() && hashFiles('.blue-work/kanto-k03a-daycare-source.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k03a-daycare-source
+          path: .blue-work/kanto-k03a-daycare-source.json
+          include-hidden-files: true
+          if-no-files-found: error
       - name: Publicar inventario de Celadon sem eventos
         if: always()
         uses: actions/upload-artifact@v4
@@ -276,6 +286,16 @@ jobs:
               Get-Content $ceruleanTrace
               Write-Host ("KANTO_K02D_NATIVE_CERULEAN_REPORT:" + (Get-Content $ceruleanProof -Raw).Trim())
               Write-Host 'KANTO_K02D_GARY_BILL_MISTY_SAVE_RELOAD_OK'
+              $corridorTrace="$pilot/Data/blue-kanto-k03a-trace.txt"
+              $corridorProof="$pilot/Data/blue-kanto-k03a-proof.txt"
+              if(-not (Test-Path $corridorTrace) -or -not (Test-Path $corridorProof)){throw 'K03-A native corridor proof missing'}
+              Get-Content $corridorTrace
+              Write-Host ("KANTO_K03A_NATIVE_CORRIDOR_REPORT:" + (Get-Content $corridorProof -Raw).Trim())
+              Write-Host 'KANTO_K03A_ROUTE5_ROUTE6_TRAINERS_SAVE_RELOAD_OK'
+              $daycareProof="$pilot/Data/blue-kanto-k03a-daycare-proof.txt"
+              if(-not (Test-Path $daycareProof)){throw 'K03-A native Day Care transaction proof missing'}
+              Write-Host ("KANTO_K03A_NATIVE_DAYCARE_REPORT:" + (Get-Content $daycareProof -Raw).Trim())
+              Write-Host 'KANTO_K03A_DAYCARE_DEPOSIT_WITHDRAW_SAVE_RELOAD_OK'
               Get-Content "$pilot/Data/blue-kanto-proof.txt"
               exit 0
             }
@@ -301,7 +321,20 @@ jobs:
           if(Test-Path $moonTrace){Get-Content $moonTrace}
           $ceruleanTrace="$pilot/Data/blue-kanto-k02d-trace.txt"
           if(Test-Path $ceruleanTrace){Get-Content $ceruleanTrace}
+          $corridorTrace="$pilot/Data/blue-kanto-k03a-trace.txt"
+          if(Test-Path $corridorTrace){Get-Content $corridorTrace}
           throw 'Kanto native proof missing'
+      - name: Preservar recibos K03-A corredor
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k03a-trace.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k03a-corridor-native
+          path: |
+            .blue-work/kanto-pilot/Data/blue-kanto-k03a-trace.txt
+            .blue-work/kanto-pilot/Data/blue-kanto-k03a-proof.txt
+            .blue-work/kanto-pilot/Data/blue-kanto-k03a-daycare-proof.txt
+          include-hidden-files: true
+          if-no-files-found: error
       - name: Preservar recibos K02-D Cerulean
         if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k02d-trace.txt') != ''
         uses: actions/upload-artifact@v4
@@ -475,7 +508,7 @@ jobs:
           python scripts/music/compile_kanto_music.py --game game
           if($LASTEXITCODE -ne 0){throw 'Installed Kanto music MapIDs failed to compile'}
           $integrated='game/Data/blue-kanto-music.txt'
-          if(@(Get-Content $integrated | Where-Object { $_ -match '^MAP[\t]' }).Count -ne 83){throw '83 Kanto environment bindings lost in integrated game'}
+          if(@(Get-Content $integrated | Where-Object { $_ -match '^MAP[\t]' }).Count -ne 84){throw '84 Kanto environment bindings lost in integrated game'}
           if(@(Get-Content $integrated | Where-Object { $_ -match '^TRANSPORT[\t]' }).Count -ne 2){throw 'Bicycle/Surf bindings lost in integrated game'}
           if(@(Get-Content $integrated | Where-Object { $_ -match '^BATTLE[\t]' }).Count -ne 8){throw 'Kanto 8 battle/victory themes missing from installed game'}
           if(@(Get-Content $integrated | Where-Object { $_ -match '^BASEPOOL[\t]' }).Count -ne 3){throw 'Decades baseline pool fingerprints missing'}
@@ -503,7 +536,17 @@ jobs:
           python scripts/regions/qa_k00_migration.py --from-142
           if($LASTEXITCODE -ne 0){throw 'K00 legacy 142 migration proof failed'}
           python scripts/regions/qa_k00_migration.py
-          if($LASTEXITCODE -ne 0){throw 'K02-C real 145 to 151 migration proof failed'}
+          if($LASTEXITCODE -ne 0){throw 'K03-A real 145 to 152 migration proof failed'}
+          python scripts/regions/qa_k00_migration.py --from-151
+          if($LASTEXITCODE -ne 0){throw 'K03-A real 151 to 152 migration proof failed'}
+      - name: Preservar recibo K03-A da migracao
+        if: always() && hashFiles('.blue-work/k03a-migration-proof.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k03a-migration-proof
+          path: .blue-work/k03a-migration-proof.json
+          include-hidden-files: true
+          if-no-files-found: error
       - name: Preservar recibo K02-C da migracao
         if: always() && hashFiles('.blue-work/k02c-migration-proof.json') != ''
         uses: actions/upload-artifact@v4

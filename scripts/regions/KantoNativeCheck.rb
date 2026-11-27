@@ -510,6 +510,257 @@ module KantoNativeCheck
     result
   end
 
+  # K03-A: traverse the installed Underground corridor in both directions.
+  # Each recursive leg derives its own native component from the actual
+  # arrival tile. No Saffron shortcut or QA teleport is accepted as a path.
+  def self.k03a_trace(label,row)
+    File.open("Data/blue-kanto-k03a-trace.txt","a") { |file| file.puts("#{label}:#{row.inspect}") }
+    puts "#{label}:#{row.inspect}"
+  end
+
+  def self.k03a_chain(sequence,anchor,target_anchor,cache={})
+    current = sequence.first
+    key = [sequence,anchor]
+    return nil if cache[key]
+    cache[key] = true
+    comp = opening_component(current,anchor)
+    if sequence.length == 1
+      return comp.key?(target_anchor) ? [] : nil
+    end
+    next_map = sequence[1]
+    candidates = $game_map.events.values.flat_map do |ev|
+      next [] unless [1,2].include?(ev.trigger) && north_event_reachable?(comp,ev)
+      ev.list.filter_map do |op|
+        next unless op.code == 201 && op.parameters[0] == 0 && op.parameters[1] == next_map
+        {"kind"=>"touch_transfer","event_id"=>ev.id,"from_map"=>current,
+          "from_xy"=>[ev.x,ev.y],"to_map"=>next_map,"to_xy"=>op.parameters[2,2]}
+      end
+    end
+    rows = File.readlines("PBS/map_connections_kanto.txt").map { |line| line.split("#",2)[0].to_s.strip.split(",").map(&:strip) }
+    if rows.any? { |f| f.length == 6 && [f[0].to_i,f[3].to_i].sort == [current,next_map].sort }
+      opening_crossings(current,comp,next_map).each do |left,right|
+        candidates << {"kind"=>"native_seam","from_map"=>current,"from_xy"=>left,
+          "to_map"=>next_map,"to_xy"=>right}
+      end
+    end
+    k03a_trace("KANTO_K03A_CORRIDOR_LEG",{"map"=>current,"anchor"=>anchor,
+      "component"=>comp.length,"next"=>next_map,"candidates"=>candidates})
+    candidates.each do |leg|
+      suffix = k03a_chain(sequence.drop(1),leg["to_xy"],target_anchor,cache)
+      return [leg]+suffix if suffix
+    end
+    nil
+  end
+
+  def self.k03a_corridor_proof(north_report,battle_calls,losses_remaining)
+    source_ids = [39,56,59,60,63,61,64]
+    sequence = source_ids.map { |id| BlueKantoPilot.kanto_map_id(id) }
+    require!(sequence.all? && sequence.uniq.length == source_ids.length, "K03-A installed corridor IDs missing")
+    city = sequence.last
+    center = BlueKantoPilot.kanto_map_id(65)
+    $map_factory.setup(center)
+    exit_event = $game_map.events.values.find { |ev| ev.list.any? { |op|
+      op.code == 201 && op.parameters[0] == 0 && op.parameters[1] == city } }
+    arrival = north_transfer!(exit_event,city)
+    anchor = north_report["city_center_landing"]
+    outbound = k03a_chain(sequence,anchor,arrival)
+    require!(outbound && outbound.length == sequence.length-1, "K03-A no natural route to Vermilion via Underground")
+    back = k03a_chain(sequence.reverse,arrival,anchor)
+    require!(back && back.length == sequence.length-1, "K03-A no independent return to Cerulean via Underground")
+    route6 = BlueKantoPilot.kanto_map_id(61)
+    route_arrival = outbound.find { |leg| leg["to_map"] == route6 }["to_xy"]
+    comp = opening_component(route6,route_arrival)
+    trainers = [[8,:BLUE_KANTO_BUGCATCHER,"Keigo"],[9,:BLUE_KANTO_PICNICKER,"Nancy"],
+      [10,:BLUE_KANTO_CAMPER,"Ricky"],[12,:BLUE_KANTO_BUGCATCHER,"Elijah"],
+      [13,:BLUE_KANTO_PICNICKER,"Isabelle"],[14,:BLUE_KANTO_CAMPER,"Jeff"]].map do |id,type,name|
+      ev = $game_map.events[id]
+      key = "KANTO_061_%03d" % id
+      north_callback!(ev,"BlueKantoPilot.battle(:#{type}, \"#{name}\", \"#{key}\")")
+      team = GameData::Trainer.get(type,name,0).pokemon
+      require!(!team.empty?, "K03-A compiled Route6 team missing")
+      witness = opening_action_witness(comp,ev)
+      if !witness && ev.trigger == 2
+        witness = north_event_reachable?(comp,ev) ? {"mode"=>"touch_adjacency"} : nil
+      end
+      require!(witness, "K03-A Route6 trainer #{name} inaccessible")
+      losses_remaining[name] = 1 if id == 8
+      calls = battle_calls.length
+      if id == 8
+        require!(!BlueKantoPilot.battle(type,name,key) &&
+          !$game_self_switches[[route6,id,"A"]], "K03-A trainer loss marked victory")
+      end
+      require!(BlueKantoPilot.battle(type,name,key) && BlueKantoPilot.sync_trainer_event(key,name,id),
+        "K03-A trainer retry/victory failed")
+      require!($game_self_switches[[route6,id,"A"]], "K03-A trainer page not persisted")
+      BlueKantoPilot.battle(type,name,key)
+      require!(battle_calls.length-calls == (id==8 ? 2 : 1), "K03-A trainer replayed after victory")
+      {"event"=>id,"key"=>key,"name"=>name,"witness"=>witness,
+        "roster"=>team.map { |mon| [mon[:species].to_s,mon[:level]] }}
+    end
+    result = {"source_ids"=>source_ids,"map_ids"=>sequence,"outbound"=>outbound,"return"=>back,
+      "vermilion_center_landing"=>arrival,"route6_trainers"=>trainers,"controlled_battle_results"=>true,
+      "manual_gameplay"=>false,"daycare_installed"=>false}
+    k03a_trace("KANTO_K03A_CORRIDOR_REPORT",result)
+    result
+  end
+
+  def self.k03a_daycare_proof(corridor)
+    route = BlueKantoPilot.kanto_map_id(56)
+    daycare = BlueKantoPilot.kanto_map_id(58)
+    require!(daycare && daycare != route, "K03-A Day Care registry missing")
+    anchor = corridor["outbound"].find { |leg| leg["to_map"] == route }["to_xy"]
+    city = BlueKantoPilot.kanto_map_id(39)
+    city_anchor = corridor["outbound"].first["from_xy"]
+    city_component = opening_component(city,city_anchor)
+    # Route 5 has directional terrain and multiple original north seams.
+    # A single successful Underground route is not a witness for the creche.
+    entries = opening_crossings(city,city_component,route).map(&:last).uniq
+    require!(entries.include?(anchor), "K03-A corridor entry no longer reachable")
+    chosen = nil
+    entries.each do |entry|
+      component = opening_component(route,entry,[],false,true)
+      door = $game_map.events[1]
+      identity = door && [door.x,door.y] == [23,25] && door.trigger == 1 &&
+        Array(door.list).any? { |op| op.code == 201 && op.parameters[1] == daycare }
+      reachable = identity && north_event_reachable?(component,door)
+      k03a_trace("KANTO_K03A_DAYCARE_APPROACH",{"entry"=>entry,"component"=>component.length,
+        "door"=>door && [door.id,door.x,door.y,door.trigger],
+        "identity"=>identity,"reachable"=>reachable,
+        "nearby"=>component.keys.select { |x,y| (x-23).abs+(y-25).abs <= 3 }})
+      if reachable
+        chosen = [entry,door]
+        break
+      end
+    end
+    # Native collision report for the exact authored doorstep and surrounding
+    # approach. Do not guess at wall/ledge tiles or open them by force.
+    unless chosen
+      $map_factory.setup(route)
+      $game_map.events.each_value { |ev| ev.refresh }
+      rows = []
+      (23..29).each do |y|
+        (20..26).each do |x|
+          $game_player.moveto(x,y)
+          terrain = $game_map.terrain_tag(x,y)
+          events = $game_map.events.values.select { |ev| ev.x == x && ev.y == y }
+          rows << {"xy"=>[x,y],"tiles"=>(0..2).map { |z| $game_map.data[x,y,z] },
+            "terrain"=>terrain.id.to_s,"ledge"=>terrain.ledge,
+            "passable"=>[2,4,6,8].map { |dir| [dir,$game_player.passable?(x,y,dir)] }.to_h,
+            "events"=>events.map { |ev| [ev.id,ev.name,ev.trigger,ev.through,ev.tile_id,ev.character_name] }}
+        end
+      end
+      k03a_trace("KANTO_K03A_DAYCARE_NATIVE_COLLISION",rows)
+    end
+    require!(chosen, "K03-A original Day Care door inaccessible from all verified north seams")
+    anchor,door = chosen
+    # Exercise the actual four physical tiles; the doorway is not a new
+    # teleport and the neighboring ledges must still prohibit uphill entry.
+    require!($game_map.data[23,27,1] == 0 &&
+      [22,24].all? { |x| $game_map.data[x,27,1] == 1212 &&
+        $game_map.terrain_tag(x,27).ledge }, "K03-A walkway altered neighboring ledges")
+    $game_player.moveto(23,28)
+    [27,26,25].each do |y|
+      require!($game_player.passable?(23,y+1,8), "K03-A walkway north step blocked #{y}")
+      $game_player.move_generic(8,true)
+      require!([$game_player.x,$game_player.y] == [23,y],
+        "K03-A native walkway step failed #{y}")
+    end
+    [22,24].each do |x|
+      $game_player.moveto(x,28)
+      require!(!$game_player.passable?(x,28,8), "K03-A neighboring ledge opened #{x}")
+    end
+    k03a_trace("KANTO_K03A_DAYCARE_WALKWAY_NATIVE_OK",{"steps"=>[[23,28],[23,27],[23,26],[23,25]],
+      "neighbor_ledges_preserved"=>true,"original_door"=>door.id})
+    landing = north_transfer!(door,daycare)
+    require!(landing == [4,7], "K03-A Day Care arrival differs")
+    inside = opening_component(daycare,landing)
+    require!([$game_map.width,$game_map.height] == [20,15], "K03-A Day Care geometry differs")
+    npc = $game_map.events[3]
+    north_callback!(npc,"BlueKantoPilot.daycare_menu")
+    witness = opening_action_witness(inside,npc)
+    require!(witness && [npc.x,npc.y] == [4,4], "K03-A Day Care caretaker inaccessible")
+    exit_event = $game_map.events[1]
+    require!(north_event_reachable?(inside,exit_event), "K03-A Day Care exit inaccessible")
+    back = north_transfer!(exit_event,route)
+    require!(back == [23,26], "K03-A Day Care return landing differs")
+    returned = opening_component(route,back,[],false,true)
+    return_seams = opening_crossings(route,returned,city)
+    # A downhill ledge need not be reversible; the return must reach an
+    # actual city seam or the existing Underground entrance, not a teleport.
+    underground_entry = corridor["outbound"].find { |leg| leg["from_map"] == route }["from_xy"]
+    require!(!return_seams.empty? || returned.keys.any? { |x,y|
+      (x-underground_entry[0]).abs+(y-underground_entry[1]).abs <= 1 },
+      "K03-A Day Care return disconnected from existing corridor")
+    k03a_trace("KANTO_K03A_DAYCARE_RETURN",{"landing"=>back,"component"=>returned.length,
+      "city_seams"=>return_seams,"underground_entry"=>underground_entry})
+    $map_factory.setup(daycare)
+    $game_player.moveto(*witness["standing"])
+    baseline = "K03 A Day Care Baseline"
+    require!(Game.save(baseline), "K03-A Day Care baseline save failed")
+    baseline_path = SaveData.get_full_path(baseline)
+    baseline_bytes = File.binread(baseline_path)
+    care = $PokemonGlobal.day_care
+    require!(care.is_a?(DayCare) && care.count == 0 &&
+      !care.equal?($PokemonGlobal.instance_variable_get(:@day_care)), "K03-A native/region Day Care isolation failed")
+    require!(!BlueKantoPilot.daycare_deposit(-1) && !BlueKantoPilot.daycare_deposit(0) &&
+      !BlueKantoPilot.daycare_withdraw, "K03-A invalid/last party operation accepted")
+    pkmn = Pokemon.new(:PIDGEY,10)
+    $player.party << pkmn
+    identity = pkmn.personalID
+    index = $player.party.length-1
+    money = $player.money
+    require!(BlueKantoPilot.daycare_deposit(index) && care.count == 1 &&
+      !$player.party.any? { |p| p.personalID == identity } && $player.money == money,
+      "K03-A deposit transaction failed")
+    require!(!BlueKantoPilot.daycare_deposit(0), "K03-A second deposit accepted")
+    slot = care.slots.find { |entry| entry.filled? }
+    exp = slot.pokemon.exp
+    care.update_on_step_taken
+    require!(slot.pokemon.exp == exp+1, "K03-A native step experience failed")
+    stored_exp = slot.pokemon.exp
+    saved_slot = "K03 A Day Care Deposited"
+    require!(Game.save(saved_slot), "K03-A deposit save failed")
+    serialized = SaveData.read_from_file(SaveData.get_full_path(saved_slot))
+    stored = serialized[:global_metadata].instance_variable_get(:@blue_kanto_day_care)
+    require!(stored && stored.count == 1 && stored.slots.find { |entry| entry.filled? }.pokemon.personalID == identity,
+      "K03-A deposited Pokemon missing from native save")
+    reload_native_slot(SaveData.get_full_path(saved_slot))
+    care = $PokemonGlobal.day_care
+    slot = care.slots.find { |entry| entry.filled? }
+    require!($game_map.map_id == daycare && care.count == 1 && slot.pokemon.personalID == identity &&
+      slot.pokemon.exp == stored_exp, "K03-A deposited Pokemon lost on reload")
+    cost = slot.cost
+    $player.money = 0
+    require!(!BlueKantoPilot.daycare_withdraw && care.count == 1, "K03-A unpaid withdrawal accepted")
+    $player.money = money + cost
+    before = $player.money
+    original_party = $player.party.dup
+    $player.party << Pokemon.new(:RATTATA,5) until $player.party_full?
+    require!(!BlueKantoPilot.daycare_withdraw && care.count == 1 && $player.money == before,
+      "K03-A full party withdrawal changed state")
+    $player.party.replace(original_party)
+    require!(BlueKantoPilot.daycare_withdraw && care.count == 0 &&
+      $player.party.count { |p| p.personalID == identity } == 1 &&
+      $player.money == before-cost && !BlueKantoPilot.daycare_withdraw,
+      "K03-A withdrawal/fee uniqueness failed")
+    final_slot = "K03 A Day Care Withdrawn"
+    require!(Game.save(final_slot), "K03-A withdrawal save failed")
+    reload_native_slot(SaveData.get_full_path(final_slot))
+    require!($PokemonGlobal.day_care.count == 0 &&
+      $player.party.count { |p| p.personalID == identity && p.exp == stored_exp } == 1 &&
+      $player.money == before-cost, "K03-A withdrawal lost on reload")
+    require!(File.binread(baseline_path) == baseline_bytes, "K03-A baseline overwritten")
+    reload_native_slot(baseline_path)
+    result = {"status"=>"PASS","source"=>58,"map_id"=>daycare,"dimensions"=>[20,15],
+      "entrance"=>[23,25],"arrival"=>landing,"return"=>back,"caretaker"=>witness,
+      "single_slot"=>true,"native_step_exp"=>1,"fee"=>cost,"deposit_save_reload"=>true,
+      "withdraw_save_reload"=>true,"last_party_guard"=>true,"full_party_guard"=>true,
+      "insufficient_money_guard"=>true,"unique_identity"=>true,"separate_native_storage"=>true,
+      "baseline_restored"=>true,"manual_gameplay"=>false}
+    k03a_trace("KANTO_K03A_NATIVE_DAYCARE_REPORT",result)
+    result
+  end
+
   def self.north_story(battle_calls, losses_remaining)
     city,gym,bridge,route,cottage = [39,42,53,54,55].map { |id| BlueKantoPilot.kanto_map_id(id) }
     require!([city,gym,bridge,route,cottage].all?, "K00-C missing installed source IDs")
@@ -1869,6 +2120,9 @@ module KantoNativeCheck
     legacy_door_report = cerulean_legacy_door_proof
     north_report = north_story(battle_calls, losses_remaining)
     interiors_report = cerulean_interiors_proof(battle_calls, losses_remaining)
+    k03a_report = k03a_corridor_proof(north_report,battle_calls,losses_remaining)
+    k03a_daycare = k03a_daycare_proof(k03a_report)
+    k03a_report["daycare_installed"] = true
     BlueKantoPilot.ticketmaster
     require!(BlueKantoPilot.progress["pilot_ss_ticket"] == true,
              "Vermilion ticket missing after Bill's quest")
@@ -2570,6 +2824,18 @@ module KantoNativeCheck
     File.write("Data/blue-kanto-k02d-proof.txt",k02d_report.inspect)
     puts "KANTO_K02D_NATIVE_CERULEAN_REPORT:#{k02d_report.inspect}"
     puts "KANTO_K02D_GARY_BILL_MISTY_SAVE_RELOAD_OK"
+    route6 = BlueKantoPilot.kanto_map_id(61)
+    require!(k03a_report["route6_trainers"].all? { |row|
+      north_state["pilot_wins"].include?(row["key"]) && $game_self_switches[[route6,row["event"],"A"]] },
+      "K03-A Route6 trainer state lost on native reload")
+    k03a_report["save_reload"] = true
+    k03a_report["status"] = "PASS"
+    k03a_report["daycare"] = k03a_daycare
+    File.write("Data/blue-kanto-k03a-daycare-proof.txt",k03a_daycare.inspect)
+    puts "KANTO_K03A_DAYCARE_DEPOSIT_WITHDRAW_SAVE_RELOAD_OK"
+    File.write("Data/blue-kanto-k03a-proof.txt",k03a_report.inspect)
+    puts "KANTO_K03A_NATIVE_CORRIDOR_REPORT:#{k03a_report.inspect}"
+    puts "KANTO_K03A_ROUTE5_ROUTE6_TRAINERS_SAVE_RELOAD_OK"
     # The final campaign reload must retain the chosen starter as well.
     require!(BlueKantoPilot.starter == :BULBASAUR &&
              [18,19,20].all? { |eid| $game_self_switches[[lab,eid,"A"]] },
