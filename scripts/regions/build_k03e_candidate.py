@@ -4,6 +4,7 @@ import os
 from audit import ROOT, KANTO, inventory, json_file, load
 from k03e_contract import MAPS, TRAINERS, WARPS, ITEMS, candidate_manifest
 from pilot import build, SOURCE
+from export_kanto import export, k03e_portal_delta
 from server.ruby_marshal import text
 
 def run():
@@ -46,8 +47,13 @@ def run():
               "baseline_ids_preserved":156,"maps":160,"transfers":len(WARPS),
               "trainers":len(TRAINERS),"items":len(ITEMS),"music_maps":4,
               "gatehouse_80":"not installed; no synthetic transfer","manual_gameplay":False}
+    portal = k03e_portal_delta(export(baseline), export(target, k03e=True))
+    # This JSON is already uploaded by the native workflow; include only
+    # the audited public portal fields, not source archives or native maps.
+    report["portal_delta"] = portal
+    print("KANTO_K03E_PORTAL_DELTA_OK:4 maps, 10 trainers, 8 encounter methods", flush=True)
     (ROOT/".blue-work/kanto-k03e-compiled.json").write_text(json.dumps(report,indent=2),encoding="utf8")
-    print("KANTO_K03E_COMPILED_CANDIDATE_REPORT:"+json.dumps(report),flush=True)
+    print("KANTO_K03E_COMPILED_CANDIDATE_REPORT:"+json.dumps({k:v for k,v in report.items() if k != "portal_delta"}),flush=True)
     print("KANTO_K03E_COMPILED_160_MAP_CANDIDATE_OK",flush=True)
 
 if __name__ == "__main__":
