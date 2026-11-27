@@ -2,6 +2,36 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0798465b33e8ee05203324dcc73a39462e269c60",
+      "date": "2026-11-27T13:38:58-03:00",
+      "title": "fix(kanto): real S.S. Ticket police gate and mobile Cerulean doors (#370)",
+      "category": "Correções"
+    },
+    {
+      "sha": "2320689330c42a1f7101f3e0e73381be4b7d5d80",
+      "date": "2026-11-27T13:27:46-03:00",
+      "title": "test(kanto): model mobile input independently of debug bootstrap jump state, retain native door dispatch and negatives",
+      "category": "Testes"
+    },
+    {
+      "sha": "43a56a6e711cf4ee274f7cc99a4c7b2724fc6a91",
+      "date": "2026-11-27T13:18:50-03:00",
+      "title": "fix(kanto): queue native touch on exact Cerulean door during walking animation",
+      "category": "Correções"
+    },
+    {
+      "sha": "c6020e2ab695827b463688e5d81085a80c83ce85",
+      "date": "2026-11-27T13:11:30-03:00",
+      "title": "fix(kanto): align ticket fixtures and verify idle mobile door input with blocker diagnostics",
+      "category": "Correções"
+    },
+    {
+      "sha": "c31e6e322af2b6695ffec193e121e78b3a2992df",
+      "date": "2026-11-27T13:04:50-03:00",
+      "title": "fix(kanto): gate Cerulean police by actual ticket and handle mobile standing door contact",
+      "category": "Correções"
+    },
+    {
       "sha": "d8de56f515b5ef5610b9e82673620bfcaf051fcb",
       "date": "2026-11-27T12:47:56-03:00",
       "title": "fix(kanto): recover legacy JoiPlay guard dialogues and Cerulean door contact (#369)",
