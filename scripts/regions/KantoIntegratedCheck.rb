@@ -35,6 +35,78 @@ module KantoIntegratedCheck
     end
   end
 
+  # Compare the two actual Sprite_Character objects in the integrated game,
+  # on the same map and viewport, before and after save/reload. No fake NPC,
+  # asset replacement, extra zoom, or mutation of the rival.
+  def self.compare_gary_scale(label)
+    previous_map = $game_map.map_id
+    previous_xy = [$game_player.x,$game_player.y]
+    previous_direction = $game_player.direction
+    viewport = nil
+    sprites = []
+    lab = BlueKantoPilot.kanto_map_id(6)
+    require!(lab, "Integrated Gary lab ID missing")
+    $map_factory.setup(lab)
+    gary = $game_map.events[14]
+    require!(gary && gary.character_name == BlueKantoPilot.cerulean_rival_graphic,
+      "Integrated Gary reference event missing")
+    $game_player.moveto(gary.x+1,gary.y)
+    $game_player.turn_down
+    viewport = Viewport.new(0,0,Graphics.width,Graphics.height)
+    [$game_player,gary].each do |actor|
+      sprite = Sprite_Character.new(viewport,actor)
+      sprites << sprite
+      2.times { sprite.update }
+    end
+    player_sprite,gary_sprite = sprites
+    values = sprites.map do |sprite|
+      rect = sprite.src_rect
+      bounds = BlueKantoPilot.overworld_frame_bounds(sprite.bitmap,rect.x,rect.y,rect.width,rect.height)
+      require!(bounds,"Integrated visible frame missing")
+      height = bounds[1]-bounds[0]+1
+      {"height"=>height,"zoom"=>sprite.zoom_y,"rendered"=>height*sprite.zoom_y,
+       "frame_height"=>rect.height,"pivot_y"=>sprite.oy,
+       "foot_offset"=>(bounds[1]+1-sprite.oy)*sprite.zoom_y}
+    end
+    player,reference = values
+    # Capture is 2x the native reference (80 vs 40). At that zoom a
+    # difference greater than one displayed pixel fails this regression.
+    require!(((player["rendered"]-reference["rendered"])*2).abs <= 1.0,
+      "Integrated active player frame does not match Gary: #{values.inspect}")
+    require!((gary_sprite.zoom_x-1.0).abs < 0.01 &&
+      (gary_sprite.zoom_y-1.0).abs < 0.01 &&
+      (player_sprite.zoom_x-player_sprite.zoom_y).abs < 0.01,
+      "Gary changed or player aspect ratio distorted")
+    # Preserve the engine's tile/feet anchor; the sprite's alpha padding
+    # may differ by pose. Require the feet to remain within two native pixels.
+    require!((player["foot_offset"]-reference["foot_offset"]).abs <= 2.0,
+      "Integrated player feet drifted from Gary: #{values.inspect}")
+    old_zoom = [1.0,40.0/player["frame_height"]].min
+    report = {"label"=>label,"capture_npc_px"=>80,"capture_player_px"=>62,
+      "capture_factor"=>80.0/62,"player"=>player,"gary"=>reference,
+      "old_rendered_at_2x"=>player["height"]*old_zoom*2,
+      "new_rendered_at_2x"=>player["rendered"]*2,
+      "reference_rendered_at_2x"=>reference["rendered"]*2,
+      "same_map"=>lab,"native_sprites"=>true}
+    File.open("Data/blue-kanto-gary-scale-integrated.txt","a") { |file|
+      file.puts("KANTO_GARY_VISIBLE_PLAYER_SCALE_INTEGRATED_REPORT:#{report.inspect}")
+      file.puts("KANTO_GARY_VISIBLE_PLAYER_SCALE_INTEGRATED_OK:#{label}")
+    }
+  ensure
+    sprites.each { |sprite| sprite.dispose unless sprite.disposed? }
+    viewport.dispose if viewport && !viewport.disposed?
+    if previous_map
+      $map_factory.setup(previous_map)
+      $game_player.moveto(*previous_xy)
+      case previous_direction
+      when 2 then $game_player.turn_down
+      when 4 then $game_player.turn_left
+      when 6 then $game_player.turn_right
+      when 8 then $game_player.turn_up
+      end
+    end
+  end
+
   def self.run
     stage("bootup")
     SaveData.initialize_bootup_values
@@ -81,6 +153,8 @@ module KantoIntegratedCheck
     stage("before_kanto_new_game")
     Game.start_new
     stage("after_kanto_new_game")
+    File.delete("Data/blue-kanto-gary-scale-integrated.txt") if File.file?("Data/blue-kanto-gary-scale-integrated.txt")
+    compare_gary_scale("new_game")
     require!($game_map.map_id == spawn[0], "Kanto initial map did not load")
     require!([$game_player.x, $game_player.y] == spawn[1,2], "Kanto spawn is wrong")
     # The canonical Kanto start is now the player's upstairs bedroom.
@@ -271,6 +345,7 @@ module KantoIntegratedCheck
     SaveData.mark_values_as_unloaded
     Game.load(saved)
     stage("after_kanto_reload")
+    compare_gary_scale("save_reload")
     require!($game_map.map_id == BlueRegionTravel.kanto_town_point[0],
              "Kanto save did not restore the Pallet arrival map")
     require!($PokemonGlobal.blue_regions["initial"] == "KANTO", "Kanto save lost its origin")

@@ -123,8 +123,8 @@ Dir.mktmpdir("kanto-cut-tree-") do |dir|
     check(!tree.instance_variable_get(:@blue_kanto_cut_animating),
           "Cut animation flag did not reset")
 
-    # Native 32px frames must retain full scale; tall frames alone are capped.
-    # Keep the CutTree guard regression independent of the former 60% bug.
+    # No bitmap/reference is present in this CutTree-specific fixture.
+    # Rendering must fall back to native zoom without altering the tree.
     pilot_player = Game_Player.new
     def pilot_player.pattern; 0; end
     def pilot_player.direction; 2; end
@@ -135,8 +135,8 @@ Dir.mktmpdir("kanto-cut-tree-") do |dir|
           "native 32px pilot player must not shrink")
     pilot_sprite.instance_variable_set(:@ch, 80)
     pilot_sprite.update
-    check(pilot_sprite.zoom_x == 0.5 && pilot_sprite.zoom_y == 0.5,
-          "oversized pilot player must be capped at 40px")
+    check(pilot_sprite.zoom_x == 1.0 && pilot_sprite.zoom_y == 1.0,
+          "missing bitmap must preserve native zoom")
 
     # Main Decades never has the isolated pilot marker.
     File.delete("Kanto pilot.json")
