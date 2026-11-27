@@ -29,10 +29,13 @@ def run():
     cave = [23, 81, 82]
     if len(route) != 1 or any(i not in names or "diglett" not in names[i].lower() for i in cave):
         raise ValueError(f"K03-E source identity mismatch: Route 11={route}, caves={[(i,names.get(i)) for i in cave]}")
-    additions = dict(zip([route[0], *cave], ["ROUTE_11", "DIGLETT_ENTRANCE_ROUTE_2", "DIGLETT_ENTRANCE_ROUTE_11", "DIGLETT_TUNNEL"]))
+    from k03e_contract import MAPS, candidate_manifest
+    if route != [79]:
+        raise ValueError(f"K03-E pinned Route 11 identity changed: {route}")
+    additions = MAPS
     if len(baseline) != 156 or baseline.intersection(additions) or set(catalog["preview_only"]).intersection(additions):
         raise ValueError("K03-E requires intact 156-map baseline and four absent source maps")
-    candidate = {**catalog, "maps": {**catalog["maps"], **{str(i): key for i,key in additions.items()}}}
+    candidate = candidate_manifest(catalog)
     wanted = baseline | set(additions)
     if stable_source_order(wanted)[:156] != stable_source_order(baseline):
         raise ValueError("K03-E allocation would move existing slots")
@@ -57,12 +60,26 @@ def run():
             if int(row[0]) in focus or int(row[3]) in focus:
                 connections.append([v.strip() for v in row])
     from pbs import read_blocks
+    from k03e_contract import TRAINERS, PBS_TRAINERS, WARPS
+    for (sid,eid), (dest,x,y,direction) in WARPS.items():
+        if not any(t["source"]==sid and t["event"]==eid and t["destination"]==dest
+                   and t["xy"]==[x,y] and t["direction"]==direction for t in warps):
+            raise ValueError(f"K03-E pinned transfer mismatch {sid}/{eid}")
+    by_id = {e["id"]: e for e in evidence["79"]["events"]}
+    for eid,(kind,name) in TRAINERS.items():
+        script = f'TrainerBattle.start(:{kind}, "{name}")'
+        if not any(op["code"]==111 and op["parameters"]==[12,script]
+                   for op in by_id[eid]["pages"][0]["commands"]):
+            raise ValueError(f"K03-E trainer identity mismatch {eid}")
+    trainer_profiles = read_blocks(source/"PBS/trainers.txt", PBS_TRAINERS)
+    if trainer_profiles.keys() != PBS_TRAINERS.keys():
+        raise ValueError("K03-E source PBS identities incomplete")
     encounters = (source/"PBS/encounters.txt").read_text("utf-8-sig")
     sections = re.split(r"(?m)(?=^\[\d+(?:,\d+)?\])", encounters)
     encounter_blocks = [s.strip() for s in sections if (m:=re.match(r"\[(\d+)(?:,\d+)?\]",s)) and int(m[1]) in additions]
     report = {"status":"SOURCE_REVIEW_REQUIRED","manual_gameplay":False,
               "source_events":evidence,"source_connections":connections,"source_transfers":warps,
-              "source_encounter_blocks":encounter_blocks,
+              "source_encounter_blocks":encounter_blocks,"trainer_profiles":trainer_profiles,
               "candidate_ids":{str(i):expected[i] for i in additions},"baseline_count":156}
     receipt.write_text(json.dumps(report,ensure_ascii=True,indent=2),encoding="utf-8")
     for sid in additions:

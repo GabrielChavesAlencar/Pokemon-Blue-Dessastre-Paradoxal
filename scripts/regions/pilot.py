@@ -875,6 +875,10 @@ def find_shopkeeper(events):
 
 
 def install_events(source, target, mapping):
+    trainer_specs = TRAINERS
+    if 79 in mapping:
+        from k03e_contract import TRAINERS as ROUTE11_TRAINERS
+        trainer_specs = {**TRAINERS, 79: ROUTE11_TRAINERS}
     event_graphics = source / "Graphics/Characters"
     dest_graphics = target / "Graphics/Characters"
 
@@ -1010,7 +1014,7 @@ def install_events(source, target, mapping):
         fossil_anchors = {}
         if original == 38:
             for candidate_id, candidate in events.items():
-                if candidate_id in TRAINERS.get(original, {}):
+                if candidate_id in trainer_specs.get(original, {}):
                     continue
                 item = source_mt_moon_fossil(candidate)
                 if item:
@@ -1020,7 +1024,7 @@ def install_events(source, target, mapping):
                     scripts[candidate_id] = (
                         f"BlueKantoPilot.choose_moon_fossil(:{item})"
                     )
-        for event_id, spec in TRAINERS.get(original, {}).items():
+        for event_id, spec in trainer_specs.get(original, {}).items():
             kind, name, *versions = spec
             version = versions[0] if versions else 0
             # Map/event identity prevents two NPCs with the same display name
@@ -1450,8 +1454,8 @@ def install_events(source, target, mapping):
                                   event_id == LEAGUE_NEXT_ROOMS[original][0]) or
                                  (original == 220 and event_id == 6) or
                                  (original == 221 and event_id == 1))
-                if event_id in TRAINERS.get(original, {}):
-                    kind, trainer_name, *_ = TRAINERS[original][event_id]
+                if event_id in trainer_specs.get(original, {}):
+                    kind, trainer_name, *_ = trainer_specs[original][event_id]
                     key = f"KANTO_{original:03d}_{event_id:03d}"
                     # Essentials 21.1 only triggers a Trainer(n) line of sight
                     # when the active RPG Event page uses Event Touch (2).
@@ -1893,16 +1897,24 @@ def audit_cerulean_reward_item(target):
         "native_compiled": False}), flush=True)
 
 
-def install_pbs(preview, target, mapping):
+def install_pbs(preview, target, mapping, manifest=None):
+    manifest = json_file(KANTO) if manifest is None else manifest
+    types, names = TYPES, LOCATION_NAMES
+    if 79 in mapping:
+        from k03e_contract import NAMES
+        # The actual Gambler overworld graphic comes from the pinned source;
+        # use a verified existing Gentleman battle portrait provisionally.
+        types = {**TYPES, "GAMBLER": "GENTLEMAN"}
+        names = {**LOCATION_NAMES, **NAMES}
     pbs = target / "PBS"
     draft = preview / "drafts"
     for name in ("encounters", "trainers"):
         shutil.copyfile(draft / f"{name}.txt", pbs / f"{name}_kanto.txt")
     shutil.copyfile(preview / "connections-preview.txt", pbs / "map_connections_kanto.txt")
 
-    kinds = read_blocks(pbs / "trainer_types.txt", set(TYPES.values()))
+    kinds = read_blocks(pbs / "trainer_types.txt", set(types.values()))
     trainer_types = []
-    for kind, base in TYPES.items():
+    for kind, base in types.items():
         new_type = f"BLUE_KANTO_{kind}"
         trainer_types.extend([f"[{new_type}]", *kinds[base], ""])
         graphics = target / "Graphics/Trainers"
@@ -1910,10 +1922,10 @@ def install_pbs(preview, target, mapping):
         shutil.copyfile(sprite, graphics / f"{new_type}.png")
     (pbs / "trainer_types_kanto.txt").write_text("\n".join(trainer_types), encoding="utf8")
     metadata = []
-    source_keys = json_file(KANTO)["maps"]
+    source_keys = manifest["maps"]
     for source_id, map_id in mapping.items():
-        metadata.extend([f"[{map_id:03}]", f"Name = {LOCATION_NAMES[source_keys[str(source_id)]]}"])
-        if source_id in (5, 9, 10, 18, 24, 25, 32, 33, 39, 53, 54, 56, 61, 64, 72, 111, 114, 141, 143, 144, 155, 157, 159, 161, 164, 107, 168, 190, 191, 198, 199, 16, 209, 214):
+        metadata.extend([f"[{map_id:03}]", f"Name = {names[source_keys[str(source_id)]]}"])
+        if source_id in (5, 9, 10, 18, 24, 25, 32, 33, 39, 53, 54, 56, 61, 64, 72, 79, 111, 114, 141, 143, 144, 155, 157, 159, 161, 164, 107, 168, 190, 191, 198, 199, 16, 209, 214):
             metadata.extend(["Outdoor = true", "ShowArea = true"])
         if source_id in {*range(155, 164), 153}:
             metadata.append("SafariMap = true")
@@ -1921,7 +1933,14 @@ def install_pbs(preview, target, mapping):
     (pbs / "map_metadata_kanto.txt").write_text("\n".join(metadata), encoding="utf8")
 
 
-def install_runtime(target, mapping, game):
+def install_runtime(target, mapping, game, manifest=None):
+    manifest = json_file(KANTO) if manifest is None else manifest
+    names = LOCATION_NAMES
+    save_app = SAVE_APP
+    if 79 in mapping:
+        from k03e_contract import NAMES
+        names = {**LOCATION_NAMES, **NAMES}
+        save_app = "Kanto K03E CI"
     presentation = target / "Plugins/ZZZZ Blue Story and Presentation"
     for name in ("RegionStart.rb", "Regions.rb", "RegionalPolicy.rb", "RegionalRespawn.rb", "Title.rb", "Story.rb", "PartyExperience.rb", "Balance.rb", "RegionalCards.rb",
                  "Economy.rb", "Locale.rb", "KantoDex.rb", "DexControls.rb"):
@@ -1937,16 +1956,16 @@ def install_runtime(target, mapping, game):
     system.attrs.update({"@start_map_id": mapping[7], "@start_x": 25, "@start_y": 7})
     write_map(data / "System.rxdata", system, SYSTEM_CLASSES)
     infos = load(data / "MapInfos.rxdata")
-    for source_id, key in json_file(KANTO)["maps"].items():
-        infos[mapping[int(source_id)]].attrs["@name"] = LOCATION_NAMES[key].encode("utf8")
+    for source_id, key in manifest["maps"].items():
+        infos[mapping[int(source_id)]].attrs["@name"] = names[key].encode("utf8")
     write_map(data / "MapInfos.rxdata", infos)
     ini = target / "Game.ini"
-    ini.write_text(re.sub(r"(?m)^Title=.*$", f"Title={SAVE_APP}", ini.read_text(encoding="utf-8-sig")), encoding="utf8")
+    ini.write_text(re.sub(r"(?m)^Title=.*$", f"Title={save_app}", ini.read_text(encoding="utf-8-sig")), encoding="utf8")
     config = target / "mkxp.json"
     config_text = config.read_text(encoding="utf-8-sig")
     if re.search(r'(?m)^\s*"dataPath(?:App|Org)"', config_text):
         raise ValueError("The base already defines a custom save directory in mkxp.json.")
-    isolated = json.dumps({"dataPathApp": SAVE_APP, "dataPathOrg": SAVE_ORG})[1:-1]
+    isolated = json.dumps({"dataPathApp": save_app, "dataPathOrg": SAVE_ORG})[1:-1]
     config_text = config_text.replace("{", "{\n  " + isolated + ",", 1)
     config_text = re.sub(r'(?m)^(\s*"windowTitle"\s*:).*$', r'\1 "Pokémon Blue — Piloto de Kanto",', config_text)
     config.write_text(config_text, encoding="utf8")
@@ -2045,7 +2064,7 @@ def install_runtime(target, mapping, game):
     (data / "blue-compile-request.txt").write_text("compile", encoding="ascii")
     (data / "PluginScripts.rxdata").unlink(missing_ok=True)
     (target / PILOT_META).write_text(json.dumps({
-        "save_app": SAVE_APP, "save_org": SAVE_ORG,
+        "save_app": save_app, "save_org": SAVE_ORG,
         "maps": mapping, "build_signature": build_signature(),
         "base_data_sha256": {
             name: hashlib.sha256((game / "Data" / name).read_bytes()).hexdigest()
@@ -2057,12 +2076,18 @@ def install_runtime(target, mapping, game):
     music = target / "Plugins/ZZZZ Blue Music/BlueMusic.rb"
     if music.is_file():
         shutil.copyfile(ROOT / "scripts/music/BlueMusic.rb", music)
-    compiled, _ = compile_bytes(ROOT, target, mapping)
+    compiled, _ = compile_bytes(ROOT, target, mapping, candidate_manifest=manifest if 79 in mapping else None)
     (data / "blue-kanto-music.txt").write_bytes(compiled)
 
 
-def build(source, game, output, existing=None):
+def build(source, game, output, existing=None, *, manifest=None):
     output = output.resolve()
+    if manifest is not None:
+        from k03e_contract import candidate_manifest
+        if (os.getenv("GITHUB_ACTIONS") != "true" or
+                output != (ROOT / ".blue-work/kanto-k03e-functional").resolve() or
+                manifest != candidate_manifest(json_file(KANTO))):
+            raise ValueError("K03-E candidate must remain isolated in CI")
     work = (ROOT / ".blue-work").resolve()
     if not output.is_relative_to(work) or output == work or output.exists():
         raise ValueError("Choose a new pilot directory inside .blue-work.")
@@ -2075,7 +2100,7 @@ def build(source, game, output, existing=None):
     output.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix=".kanto-build-", dir=output.parent) as tmp:
         preview, target = Path(tmp) / "preview", Path(tmp) / "game"
-        plan = stage(ROOT, source, game, preview, existing=existing)
+        plan = stage(ROOT, source, game, preview, existing=existing, manifest=manifest)
         mapping = {row["source_id"]: row["proposed_id"] for row in plan["maps"]}
         target.mkdir()
         copy_game(game, target)
@@ -2085,16 +2110,16 @@ def build(source, game, output, existing=None):
         install_cerulean_items(source, target)
         install_events(source, target, mapping)
         install_pewter_route3_gate(source, target, mapping)
-        install_pbs(preview, target, mapping)
+        install_pbs(preview, target, mapping, manifest)
         install_npc_locale(ROOT, source, target, use_optional_translator=False)
         # Copy approved F2/F3 BGM and six confirmed F4 ME in this isolated pilot.
         # Hash verification and exclusive copy protect the original game audio.
         from scripts.music.compile_kanto_music import approved_audio_track_numbers
         from scripts.music.install_kanto_music import install as install_kanto_audio
         install_kanto_audio(target, apply=True, numbers=approved_audio_track_numbers(ROOT))
-        install_runtime(target, mapping, game)
+        install_runtime(target, mapping, game, manifest)
         install_cerulean_wall_map(source, target)
-        write_audit(target, ROOT)
+        write_audit(target, ROOT, manifest=manifest)
         if output.exists():
             raise ValueError("Another pilot already exists at the output path.")
         target.rename(output)

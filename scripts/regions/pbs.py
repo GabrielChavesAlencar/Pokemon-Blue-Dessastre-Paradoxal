@@ -314,10 +314,11 @@ def normalize_encounters(source, rows, species):
     return "\n".join(out), len(tables)
 
 
-def trainer_draft(path, species, moves, items):
-    blocks = read_blocks(path, TRAINERS)
+def trainer_draft(path, species, moves, items, specs=None):
+    specs = TRAINERS if specs is None else specs
+    blocks = read_blocks(path, specs)
     out = []
-    for original, (kind, name, version) in TRAINERS.items():
+    for original, (kind, name, version) in specs.items():
         # This type needs a proper trainer type/graphic when the events are wired.
         dest_type = f"BLUE_KANTO_{kind}"
         out.extend([f"# Source: [{original}]", f"[{dest_type},{name},{version}]"])
@@ -361,14 +362,18 @@ def build_drafts(source, game, plan):
                if row["source_id"] not in no_gameplay
                and row["source_id"] not in ENCOUNTER_REVIEW_SOURCE_IDS}
     encounters, count = normalize_encounters(source / "PBS/encounters.txt", mapping, species)
-    trainers = trainer_draft(source / "PBS/trainers.txt", species, moves, items)
+    specs = TRAINERS
+    if 79 in mapping:
+        from k03e_contract import PBS_TRAINERS
+        specs = {**TRAINERS, **PBS_TRAINERS}
+    trainers = trainer_draft(source / "PBS/trainers.txt", species, moves, items, specs)
     # Separate full-strength rematch versions, generated from an authored
     # 15-profile manifest. The source first-challenge PBS is never replaced.
     from kanto_full_power import full_power_draft
     from audit import ROOT
     trainers += "\n" + full_power_draft(
         ROOT / "data/kanto-full-power.json", species, TRAINERS)
-    plan["drafts"] = {"encounter_tables": count, "trainer_profiles": len(TRAINERS),
+    plan["drafts"] = {"encounter_tables": count, "trainer_profiles": len(specs),
                       "source_policy": "Essentials FRLG 1.1 explicitly listed levels; exact integer-weight conversion; map209 LandDay ambiguous; independent official exclusivities pending"}
     warning = "# REVIEW ONLY. Not loaded by the game. Source: Essentials FRLG 1.1.\n"
     return {Path("drafts", "encounters.txt"): (warning + encounters).encode("utf-8"),

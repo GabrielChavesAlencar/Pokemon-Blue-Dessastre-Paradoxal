@@ -47,10 +47,11 @@ def ruby_methods(path):
             for method, end in zip(methods, [*methods[1:], None])}, source
 
 
-def audit_pilot(target, root):
+def audit_pilot(target, root, *, manifest=None):
     data = target / "Data"
     mapping = json.loads((target / "Kanto pilot.json").read_text("utf-8"))["maps"]
-    manifest = json.loads((root / "data/regions" / KANTO.name).read_text("utf-8"))
+    manifest = (json.loads((root / "data/regions" / KANTO.name).read_text("utf-8"))
+                if manifest is None else manifest)
     if set(mapping) != set(manifest["maps"]) or len(set(mapping.values())) != len(mapping):
         raise ValueError("A auditoria precisa do conjunto completo de MapIDs do piloto Kanto")
     preview = {str(num) for num in manifest.get("preview_only", [])}
@@ -182,8 +183,8 @@ def audit_pilot(target, root):
             "pending": pending}
 
 
-def write_audit(target, root=ROOT):
-    report = audit_pilot(target, root)
+def write_audit(target, root=ROOT, *, manifest=None):
+    report = audit_pilot(target, root, manifest=manifest)
     path = target / "Data/blue-kanto-locale-audit.json"
     path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"[KANTO PT-BR] {len(report['maps'])} maps audited; "

@@ -87,12 +87,19 @@ def _rules(project: Path) -> tuple[dict, dict, dict]:
     return rules, source, catalog
 
 
-def compile_bytes(project: Path, game: Path, mapping: dict) -> tuple[bytes, dict]:
+def compile_bytes(project: Path, game: Path, mapping: dict, *, candidate_manifest=None) -> tuple[bytes, dict]:
     """Pure compilation; checks all actual MapXXX.rxdata files, writes nothing."""
     rules, source, catalog = _rules(project)
     maps = source.get("maps")
     if not isinstance(maps, dict) or len(maps) != 156 or maps.get("58") != "DAY_CARE" or not {"68","69","70","71"} <= maps.keys():
         raise ValueError("Kanto source map catalog changed unexpectedly")
+    if candidate_manifest is not None:
+        from scripts.regions.k03e_contract import candidate_manifest as expected_manifest, MUSIC
+        if candidate_manifest != expected_manifest(source) or game.name != "game":
+            raise ValueError("Invalid isolated K03-E music candidate")
+        source = candidate_manifest
+        maps = source["maps"]
+        rules = {**rules, "maps": [*rules["maps"], *MUSIC]}
     source_ids = set(maps)
     if set(map(str, mapping)) != source_ids:
         raise ValueError("Compiled MapIDs do not cover precisely Kanto source maps")
