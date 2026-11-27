@@ -13,7 +13,7 @@ module KantoMusicNativeProbe
              "Kanto save is not active")
     region = $PokemonGlobal.blue_regions["current"]
     music = BlueMusic.kanto_data
-    require!(music[0].length == 152, "Compiled MapID coverage not 152")
+    require!(music[0].length == 156, "Compiled MapID coverage not 156")
     require!([music[1].length,music[2].length,music[3].length,music[4].length,
               music[5].length,music[6].length] == [84,8,2,3,6,5],
              "Kanto manifest category counts do not match approved rules")
@@ -31,6 +31,11 @@ module KantoMusicNativeProbe
     require!(daycare && daycare == BlueKantoPilot.kanto_map_id(58) &&
              !music[0][daycare][1] && music[1][daycare][0].include?("1-50."),
              "K03-A Day Care native music binding missing")
+    (68..71).each do |source|
+      id = BlueKantoPilot.kanto_map_id(source)
+      require!(id && music[0].key?(id) && !music[0][id][1],
+               "K03-B missing native music scope for #{source}")
+    end
     map_id=$game_map.map_id
     require!(music[0].key?(map_id) && !music[0][map_id][1] &&
              music[1].key?(map_id),
@@ -97,7 +102,7 @@ module KantoMusicNativeProbe
              "Music probe changed current region or map")
     File.write("Data/blue-kanto-music-native-#{label}.txt",
                "STATUS=PASS_NATIVE_AUDIOFILE_DISPATCH_NOT_AUDIBLE\n" +
-               "SCOPE=152;MAP=84;BATTLE=8;TRANSPORT=2;ME=6;SCENE=5\n" +
+               "SCOPE=156;MAP=84;BATTLE=8;TRANSPORT=2;ME=6;SCENE=5\n" +
                "DECODER=SEPARATE_FFMPEG_CI;LOOP_FADE_SPEAKER=BLOCKED_ENV\n")
     puts "KANTO_MUSIC_NATIVE_F6=#{label}|PASS_NATIVE_AUDIOFILE_DISPATCH_NOT_AUDIBLE"
     true

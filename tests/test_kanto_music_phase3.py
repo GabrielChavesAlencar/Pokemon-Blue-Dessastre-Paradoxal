@@ -89,7 +89,7 @@ class PhaseThreeMusicTests(KantoMusicPhaseOneTests):
             self.add_music(number)
         before=(self.game/"Kanto pilot.json").read_bytes()
         data,report=self.compile()
-        self.assertEqual(report["source_maps"],152)
+        self.assertEqual(report["source_maps"],156)
         self.assertEqual(report["preview_maps"],35)
         self.assertFalse((self.game/compiler.OUTPUT).exists())
         self.assertEqual((self.game/"Kanto pilot.json").read_bytes(),before)

@@ -8886,10 +8886,10 @@ except OSError as _log_error:
     print("[A13] Nao foi possivel criar log: "+str(_log_error),file=sys.stderr)
 
 try:
-    print("[A13] Validando e extraindo os 29 arquivos da ferramenta...",flush=True)
+    print("[A13] Validando e extraindo os 30 arquivos da ferramenta...",flush=True)
     raw = base64.b64decode("".join(BUNDLE_B64),validate=True)
     files = json.loads(raw.decode("utf-8"))
-    if not isinstance(files,dict) or len(files)!=29:
+    if not isinstance(files,dict) or len(files)!=30:
         raise ValueError("Bundle incompleto")
     root_base=Path(os.environ.get("LOCALAPPDATA") or tempfile.gettempdir()).absolute()
     root=root_base/"PokemonBlueUnovaMapids"/("bundle-"+hashlib.sha256(raw).hexdigest()[:16])

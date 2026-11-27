@@ -27,7 +27,7 @@ class KantoMusicPhase4Tests(KantoMusicPhaseOneTests):
             self.add_music(number)
         raw, report = self.compile()
         lines=raw.decode().splitlines()
-        self.assertEqual(report["source_maps"],152)
+        self.assertEqual(report["source_maps"],156)
         self.assertEqual(report["preview_maps"],35)
         self.assertEqual(report["active_map_bindings"],84)
         self.assertEqual(report["active_battle_bindings"],8)
