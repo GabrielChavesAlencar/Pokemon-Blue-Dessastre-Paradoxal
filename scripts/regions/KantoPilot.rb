@@ -1036,14 +1036,17 @@ module BlueKantoPilot
   # verified local quest unlocks the original front and rear doors.
   CERULEAN_ROCKET_KEY = "KANTO_039_026".freeze
   def self.cerulean_house_open?
-    kanto_current? && !!(progress["pilot_bill_helped"] ||
-      progress["pilot_bill_ticket"] || progress["pilot_ss_ticket"])
+    return false unless kanto_current?
+    # The actual regional ticket in the Bag controls the police position.
+    # Only a historical runtime with no native item can use a digital permit.
+    return bill_ticket_in_bag? if bill_ticket_item
+    !!(progress["pilot_bill_ticket"] || progress["pilot_ss_ticket"])
   end
 
   def self.cerulean_house_entry?
     return true if cerulean_house_open?
-    pbMessage(t("The police are investigating. Help Bill first.",
-                "A polícia está investigando. Ajude Bill primeiro.")) if kanto_current?
+    pbMessage(t("The police are investigating. Get the S.S. Ticket from Bill first.",
+                "A polícia está investigando. Pegue primeiro o S.S. Ticket com Bill.")) if kanto_current?
     false
   end
 
@@ -2399,9 +2402,9 @@ module BlueKantoPilot
     city = kanto_map_id(39)
     return unless city
     sync_cerulean_quest_pages(city)
-    maps = $map_factory && $map_factory.respond_to?(:maps) ? $map_factory.maps : [$game_map]
-    Array(maps).each do |map|
-      sync_loaded_cerulean_map(map) if map && map.map_id == city
+    maps = $map_factory && $map_factory.respond_to?(:maps) ? Array($map_factory.maps) : []
+    (maps + [$game_map]).compact.uniq.each do |map|
+      sync_loaded_cerulean_map(map) if map.map_id == city
     end
   end
 
@@ -2472,7 +2475,10 @@ module BlueKantoPilot
     return false unless destinations.values.all? && destinations.values.uniq.length == 6
     stale = destinations.keys.select do |id|
       event = map.events[id]
-      !event || event.trigger != 1 || !cerulean_door_transfer?(event.list,destinations[id])
+      from,dir = CERULEAN_DOOR_STEPS.fetch(id)
+      dx,dy = {2=>[0,1],8=>[0,-1]}.fetch(dir)
+      !event || event.trigger != 1 || [event.x,event.y] != [from[0]+dx,from[1]+dy] ||
+        !cerulean_door_transfer?(event.list,destinations[id])
     end
     # Older cached maps can retain donor police scripts even when all
     # eight doors already exist. Require both original adapted guard pages.
@@ -2492,7 +2498,9 @@ module BlueKantoPilot
     return false if stale.empty?
     path = format("Data/Map%03d.rxdata",map.map_id)
     return false unless File.file?(path)
-    authored = load_data(path)
+    # Read the actual installed Marshal file instead of an engine/JoiPlay
+    # load_data cache that can still return the pre-update event table.
+    authored = Marshal.load(File.binread(path))
     # The on-disk map must already contain ALL eight verified transfers.
     # An incomplete installation cannot be fixed by inventing a warp.
     return false unless authored.respond_to?(:events) &&
@@ -2500,10 +2508,25 @@ module BlueKantoPilot
         authored.events[id].pages.any? { |page| page.trigger == 1 &&
           cerulean_door_transfer?(page.list,destination) } } &&
       destinations.values.all? { |id| File.file?(format("Data/Map%03d.rxdata",id)) }
-    display = [map.display_x,map.display_y] if map.respond_to?(:display_x) && map.respond_to?(:display_y)
-    map.setup(map.map_id)
-    if display && map.respond_to?(:display_x=) && map.respond_to?(:display_y=)
-      map.display_x,map.display_y = display
+    # Repair only the known source events. Do not replace the live map or
+    # invalidate Sprite_Character references after the spriteset is built.
+    return false unless [13,25].all? { |id|
+      e = authored.events[id]
+      active = id == 13 ? 0 : 1
+      e && e.pages.length == 2 && e.pages[active].list.map(&:code) == [101,0] &&
+        e.pages[1-active].list.map(&:code) == [0] }
+    sync_cerulean_quest_pages(map.map_id)
+    stale.uniq.each do |id|
+      raw = authored.events.fetch(id)
+      live = map.events[id]
+      if live.is_a?(Game_Event)
+        live.instance_variable_set(:@event,raw)
+        live.instance_variable_set(:@erased,false)
+        live.moveto(raw.x,raw.y) unless [live.x,live.y] == [raw.x,raw.y]
+        live.refresh
+      else
+        map.events[id] = Game_Event.new(map.map_id,raw,map)
+      end
     end
     puts "KANTO_CERULEAN_STALE_DOORS_RELOADED:#{stale.inspect}"
     true
@@ -2678,8 +2701,10 @@ module BlueKantoPilot
     # A JoiPlay save can skip the expected spriteset/setup hook. Recheck
     # the actual current map at a canonical doorstep, before fetching the
     # event reference. Never reload a map while an interpreter is running.
-    canonical_step = CERULEAN_DOOR_STEPS.values.include?([from,direction]) ||
-      (from == [14,29] && direction == 8)
+    canonical_step = CERULEAN_DOOR_STEPS.values.any? { |standing,dir|
+      dir == direction && (standing == from ||
+        [standing[0]+delta[0],standing[1]+delta[1]] == from) } ||
+      (direction == 8 && [[14,29],[14,28]].include?(from))
     sync_loaded_cerulean_map($game_map) if canonical_step
     CERULEAN_INTERIOR_DOORS.each do |id,source|
       event = $game_map.events[id]
@@ -2687,9 +2712,12 @@ module BlueKantoPilot
         event.respond_to?(:list) && event.respond_to?(:x) && event.respond_to?(:y) &&
         event.respond_to?(:start) && event.respond_to?(:starting) &&
         event.trigger == 1 && cerulean_door_transfer?(event.list,kanto_map_id(source))
-      next unless [event.x,event.y] == target ||
+      standing,dir = CERULEAN_DOOR_STEPS.fetch(id)
+      on_door = direction == dir && from == [event.x,event.y]
+      on_alias = id == 7 && from == [14,28] && direction == 8
+      next unless [event.x,event.y] == target || on_door || on_alias ||
         (id == 7 && target == [14,28])
-      canonical = CERULEAN_DOOR_STEPS[id] == [from,direction] ||
+      canonical = [standing,dir] == [from,direction] || on_door || on_alias ||
         (id == 7 && from == [14,29] && direction == 8)
       return [event,from,target,canonical]
     end
@@ -2697,7 +2725,82 @@ module BlueKantoPilot
   end
 end
 
+module BlueKantoPilot
+  # Independent of move_generic: JoiPlay/DexNav can use another movement
+  # path or leave the player standing on a door without firing touch.
+  # Only the exact original doorstep/door tile + direction may dispatch.
+  def self.cerulean_mobile_contact(player,dir)
+    return false unless $game_map && kanto_current?
+    return false unless [2,8].include?(dir)
+    return false unless $game_map.map_id == kanto_map_id(39)
+    blocker = cerulean_mobile_contact_blocker(player)
+    if blocker
+      cerulean_mobile_trace("contact blocked=#{blocker} from=#{[player.x,player.y].inspect} dir=#{dir}")
+      return false
+    end
+    # Essentials changes logical x/y before the walking animation settles.
+    # A native player-touch event may be queued on the actual door tile
+    # during that animation. Do not force the animation or a transfer.
+    # Never queue from the adjacent doorstep until movement has stopped.
+    if player.moving?
+      standing = CERULEAN_DOOR_STEPS.any? { |id,(from,door_dir)|
+        dy = door_dir == 8 ? -1 : 1
+        door_dir == dir && [player.x,player.y] == [from[0],from[1]+dy] } ||
+        (dir == 8 && [player.x,player.y] == [14,28])
+      return false unless standing
+    end
+    contact = cerulean_door_contact(player,dir)
+    if contact && contact[3]
+      event = contact[0]
+      event.start unless event.starting
+      cerulean_mobile_trace("door=#{event.id} from=#{contact[1].inspect} dir=#{dir} moving=#{player.moving?} started=#{event.starting}")
+      return !!event.starting
+    end
+    false
+  end
+
+  def self.cerulean_mobile_contact_blocker(player)
+    return :jumping if player.jumping?
+    return :interpreter if defined?(pbMapInterpreterRunning?) && pbMapInterpreterRunning?
+    if $game_temp
+      [:in_battle,:message_window_showing,:player_transferring,:menu_calling].each do |flag|
+        return flag if $game_temp.respond_to?(flag) && $game_temp.public_send(flag)
+      end
+    end
+    nil
+  end
+
+  def self.cerulean_mobile_trace(line)
+    return unless File.file?("Data/blue-mobile.txt")
+    @cerulean_trace_seen ||= {}
+    return if @cerulean_trace_seen.key?(line) || @cerulean_trace_seen.length >= 100
+    @cerulean_trace_seen[line] = true
+    File.open("Data/blue-android-cerulean-runtime.txt","ab") { |log| log.puts(line) }
+  rescue IOError, SystemCallError
+    nil
+  end
+
+  def self.cerulean_mobile_refresh
+    return unless $game_map && kanto_current? && $game_map.map_id == kanto_map_id(39)
+    return if defined?(pbMapInterpreterRunning?) && pbMapInterpreterRunning?
+    key = [$game_map,cerulean_house_open?]
+    return if @cerulean_mobile_map_key == key
+    sync_loaded_cerulean_map($game_map)
+    @cerulean_mobile_map_key = key
+    front,side = $game_map.events[13],$game_map.events[25]
+    cerulean_mobile_trace("map=#{$game_map.map_id} ticket=#{bill_ticket_in_bag?} front=#{front && front.character_name} side=#{side && side.character_name} doors=#{CERULEAN_INTERIOR_DOORS.keys.select { |id| $game_map.events[id] }.inspect}")
+  end
+end
+
 module BlueKantoPilot::CeruleanDoorContact
+  def update(*args)
+    if File.file?("Data/blue-mobile.txt")
+      BlueKantoPilot.cerulean_mobile_refresh
+      BlueKantoPilot.cerulean_mobile_contact(self,Input.dir4) if defined?(Input) && Input.respond_to?(:dir4)
+    end
+    super
+  end
+
   def move_generic(dir, turn_enabled = true)
     contact = turn_enabled && BlueKantoPilot.cerulean_door_contact(self,dir)
     # Canonical doorstep interaction is an event, not walking into a wall.
