@@ -64,8 +64,8 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
     badges = [badge for _, badge in BADGES]
     if official["milestones"] != badges:
         raise ValueError("Regional milestone order no longer matches the eight Kanto gyms")
-    if site.get("version") != 1 or len(site["locations"]) != 156 or len(site["trainers"]) != 162:
-        raise ValueError("Kanto portal is not synchronized with 156 maps/162 grouped trainers")
+    if site.get("version") != 1 or len(site["locations"]) != 156 or len(site["trainers"]) != 163:
+        raise ValueError("Kanto portal is not synchronized with 156 maps/163 grouped trainers")
 
     locations = {loc["id"]: loc for loc in site["locations"]}
     if len(locations) != len(site["locations"]):
@@ -108,6 +108,18 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
             linked.append(trainer_id)
     if len(linked) != len(trainer_ids) or set(linked) != trainer_ids:
         raise ValueError("Every trainer must occur in exactly one area")
+    anne = next((t for t in site["trainers"] if t["id"] == "kanto-blue-ss-anne"), None)
+    expected_anne = {"BULBASAUR": "CHARMELEON", "CHARMANDER": "WARTORTLE", "SQUIRTLE": "IVYSAUR"}
+    if (not anne or anne["location"] != "kanto-ss-anne-2f" or anne["leader"]
+        or locations["kanto-ss-anne-2f"]["trainers"].count(anne["id"]) != 1
+        or len(anne["variants"]) != 3
+        or {v.get("starter") for v in anne["variants"]} != set(expected_anne)):
+        raise ValueError("S.S. Anne rival identity/variants differ from source")
+    for variant in anne["variants"]:
+        expected_team = [("PIDGEOTTO", 19), ("RATICATE", 16), ("KADABRA", 18),
+                         (expected_anne[variant["starter"]], 20)]
+        if [(p["species"], p["level"]) for p in variant["team"]] != expected_team:
+            raise ValueError("S.S. Anne rival team differs from source")
     actual_leaders = {t["name"] for t in site["trainers"] if t["leader"]}
     if actual_leaders != set(names):
         raise ValueError("Gym leader catalog does not match eight badge rewards")

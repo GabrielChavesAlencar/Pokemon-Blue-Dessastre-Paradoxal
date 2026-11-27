@@ -14,7 +14,7 @@ const loc=id=>kanto.locations.find(v=>v.id===id);
 
 test('Kanto prototype states are explicit and the route 23 exception stays visible',()=>{
   assert.equal(kanto.locations.length,156);
-  assert.equal(kanto.trainers.length,162);
+  assert.equal(kanto.trainers.length,163);
   assert.equal(kanto.locations.filter(x=>x.status==='preview').length,35);
   assert.equal(kanto.locations.filter(x=>x.status==='encounter_review').length,1);
   assert.equal(kanto.locations.filter(x=>x.status==='experimental').length,120);
@@ -24,7 +24,7 @@ test('Kanto prototype states are explicit and the route 23 exception stays visib
   assert.match(route23,/método duplicado/);
   const preview=kanto.locations.find(x=>x.status==='preview');
   assert.match(kantoLocation(model,kanto,preview),/Somente cenário/);
-  assert.match(kantoIndex(model,kanto,'localizacoes'),/156 locais e 162 treinadores/);
+  assert.match(kantoIndex(model,kanto,'localizacoes'),/156 locais e 163 treinadores/);
   assert.doesNotMatch(route23,/Trecho de Pallet Town a Pewter City/);
 });
 test('seis interiores de Cerulean e Grunt 6 são explícitos sem alterar as prévias',()=>{
@@ -39,6 +39,18 @@ test('seis interiores de Cerulean e Grunt 6 são explícitos sem alterar as pré
   assert.equal(grunt.location,'kanto-cerulean-city');
   assert.deepEqual(grunt.variants[0].team.map(p=>[p.species,p.level]),[['MACHOP',17],['DROWZEE',17]]);
   assert.equal(loc('kanto-cerulean-city').trainers.filter(id=>id===grunt.id).length,1);
+});
+test('rival do navio tem identidade própria e três variantes originais',()=>{
+  const rival=kanto.trainers.find(t=>t.id==='kanto-blue-ss-anne');
+  assert.ok(rival);
+  assert.equal(rival.location,'kanto-ss-anne-2f');
+  assert.equal(rival.leader,false);
+  assert.equal(loc(rival.location).trainers.filter(id=>id===rival.id).length,1);
+  assert.deepEqual(rival.variants.map(v=>[v.starter,v.team.map(p=>[p.species,p.level])]),[
+    ['BULBASAUR',[['PIDGEOTTO',19],['RATICATE',16],['KADABRA',18],['CHARMELEON',20]]],
+    ['CHARMANDER',[['PIDGEOTTO',19],['RATICATE',16],['KADABRA',18],['WARTORTLE',20]]],
+    ['SQUIRTLE',[['PIDGEOTTO',19],['RATICATE',16],['KADABRA',18],['IVYSAUR',20]]]
+  ]);
 });
 test('creche original está catalogada sem declarar aceite físico',()=>{
   const daycare=loc('kanto-day-care');
