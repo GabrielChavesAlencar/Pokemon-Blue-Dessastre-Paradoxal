@@ -2666,8 +2666,11 @@ module KantoNativeCheck
       $game_map.events.each_value { |ev| ev.clear_starting }
       # The earlier headless native run reached command 355 but DexNav
       # accessed an uninitialized scene spriteset (005_Override.rb:12).
-      # Use the actual Scene_Map lifecycle only for the Cut animation.
-      # Do not override DexNav, pbCut, pbSmashEvent or event collision.
+      # Keep the actual Scene_Map spritesets alive for both the Cut
+      # animation AND the player's subsequent door movement/update. The
+      # previous CI reached the door step but restored the headless scene
+      # too soon (DexNav spriteset lookup from native update_move).
+      # No overrides of DexNav, pbCut, pbSmashEvent or event collision.
       cut_scene_before = $scene
       cut_scene = Scene_Map.new
       begin
@@ -2677,25 +2680,65 @@ module KantoNativeCheck
           file.puts("K03-D scene=#{cut_scene.class} created; map=#{$game_map.map_id}; event=#{tree_id}; commands=#{tree.list.map(&:code).inspect}")
         end
         tree.start
-      interpreter = pbMapInterpreter
-      require!(!interpreter.running?, "K03-D Cut interpreter busy")
-      interpreter.setup_starting_event
-      require!(interpreter.running? && interpreter.instance_variable_get(:@event_id) == tree_id,
-        "K03-D native Cut event not selected")
-      # Native command 111 calls pbCut, then command 355 calls
-      # pbSmashThisEvent. No direct erase or synthetic through flag.
-      deadline = System.uptime + 12
-      loop do
-        interpreter.update
-        break if !interpreter.running? || System.uptime >= deadline
-        Graphics.update
-        $game_player.update
-        $game_map.update
-      end
-        require!(!interpreter.running?, "K03-D Cut event did not complete")
-        File.open("Data/blue-kanto-k03d-cut-trace.txt","a") do |file|
-          file.puts("K03-D native Cut completed; event erased=#{tree.instance_variable_get(:@erased).inspect}")
+        interpreter = pbMapInterpreter
+        require!(!interpreter.running?, "K03-D Cut interpreter busy")
+        interpreter.setup_starting_event
+        require!(interpreter.running? && interpreter.instance_variable_get(:@event_id) == tree_id,
+          "K03-D native Cut event not selected")
+        # Native command 111 calls pbCut, then command 355 calls
+        # pbSmashThisEvent. No direct erase or synthetic through flag.
+        deadline = System.uptime + 12
+        loop do
+          interpreter.update
+          break if !interpreter.running? || System.uptime >= deadline
+          Graphics.update
+          $game_player.update
+          $game_map.update
         end
+          require!(!interpreter.running?, "K03-D Cut event did not complete")
+          File.open("Data/blue-kanto-k03d-cut-trace.txt","a") do |file|
+            file.puts("K03-D native Cut completed; event erased=#{tree.instance_variable_get(:@erased).inspect}")
+          end
+        require!($bag.quantity(anne_cut) == original_cut, "K03-D Cut consumed HM")
+        city_after_cut = opening_component(vermilion,k03a_report.fetch("vermilion_center_landing"),
+          reuse_loaded: true)
+        require!(city_after_cut.key?(tree_xy) && north_event_reachable?(city_after_cut,door),
+          "K03-D native Cut did not open physical path to gym")
+        File.open("Data/blue-kanto-k03d-cut-trace.txt","a") do |file|
+          file.puts("K03-D physical Cut path: #{city_comp.length}->#{city_after_cut.length}; tree=#{tree_xy.inspect}; door=#{door_id}")
+        end
+        # Exercise the real player touch and native interpreter from a tile
+        # reached by the post-Cut collision component; no map setup beforehand.
+        door_step = {2=>[0,1],4=>[-1,0],6=>[1,0],8=>[0,-1]}.filter_map do |dir,(dx,dy)|
+          from = [door.x-dx,door.y-dy]
+          next unless city_after_cut.key?(from)
+          $game_player.moveto(*from)
+          [from,dir,$game_player.passable?(*from,dir)]
+        end.sort_by { |from,_dir,passable| [passable ? 0 : 1,city_after_cut.fetch(from)] }
+        selected = nil
+        door_step.each do |from,dir,passable|
+          $game_player.moveto(*from)
+          $game_map.events.each_value { |ev| ev.clear_starting }
+          $game_player.move_generic(dir,true)
+          deadline = System.uptime + 3
+          until door.starting || System.uptime >= deadline
+            break unless $game_player.moving? || $game_player.jumping?
+            Graphics.update
+            $game_player.update
+          end
+          if door.starting
+            selected = [from,dir,passable]
+            break
+          end
+        end
+        require!(selected, "K03-D post-Cut door did not start on player touch")
+        cut_transfer = cerulean_native_started_transfer!(door,surge_map_id,*selected)
+        require!(cut_transfer["landing"] == gym_landing, "K03-D gym entry landing changed")
+        File.open("Data/blue-kanto-k03d-cut-trace.txt","a") { |file| file.puts("K03-D native transfer: #{cut_transfer.inspect}") }
+        cut_report = {"event"=>tree_id,"tree_xy"=>tree_xy,"before"=>false,
+          "after"=>true,"native_interpreter"=>true,"hm_preserved"=>true,"native_spriteset"=>true,
+          "before_cells"=>city_comp.length,"after_cells"=>city_after_cut.length,
+          "transfer"=>cut_transfer}
       rescue Exception => error
         # EventScriptError may not inherit StandardError. Preserve the
         # original diagnostic and fail closed rather than swallow it.
@@ -2708,42 +2751,6 @@ module KantoNativeCheck
           $scene = cut_scene_before
         end
       end
-      require!($bag.quantity(anne_cut) == original_cut, "K03-D Cut consumed HM")
-      city_after_cut = opening_component(vermilion,k03a_report.fetch("vermilion_center_landing"),
-        reuse_loaded: true)
-      require!(city_after_cut.key?(tree_xy) && north_event_reachable?(city_after_cut,door),
-        "K03-D native Cut did not open physical path to gym")
-      # Exercise the real player touch and native interpreter from a tile
-      # reached by the post-Cut collision component; no map setup beforehand.
-      door_step = {2=>[0,1],4=>[-1,0],6=>[1,0],8=>[0,-1]}.filter_map do |dir,(dx,dy)|
-        from = [door.x-dx,door.y-dy]
-        next unless city_after_cut.key?(from)
-        $game_player.moveto(*from)
-        [from,dir,$game_player.passable?(*from,dir)]
-      end.sort_by { |from,_dir,passable| [passable ? 0 : 1,city_after_cut.fetch(from)] }
-      selected = nil
-      door_step.each do |from,dir,passable|
-        $game_player.moveto(*from)
-        $game_map.events.each_value { |ev| ev.clear_starting }
-        $game_player.move_generic(dir,true)
-        deadline = System.uptime + 3
-        until door.starting || System.uptime >= deadline
-          break unless $game_player.moving? || $game_player.jumping?
-          Graphics.update
-          $game_player.update
-        end
-        if door.starting
-          selected = [from,dir,passable]
-          break
-        end
-      end
-      require!(selected, "K03-D post-Cut door did not start on player touch")
-      cut_transfer = cerulean_native_started_transfer!(door,surge_map_id,*selected)
-      require!(cut_transfer["landing"] == gym_landing, "K03-D gym entry landing changed")
-      cut_report = {"event"=>tree_id,"tree_xy"=>tree_xy,"before"=>false,
-        "after"=>true,"native_interpreter"=>true,"hm_preserved"=>true,"native_spriteset"=>true,
-        "before_cells"=>city_comp.length,"after_cells"=>city_after_cut.length,
-        "transfer"=>cut_transfer}
     ensure
       $player.party.replace(original_party)
     end

@@ -239,6 +239,8 @@ Não iniciar antes da verificação das duas publicações e do gate de QA físi
 
 **CI K03-D — HEAD `ee260a145dca6905e2eeccc208e2fcb273e0973b`:** 6/7 workflows, 14/15 jobs aprovados. [Job nativo 140667571444](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/46046678937/job/140667571444) falhou durante command_355 (pbSmashThisEvent), com DexNav 005_Override.rb:12 (each_value em nil) e EventScriptError; o teste roda antes dos spritesets da Scene_Map. Não há prova de Cut após essa falha. A próxima revisão cria/descarta a cena nativa somente na fixture de Cut e preserva o erro completo e artefato de diagnóstico; nenhum callback de campo, colisão ou plugin de produção é substituído. Revalidar os três marcadores; merge bloqueado.
 
+**CI K03-D — HEAD `68c883fe712007cb9b65a4c734d832be229426c6`:** 6/7 workflows, 14/15 jobs aprovados. [Job 140671315260](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/46047799157/job/140671315260) avançou além de pbSmashThisEvent e das asserções de colisão pós-Cut, mas falhou em `$game_player.update` durante o passo até a porta (linha 2733), DexNav `spriteset` acessando nil. A cena havia sido descartada cedo demais. Manter spritesets nativos até o pedido real de transferência e registrar testemunhas do caminho e porta. Não alterar plugins/runtime de produção, saves ou balanceamento. Exigir os três marcadores na nova CI; não declarar conclusão com base apenas no avanço do stack trace.
+
 ## Referências
 
 - [Etapas de Kanto](KANTO_ETAPAS.md), [plano E2E](KANTO_CODEX_TESTES_E2E.md), [integração Decades](KANTO_INTEGRACAO_DECADES.md), [auditoria dos mapas ausentes](KANTO_MAPAS_AUSENTES_2026_11_19.md), [plano regional v2](PLANO_REGIOES_DESSASTRE_V2.md).
