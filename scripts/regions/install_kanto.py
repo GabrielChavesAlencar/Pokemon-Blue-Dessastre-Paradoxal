@@ -384,6 +384,10 @@ def known_legacy_catalog(wanted, previous):
     if len(wanted) == 152 and north | interiors | {"58"} <= wanted:
         published = wanted - {"58"}
         return previous in (published, published - interiors, published - interiors - north)
+    vermilion = {"68", "69", "70", "71"}
+    if len(wanted) == 156 and north | interiors | {"58"} | vermilion <= wanted:
+        baseline = wanted - vermilion
+        return previous == baseline or known_legacy_catalog(baseline, previous)
     return False
 
 

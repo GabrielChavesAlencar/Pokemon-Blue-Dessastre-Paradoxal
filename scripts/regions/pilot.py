@@ -35,6 +35,7 @@ PILOT_META = "Kanto pilot.json"
 PILOT_INPUTS = (
     "scripts/regions/pilot.py",
     "scripts/regions/kanto_wall_atlas.py",
+    "scripts/regions/vermilion_interiors.py",
     "scripts/regions/kanto_overworld.py",
     "scripts/regions/kanto_npc_locale.py",
     "scripts/regions/kanto_locale_audit.py",
@@ -904,6 +905,12 @@ def install_events(source, target, mapping):
     mart_intro_event_id = max(mart_events) + 1
     preview_only = set(json_file(KANTO).get("preview_only", []))
     catalogue_items = catalogue(target, "items")
+    vermilion = None
+    if {68,69,70,71} <= mapping.keys():
+        from vermilion_interiors import inspect_source
+        vermilion = inspect_source(source)
+    if vermilion and not {"BIKEVOUCHER", "OLDROD"} <= catalogue_items:
+        raise ValueError("K03-B native reward items absent")
     field_inventory, skipped_items, pending_review, missing_graphics = [], [], [], []
     npc_dialogues = []  # FRLG source text stays only in the locally built pilot.
     if preview_only - mapping.keys():
@@ -1066,6 +1073,12 @@ def install_events(source, target, mapping):
             if not viridian_event_allowed(original, event_id) and not passive_field:
                 continue
             if not league_event_allowed(original, event_id) and not passive_field:
+                continue
+            if vermilion and (original, event_id) in vermilion["rewards"]:
+                item = vermilion["rewards"][(original,event_id)]
+                selected[event_id] = new_event(event, [
+                    command(355, f"BlueKantoPilot.vermilion_gift({original}, {event_id}, :{item})".encode("ascii"))
+                ], 0, actor(event))
                 continue
             # K02-C source Map039 events and interiors 043–048. Preserve
             # geometry, event IDs, and local transfer coordinates. No donor

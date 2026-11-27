@@ -54,6 +54,8 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Kanto release selector regression tests failed'}
           python scripts/regions/audit_vermilion.py --output .blue-work/kanto-phase-08-audit.json
           if($LASTEXITCODE -ne 0){throw 'Kanto phase 08 source audit failed'}
+          python scripts/regions/vermilion_interiors.py
+          if($LASTEXITCODE -ne 0){throw 'K03-B original source identity/reward audit failed'}
           python tests/qa_k03a_daycare_source.py
           if($LASTEXITCODE -ne 0){throw 'K03-A Day Care source identity/transfer audit failed'}
           python scripts/regions/audit_celadon.py --output .blue-work/kanto-phase-09-audit.json
@@ -89,7 +91,7 @@ jobs:
           $scope='.blue-work/kanto-pilot/Data/blue-kanto-music.txt'
           if(-not (Test-Path $scope)){throw 'Missing regional Kanto music scope'}
           $scopeRows=@(Get-Content $scope | Where-Object { $_ -match '^SCOPE[\t]' })
-          if($scopeRows.Count -ne 152){throw "Expected 152 real MapIDs; got $($scopeRows.Count)"}
+          if($scopeRows.Count -ne 156){throw "Expected 156 real MapIDs; got $($scopeRows.Count)"}
           python scripts/music/compile_kanto_music.py --game .blue-work/kanto-pilot --apply
           if($LASTEXITCODE -ne 0){throw 'Kanto regional music compiler failed'}
           $mapRows=@(Get-Content $scope | Where-Object { $_ -match '^MAP[\t]' })
@@ -300,6 +302,10 @@ jobs:
               Get-Content $ceruleanTrace
               Write-Host ("KANTO_K02D_NATIVE_CERULEAN_REPORT:" + (Get-Content $ceruleanProof -Raw).Trim())
               Write-Host 'KANTO_K02D_GARY_BILL_MISTY_SAVE_RELOAD_OK'
+              $vermilionProof="$pilot/Data/blue-kanto-k03b-proof.txt"
+              if(-not (Test-Path $vermilionProof)){throw 'K03-B native Vermilion proof missing'}
+              Write-Host ("KANTO_K03B_NATIVE_VERMILION_REPORT:" + (Get-Content $vermilionProof -Raw).Trim())
+              Write-Host 'KANTO_K03B_NATIVE_VERMILION_SAVE_RELOAD_OK'
               $corridorTrace="$pilot/Data/blue-kanto-k03a-trace.txt"
               $corridorProof="$pilot/Data/blue-kanto-k03a-proof.txt"
               if(-not (Test-Path $corridorTrace) -or -not (Test-Path $corridorProof)){throw 'K03-A native corridor proof missing'}
@@ -669,7 +675,9 @@ jobs:
           python scripts/regions/qa_k00_migration.py
           if($LASTEXITCODE -ne 0){throw 'K03-A real 145 to 152 migration proof failed'}
           python scripts/regions/qa_k00_migration.py --from-151
-          if($LASTEXITCODE -ne 0){throw 'K03-A real 151 to 152 migration proof failed'}
+          if($LASTEXITCODE -ne 0){throw 'K03-B real 151 to 156 migration proof failed'}
+          python scripts/regions/qa_k00_migration.py --from-152
+          if($LASTEXITCODE -ne 0){throw 'K03-B real 152 to 156 migration proof failed'}
       - name: Preservar recibo K03-A da migracao
         if: always() && hashFiles('.blue-work/k03a-migration-proof.json') != ''
         uses: actions/upload-artifact@v4

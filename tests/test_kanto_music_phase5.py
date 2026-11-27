@@ -26,7 +26,7 @@ class PhaseFiveMusicTests(KantoMusicPhaseOneTests):
         data,report=self.compile()
         lines=data.decode().splitlines()
         scenes=[row.split("\t") for row in lines if row.startswith("SCENE\t")]
-        self.assertEqual(report["source_maps"],152)
+        self.assertEqual(report["source_maps"],156)
         self.assertEqual(report["preview_maps"],35)
         self.assertEqual(report["active_map_bindings"],84)
         self.assertEqual(report["active_battle_bindings"],8)

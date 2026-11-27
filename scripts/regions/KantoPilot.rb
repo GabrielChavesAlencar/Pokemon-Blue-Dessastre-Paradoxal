@@ -1144,6 +1144,42 @@ module BlueKantoPilot
     true
   end
 
+  # The builder only emits this callback at a source-witnessed NPC.
+  # Key items remain in the regional vault; flags survive save/reload.
+  def self.vermilion_gift(source, event_id, item)
+    return false unless kanto_current? && $game_map && $bag &&
+      [68,69,70,71].include?(source) && $game_map.map_id == kanto_map_id(source) &&
+      [:BIKEVOUCHER,:OLDROD].include?(item) && defined?(GameData::Item) &&
+      GameData::Item.exists?(item) && GameData::Item.get(item).is_key_item?
+    event = $game_map.events[event_id]
+    expected = "BlueKantoPilot.vermilion_gift(#{source}, #{event_id}, :#{item})"
+    return false unless event && event.trigger == 0 &&
+      Array(event.list).any? { |op| op.code == 355 && op.parameters[0].to_s == expected }
+    key = item == :BIKEVOUCHER ? "pilot_vermilion_voucher" : "pilot_vermilion_old_rod"
+    if progress[key] || $bag.has?(item) ||
+       (item == :BIKEVOUCHER && (progress["pilot_cerulean_bike_exchanged"] || $bag.has?(:BICYCLE)))
+      progress[key] = true
+      pbMessage(t("I hope you enjoy your gift!", "Espero que aproveite o presente!"))
+      return true
+    end
+    if item == :BIKEVOUCHER
+      return false unless pbConfirmMessage(t("Would you like to hear about my favorite Pokémon?",
+        "Quer ouvir sobre meu Pokémon favorito?"))
+      pbMessage(t("I love Rapidash! Please take this Bike Voucher.",
+        "Eu adoro Rapidash! Aceite este vale-bicicleta."))
+    else
+      return false unless pbConfirmMessage(t("Would you like to try fishing?",
+        "Quer experimentar pescar?"))
+    end
+    return false if $bag.respond_to?(:can_add?) && !$bag.can_add?(item,1)
+    return false unless $bag.add(item,1)
+    progress[key] = true
+    pbMessage(item == :BIKEVOUCHER ?
+      t("You received a Bike Voucher!", "Você recebeu um vale-bicicleta!") :
+      t("You received an Old Rod!", "Você recebeu uma Vara Velha!"))
+    true
+  end
+
   def self.cerulean_bike_exchange
     return false unless kanto_current? && $game_map &&
       $game_map.map_id == kanto_map_id(43) && $bag && defined?(GameData::Item)
@@ -2536,12 +2572,44 @@ module BlueKantoPilot
     48=>{3=>[[4,2],8,[31,8]],4=>[[3,7],2,[30,12]]}
   }.freeze
 
+  # Source-witnessed Vermilion door positions; check the installed
+  # native transfer before dispatch. No synthetic warps.
+  VERMILION_DOOR_STEPS = {
+    64=>{13=>[[13,7],8,71,[4,7]],14=>[[23,18],8,69,[4,7]],
+         15=>[[32,25],8,70,[4,7]],16=>[[16,18],8,68,[5,10]]},
+    68=>{1=>[[5,10],2,64,[16,18]]},
+    69=>{3=>[[4,7],2,64,[23,18]]},
+    70=>{3=>[[4,7],2,64,[32,25]]},
+    71=>{3=>[[4,7],2,64,[13,7]]}
+  }.freeze
+  def self.vermilion_door_contact(player,direction)
+    return nil unless $game_map && kanto_current?
+    return nil if $game_temp && $game_temp.respond_to?(:in_battle) && $game_temp.in_battle
+    return nil if defined?(pbMapInterpreterRunning?) && pbMapInterpreterRunning?
+    src = VERMILION_DOOR_STEPS.keys.find { |id| kanto_map_id(id) == $game_map.map_id }
+    return nil unless src && $game_map.respond_to?(:events)
+    delta = {2=>[0,1],8=>[0,-1]}[direction]
+    return nil unless delta
+    from = [player.x,player.y]
+    target = [from[0]+delta[0],from[1]+delta[1]]
+    VERMILION_DOOR_STEPS.fetch(src).each do |id,(standing,dir,dst,landing)|
+      next unless standing == from && direction == dir && kanto_map_id(dst)
+      e = $game_map.events[id]
+      next unless e.is_a?(Game_Event) && e.trigger == 1 &&
+        [e.x,e.y] == target &&
+        Array(e.list).any? { |op| op.code == 201 &&
+          op.parameters[0,4] == [0,kanto_map_id(dst),*landing] }
+      return [e,from,target,true]
+    end
+    nil
+  end
+
   def self.cerulean_door_contact(player, direction)
     return nil unless $game_map && kanto_current?
     city = kanto_map_id(39)
     current = $game_map.map_id
     source = CERULEAN_RETURN_STEPS.keys.find { |id| kanto_map_id(id) == current } unless current == city
-    return nil unless current == city || source
+    return vermilion_door_contact(player,direction) unless current == city || source
     return nil unless $game_map.respond_to?(:events)
     return nil if $game_temp && $game_temp.respond_to?(:in_battle) && $game_temp.in_battle
     return nil if defined?(pbMapInterpreterRunning?) && pbMapInterpreterRunning?

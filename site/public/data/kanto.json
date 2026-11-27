@@ -2121,6 +2121,34 @@
       ]
     },
     {
+      "id": "kanto-vermilion-fan-club",
+      "name": "Fã-Clube Pokémon de Vermilion",
+      "status": "experimental",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-vermilion-house-a",
+      "name": "Casa de Vermilion A",
+      "status": "experimental",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-vermilion-house-b",
+      "name": "Casa de Vermilion B",
+      "status": "experimental",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-vermilion-fisherman-house",
+      "name": "Casa do pescador de Vermilion",
+      "status": "experimental",
+      "methods": [],
+      "trainers": []
+    },
+    {
       "id": "kanto-vermilion-harbor",
       "name": "Porto de Vermilion",
       "status": "experimental",

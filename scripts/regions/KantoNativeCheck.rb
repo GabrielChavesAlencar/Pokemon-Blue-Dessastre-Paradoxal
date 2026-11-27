@@ -368,6 +368,58 @@ module KantoNativeCheck
     receipt.merge("interior_map"=>map_id,"interior_anchor"=>anchor)
   end
 
+  # Traverse each new source door using engine movement and interpreter.
+  # This is a native fixture, not a manual GUI playthrough.
+  def self.vermilion_interiors_proof
+    city = BlueKantoPilot.kanto_map_id(64)
+    center = BlueKantoPilot.kanto_map_id(65)
+    $map_factory.setup(center)
+    center_exit = $game_map.events.values.find { |e| Array(e.list).any? { |op| op.code == 201 && op.parameters[1] == city } }
+    anchor = north_transfer!(center_exit,city)
+    records = []
+    rewards = []
+    (68..71).each do |source|
+      dest = BlueKantoPilot.kanto_map_id(source)
+      require!(dest,"K03-B missing original map #{source}")
+      $map_factory.setup(city)
+      door = $game_map.events.values.find { |e| Array(e.list).any? { |op| op.code == 201 && op.parameters[1] == dest } }
+      landing = north_transfer!(door,dest)
+      entry = cerulean_native_return_proof(city,anchor,door.id,dest,landing)
+      inside = opening_component(dest,landing)
+      $game_map.events.values.each do |event|
+        Array(event.list).each do |op|
+          next unless op.code == 355
+          match = /\ABlueKantoPilot\.vermilion_gift\((\d+), (\d+), :(BIKEVOUCHER|OLDROD)\)\z/.match(op.parameters[0].to_s)
+          next unless match
+          require!(match[1].to_i == source && match[2].to_i == event.id &&
+            opening_action_witness(inside,event),"K03-B invalid or unreachable reward NPC")
+          item = match[3].to_sym
+          require!(GameData::Item.get(item).is_key_item? &&
+            BlueRegionTravel.regional_item?(item),"K03-B reward not a regional key item")
+          before = $bag.quantity(item)
+          require!(before == 0,"K03-B unexpected reward already owned")
+          Object.send(:define_method,:pbConfirmMessage) { |*args| false }
+          begin
+            require!(!BlueKantoPilot.vermilion_gift(source,event.id,item) &&
+              $bag.quantity(item) == 0,"K03-B declined gift granted item")
+          ensure
+            Object.send(:define_method,:pbConfirmMessage) { |*args| true }
+          end
+          require!(BlueKantoPilot.vermilion_gift(source,event.id,item) &&
+            BlueKantoPilot.vermilion_gift(source,event.id,item) &&
+            $bag.quantity(item) == 1,"K03-B reward missing or duplicated")
+          rewards << [source,event.id,item.to_s]
+        end
+      end
+      exit_event = $game_map.events.values.find { |e| Array(e.list).any? { |op| op.code == 201 && op.parameters[1] == city } }
+      back = north_transfer!(exit_event,city)
+      exit_receipt = cerulean_native_return_proof(dest,landing,exit_event.id,city,back)
+      records << {"source"=>source,"entry"=>entry,"exit"=>exit_receipt}
+    end
+    require!(rewards.map { |r| r[2] }.sort == ["BIKEVOUCHER","OLDROD"],"K03-B expected exactly two source rewards")
+    {"doors"=>records,"rewards"=>rewards,"manual_gameplay"=>false}
+  end
+
   def self.cerulean_interiors_proof(battle_calls, losses_remaining)
     city = BlueKantoPilot.kanto_map_id(39)
     mapping = (43..48).to_h { |id| [id,BlueKantoPilot.kanto_map_id(id)] }
@@ -556,7 +608,9 @@ module KantoNativeCheck
     require!(!BlueKantoPilot.cerulean_bike_exchange && !$bag.has?(:BICYCLE),"K02-C free bike")
     # Test the store contract with a native item fixture. Its actual Fan Club
     # acquisition belongs to K03 and is not claimed here.
-    require!($bag.add(:BIKEVOUCHER,1),"K02-C voucher fixture failed")
+    vermilion_report = vermilion_interiors_proof
+    $map_factory.setup(mapping[43])
+    require!($bag.quantity(:BIKEVOUCHER)==1,"K03-B Fan Club did not deliver voucher")
     require!(BlueKantoPilot.cerulean_bike_exchange && $bag.quantity(:BICYCLE)==1 &&
              $bag.quantity(:BIKEVOUCHER)==0,"K02-C voucher exchange failed")
     require!(BlueKantoPilot.cerulean_bike_exchange && $bag.quantity(:BICYCLE)==1,"K02-C bicycle duplicated")
@@ -587,7 +641,7 @@ module KantoNativeCheck
     require!([26,37,38].all? { |id| $game_self_switches[[city,id,"A"]] &&
              $game_map.events[id].character_name.to_s.empty? },"K02-C Rocket pages not hidden")
     {"manual_gameplay"=>false,"witnesses"=>witnesses,"police_after_bill"=>police,"bicycle"=>1,"voucher"=>0,
-     "tm28"=>$bag.quantity(:TM28),"rocket_retry"=>true,"voucher_fixture"=>true,
+     "tm28"=>$bag.quantity(:TM28),"rocket_retry"=>true,"voucher_fixture"=>false,"vermilion"=>vermilion_report,
      "native_bike_handlers"=>true,"regional_bag_staging"=>true,"required_actor_sprites"=>true,
      "native_trade_transaction"=>true,"trade_native_slot_read"=>true,"trade_animation_tested"=>false,"atlas_bitmap_loaded"=>true,
      "atlas_manual_ui_tested"=>false,"badge_guide_callback"=>true,"badge_guide_menu_controlled"=>true,
@@ -3000,6 +3054,13 @@ module KantoNativeCheck
              $bag.quantity(:BIKEVOUCHER)==interiors_report["voucher"] &&
              $bag.quantity(:TM28)==interiors_report["tm28"],
              "K02-C reward/quest persistence failed")
+    require!(north_state["pilot_vermilion_voucher"] && north_state["pilot_vermilion_old_rod"] &&
+      $bag.quantity(:OLDROD)==1 && $bag.quantity(:BIKEVOUCHER)==0 &&
+      $bag.quantity(:BICYCLE)==1,"K03-B reward flags/item persistence failed")
+    k03b_report = interiors_report.fetch("vermilion")
+    k03b_report["save_reload"] = true
+    File.write("Data/blue-kanto-k03b-proof.txt",k03b_report.inspect)
+    puts "KANTO_K03B_NATIVE_VERMILION_REPORT:#{k03b_report.inspect}"
     interiors_report["save_reload"] = true
     interiors_report["legacy_door_reload"] = legacy_door_report
     before_police = legacy_door_report.fetch("police")

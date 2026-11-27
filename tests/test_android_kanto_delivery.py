@@ -104,7 +104,7 @@ class KantoDeliveryTests(unittest.TestCase):
     def test_all_maps_and_compiled_luis_guard_pass_in_both_channels(self):
         for channel in ("kanto", "multiregion"):
             with self.subTest(channel=channel):
-                self.assertEqual(assert_delivery(self.fixture(channel), channel)["kanto_maps"], 152)
+                self.assertEqual(assert_delivery(self.fixture(channel), channel)["kanto_maps"], 156)
 
     def test_missing_cerulean_door_is_rejected_even_with_all_maps_present(self):
         with self.assertRaisesRegex(ValueError, "Cerulean door 7 missing"):

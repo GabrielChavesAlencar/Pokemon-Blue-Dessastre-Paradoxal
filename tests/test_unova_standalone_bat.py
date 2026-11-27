@@ -33,6 +33,7 @@ NEEDED=(
  "scripts/regions/install_kanto.py",
  "scripts/regions/cerulean_doors.py",
  "scripts/regions/pilot.py",
+ "scripts/regions/vermilion_interiors.py",
  "scripts/regions/kanto_wall_atlas.py",
  "scripts/regions/johto_main_preview.py",
  "scripts/regions/auto_integrate_johto.py",

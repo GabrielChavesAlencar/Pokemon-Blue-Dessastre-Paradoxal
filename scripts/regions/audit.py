@@ -75,6 +75,7 @@ KANTO_PHASE14_SOURCE_IDS = (16, 17, *range(209, 222))
 KANTO_CERULEAN_NORTH_SOURCE_IDS = (53, 54, 55)
 KANTO_CERULEAN_INTERIOR_SOURCE_IDS = (43, 44, 45, 46, 47, 48)
 KANTO_DAY_CARE_SOURCE_IDS = (58,)  # append after all 151 published slots
+KANTO_VERMILION_INTERIOR_SOURCE_IDS = (68, 69, 70, 71)  # append after 152
 
 
 def stable_source_order(wanted):
@@ -83,7 +84,8 @@ def stable_source_order(wanted):
               *KANTO_PHASE11_LATE_SOURCE_IDS,
               *KANTO_PHASE12_SOURCE_IDS, *KANTO_PHASE13_SOURCE_IDS,
               *KANTO_PHASE14_SOURCE_IDS, *KANTO_CERULEAN_NORTH_SOURCE_IDS,
-              *KANTO_CERULEAN_INTERIOR_SOURCE_IDS, *KANTO_DAY_CARE_SOURCE_IDS)
+              *KANTO_CERULEAN_INTERIOR_SOURCE_IDS, *KANTO_DAY_CARE_SOURCE_IDS,
+              *KANTO_VERMILION_INTERIOR_SOURCE_IDS)
     result = [source for source in stable if source in chosen]
     result.extend(sorted(chosen - set(stable)))
     return result
@@ -187,7 +189,12 @@ def allocate_kanto_ids(wanted, occupied, existing=None):
             any(type(n) is not int or not 0 < n < 1000 or n not in occupied
                 for n in existing.values())):
         raise ValueError("Invalid existing Kanto mapping")
-    free = iter(range(max(300, max(occupied, default=0) + 1), 1000))
+    # Published Sinnoh shared IDs must remain reserved even on a clean game.
+    reserved = range(452, 596)
+    if set(existing.values()).intersection(reserved):
+        raise ValueError("Existing Kanto mapping collides with reserved Sinnoh IDs")
+    free = (mid for mid in range(max(300, max(occupied, default=0) + 1), 1000)
+            if mid not in reserved)
     ids = {n: existing[n] if n in existing else next(free, None)
            for n in stable_source_order(wanted)}
     if None in ids.values():

@@ -35,22 +35,23 @@ class CeruleanNorthContract(unittest.TestCase):
         cls.ids = {int(i) for i in cls.manifest["maps"]}
 
     def test_01_legacy_map_ids_cannot_shift(self):
-        prior = self.ids - {43,44,45,46,47,48,53,54,55,58}
+        prior = self.ids - {43,44,45,46,47,48,53,54,55,58,68,69,70,71}
         self.assertEqual(len(prior), 142)
-        self.assertEqual(len(self.ids), 152)
+        self.assertEqual(len(self.ids), 156)
         old_order = stable_source_order(prior)
         upgraded = stable_source_order(self.ids)
         self.assertEqual(upgraded[:142], old_order)
         self.assertEqual(upgraded[142:145], [53, 54, 55])
         self.assertEqual(upgraded[145:151], [43,44,45,46,47,48])
-        self.assertEqual(upgraded[151:], [58])
+        self.assertEqual(upgraded[151:152], [58])
+        self.assertEqual(upgraded[152:], [68,69,70,71])
         self.assertEqual(self.manifest["maps"]["53"], "ROUTE_24")
         self.assertEqual(self.manifest["maps"]["54"], "ROUTE_25")
         self.assertEqual(self.manifest["maps"]["55"], "BILL_COTTAGE")
 
     def test_cerulean_interiors_append_without_shifting_145_existing_slots(self):
         extra = {43, 44, 45, 46, 47, 48}
-        historical = self.ids - {58}
+        historical = self.ids - {58,68,69,70,71}
         before = stable_source_order(historical - extra)
         expanded = stable_source_order(historical)
         self.assertEqual(expanded[:145], before)
@@ -180,10 +181,13 @@ puts "KANTO_K02C_MESSAGE_PREPEND_RESTORE_OK"
 
     def test_04_android_ready_gate_accepts_only_verified_old_and_new_registry(self):
         source = (ROOT / "scripts/battle_polish/RegionStart.rb").read_text("utf-8")
-        self.assertIn('["142", "145", "151", "152"].include?(fields[1])', source)
+        self.assertIn('["142", "145", "151", "152", "156"].include?(fields[1])', source)
         self.assertIn('pairs.length == expected_count', source)
         self.assertIn('maps.values.uniq.length == expected_count', source)
         self.assertIn('["53", "54", "55"].all?', source)
+        self.assertIn('expected_count >= 152 && !maps["58"].is_a?(Integer)', source)
+        self.assertIn('(68..71).all?', source)
+        self.assertIn('(452..595).include?(maps[source.to_s])', source)
         self.assertIn('pbRgssExists?(sprintf("Data/Map%03d.rxdata", id))', source)
 
     @unittest.skipUnless((SOURCE / "Data/MapInfos.rxdata").is_file(),
