@@ -66,8 +66,10 @@ def describe(source: Path) -> dict:
         all_names = (
             [{"id": event_id, "name": text(event.attrs["@name"])}
              for event_id, event in sorted(map_data["@events"].items())]
-            if map_id in (64, 67, 72, 76) else []
+            if map_id in (64, 67, 72, 74, 75, 76, 77, 78) else []
         )
+        # Keep source rival/conditional transfer evidence for the next
+        # sublote; never execute donor event scripts or publish the source.
         result.append({"id": map_id, "name": name, "all_event_names": all_names,
                        "size": [map_data["@width"], map_data["@height"]],
                        "events": events[:100], "event_count": len(events)})

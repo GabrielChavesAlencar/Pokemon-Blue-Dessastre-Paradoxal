@@ -2339,6 +2339,10 @@ module KantoNativeCheck
              "Misty original FRLG team differs from Staryu/Starmie")
     # Native Cerulean quest proof begins after confirming Cascade cannot
     # substitute for Bill; leave the existing badge checks intact below.
+    # A legacy permit or a ticket before Cascade cannot bypass the harbor.
+    BlueKantoPilot.progress["pilot_ss_ticket"] = true
+    require!(!BlueKantoPilot.ss_anne_boarding_allowed?, "K03-C ticket bypassed Cascade")
+    BlueKantoPilot.progress.delete("pilot_ss_ticket")
     misty_map = BlueKantoPilot.kanto_map_id(42)
     $map_factory.setup(misty_map)
     north_callback!($game_map.events[1],
@@ -2366,6 +2370,11 @@ module KantoNativeCheck
     BlueKantoPilot.ticketmaster
     require!(!BlueKantoPilot.progress["pilot_ss_ticket"],
              "Harbor issued a ticket without Bill's Route 25 quest")
+    require!(!BlueKantoPilot.ss_anne_boarding_allowed?, "K03-C Cascade bypassed Bill")
+    $map_factory.setup(BlueKantoPilot.kanto_map_id(76))
+    north_callback!($game_map.events[2], "BlueKantoPilot.captain")
+    require!(!BlueKantoPilot.captain, "K03-C captain granted Cut before Bill")
+    $map_factory.setup(misty_map)
     require!(!BlueKantoPilot.cerulean_house_open?, "K02-C house opened before Bill")
     legacy_door_report = cerulean_legacy_door_proof
     north_report = north_story(battle_calls, losses_remaining)
@@ -2376,6 +2385,31 @@ module KantoNativeCheck
     BlueKantoPilot.ticketmaster
     require!(BlueKantoPilot.progress["pilot_ss_ticket"] == true,
              "Vermilion ticket missing after Bill's quest")
+    require!(BlueKantoPilot.ss_anne_boarding_allowed?, "K03-C legitimate boarding refused")
+    # Native callback and item transaction; map setup is a QA position, not
+    # evidence of walking through every deck. Rival/physical path remains open.
+    anne_previous_map = $game_map.map_id
+    require!(!BlueKantoPilot.captain, "K03-C remote captain invocation accepted")
+    $map_factory.setup(BlueKantoPilot.kanto_map_id(76))
+    north_callback!($game_map.events[2], "BlueKantoPilot.captain")
+    anne_cut = [:HM01, :HMCUT].find { |id| GameData::Item.exists?(id) }
+    require!(anne_cut, "K03-C native Cut HM missing")
+    anne_bag = $bag
+    anne_add = anne_bag.method(:add)
+    begin
+      anne_bag.define_singleton_method(:add) { |item, qty=1| item == anne_cut ? false : anne_add.call(item,qty) }
+      require!(!BlueKantoPilot.captain, "K03-C failed Cut delivery marked success")
+      require!(!BlueKantoPilot.progress["field_events"]["KANTO"].include?("SS_ANNE_CAPTAIN"),
+        "K03-C failed Cut delivery set completion")
+    ensure
+      anne_bag.singleton_class.send(:remove_method, :add)
+    end
+    require!(BlueKantoPilot.captain, "K03-C legitimate Cut delivery failed")
+    anne_quantity = $bag.quantity(anne_cut)
+    require!(anne_quantity == 1, "K03-C initial Cut quantity not one")
+    require!(BlueKantoPilot.captain && $bag.quantity(anne_cut) == anne_quantity,
+      "K03-C repeat captain duplicated Cut")
+    $map_factory.setup(anne_previous_map)
     # Lt. Surge grants exactly one Thunder Badge after a legitimate victory.
     surge = GameData::Trainer.get(:BLUE_KANTO_LEADER_SURGE, "Lt. Surge")
     require!(surge.pokemon.length == 3, "Lt. Surge original FRLG roster missing")
@@ -3030,6 +3064,9 @@ module KantoNativeCheck
     require!($game_map.map_id == lab, "Pilot did not reload its map")
     require!(BlueKantoPilot.progress["pilot_ss_ticket"] == true, "S.S. Ticket permit did not survive reload")
     north_state = BlueKantoPilot.progress
+    require!(north_state["field_events"]["KANTO"].count("SS_ANNE_CAPTAIN") == 1 &&
+      $bag.quantity(anne_cut) == anne_quantity, "K03-C Cut grant lost or duplicated after reload")
+    puts "KANTO_K03C_BOARDING_CAPTAIN_CUT_SAVE_RELOAD_OK"
     require!(%w[pilot_cerulean_rival pilot_nugget_bridge_awarded pilot_bill_agreed pilot_bill_helped pilot_bill_ticket pilot_ss_ticket].all? { |key| north_state[key] },
              "K00-C quest flags lost after native save/reload")
     north_keys = ["KANTO_CERULEAN_RIVAL","KANTO_042_001","KANTO_042_011","KANTO_042_016"] +
