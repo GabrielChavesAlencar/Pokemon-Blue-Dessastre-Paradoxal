@@ -6,6 +6,7 @@ from pathlib import Path
 from audit import KANTO, ROOT, json_file
 from pilot_catalog import prepared_plan
 from pbs import read_blocks, ENCOUNTER_REVIEW_SOURCE_IDS
+from k03e_contract import MAPS, NAMES, TRAINERS, candidate_manifest
 
 LOCATION_NAMES = {
     "PALLET_TOWN": "Pallet Town",
@@ -341,9 +342,27 @@ def slug(key):
     return "kanto-" + key.lower().replace("_", "-")
 
 
-def export(preview: Path):
+def location_names(manifest):
+    maps = manifest["maps"]
+    corridor = {str(i): name for i, name in MAPS.items()}
+    active = maps.keys() & corridor.keys()
+    if not active:
+        return LOCATION_NAMES
+    if len(maps) != 160 or any(maps.get(i) != name for i, name in corridor.items()):
+        raise ValueError("K03-E portal requires the exact four corridor identities")
+    return {**LOCATION_NAMES, **NAMES}
+
+
+def export(preview: Path, *, k03e=False):
     manifest = json_file(KANTO)
-    if (preview / "plan.json").is_file():
+    if k03e:
+        manifest = candidate_manifest(manifest)
+    names = location_names(manifest)
+    route11_roles = {}
+    if "ROUTE_11" in names:
+        roles = {"YOUNGSTER": "Jovem treinador", "GAMBLER": "Jogador", "ENGINEER": "Engenheiro"}
+        route11_roles = {(kind, name): roles[kind] for kind, name in TRAINERS.values()}
+    if not k03e and (preview / "plan.json").is_file():
         plan = json_file(preview / "plan.json")
         encounter_file = preview / "drafts/encounters.txt"
         trainer_file = preview / "drafts/trainers.txt"
@@ -356,7 +375,7 @@ def export(preview: Path):
     if plan["package_sha256"] != manifest["sha256"] or plan["region"] != manifest["region"]:
         raise ValueError("Kanto preview source does not match the project manifest.")
     keys_by_id = {row["proposed_id"]: row["key"].removeprefix("KANTO_") for row in plan["maps"]}
-    if set(keys_by_id.values()) != set(LOCATION_NAMES) or len(keys_by_id) != len(LOCATION_NAMES):
+    if set(keys_by_id.values()) != set(names) or len(keys_by_id) != len(names):
         raise ValueError("Kanto map catalog differs from the audited preview.")
     # Release/UI flags are derived from the audited source manifest, never
     # from whether a preview happens to have visible encounters or trainers.
@@ -372,7 +391,7 @@ def export(preview: Path):
     locations = {
         key: {"id": slug(key), "name": name, "status": status_by_key[key],
               "methods": [], "trainers": []}
-        for key, name in LOCATION_NAMES.items()
+        for key, name in names.items()
     }
     for header, lines in read_blocks(encounter_file).items():
         key = keys_by_id[int(header)]
@@ -418,6 +437,9 @@ def export(preview: Path):
         elif kind == "ROCKET" and int(version) == 5:
             key, role = "ROUTE_24", "Equipe Rocket"
             trainer_id, shown_name = slug("rocket_route_24"), "Grunt (Nugget Bridge)"
+        elif (kind, name) in route11_roles and version == "0":
+            key, role = "ROUTE_11", route11_roles[kind, name]
+            trainer_id, shown_name = slug(f"route-11-{name}"), name
         elif kind == "ROCKET" and int(version) in SILPH_GRUNT_FLOORS:
             key, role = SILPH_GRUNT_FLOORS[int(version)], "Equipe Rocket"
             trainer_id, shown_name = slug(f"grunt-silph-{version}"), f"Grunt {version}"
@@ -450,6 +472,33 @@ def export(preview: Path):
     return {"version": 1, "source": {"name": manifest["name"], "url": manifest["source"],
                                       "author": manifest["author"]},
             "locations": list(locations.values()), "trainers": list(trainers.values())}
+
+
+def k03e_portal_delta(baseline: dict, candidate: dict) -> dict:
+    """Only the four K03-E maps and their ten roster entries, never game assets."""
+    from k03e_contract import MAPS, TRAINERS
+    added_locations = {slug(key) for key in MAPS.values()}
+    expected_trainers = {slug(f"route-11-{name}") for _, name in TRAINERS.values()}
+
+    def indexed(data, key):
+        values = {row["id"]: row for row in data[key]}
+        if len(values) != len(data[key]):
+            raise ValueError(f"Duplicate K03-E portal IDs: {key}")
+        return values
+
+    for key, expected in (("locations", added_locations), ("trainers", expected_trainers)):
+        before, after = indexed(baseline, key), indexed(candidate, key)
+        if after.keys() - before.keys() != expected or any(after.get(i) != row for i, row in before.items()):
+            raise ValueError(f"K03-E portal changed historic {key} or missed audited additions")
+    locations = [row for row in candidate["locations"] if row["id"] in added_locations]
+    trainers = [row for row in candidate["trainers"] if row["id"] in expected_trainers]
+    route = next(row for row in locations if row["id"] == slug("ROUTE_11"))
+    cave = next(row for row in locations if row["id"] == slug("DIGLETT_TUNNEL"))
+    if (set(route["trainers"]) != expected_trainers or len(route["trainers"]) != len(expected_trainers)
+            or len(route["methods"]) != 6 or len(cave["methods"]) != 2
+            or any(row["status"] != "experimental" for row in locations)):
+        raise ValueError("K03-E portal route, tunnel or trainer evidence incomplete")
+    return {"version": 1, "status": "CANDIDATE_NOT_PUBLISHED", "locations": locations, "trainers": trainers}
 
 
 def main():

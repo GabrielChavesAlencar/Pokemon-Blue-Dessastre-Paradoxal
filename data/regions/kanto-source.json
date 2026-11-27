@@ -161,7 +161,11 @@
     "218": "ELITE_AGATHA_ROOM",
     "219": "ELITE_LANCE_ROOM",
     "220": "CHAMPION_HALL",
-    "221": "HALL_OF_FAME"
+    "221": "HALL_OF_FAME",
+    "23": "DIGLETT_ENTRANCE_ROUTE_2",
+    "79": "ROUTE_11",
+    "81": "DIGLETT_ENTRANCE_ROUTE_11",
+    "82": "DIGLETT_TUNNEL"
   },
   "preview_only": [
     57,

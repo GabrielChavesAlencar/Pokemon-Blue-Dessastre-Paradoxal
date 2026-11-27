@@ -169,6 +169,38 @@ class KantoAutoIntegrationTests(unittest.TestCase):
         self.assertIn("--migrate-existing", self.calls[2])
         self.assertIn("--verify-installed", self.calls[3])
 
+    def test_k03e_automatic_migration_requires_exact_predecessor(self):
+        import json
+        (self.game / auto.KANTO_MARKER).write_text("installed")
+        catalogue = self.project / "data/regions/kanto-source.json"
+        catalogue.parent.mkdir(parents=True)
+        new = {"23", "79", "81", "82"}
+        old = {str(i): i + 300 for i in range(200, 356)}
+        target = {**old, **dict.fromkeys(new, "future")}
+        catalogue.write_text(json.dumps({"maps": target}))
+        for maps, should_migrate in (
+            ({**{k: v for k, v in old.items() if k != "355"}, "23": 900}, False),
+            ({k: v for k, v in old.items() if k != "355"}, False),
+            (old, True),
+        ):
+            with self.subTest(should_migrate=should_migrate, old_size=len(maps)):
+                self.calls.clear()
+                (self.game / auto.KANTO_MANIFEST).write_text(json.dumps({
+                    "schema": 1, "source": "Essentials FRLG 21.1", "maps": maps,
+                }))
+                def runner(argv, project, env):
+                    self.calls.append(argv)
+                    if len(self.calls) == 1:
+                        raise ValueError("Old Kanto catalogue")
+                result = auto.integrate(self.project, self.game, run=runner)
+                if should_migrate:
+                    self.assertEqual(result["source"], "verified_156_to_160_migration")
+                    self.assertIn("--migrate-existing", self.calls[2])
+                    self.assertIn("--verify-installed", self.calls[3])
+                else:
+                    self.assertEqual(result["status"], "manual_migration_required")
+                    self.assertEqual(len(self.calls), 1)
+
     def test_current_count_broken_cerulean_door_retries_verified_migration(self):
         import json
         (self.game / auto.KANTO_MARKER).write_text("installed")

@@ -10,11 +10,18 @@ import argparse
 import hashlib
 import json
 import os
+import sys
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+if __package__ in (None, ""):
+    # Actions and Windows launchers run this file directly.
+    sys.path.insert(0, str(ROOT))
+
+from scripts.regions.k03e_contract import MAPS, MUSIC, candidate_manifest as expected_manifest
+
 OUTPUT = Path("Data/blue-kanto-music.txt")
 MAGIC = "BLUE_KANTO_MUSIC_V1"
 ME_ENABLED_PHASE4 = frozenset({"obtained_pokemon", "obtained_item", "healed",
@@ -87,12 +94,29 @@ def _rules(project: Path) -> tuple[dict, dict, dict]:
     return rules, source, catalog
 
 
-def compile_bytes(project: Path, game: Path, mapping: dict) -> tuple[bytes, dict]:
+def compile_bytes(project: Path, game: Path, mapping: dict, *, candidate_manifest=None) -> tuple[bytes, dict]:
     """Pure compilation; checks all actual MapXXX.rxdata files, writes nothing."""
     rules, source, catalog = _rules(project)
     maps = source.get("maps")
-    if not isinstance(maps, dict) or len(maps) != 156 or maps.get("58") != "DAY_CARE" or not {"68","69","70","71"} <= maps.keys():
+    if (not isinstance(maps, dict) or maps.get("58") != "DAY_CARE" or
+            not {"68", "69", "70", "71"} <= maps.keys()):
         raise ValueError("Kanto source map catalog changed unexpectedly")
+    k03e_sources = {str(i): key for i, key in MAPS.items()}
+    active = set(k03e_sources) & maps.keys()
+    promoted = len(maps) == 160 and all(maps.get(i) == key for i, key in k03e_sources.items())
+    k03e_names = set(k03e_sources.values())
+    configured = [row for row in rules["maps"] if row.get("map") in k03e_names]
+    if promoted:
+        if candidate_manifest is not None or sorted(configured, key=lambda row: row["map"]) != sorted(MUSIC, key=lambda row: row["map"]):
+            raise ValueError("Invalid promoted K03-E music configuration")
+    elif len(maps) != 156 or active or configured:
+        raise ValueError("Kanto source map catalog changed unexpectedly")
+    elif candidate_manifest is not None:
+        if candidate_manifest != expected_manifest(source) or game.name != "game":
+            raise ValueError("Invalid isolated K03-E music candidate")
+        source = candidate_manifest
+        maps = source["maps"]
+        rules = {**rules, "maps": [*rules["maps"], *MUSIC]}
     source_ids = set(maps)
     if set(map(str, mapping)) != source_ids:
         raise ValueError("Compiled MapIDs do not cover precisely Kanto source maps")

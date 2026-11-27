@@ -8,6 +8,8 @@ import zlib
 
 from scripts.android.verify_kanto_cerulean import assert_delivery, EDGES, JOURNEY, KANTO_RUNTIME, KANTO_ATLAS, CERULEAN_DOORS
 from scripts.regions.kanto_wall_atlas import render_wall_atlas
+from scripts.regions.k03e_contract import MAPS, TRAINERS, MUSIC
+from scripts.android.verify_kanto_cerulean import verify_k03e, k03e_audio_paths
 from scripts.official_rules.prepare_restore import RubyString, dump
 from server.ruby_marshal import integer
 
@@ -103,11 +105,13 @@ class KantoDeliveryTests(unittest.TestCase):
                 if original != omit:
                     archive.writestr(root + f"Data/Map{destination:03}.rxdata",
                                      b"map" if original == short else (city_fixture(mapping, missing_door, legacy_guard) if original == "39" else b"m" * 128))
+            edges = (*EDGES, ("64", "79"))
             archive.writestr(root + "PBS/map_connections_kanto.txt", "\n".join(
-                f"{mapping[a]},North,0,{mapping[b]},South,0" for a, b in EDGES))
+                f"{mapping[a]},North,0,{mapping[b]},South,0" for a, b in edges))
             archive.writestr(root + "PBS/trainers_kanto.txt",
                              "[BLUE_KANTO_SWIMMER,Luis,0]\n[BLUE_KANTO_PICNICKER,Diana,0]\n[BLUE_KANTO_ROCKET,Grunt,6]\n" +
-                             "\n".join(f"[BLUE_KANTO_RIVAL,Blue,{v}]" for v in (31, 32, 33)))
+                             "\n".join(f"[BLUE_KANTO_RIVAL,Blue,{v}]" for v in (31, 32, 33)) + "\n" +
+                             "\n".join(f"[BLUE_KANTO_{kind},{name},0]" for kind, name in TRAINERS.values()))
             if not omit_rival:
                 archive.writestr(root + KANTO_RUNTIME, rival)
             if atlas is not None:
@@ -116,15 +120,46 @@ class KantoDeliveryTests(unittest.TestCase):
             archive.writestr(root + "Plugins/ZZZZ Blue Story and Presentation/RegionTravel.rb", travel)
             archive.writestr(root + "Data/PluginScripts.rxdata", cache)
             archive.writestr(root + "Data/items.dat", b"\x04\x08{\x00" if omit_ticket else ticket_catalog(omit_bike, invalid_dig))
-            archive.writestr(root + "Data/blue-kanto-music.txt", "MAP\tfixture\n" * 84)
+            audio_paths = k03e_audio_paths()
+            for path in set(audio_paths.values()):
+                archive.writestr(root + path, b"synthetic audio fixture")
+            by_name = {name: str(source) for source, name in MAPS.items()}
+            selected = ["MAP\t{}\t{}\t100\t100".format(
+                mapping[by_name[row["map"]]], audio_paths[row["track"]].removeprefix("Audio/BGM/"))
+                for row in MUSIC]
+            archive.writestr(root + "Data/blue-kanto-music.txt",
+                             "MAP\tfixture\n" * 84 + "\n".join(selected))
         return target
 
     def test_all_maps_and_compiled_luis_guard_pass_in_both_channels(self):
         for channel in ("kanto", "multiregion"):
             with self.subTest(channel=channel):
                 proof = assert_delivery(self.fixture(channel), channel)
-                self.assertEqual(proof["kanto_maps"], 156)
+                self.assertEqual(proof["kanto_maps"], 160)
                 self.assertEqual(proof["cerulean_police_native_pages"], 2)
+
+    def test_promoted_k03e_requires_all_trainers_seam_and_music(self):
+        mapping = {str(key): 600 + index for index, key in enumerate(MAPS)}
+        mapping["64"] = 580
+        pbs = "\n".join(f"[BLUE_KANTO_{kind},{name},0]" for kind, name in TRAINERS.values())
+        edges = {frozenset((mapping["64"], mapping["79"]))}
+        by_name = {name: source for source, name in MAPS.items()}
+        audio_paths = k03e_audio_paths()
+        track_names = {number: path.removeprefix("Audio/BGM/") for number, path in audio_paths.items()}
+        music = [f"MAP\t{mapping[str(by_name[row['map']])]}\t{track_names[row['track']]}\t100\t100"
+                 for row in MUSIC]
+        files = set(audio_paths.values())
+        verify_k03e(mapping, edges, pbs, music, files)
+        with self.assertRaisesRegex(ValueError, "soundtrack missing"):
+            verify_k03e(mapping, edges, pbs, music, set())
+        for connection, trainers, tracks, error in (
+            (set(), pbs, music, "connection absent"),
+            (edges, pbs.replace("Dave", "Davi"), music, "trainer missing: Dave"),
+            (edges, pbs, music[1:], "soundtrack missing"),
+            (edges, pbs, music + [music[0]], "soundtrack missing"),
+        ):
+            with self.subTest(error=error), self.assertRaisesRegex(ValueError, error):
+                verify_k03e(mapping, connection, trainers, tracks, files)
 
     def test_legacy_police_script_rejected_in_both_channels(self):
         for channel in ("kanto", "multiregion"):

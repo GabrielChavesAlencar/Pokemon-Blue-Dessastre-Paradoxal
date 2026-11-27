@@ -3,10 +3,13 @@ from __future__ import annotations
 
 import copy
 import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 from scripts.music import compile_kanto_music as compiler
+from scripts.regions.k03e_contract import MAPS as K03E_MAPS
 
 ROOT = Path(__file__).resolve().parents[1]
 FILES = ("data/regions/kanto-source.json", "data/kanto-music.json",
@@ -26,6 +29,14 @@ class KantoMusicPhaseOneTests(unittest.TestCase):
         self.source = self.read("data/regions/kanto-source.json")
         self.catalog = self.read("data/kanto-music.json")
         self.rules = self.read("data/kanto-music-rules.json")
+        # F1–F5 regressions use the exact pre-K03-E catalog and rules.
+        self.source["maps"] = {k:v for k,v in self.source["maps"].items()
+                               if int(k) not in K03E_MAPS}
+        (self.project / "data/regions/kanto-source.json").write_text(
+            json.dumps(self.source), encoding="utf-8")
+        self.rules["maps"] = [row for row in self.rules["maps"]
+                              if row["map"] not in K03E_MAPS.values()]
+        self.write_rules()
         self.mapping = {sid: int(sid) + 700 for sid in self.source["maps"]}
         (self.game / "Data").mkdir(parents=True)
         for dest in self.mapping.values():
@@ -49,6 +60,24 @@ class KantoMusicPhaseOneTests(unittest.TestCase):
         file = self.game / item["game_path"]
         file.parent.mkdir(parents=True,exist_ok=True)
         file.write_bytes(b"synthetic fixture, no soundtrack recording")
+
+    def test_direct_cli_works_without_repo_on_pythonpath(self):
+        # CLI compiles against the active repository catalog, not the
+        # historical fixture used by the F1–F5 unit checks.
+        active = json.loads((ROOT / "data/regions/kanto-source.json").read_text("utf-8"))
+        mapping = {sid: int(sid) + 700 for sid in active["maps"]}
+        for dest in mapping.values():
+            (self.game / "Data" / f"Map{dest:03d}.rxdata").write_bytes(b"mock Kanto map")
+        self.pilot.write_text(json.dumps({"maps": mapping}), encoding="utf-8")
+        result = subprocess.run(
+            [sys.executable, "-I", str(ROOT / "scripts/music/compile_kanto_music.py"),
+             "--game", str(self.game)],
+            cwd=self.project, capture_output=True, text=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        report = json.loads(result.stdout)
+        self.assertEqual(report["source_maps"], len(active["maps"]))
+        self.assertEqual(report["status"], "dry_run")
 
     def test_145_actual_ids_and_35_previews_are_scoped_but_not_playing(self):
         content, report = self.compile()

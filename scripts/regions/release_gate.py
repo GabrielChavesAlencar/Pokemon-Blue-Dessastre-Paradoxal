@@ -12,7 +12,8 @@ import json
 from pathlib import Path
 
 from audit import KANTO, ROOT, json_file, stable_source_order
-from export_kanto import LOCATION_NAMES, slug
+from export_kanto import location_names, slug
+from k03e_contract import MAPS
 from pbs import ENCOUNTER_REVIEW_SOURCE_IDS
 
 BADGES = (
@@ -38,8 +39,13 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
     site = json_file(root / "site/public/data/kanto.json")
     dex = json_file(root / "site/public/data/catalog.json")
     expected_ids = {int(key) for key in manifest["maps"]}
-    if len(expected_ids) != 156:
-        raise ValueError("Kanto catalog must include 145 stable IDs, six appended Cerulean interiors, Day Care and four Vermilion interiors")
+    audited_names = location_names(manifest)
+    promoted = "ROUTE_11" in audited_names
+    map_total, trainer_total, wild_totals = (
+        (160, 173, (30, 107, 71)) if promoted else (156, 163, (28, 99, 68))
+    )
+    if len(expected_ids) != map_total:
+        raise ValueError("Kanto catalog differs from the audited stable map identities")
     expected_order = stable_source_order(expected_ids)
     if len(expected_order) != len(set(expected_order)) or set(expected_order) != expected_ids:
         raise ValueError("Kanto source ID plan is corrupt")
@@ -49,8 +55,12 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
         raise ValueError("Cerulean north maps are not appended after the old save IDs")
     if expected_order[145:151] != [43, 44, 45, 46, 47, 48]:
         raise ValueError("Cerulean interiors are not appended after the 145 published save IDs")
-    if expected_order[151:152] != [58] or expected_order[152:] != [68,69,70,71] or manifest["maps"].get("58") != "DAY_CARE":
+    if expected_order[151:152] != [58] or expected_order[152:156] != [68,69,70,71] or manifest["maps"].get("58") != "DAY_CARE":
         raise ValueError("Day Care must follow the 151 published save IDs")
+    if expected_order[156:] != (list(MAPS) if promoted else []):
+        raise ValueError("K03-E must append the four corridor maps after the 156 published IDs")
+    if set(manifest["maps"].values()) != set(audited_names):
+        raise ValueError("Kanto catalog differs from the audited stable map identities")
     preview = set(manifest["preview_only"])
     if len(preview) != 35 or not preview.issubset(expected_ids):
         raise ValueError("35 geometry-only previews must remain protected")
@@ -64,8 +74,8 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
     badges = [badge for _, badge in BADGES]
     if official["milestones"] != badges:
         raise ValueError("Regional milestone order no longer matches the eight Kanto gyms")
-    if site.get("version") != 1 or len(site["locations"]) != 156 or len(site["trainers"]) != 163:
-        raise ValueError("Kanto portal is not synchronized with 156 maps/163 grouped trainers")
+    if site.get("version") != 1 or len(site["locations"]) != map_total or len(site["trainers"]) != trainer_total:
+        raise ValueError(f"Kanto portal is not synchronized with {map_total} maps/{trainer_total} grouped trainers")
 
     locations = {loc["id"]: loc for loc in site["locations"]}
     if len(locations) != len(site["locations"]):
@@ -73,7 +83,7 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
     expected_locations = {
         slug(key): (int(original), key, name)
         for original, key in manifest["maps"].items()
-        for name in (LOCATION_NAMES[key],)
+        for name in (audited_names[key],)
     }
     if set(locations) != set(expected_locations):
         raise ValueError("Portal locations diverge from the verified FRLG map manifest")
@@ -160,7 +170,7 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
                 if (slot["weight"] <= 0 or
                     not 1 <= slot["min"] <= slot["max"] <= 100):
                     raise ValueError("Illegal encounter level or source weight")
-    if wild_locations != 28 or methods != 99 or len(encounter_species) != 68:
+    if (wild_locations, methods, len(encounter_species)) != wild_totals:
         raise ValueError("Audited wild content differs from the portal")
 
     isolated = None
@@ -168,7 +178,7 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
         from pilot_catalog import prepared_plan
         plan = prepared_plan(pilot, manifest)
         mapping = {row["source_id"]:row["proposed_id"] for row in plan["maps"]}
-        if len(mapping) != 156 or len(set(mapping.values())) != 156:
+        if set(mapping) != expected_ids or len(set(mapping.values())) != map_total:
             raise ValueError("Compiled pilot map IDs are incomplete")
         # The canonical stable order must also remain stable for old saves,
         # despite lower-numbered source IDs appended in later phases.

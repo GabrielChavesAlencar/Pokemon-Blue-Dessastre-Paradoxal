@@ -174,14 +174,24 @@ def integrate(project: Path = ROOT, game: Path | None = None,
             try:
                 legacy = json.loads((game / KANTO_MANIFEST).read_text(encoding="utf-8"))
                 catalogue = project / "data/regions/kanto-source.json"
-                target_count = len(json.loads(catalogue.read_text("utf8"))["maps"]) if catalogue.is_file() else 145
-                old_count = len(legacy["maps"]) if isinstance(legacy.get("maps"), dict) else 0
+                target_maps = json.loads(catalogue.read_text("utf8"))["maps"] if catalogue.is_file() else {}
+                target_count = len(target_maps) if catalogue.is_file() else 145
+                old_maps = legacy.get("maps")
+                old_count = len(old_maps) if isinstance(old_maps, dict) else 0
+                # K03-E's automatic path is only for its exact audited
+                # 156-map predecessor. The importer still proves ownership,
+                # hashes, allocation and rollback before writing anything.
+                k03e_sources = {"23", "79", "81", "82"}
+                k03e_migration = (target_count == 160 and old_count == 156 and
+                                  k03e_sources <= target_maps.keys() and
+                                  set(old_maps) == target_maps.keys() - k03e_sources)
                 candidate = (legacy.get("schema") == 1 and
                              legacy.get("source") == "Essentials FRLG 21.1" and
                              ((target_count == 145 and old_count == 142) or
                               (target_count == 151 and old_count in (142, 145)) or
                               (target_count == 152 and old_count in (142, 145, 151)) or
                               (target_count == 156 and old_count in (142, 145, 151, 152)) or
+                              k03e_migration or
                               (target_count == old_count and target_count >= 151 and
                                ("Cerulean door" in str(err) or
                                 "S.S. Anne rival gate:" in str(err)))) and

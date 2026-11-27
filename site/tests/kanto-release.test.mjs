@@ -13,19 +13,37 @@ const model={byId:new Map(catalog.species.map(p=>[p.id,p]))};
 const loc=id=>kanto.locations.find(v=>v.id===id);
 
 test('Kanto prototype states are explicit and the route 23 exception stays visible',()=>{
-  assert.equal(kanto.locations.length,156);
-  assert.equal(kanto.trainers.length,163);
+  assert.equal(kanto.locations.length,160);
+  assert.equal(kanto.trainers.length,173);
   assert.equal(kanto.locations.filter(x=>x.status==='preview').length,35);
   assert.equal(kanto.locations.filter(x=>x.status==='encounter_review').length,1);
-  assert.equal(kanto.locations.filter(x=>x.status==='experimental').length,120);
+  assert.equal(kanto.locations.filter(x=>x.status==='experimental').length,124);
   assert.ok(kanto.locations.filter(x=>x.status==='preview').every(x=>!x.methods.length&&!x.trainers.length));
   const route23=kantoLocation(model,kanto,loc('kanto-route-23'));
   assert.match(route23,/Encontros temporariamente suspensos/);
   assert.match(route23,/método duplicado/);
   const preview=kanto.locations.find(x=>x.status==='preview');
   assert.match(kantoLocation(model,kanto,preview),/Somente cenário/);
-  assert.match(kantoIndex(model,kanto,'localizacoes'),/156 locais e 163 treinadores/);
+  assert.match(kantoIndex(model,kanto,'localizacoes'),/160 locais e 173 treinadores/);
   assert.doesNotMatch(route23,/Trecho de Pallet Town a Pewter City/);
+});
+test('Rota 11 e a Caverna dos Diglett mantêm os encontros e os treinadores verificados',()=>{
+  const route=loc('kanto-route-11'), tunnel=loc('kanto-diglett-tunnel');
+  assert.equal(route.status,'experimental');
+  assert.equal(route.methods.length,6);
+  assert.equal(route.trainers.length,10);
+  assert.equal(new Set(route.trainers).size,10);
+  assert.ok(route.trainers.every(id=>kanto.trainers.some(t=>t.id===id&&t.location===route.id)));
+  assert.equal(tunnel.status,'experimental');
+  assert.equal(tunnel.methods.length,2);
+  for(const method of tunnel.methods){
+    assert.deepEqual(method.slots.map(s=>[s.species,s.chance]),[['DIGLETT',95],['DUGTRIO',5]]);
+  }
+  for(const id of ['route-2','route-11']){
+    const entrance=loc('kanto-diglett-entrance-'+id);
+    assert.equal(entrance.status,'experimental');
+    assert.deepEqual(entrance.methods,[]);
+  }
 });
 test('seis interiores de Cerulean e Grunt 6 são explícitos sem alterar as prévias',()=>{
   for(const id of ['bike-shop','house-a','house-b','house-c','house-d','ransacked-house']){

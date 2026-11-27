@@ -36,7 +36,7 @@ def reachable(edges: dict[int, set[int]], start: int) -> set[int]:
     return seen
 
 
-def inspect(game: Path) -> dict:
+def inspect(game: Path, *, candidate=False) -> dict:
     game = game.resolve()
     workspace = (ROOT / ".blue-work").resolve()
     if not game.is_relative_to(workspace):
@@ -46,11 +46,25 @@ def inspect(game: Path) -> dict:
         raise ValueError("Not a prepared Kanto pilot")
     mapping = {int(source): int(dest) for source, dest in json_file(meta_path)["maps"].items()}
     manifest = json_file(KANTO)
+    trainer_specs = TRAINERS
+    if candidate:
+        import os
+        from k03e_contract import candidate_manifest, migration_pilot
+        if os.getenv("GITHUB_ACTIONS") != "true" or game != migration_pilot(ROOT):
+            raise ValueError("K03-E structural verification requires the isolated migration pilot")
+        manifest = candidate_manifest(manifest)
+    from k03e_contract import MAPS, TRAINERS as ROUTE11_TRAINERS
+    corridor = {str(i): key for i, key in MAPS.items()}
+    active = corridor.keys() & manifest["maps"].keys()
+    if active:
+        if len(manifest["maps"]) != 160 or any(manifest["maps"].get(i) != key for i, key in corridor.items()):
+            raise ValueError("Incomplete K03-E catalogue")
+        trainer_specs = {**TRAINERS, 79: ROUTE11_TRAINERS}
     expected = {int(source): name for source, name in manifest["maps"].items()}
     preview_only = set(manifest.get("preview_only", []))
     if preview_only - expected.keys():
         raise ValueError("Preview map IDs do not exist in the Kanto manifest")
-    if preview_only & set(TRAINERS):
+    if preview_only & set(trainer_specs):
         raise ValueError("No trainer scripts can be installed on preview-only maps")
     if set(mapping) != set(expected) or len(set(mapping.values())) != len(expected):
         raise ValueError("Pilot map manifest is missing locations or contains duplicate destination IDs")
@@ -273,7 +287,32 @@ def inspect(game: Path) -> dict:
             raise ValueError(f"Interior {inside}: missing entry from {outer}/{entry}")
         if mapping[outer] not in event_transfers(inside, exit_id):
             raise ValueError(f"Interior {inside}: missing return to {outer}/{entry}")
-    if 23 in mapping:
+    if active:
+        # Apply the same native corridor checks to both CI and release pilots.
+        from k03e_contract import WARPS
+        if not set(MAPS).issubset(mapping) or set(MAPS) & preview_only:
+            raise ValueError("K03-E missing functional source maps")
+        for (source, eid), (dest, x, y, direction) in WARPS.items():
+            event = maps[mapping[source]].attrs["@events"].get(eid)
+            if event is None:
+                raise ValueError(f"K03-E missing source door {source}/{eid}")
+            page = event.attrs["@pages"][0].attrs
+            transfers = [
+                op.attrs["@parameters"][:5] for op in page["@list"]
+                if op.attrs["@code"] == 201
+            ]
+            if (page["@trigger"] != 1 or
+                    transfers != [[0, mapping[dest], x, y, direction]] or
+                    event_transfers(source, eid) != {mapping[dest]}):
+                raise ValueError(f"K03-E unsafe native transfer {source}/{eid}")
+        if 80 in mapping:
+            raise ValueError("K03-E Route 11 gatehouse is outside audited scope")
+        rows = (game / "PBS/map_connections_kanto.txt").read_text(
+            encoding="utf-8-sig").splitlines()
+        seam = f"{mapping[64]},East,0,{mapping[79]},West,0"
+        if seam not in {row.split("#", 1)[0].strip() for row in rows}:
+            raise ValueError("K03-E missing original Vermilion/Route 11 seam")
+    elif 23 in mapping:
         raise ValueError("Diglett Cave was imported before its source audit")
 
     # A unique Viridian Mart shopkeeper now anchors the Pallet <-> Viridian
@@ -690,10 +729,10 @@ def inspect(game: Path) -> dict:
         "BlueKantoPilot.victory_couple" not in first_scripts(213,16)):
         raise ValueError("Victory Road's Ray/Tyra double battle was split or discarded")
 
-    # MAN-02: the source-proven 122 line-of-sight trainers require Event Touch,
+    # MAN-02: source-proven line-of-sight trainers require Event Touch,
     # with a non-triggering second page selected by self-switch A after victory.
     sight_count = 0
-    for original, profiles in TRAINERS.items():
+    for original, profiles in trainer_specs.items():
         for event_id, spec in profiles.items():
             event = maps[mapping[original]].attrs["@events"][event_id]
             pages = event.attrs["@pages"]
@@ -701,6 +740,8 @@ def inspect(game: Path) -> dict:
                 raise ValueError(f"Trainer {original}/{event_id} missing win-state page")
             sight = bool(re.search(r"(?i)(?:trainer|sight)\((\d+)\)",
                                    text(event.attrs["@name"])))
+            if original == 79 and not sight:
+                raise ValueError(f"Route 11 trainer {event_id} lost its source sight range")
             expected_trigger = 2 if sight else 0
             if pages[0].attrs["@trigger"] != expected_trigger:
                 raise ValueError(f"Trainer {original}/{event_id} has wrong sight trigger")
@@ -739,8 +780,10 @@ def inspect(game: Path) -> dict:
                 if original != 42 or event_id not in (11, 16):
                     if "pbNoticePlayer(get_self)" not in script:
                         raise ValueError(f"Trainer {original}/{event_id} will not alert the player")
-    if sight_count != 137:  # Previously 122, plus 15 source Route24/25 trainers.
-        raise ValueError(f"Source-proven trainer sight count changed: {sight_count}")
+    # Both the isolated candidate and the active catalogue add the same ten.
+    expected_sight_count = 137 + (len(ROUTE11_TRAINERS) if active else 0)
+    if sight_count != expected_sight_count:
+        raise ValueError(f"Source-proven trainer sight count changed: {sight_count}; expected {expected_sight_count}")
 
     # Route connections are bidirectional, but transfer events are directed.
     # Check reachability both from and back to Pallet to avoid accepting
@@ -815,7 +858,7 @@ def inspect(game: Path) -> dict:
                         (47,4): "BlueKantoPilot.cerulean_wall_map",
                         **{(39,eid): "BlueKantoPilot.cerulean_rocket" for eid in (26,37,38)}})
         verify_cerulean_police(maps[mapping[39]].attrs["@events"])
-    for source_id, entries in TRAINERS.items():
+    for source_id, entries in trainer_specs.items():
         for event_id, spec in entries.items():
             kind, name = spec[:2]
             key = f"KANTO_{source_id:03d}_{event_id:03d}"
