@@ -38,6 +38,25 @@ jobs:
           }
           python scripts/regions/ensure_source.py
           if($LASTEXITCODE -ne 0){throw 'Pinned FRLG source preparation failed'}
+          # Prove the default release build first, using all inputs from this SHA.
+          python scripts/regions/pilot.py --output .blue-work/kanto-release-pilot
+          if($LASTEXITCODE -ne 0){throw 'Active Kanto pilot build failed'}
+          python scripts/regions/release_gate.py --pilot .blue-work/kanto-release-pilot
+          if($LASTEXITCODE -ne 0){throw 'Active Kanto release gate failed'}
+          python -c "from pathlib import Path; from scripts.android.package_kanto import _metadata; d=_metadata(Path('.blue-work/kanto-release-pilot')); assert len(d['maps']) == 160; print('KANTO_K03E_ACTIVE_RELEASE_METADATA_OK')"
+          if($LASTEXITCODE -ne 0){throw 'Active Kanto package inputs or preserved save namespace are invalid'}
+          python scripts/regions/export_kanto.py --preview .blue-work/kanto-release-pilot --output .blue-work/kanto-release-site.json
+          if($LASTEXITCODE -ne 0){throw 'Active Kanto portal export failed'}
+          python -c "import json; from pathlib import Path; a,b=(json.loads(Path(p).read_text(encoding='utf-8')) for p in ('site/public/data/kanto.json','.blue-work/kanto-release-site.json')); assert a['source']==b['source'] and all(sorted(a[k],key=lambda r:r['id'])==sorted(b[k],key=lambda r:r['id']) for k in ('locations','trainers')); print('KANTO_K03E_ACTIVE_PORTAL_MATCH_OK')"
+          if($LASTEXITCODE -ne 0){throw 'Committed game guide differs from active compiled sources'}
+          Copy-Item .blue-work/kanto-release-pilot/Data/Scripts.rxdata .blue-work/kanto-release-clean-main.rxdata
+          # Keep native regression coverage against the exact historical 156-map
+          # inputs. Restore the current revision before entering any package path.
+          $baseline='e7c8f8d5d42ebe225cf88a4f900b0e0f8102b1bb'
+          git fetch --no-tags --depth=1 origin $baseline
+          if($LASTEXITCODE -ne 0){throw 'Cannot fetch pinned K03-D regression inputs'}
+          git restore --source=$baseline -- data/regions/kanto-source.json data/kanto-music-rules.json site/public/data/kanto.json
+          if($LASTEXITCODE -ne 0){throw 'Cannot prepare pinned K03-D regression inputs'}
           python scripts/regions/audit_kanto_coverage.py > .blue-work/kanto-map-coverage.json
           if($LASTEXITCODE -ne 0){throw 'Kanto source/catalog coverage audit failed'}
           python scripts/regions/audit_next_segment.py
@@ -892,14 +911,38 @@ jobs:
           Get-Content ".blue-work/kanto-main-out.txt",".blue-work/kanto-main-err.txt","$game/Data/blue-kanto-integrated-error.txt","$game/Data/blue-kanto-integrated-stage.txt","$game/errorlog.txt" -ErrorAction SilentlyContinue | Select-Object -Last 100
           throw 'Integrated Kanto new game/save proof missing'
 
+      - name: Testar Game.exe com catálogo ativo e preparar só o piloto atual
+        shell: powershell
+        run: |
+          git restore --source=$env:GITHUB_SHA -- data/regions/kanto-source.json data/kanto-music-rules.json site/public/data/kanto.json
+          if($LASTEXITCODE -ne 0){throw 'Cannot restore current release inputs'}
+          $release=(Resolve-Path .blue-work/kanto-release-pilot).Path
+          python scripts/regions/native_check.py $release --k03e
+          if($LASTEXITCODE -ne 0){throw 'Cannot prepare native active Kanto proof'}
+          $mesaFolder=Join-Path $env:RUNNER_TEMP 'blue-mesa'
+          Get-ChildItem -LiteralPath $mesaFolder -Recurse -File -Filter '*.dll' |
+            Where-Object { $_.FullName -match '[\\/]x64[\\/]' } |
+            ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $release }
+          $proc=Start-Process -FilePath "$release/Game.exe" -WorkingDirectory $release -WindowStyle Hidden -PassThru -RedirectStandardOutput ".blue-work/kanto-release-native-out.txt" -RedirectStandardError ".blue-work/kanto-release-native-err.txt"
+          $handle=$proc.Handle
+          if(-not $proc.WaitForExit(180000)){
+            Stop-Process -Id $proc.Id -ErrorAction SilentlyContinue
+            throw 'Active Kanto native proof timed out'
+          }
+          $proof="$release/Data/blue-kanto-k03e-proof.txt"
+          if(-not (Test-Path $proof)){
+            Get-Content ".blue-work/kanto-release-native-out.txt",".blue-work/kanto-release-native-err.txt","$release/Data/blue-kanto-error.txt" -ErrorAction SilentlyContinue | Select-Object -Last 120
+            throw 'Active Kanto native proof is missing'
+          }
+          Write-Host ("KANTO_K03E_ACTIVE_RELEASE_NATIVE_REPORT:" + (Get-Content $proof -Raw).Trim())
+          Copy-Item .blue-work/kanto-release-clean-main.rxdata "$release/Data/Scripts.rxdata" -Force
+          Remove-Item "$release/Data/blue-kanto-proof.rb","$release/Data/blue-kanto-walk-check.rb","$release/Data/blue-kanto-k03e-check.rb","$release/Data/blue-kanto-music-native-probe.rb" -ErrorAction Stop
       # The Kanto ZIP is a separate compiled game. It cannot be the Decades ZIP.
       - name: Compilar versão mobile do piloto de Kanto
         if: github.event_name == 'push' && contains(github.event.head_commit.message, '[android-kanto-release]')
         shell: powershell
         run: |
-          $pilot=(Resolve-Path '.blue-work/kanto-pilot').Path
-          Copy-Item '.blue-work/kanto-clean-main.rxdata' "$pilot/Data/Scripts.rxdata" -Force
-          Remove-Item "$pilot/Data/blue-kanto-proof.rb","$pilot/Data/blue-kanto-walk-check.rb" -ErrorAction SilentlyContinue
+          $pilot=(Resolve-Path '.blue-work/kanto-release-pilot').Path
           python scripts/android/package_kanto.py --windows --game-dir $pilot --output dist/Blue-Windows-Kanto-Piloto.zip --revision '${{ github.sha }}'
           if($LASTEXITCODE -ne 0){throw 'Kanto Windows archive verification failed'}
           python scripts/android/package_kanto.py --game-dir $pilot --request-compile

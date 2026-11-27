@@ -430,6 +430,26 @@
       "map": "VIRIDIAN_GYM",
       "track": 25,
       "enabled": true
+    },
+    {
+      "map": "DIGLETT_ENTRANCE_ROUTE_2",
+      "track": 34,
+      "enabled": true
+    },
+    {
+      "map": "ROUTE_11",
+      "track": 32,
+      "enabled": true
+    },
+    {
+      "map": "DIGLETT_ENTRANCE_ROUTE_11",
+      "track": 34,
+      "enabled": true
+    },
+    {
+      "map": "DIGLETT_TUNNEL",
+      "track": 34,
+      "enabled": true
     }
   ],
   "battles": [

@@ -23,9 +23,17 @@ class K03EReleaseInputsTests(unittest.TestCase):
         self.site = read(ROOT / "site/public/data/kanto.json")
         self.music = read(ROOT / "data/kanto-music-rules.json")
         self.evidence = read(ROOT / "data/regions/kanto-k03e-portal-delta.json")
+        self.active_triplet = copy.deepcopy((self.source, self.site, self.music))
+        self.source["maps"] = {i: key for i,key in self.source["maps"].items()
+                               if int(i) not in MAPS}
+        for field in ("locations", "trainers"):
+            delta_ids = {row["id"] for row in self.evidence[field]}
+            self.site[field] = [row for row in self.site[field] if row["id"] not in delta_ids]
+        self.music["maps"] = [row for row in self.music["maps"] if row["map"] not in MAPS.values()]
 
     def test_prepare_triplet_from_real_ci_artifact_and_compile_music(self):
         active, site, music = promote_inputs(self.source, self.site, self.music, self.evidence)
+        self.assertEqual((active, site, music), self.active_triplet)
         self.assertEqual((len(active["maps"]), len(site["locations"]), len(site["trainers"])),
                          (160, 160, 173))
         self.assertEqual((len(self.source["maps"]), len(self.site["locations"])), (156, 156))

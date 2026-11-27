@@ -6,6 +6,7 @@ from pathlib import Path
 from audit import KANTO, ROOT, json_file
 from pilot_catalog import prepared_plan
 from pbs import read_blocks, ENCOUNTER_REVIEW_SOURCE_IDS
+from k03e_contract import MAPS, NAMES, TRAINERS, candidate_manifest
 
 LOCATION_NAMES = {
     "PALLET_TOWN": "Pallet Town",
@@ -341,14 +342,24 @@ def slug(key):
     return "kanto-" + key.lower().replace("_", "-")
 
 
+def location_names(manifest):
+    maps = manifest["maps"]
+    corridor = {str(i): name for i, name in MAPS.items()}
+    active = maps.keys() & corridor.keys()
+    if not active:
+        return LOCATION_NAMES
+    if len(maps) != 160 or any(maps.get(i) != name for i, name in corridor.items()):
+        raise ValueError("K03-E portal requires the exact four corridor identities")
+    return {**LOCATION_NAMES, **NAMES}
+
+
 def export(preview: Path, *, k03e=False):
     manifest = json_file(KANTO)
-    names = LOCATION_NAMES
-    route11_roles = {}
     if k03e:
-        from k03e_contract import NAMES, TRAINERS, candidate_manifest
         manifest = candidate_manifest(manifest)
-        names = {**names, **NAMES}
+    names = location_names(manifest)
+    route11_roles = {}
+    if "ROUTE_11" in names:
         roles = {"YOUNGSTER": "Jovem treinador", "GAMBLER": "Jogador", "ENGINEER": "Engenheiro"}
         route11_roles = {(kind, name): roles[kind] for kind, name in TRAINERS.values()}
     if not k03e and (preview / "plan.json").is_file():

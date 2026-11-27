@@ -24,7 +24,7 @@ class SourceZipFixture:
         # Keep the old 142-map incremental hotfix supported even though the
         # *new* full Kanto manifest contains 152 maps.
         legacy = {k: v for k, v in SOURCE["maps"].items()
-                  if k not in ("43","44","45","46","47","48","53", "54", "55", "58", "68", "69", "70", "71")}
+                  if k not in ("23","79","81","82","43","44","45","46","47","48","53", "54", "55", "58", "68", "69", "70", "71")}
         self.mapping = {k: 700 + i for i, k in enumerate(legacy)}
         preview = set(SOURCE["preview_only"])
         self.lines = ["BLUE_KANTO_MUSIC_V1\tKANTO\t" + "a" * 64]
@@ -74,7 +74,7 @@ class KantoCeruleanMusicRegression(unittest.TestCase):
         self.assertEqual((symbols["CERULEAN_CITY"]["track"], symbols["CERULEAN_CITY"]["enabled"]), (50, True))
         self.assertTrue(TRACKS[32]["filename"].startswith("1-32. Road to Cerulean City"))
         self.assertEqual(TRACKS[50]["filename"], "1-50. Fuchsia City.mp3")
-        self.assertEqual(sum(row["enabled"] for row in RULES["maps"]), 84)
+        self.assertEqual(sum(row["enabled"] for row in RULES["maps"]), 88)
 
     def test_produces_two_exact_bindings_without_reordering_other_music(self):
         original = self.source.music()

@@ -1941,7 +1941,8 @@ def install_runtime(target, mapping, game, manifest=None):
     if 79 in mapping:
         from k03e_contract import NAMES
         names = {**LOCATION_NAMES, **NAMES}
-        save_app = "Kanto K03E CI"
+        if isolated_manifest is not None:
+            save_app = "Kanto K03E CI"
     presentation = target / "Plugins/ZZZZ Blue Story and Presentation"
     for name in ("RegionStart.rb", "Regions.rb", "RegionalPolicy.rb", "RegionalRespawn.rb", "Title.rb", "Story.rb", "PartyExperience.rb", "Balance.rb", "RegionalCards.rb",
                  "Economy.rb", "Locale.rb", "KantoDex.rb", "DexControls.rb"):

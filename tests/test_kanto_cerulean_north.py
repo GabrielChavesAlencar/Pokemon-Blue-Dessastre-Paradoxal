@@ -35,23 +35,26 @@ class CeruleanNorthContract(unittest.TestCase):
         cls.ids = {int(i) for i in cls.manifest["maps"]}
 
     def test_01_legacy_map_ids_cannot_shift(self):
-        prior = self.ids - {43,44,45,46,47,48,53,54,55,58,68,69,70,71}
+        corridor = {23,79,81,82}
+        active = bool(self.ids & corridor)
+        prior = self.ids - corridor - {43,44,45,46,47,48,53,54,55,58,68,69,70,71}
         self.assertEqual(len(prior), 142)
-        self.assertEqual(len(self.ids), 156)
+        self.assertEqual(len(self.ids), 160 if active else 156)
         old_order = stable_source_order(prior)
         upgraded = stable_source_order(self.ids)
         self.assertEqual(upgraded[:142], old_order)
         self.assertEqual(upgraded[142:145], [53, 54, 55])
         self.assertEqual(upgraded[145:151], [43,44,45,46,47,48])
         self.assertEqual(upgraded[151:152], [58])
-        self.assertEqual(upgraded[152:], [68,69,70,71])
+        self.assertEqual(upgraded[152:156], [68,69,70,71])
+        self.assertEqual(upgraded[156:], sorted(corridor) if active else [])
         self.assertEqual(self.manifest["maps"]["53"], "ROUTE_24")
         self.assertEqual(self.manifest["maps"]["54"], "ROUTE_25")
         self.assertEqual(self.manifest["maps"]["55"], "BILL_COTTAGE")
 
     def test_cerulean_interiors_append_without_shifting_145_existing_slots(self):
         extra = {43, 44, 45, 46, 47, 48}
-        historical = self.ids - {58,68,69,70,71}
+        historical = self.ids - {23,58,68,69,70,71,79,81,82}
         before = stable_source_order(historical - extra)
         expanded = stable_source_order(historical)
         self.assertEqual(expanded[:145], before)

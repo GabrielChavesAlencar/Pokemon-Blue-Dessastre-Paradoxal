@@ -17,7 +17,9 @@ def prepare(game, integrated=False, k03e=False):
     if k03e:
         from k03e_contract import migration_game
         migrated = game == migration_game(ROOT)
-        if integrated or os.getenv("GITHUB_ACTIONS") != "true" or not (migrated or game == (ROOT / ".blue-work/kanto-k03e-functional").resolve()):
+        standalone = game in {(ROOT / ".blue-work" / name).resolve()
+                              for name in ("kanto-k03e-functional", "kanto-release-pilot")}
+        if integrated or os.getenv("GITHUB_ACTIONS") != "true" or not (migrated or standalone):
             raise ValueError("K03-E requires a disposable CI candidate")
         from audit import json_file
         marker = game/"Data/blue-kanto-install.json" if migrated else game/PILOT_META
