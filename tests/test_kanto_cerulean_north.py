@@ -181,10 +181,13 @@ puts "KANTO_K02C_MESSAGE_PREPEND_RESTORE_OK"
 
     def test_04_android_ready_gate_accepts_only_verified_old_and_new_registry(self):
         source = (ROOT / "scripts/battle_polish/RegionStart.rb").read_text("utf-8")
-        self.assertIn('["142", "145", "151", "152"].include?(fields[1])', source)
+        self.assertIn('["142", "145", "151", "152", "156"].include?(fields[1])', source)
         self.assertIn('pairs.length == expected_count', source)
         self.assertIn('maps.values.uniq.length == expected_count', source)
         self.assertIn('["53", "54", "55"].all?', source)
+        self.assertIn('expected_count >= 152 && !maps["58"].is_a?(Integer)', source)
+        self.assertIn('(68..71).all?', source)
+        self.assertIn('(452..595).include?(maps[source.to_s])', source)
         self.assertIn('pbRgssExists?(sprintf("Data/Map%03d.rxdata", id))', source)
 
     @unittest.skipUnless((SOURCE / "Data/MapInfos.rxdata").is_file(),

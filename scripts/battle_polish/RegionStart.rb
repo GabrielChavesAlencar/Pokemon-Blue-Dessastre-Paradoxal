@@ -280,14 +280,14 @@ module BlueRegionStart
     return false unless spawn && File.file?(path) && !File.symlink?(path)
     fields = File.read(path, 128).strip.split(",")
     fields.length == 3 && fields[0] == "BLUE_KANTO_READY_V1" &&
-      ["142", "145", "151", "152"].include?(fields[1]) && fields[2] == spawn[0].to_s
+      ["142", "145", "151", "152", "156"].include?(fields[1]) && fields[2] == spawn[0].to_s
   rescue StandardError
     false
   end
 
   # The JoiPlay Ruby runtime can have no JSON gem *or* a JSON constant
   # without a working .parse method. Read the audited installer's exact
-  # 142/145-map registry from its JSON text if the native parser is unavailable.
+  # published 142/145/151/152/156-map registry if the native parser is unavailable.
   # Never unlock Kanto from just a ready marker or a few sample maps.
   def self.kanto_compact_maps(spawn)
     return nil unless kanto_ready_gate?(spawn) && File.file?(KANTO_INSTALL) &&
@@ -301,11 +301,11 @@ module BlueRegionStart
     # Reject junk/partial entries instead of accepting a few regex matches.
     rest = section.gsub(/"(\d+)"\s*:\s*(\d+)/, "").gsub(/[\s,]/, "")
     # Preserve legacy 142-map Kanto installs while accepting only the
-    # explicitly appended 145-map update. The ready marker and JSON count
+    # explicitly published append-only updates. The ready marker and JSON count
     # MUST agree; random or partial archives remain fail-closed.
     gate = File.read("Data/blue-kanto-ready.txt", 128).strip.split(",")
     expected_count = Integer(gate[1], 10)
-    return nil unless [142, 145, 151, 152].include?(expected_count)
+    return nil unless [142, 145, 151, 152, 156].include?(expected_count)
     return nil unless rest.empty? && pairs.length == expected_count
     maps = {}
     pairs.each do |src, dst|
@@ -321,7 +321,13 @@ module BlueRegionStart
     if expected_count >= 151
       return nil unless (43..48).all? { |source| maps[source.to_s].is_a?(Integer) }
     end
-    return nil if expected_count == 152 && !maps["58"].is_a?(Integer)
+    return nil if expected_count >= 152 && !maps["58"].is_a?(Integer)
+    if expected_count == 156
+      return nil unless (68..71).all? { |source| maps[source.to_s].is_a?(Integer) }
+      # Shared Sinnoh's reserved MapIDs cannot be claimed by the new Kanto
+      # interiors, including on JoiPlay where JSON parsing is unavailable.
+      return nil if (68..71).any? { |source| (452..595).include?(maps[source.to_s]) }
+    end
     return nil unless maps.values.all? { |id|
       pbRgssExists?(sprintf("Data/Map%03d.rxdata", id))
     }

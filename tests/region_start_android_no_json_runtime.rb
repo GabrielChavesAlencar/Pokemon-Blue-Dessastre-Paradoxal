@@ -151,6 +151,51 @@ Dir.mktmpdir("blue-joiplay-no-json") do |directory|
     check(BlueRegionStart.request_initial("HOENN"),
           "Hoenn unavailable after Kanto JSON fallback")
 
+    # Upgrade the same synthetic legacy registry to an independent 156-map
+    # installation. The additional four destinations skip Sinnoh reservations.
+    # Every existing legacy file remains in place.
+    expanded = kanto_maps.reject { |source,_| (68..71).include?(source.to_i) }
+    # Synthetic source keys only; the real source identity and 152->156
+    # ownership migration are tested separately in the Windows native CI.
+    (143..156).each { |source| expanded[source.to_s] = 600 + source - 143 }
+    (68..71).each { |source| expanded[source.to_s] = 596 + source - 68 }
+    check(expanded.size == 156,"bad expanded fixture")
+    write_kanto_registry = proc do |registry,count|
+      File.write("Data/blue-kanto-install.json",
+                 '{"schema":1,"maps":{' +
+                 registry.map { |key,value| %("#{key}":#{value}) }.join(",") +
+                 '},"source":"Essentials FRLG 21.1"}')
+      File.write("Data/blue-kanto-ready.txt",
+                 "BLUE_KANTO_READY_V1,#{count},#{kanto_home[0]}\n")
+    end
+    expanded.values.each { |id| File.write(sprintf("Data/Map%03d.rxdata",id), "kanto") }
+    write_kanto_registry.call(expanded,156)
+    check(BlueRegionStart.kanto_integrated?, "156-map Kanto rejected without JSON")
+    check(BlueRegionStart.kanto_compact_maps(kanto_home) == expanded, "156-map registry changed")
+    check(BlueRegionStart.request_initial("KANTO") &&
+          BlueRegionStart.choose_initial == "KANTO", "156-map Kanto start blocked")
+    missing_new = sprintf("Data/Map%03d.rxdata",expanded["71"])
+    File.delete(missing_new)
+    check(!BlueRegionStart.kanto_integrated?, "156-map gate accepted missing fisherman house")
+    File.write(missing_new,"kanto")
+    wrong_source = expanded.dup
+    wrong_source["999"] = wrong_source.delete("68")
+    write_kanto_registry.call(wrong_source,156)
+    check(!BlueRegionStart.kanto_integrated?, "156-map gate accepted missing Fan Club source")
+    reserved = expanded.merge("68"=>455)
+    write_kanto_registry.call(reserved,156)
+    check(!BlueRegionStart.kanto_integrated?, "156-map gate accepted reserved Sinnoh ID")
+    write_kanto_registry.call(expanded,152)
+    check(!BlueRegionStart.kanto_integrated?, "156-map gate accepted stale marker count")
+    write_kanto_registry.call(expanded,156)
+    check(BlueRegionStart.kanto_integrated? && BlueRegionStart.hoenn_integrated?,
+          "156-map gate repair affected Hoenn")
+    Object.const_set(:JSON, Module.new)
+    ::JSON.define_singleton_method(:parse) { |_raw| raise NoMethodError, "broken JSON" }
+    check(BlueRegionStart.kanto_integrated?, "156-map gate rejected broken JoiPlay JSON")
+    Object.send(:remove_const, :JSON)
+    puts "KANTO_K03B_156_READY_GATE_NO_JSON_OK"
+
     check(BlueRegionStart.request_initial("DECADES"),
           "Decades new game blocked by missing JSON")
     check(BlueRegionStart.choose_initial == "DECADES",

@@ -112,6 +112,12 @@ module KantoIntegratedCheck
     SaveData.initialize_bootup_values
     spawn = BlueRegionStart.kanto_spawn
     require!(spawn && spawn.length == 3, "Integrated Kanto marker/map missing")
+    require!(BlueRegionStart.kanto_integrated?,
+             "Integrated Kanto ready gate rejected installed 156-map registry")
+    registry = BlueRegionStart.kanto_compact_maps(spawn)
+    require!(registry && registry.size == 156 &&
+             (68..71).all? { |source| registry[source.to_s] == BlueKantoPilot.kanto_map_id(source) },
+             "Integrated Vermilion registry missing or inconsistent")
     stage("main_title_kanto")
     require!(defined?(BlueKantoTitle), "Testar Kanto title menu plugin not loaded")
     require!(PokemonLoad_Scene.ancestors.include?(BlueKantoTitle::Scene),
@@ -167,6 +173,9 @@ module KantoIntegratedCheck
     town_map = $game_map.events[1].list.find { |op| op.code == 201 }.parameters[1]
     $map_factory.setup(town_map)
     load "Data/blue-kanto-music-native-probe.rb"
+    require!(BlueRegionTravel.installed? && BlueRegionalPolicy.state &&
+             BlueRegionalPolicy.state["current"] == "KANTO",
+             "Integrated Kanto regional policy unavailable after native new game")
     KantoMusicNativeProbe.run("integrated")
     require!($game_map.events[1]&.trigger == 1 &&
              $game_map.events[1].list.any? { |op|
