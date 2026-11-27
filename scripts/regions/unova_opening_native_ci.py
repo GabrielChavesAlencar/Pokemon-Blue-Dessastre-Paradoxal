@@ -19,6 +19,8 @@ GAME = WORK / "game"
 PROBE = "Data/unova-opening-native-check.rb"
 INPUT = "Data/unova-opening-native-input.json"
 RESULT = "Data/unova-opening-native-result.json"
+COMPILED = "Data/unova-opening-base-compiled.txt"
+ERROR = "Data/unova-opening-native-error.txt"
 
 
 def only_ci():
@@ -34,13 +36,19 @@ def patch_main(source, *, compile_only):
     ready = "    Game.set_up_system\n"
     if any(source.count(text) != 1 for text in (plugins, compiler, ready)):
         raise ValueError("Pontos de entrada da engine não reconhecidos.")
-    source = source.replace(plugins, '''    Object.send(:define_method, :pbPrintException) do |error|
-      warn [error.class, error.message, *Array(error.backtrace).first(16)].join("\\n")
+    source = source.replace(plugins, f'''    Object.send(:define_method, :pbPrintException) do |error|
+      report = [error.class, error.message, *Array(error.backtrace).first(16)].join("\\n")
+      File.binwrite("{ERROR}", report)
+      warn report
       exit! 1
     end
 ''' + plugins)
     if compile_only:
-        return source.replace(compiler, compiler + '    puts "UNOVA_QA_BASE_COMPILED"\n    exit\n')
+        return source.replace(compiler, compiler + f'''
+    GameData::Species.load
+    File.binwrite("{COMPILED}", "UNOVA_QA_BASE_COMPILED")
+    exit
+''')
     return source.replace(compiler, "").replace(ready, ready + f'''
     begin
       require "json"
@@ -66,12 +74,15 @@ def isolate_profile():
 
 def run(android_manifest):
     only_ci()
-    if not (GAME / "Game.exe").is_file() or (GAME / INPUT).exists() or (GAME / RESULT).exists():
+    previous_outputs = (INPUT, RESULT, COMPILED, ERROR)
+    if not (GAME / "Game.exe").is_file() or any((GAME / name).exists() for name in previous_outputs):
         raise ValueError("A cópia descartável precisa ser uma instalação nova de CI.")
     isolate_profile()
     compiled = run_native_probe(GAME, lambda source: patch_main(source, compile_only=True), timeout=360)
-    if compiled.returncode != 0 or b"UNOVA_QA_BASE_COMPILED" not in compiled.stdout:
-        raise ValueError("Compilação da base QA falhou.\n" + engine_output(compiled.stdout))
+    marker = GAME / COMPILED
+    if compiled.returncode != 0 or not marker.is_file() or marker.read_bytes() != b"UNOVA_QA_BASE_COMPILED":
+        raise ValueError(f"Compilação da base QA falhou (saída {compiled.returncode}).\n"
+                         + diagnostic(compiled))
     config = write_overlay(ROOT, GAME, android_manifest)
     expected_base = {MAP_INFOS: config["baselines"]["windows_mapinfos_sha256"],
                      TILESETS: config["base_tilesets_sha256"]}
@@ -91,7 +102,8 @@ def run(android_manifest):
     (GAME / INPUT).write_text(json.dumps(config), encoding="utf-8")
     result = run_native_probe(GAME, lambda source: patch_main(source, compile_only=False), timeout=240)
     if result.returncode != 0 or not (GAME / RESULT).is_file():
-        raise ValueError("Game.exe não confirmou o corredor QA.\n" + engine_output(result.stdout))
+        raise ValueError(f"Game.exe não confirmou o corredor QA (saída {result.returncode}).\n"
+                         + diagnostic(result))
     proof = json.loads((GAME / RESULT).read_bytes())
     if (proof["windows_game_exe"] is not True or len(proof["doors"]) != len(config["doors"])
             or proof["visited_map_ids"] != sorted(config["map_ids"].values())):
@@ -102,6 +114,13 @@ def run(android_manifest):
     proof["android_reference"] = config["baselines"]["android"]
     (WORK / "windows-native-receipt.json").write_text(json.dumps(proof, indent=2), encoding="utf-8")
     print(f"Game.exe verificou {len(proof['doors'])} portas e save/reload.")
+
+
+def diagnostic(result):
+    error = GAME / ERROR
+    if error.is_file():
+        return error.read_text(encoding="utf-8", errors="replace")
+    return engine_output(result.stdout)
 
 
 def main():
