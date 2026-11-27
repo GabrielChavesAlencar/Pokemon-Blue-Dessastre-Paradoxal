@@ -179,8 +179,10 @@ module KantoNativeCheck
       [id,[event.x,event.y],witness[0]]
     end
     $game_player.moveto(*position)
-    puts "KANTO_CERULEAN_LEGACY_DOORS_REPORT:#{ {restored: doors.keys,public_approaches: approaches,guarded_house: !BlueKantoPilot.cerulean_house_open?,position: position,party_preserved: true}.inspect}"
+    report = {"restored"=>doors.keys,"public_approaches"=>approaches,"guarded_house"=>!BlueKantoPilot.cerulean_house_open?,"position"=>position,"party_preserved"=>true,"idempotent"=>true,"manual_gameplay"=>false}
+    puts "KANTO_CERULEAN_LEGACY_DOORS_REPORT:#{report.inspect}"
     puts "KANTO_CERULEAN_LEGACY_DOORS_RELOAD_OK"
+    report
   end
 
   def self.cerulean_interiors_proof(battle_calls, losses_remaining)
@@ -1864,7 +1866,7 @@ module KantoNativeCheck
     require!(!BlueKantoPilot.progress["pilot_ss_ticket"],
              "Harbor issued a ticket without Bill's Route 25 quest")
     require!(!BlueKantoPilot.cerulean_house_open?, "K02-C house opened before Bill")
-    cerulean_legacy_door_proof
+    legacy_door_report = cerulean_legacy_door_proof
     north_report = north_story(battle_calls, losses_remaining)
     interiors_report = cerulean_interiors_proof(battle_calls, losses_remaining)
     BlueKantoPilot.ticketmaster
@@ -2549,6 +2551,7 @@ module KantoNativeCheck
              $bag.quantity(:TM28)==interiors_report["tm28"],
              "K02-C reward/quest persistence failed")
     interiors_report["save_reload"] = true
+    interiors_report["legacy_door_reload"] = legacy_door_report
     File.write("Data/blue-kanto-k02c-native-proof.txt", interiors_report.inspect)
     puts "KANTO_K02C_NATIVE_INTERIORS_REPORT:#{interiors_report.inspect}"
     puts "KANTO_K02C_INTERIORS_BIKE_ROCKET_SAVE_RELOAD_OK"
