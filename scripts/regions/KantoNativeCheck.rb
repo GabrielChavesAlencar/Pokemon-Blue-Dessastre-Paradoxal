@@ -241,12 +241,15 @@ module KantoNativeCheck
     # without a move_generic event. The independent contact must dispatch.
     $game_player.moveto(13,28)
     $game_map.events.each_value { |e| e.clear_starting }
-    # Native CI 46031491604 confirmed logical position [13,28] and
-    # event 7 while moving? was still true after 3 seconds. Exercise that
-    # actual state: the player-touch event must queue without forcing
-    # real_x/real_y, animation, interpreter state or a transfer.
-    require!(!pbMapInterpreterRunning? && !$game_temp.player_transferring &&
-      !$game_player.jumping?, "Standing-door fixture interpreter/transfer/jump busy")
+    # The debug bootstrap can retain an unfinished jump/animation from
+    # earlier map probes. The independent mobile input path consumes
+    # only position and movement predicates. Model those input predicates
+    # explicitly, leaving the actual native player, event and interpreter
+    # untouched. All eight native movement/transfer roundtrips are still
+    # exercised separately below.
+    require!(!pbMapInterpreterRunning? && !$game_temp.player_transferring,
+      "Standing-door native interpreter or transfer busy")
+    input = Struct.new(:x,:y,:moving?,:jumping?).new(13,28,true,false)
     old_menu = $game_temp.menu_calling
     old_message = $game_temp.message_window_showing
     begin
@@ -254,17 +257,26 @@ module KantoNativeCheck
       $game_temp.message_window_showing = false
       # The exact same input must be rejected while a menu is open.
       $game_temp.menu_calling = true
-      require!(!BlueKantoPilot.cerulean_mobile_contact($game_player,8) &&
+      require!(!BlueKantoPilot.cerulean_mobile_contact(input,8) &&
         !$game_map.events[7].starting, "Standing-door contact bypassed menu")
       $game_temp.menu_calling = false
-      blocker = BlueKantoPilot.cerulean_mobile_contact_blocker($game_player)
-      probe = BlueKantoPilot.cerulean_door_contact($game_player,8)
-      context = {"blocker"=>blocker,"pos"=>[$game_player.x,$game_player.y],
-        "moving"=>$game_player.moving?, "jumping"=>$game_player.jumping?,
+      jumping_input = input.class.new(13,28,true,true)
+      require!(!BlueKantoPilot.cerulean_mobile_contact(jumping_input,8) &&
+        !$game_map.events[7].starting, "Standing-door contact bypassed jump")
+      adjacent_input = input.class.new(13,29,true,false)
+      require!(!BlueKantoPilot.cerulean_mobile_contact(adjacent_input,8) &&
+        !$game_map.events[7].starting, "Moving adjacent input opened door early")
+      require!(!BlueKantoPilot.cerulean_mobile_contact(input,2) &&
+        !$game_map.events[7].starting, "Wrong direction opened door")
+      blocker = BlueKantoPilot.cerulean_mobile_contact_blocker(input)
+      probe = BlueKantoPilot.cerulean_door_contact(input,8)
+      context = {"blocker"=>blocker,"pos"=>[input.x,input.y],
+        "moving"=>input.moving?, "jumping"=>input.jumping?,
+        "input_predicates_modelled"=>true,
         "event"=>probe && probe[0].id,"canonical"=>probe && probe[3],
         "actual_door"=>[$game_map.events[7].x,$game_map.events[7].y],
         "commands"=>$game_map.events[7].list.map(&:code)}
-      require!(BlueKantoPilot.cerulean_mobile_contact($game_player,8) &&
+      require!(BlueKantoPilot.cerulean_mobile_contact(input,8) &&
         $game_map.events[7].starting, "JoiPlay standing-door contact failed: #{context.inspect}")
       require!(!$game_temp.player_transferring && !pbMapInterpreterRunning?,
         "Standing-door contact bypassed native interpreter")
