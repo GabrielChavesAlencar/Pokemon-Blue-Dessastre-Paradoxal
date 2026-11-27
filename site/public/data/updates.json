@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "549eea9eff18d0a916aaafefe8c90fce400b85f2",
+      "date": "2026-11-27T11:14:31-03:00",
+      "title": "docs: linkar roteiro operacional Unova no README",
+      "category": "Novidades"
+    },
+    {
+      "sha": "ef29c244b86743958a871e876bb69e4d329cc258",
+      "date": "2026-11-27T11:14:22-03:00",
+      "title": "docs(unova): roteiro operacional Codex para campanha nativa e releases Windows Android",
+      "category": "Novidades"
+    },
+    {
       "sha": "c37778eed3819fe589b9ce7d02b474e7289456a3",
       "date": "2026-11-27T10:11:05-03:00",
       "title": "docs: record verified Windows 1614 and Android 186 publication receipts",
