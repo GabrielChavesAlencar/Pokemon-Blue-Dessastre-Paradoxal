@@ -1089,9 +1089,17 @@ def install_events(source, target, mapping):
             if 43 in mapping:
                 if (original == 39 and event_id in (13,25,26,37,38)):
                     police = event_id in (13,25)
-                    callback = "cerulean_police" if police else "cerulean_rocket"
                     visible = event_id in (13,25,26)
-                    local = new_event(event, [command(355, f"BlueKantoPilot.{callback}".encode())],
+                    # Ship native text in RXDATA itself. JoiPlay must never
+                    # evaluate Ruby just to speak to either police actor.
+                    if police:
+                        message = ("A Equipe Rocket roubou esta casa. Estamos investigando."
+                                   if event_id == 13 else
+                                   "Pode passar. A investigação continua.")
+                        ops = [command(101, message.encode("utf-8"))]
+                    else:
+                        ops = [command(355, b"BlueKantoPilot.cerulean_rocket")]
+                    local = new_event(event, ops,
                                       0 if visible else 2, actor(event) if visible else b"")
                     page = local.attrs["@pages"][0]
                     blank = copy.deepcopy(page)

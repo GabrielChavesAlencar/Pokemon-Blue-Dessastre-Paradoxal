@@ -165,7 +165,8 @@ def assert_delivery(path: Path, channel: str) -> dict:
             "music_maps": EXPECTED_MUSIC_MAPS,
             "compiled_journey": True, "compiled_cerulean_gary": True,
             "compiled_kanto_ss_ticket": True, "compiled_cerulean_bike_items": True,
-            "compiled_cerulean_dig_machine": True, "cerulean_city_doors": 8}
+            "compiled_cerulean_dig_machine": True, "cerulean_city_doors": 8,
+            "cerulean_police_native_pages": 2}
 
 
 def main() -> None:

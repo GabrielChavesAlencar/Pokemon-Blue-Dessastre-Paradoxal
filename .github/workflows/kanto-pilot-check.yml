@@ -291,7 +291,7 @@ jobs:
               $ceruleanRegression="$pilot/Data/blue-kanto-cerulean-regression.txt"
               if(-not (Test-Path $ceruleanRegression)){throw 'Cerulean police/roundtrip native receipt missing'}
               $ceruleanMarkers=Get-Content $ceruleanRegression
-              foreach($marker in @('KANTO_CERULEAN_POLICE_BEFORE_AFTER_BILL_OK','KANTO_CERULEAN_NATIVE_ROUNDTRIP_OK')){
+              foreach($marker in @('KANTO_CERULEAN_POLICE_BEFORE_AFTER_BILL_OK','KANTO_CERULEAN_NATIVE_ROUNDTRIP_OK','KANTO_CERULEAN_POLICE_PACKAGED_NATIVE_AND_CACHE_REFRESH_OK','KANTO_CERULEAN_PHYSICAL_LEGACY_DIALOGUE_AND_DOOR_RECOVERY_OK','KANTO_CERULEAN_REAL_TICKET_AND_STANDING_DOOR_OK','KANTO_CERULEAN_ROCKET_REAR_EXIT_NATIVE_DIG_ONCE_OK')){
                 if($ceruleanMarkers -notcontains $marker){throw "Missing native marker: $marker"}
               }
               $ceruleanMarkers | Write-Host
@@ -682,8 +682,18 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'K03-B real 151 to 156 migration proof failed'}
           python scripts/regions/qa_k00_migration.py --from-152
           if($LASTEXITCODE -ne 0){throw 'K03-B real 152 to 156 migration proof failed'}
+          python scripts/regions/qa_k00_migration.py --police-hotfix
+          if($LASTEXITCODE -ne 0){throw 'Cerulean police real 156 to 156 migration proof failed'}
           python scripts/regions/qa_k00_migration.py --from-156
           if($LASTEXITCODE -ne 0){throw 'K03-C real 156 to 156 migration proof failed'}
+      - name: Preservar recibo do hotfix Cerulean
+        if: always() && hashFiles('.blue-work/cerulean-police-migration-proof.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-cerulean-police-migration-proof
+          path: .blue-work/cerulean-police-migration-proof.json
+          include-hidden-files: true
+          if-no-files-found: error
       - name: Preservar recibos K03-C do navio e migracao
         if: always()
         uses: actions/upload-artifact@v4

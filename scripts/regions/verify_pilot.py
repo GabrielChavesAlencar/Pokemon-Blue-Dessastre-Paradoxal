@@ -22,6 +22,7 @@ from pilot import (PILOT_META, TRAINERS, CINNABAR_EVENTS, CINNABAR_GYM_DOORS,
                    LEAGUE_TRAINER_SPECS, KANTO_MOONSTONE_CALLBACK)
 from server.ruby_marshal import text
 from kanto_overworld import CERULEAN_FURNITURE
+from cerulean_doors import verify_cerulean_police
 
 
 def reachable(edges: dict[int, set[int]], start: int) -> set[int]:
@@ -812,8 +813,8 @@ def inspect(game: Path) -> dict:
                         (46,2): "BlueKantoPilot.cerulean_jynx_trade",
                         (46,5): "BlueKantoPilot.cerulean_wall_map",
                         (47,4): "BlueKantoPilot.cerulean_wall_map",
-                        **{(39,eid): "BlueKantoPilot.cerulean_rocket" for eid in (26,37,38)},
-                        **{(39,eid): "BlueKantoPilot.cerulean_police" for eid in (13,25)}})
+                        **{(39,eid): "BlueKantoPilot.cerulean_rocket" for eid in (26,37,38)}})
+        verify_cerulean_police(maps[mapping[39]].attrs["@events"])
     for source_id, entries in TRAINERS.items():
         for event_id, spec in entries.items():
             kind, name = spec[:2]

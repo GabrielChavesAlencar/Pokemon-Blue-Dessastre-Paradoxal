@@ -34,7 +34,7 @@ def ticket_catalog(omit_bike=False, invalid_dig=False):
         records.append(sym(key) + record)
     return b"\x04\x08{" + integer(len(records)) + b"".join(records)
 
-def city_fixture(mapping, missing_door=None):
+def city_fixture(mapping, missing_door=None, legacy_guard=None):
     def sym(value):
         raw = value.encode("ascii")
         return b":" + integer(len(raw)) + raw
@@ -55,6 +55,24 @@ def city_fixture(mapping, missing_door=None):
         page = obj("RPG::Event::Page", {"@trigger": dump(1), "@list": arr([op])})
         events[event_id] = obj("RPG::Event", {
             "@x": dump(xy[0]), "@y": dump(xy[1]), "@pages": arr([page])})
+    for event_id, active_index in ((13, 0), (25, 1)):
+        pages = []
+        for index in (0, 1):
+            active = index == active_index
+            ops = []
+            if active:
+                legacy = legacy_guard == event_id
+                ops.append(obj("RPG::EventCommand", {
+                    "@code": dump(355 if legacy else 101),
+                    "@parameters": dump([RubyString(b"BlueKantoPilot.cerulean_police" if legacy else b"Police dialogue")])}))
+            ops.append(obj("RPG::EventCommand", {"@code": dump(0), "@parameters": dump([])}))
+            pages.append(obj("RPG::Event::Page", {
+                "@trigger": dump(0), "@through": dump(not active),
+                "@graphic": obj("RPG::Event::Page::Graphic", {"@character_name": dump(RubyString(b"guard" if active else b""))}),
+                "@condition": obj("RPG::Event::Page::Condition", {
+                    "@self_switch_valid": dump(bool(index)), "@self_switch_ch": dump(RubyString(b"A"))}),
+                "@list": arr(ops)}))
+        events[event_id] = obj("RPG::Event", {"@pages": arr(pages)})
     table = b"{" + integer(len(events)) + b"".join(dump(k) + v for k, v in events.items())
     return b"\x04\x08" + obj("RPG::Map", {"@events": table})
 
@@ -63,7 +81,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class KantoDeliveryTests(unittest.TestCase):
-    def fixture(self, channel, omit=None, short=None, omit_rival=False, omit_ticket=False, omit_bike=False, invalid_dig=False, atlas="authored", missing_door=None):
+    def fixture(self, channel, omit=None, short=None, omit_rival=False, omit_ticket=False, omit_bike=False, invalid_dig=False, atlas="authored", missing_door=None, legacy_guard=None):
         manifest = json.loads((ROOT / "data/regions/kanto-source.json").read_text("utf8"))
         mapping = {source: 600 + index for index, source in enumerate(manifest["maps"])}
         root, marker = (("Pokemon-Blue-Kanto-Android/", "Kanto pilot.json")
@@ -84,7 +102,7 @@ class KantoDeliveryTests(unittest.TestCase):
             for original, destination in mapping.items():
                 if original != omit:
                     archive.writestr(root + f"Data/Map{destination:03}.rxdata",
-                                     b"map" if original == short else (city_fixture(mapping, missing_door) if original == "39" else b"m" * 128))
+                                     b"map" if original == short else (city_fixture(mapping, missing_door, legacy_guard) if original == "39" else b"m" * 128))
             archive.writestr(root + "PBS/map_connections_kanto.txt", "\n".join(
                 f"{mapping[a]},North,0,{mapping[b]},South,0" for a, b in EDGES))
             archive.writestr(root + "PBS/trainers_kanto.txt",
@@ -104,7 +122,16 @@ class KantoDeliveryTests(unittest.TestCase):
     def test_all_maps_and_compiled_luis_guard_pass_in_both_channels(self):
         for channel in ("kanto", "multiregion"):
             with self.subTest(channel=channel):
-                self.assertEqual(assert_delivery(self.fixture(channel), channel)["kanto_maps"], 156)
+                proof = assert_delivery(self.fixture(channel), channel)
+                self.assertEqual(proof["kanto_maps"], 156)
+                self.assertEqual(proof["cerulean_police_native_pages"], 2)
+
+    def test_legacy_police_script_rejected_in_both_channels(self):
+        for channel in ("kanto", "multiregion"):
+            for guard in (13, 25):
+                with self.subTest(channel=channel, guard=guard):
+                    with self.assertRaisesRegex(ValueError, f"Cerulean police {guard}"):
+                        assert_delivery(self.fixture(channel, legacy_guard=guard), channel)
 
     def test_missing_cerulean_door_is_rejected_even_with_all_maps_present(self):
         with self.assertRaisesRegex(ValueError, "Cerulean door 7 missing"):
