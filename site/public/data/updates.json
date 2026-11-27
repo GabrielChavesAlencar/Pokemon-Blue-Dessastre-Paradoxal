@@ -2,6 +2,126 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4c21940ae4936adb1919c0052007e3f2812b077d",
+      "date": "2026-11-27T19:44:03-03:00",
+      "title": "Merge pull request #373 from GabrielChavesAlencar/kanto-k03e-route11-diglett",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "698e79d7d8f0a217d189b3766709e47e68b08900",
+      "date": "2026-11-27T19:20:24-03:00",
+      "title": "ci(kanto): verify runtime package after native cache compilation",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "e526346503e04d6d4321186d6a3adaa8e21b2640",
+      "date": "2026-11-27T19:09:59-03:00",
+      "title": "fix(kanto): validate all ten Route 11 sight trainers in active builds",
+      "category": "Correções"
+    },
+    {
+      "sha": "cf0b43ba5f5ffe8cdc63fc28f0f0583238d1ce2b",
+      "date": "2026-11-27T19:01:16-03:00",
+      "title": "feat(kanto): activate Route 11 and Diglett in Windows and Android catalogs",
+      "category": "Novidades"
+    },
+    {
+      "sha": "0d9d761cec3e318c1187e384baea9cec223c0074",
+      "date": "2026-11-27T18:49:55-03:00",
+      "title": "fix(kanto): resolve music contract when invoked directly in Windows CI",
+      "category": "Correções"
+    },
+    {
+      "sha": "abef0c288c3a2b43a6e432c18a795ea90c5b57c0",
+      "date": "2026-11-27T18:37:53-03:00",
+      "title": "feat(kanto): prepare verified K03-E release inputs and dual-platform checks",
+      "category": "Novidades"
+    },
+    {
+      "sha": "3f53555ed82b3ffaad86422fae572130b0fca2a2",
+      "date": "2026-11-27T18:19:49-03:00",
+      "title": "test(kanto): export audited K03-E portal delta in native CI",
+      "category": "Testes"
+    },
+    {
+      "sha": "8ececd2fe6f582665870804409a248c1a6c6fc91",
+      "date": "2026-11-27T17:59:44-03:00",
+      "title": "test(kanto): prepare K03-E Windows migration and Android delivery gates",
+      "category": "Testes"
+    },
+    {
+      "sha": "c1c1e3d65579e6cb8f28b7c6ba6572008a145ca2",
+      "date": "2026-11-27T17:28:36-03:00",
+      "title": "fix(ci): synchronize bundled Kanto installer for K03-E",
+      "category": "Correções"
+    },
+    {
+      "sha": "60739c27d194ea0d646c5eaf0a95ed84a8abb0d0",
+      "date": "2026-11-27T17:13:55-03:00",
+      "title": "fix(kanto): share additive 156-to-160 preservation with production installer",
+      "category": "Correções"
+    },
+    {
+      "sha": "a4368b0f9929e4d17973992df66952a90920a5ce",
+      "date": "2026-11-27T17:00:32-03:00",
+      "title": "docs(kanto): record approved transaction and pending integrated native boot",
+      "category": "Documentação"
+    },
+    {
+      "sha": "6ec30da97ec08bdb4422b68ed2b4987e1fe8f849",
+      "date": "2026-11-27T17:00:23-03:00",
+      "title": "fix(ci): require integrated K03-E receipt after native compile restart",
+      "category": "Correções"
+    },
+    {
+      "sha": "1ad0c90456f859edce038497f32bcfb492a6750e",
+      "date": "2026-11-27T16:50:00-03:00",
+      "title": "docs(kanto): record compiled baseline event diagnosis and migration gate",
+      "category": "Documentação"
+    },
+    {
+      "sha": "ce74de14553d7dc314f85a82f2437210928d0ff8",
+      "date": "2026-11-27T16:49:51-03:00",
+      "title": "fix(kanto): preserve compiled legacy map bytes in K03-E migration fixture",
+      "category": "Correções"
+    },
+    {
+      "sha": "994f7505bcca9b1f31d1441ce722e980f7a1ae45",
+      "date": "2026-11-27T16:41:33-03:00",
+      "title": "test(kanto): report exact baseline event divergences before migration writes",
+      "category": "Testes"
+    },
+    {
+      "sha": "ec8da3b43fa06d6f8517500f958b1b81b22e643a",
+      "date": "2026-11-27T16:35:01-03:00",
+      "title": "fix(kanto): validate audited Diglett corridor in isolated migration verifier",
+      "category": "Correções"
+    },
+    {
+      "sha": "e788376c3564cb98feef5f47f52eeeb580e9b27a",
+      "date": "2026-11-27T16:26:52-03:00",
+      "title": "test(kanto): cover verified 160-map Android registry without weakening legacy gates",
+      "category": "Testes"
+    },
+    {
+      "sha": "64ca4fca4a805d11e26bbca0dd78e13e9408d88b",
+      "date": "2026-11-27T16:22:27-03:00",
+      "title": "K03-E: sync portable bundle and prove real 156-to-160 main migration in isolated CI",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "1ca3fc613f8529dbb7d9ab4e59bea29295203dec",
+      "date": "2026-11-27T16:06:46-03:00",
+      "title": "K03-E: compile isolated Route 11 and Diglett corridor with native transfer and persistence tests",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "c076ae9aa2ead45bdd66470bc855bf7674beac08",
+      "date": "2026-11-27T15:48:55-03:00",
+      "title": "Kanto K03-E: audit Route 11 and Diglett Cave geometry without changing installed maps",
+      "category": "Melhorias"
+    },
+    {
       "sha": "dc12b8dbde34bd8affee3903023fc5f1182bce8e",
       "date": "2026-11-27T15:35:57-03:00",
       "title": "Kanto K03-D: Cut nativo, puzzle de Lt. Surge e Thunder Badge",
