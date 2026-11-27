@@ -256,8 +256,34 @@ module KantoIntegratedCheck
       require!($bag.add(cut_item,1),"K03-C unable to add temporary HM")
       $player.party.replace([Pokemon.new(:PIDGEY,5)])
       require!(BlueRegionalPolicy.field_result(:CUT) == :pokemon,"K03-C incompatible Pokemon accepted")
-      $player.party.replace([Pokemon.new(:BULBASAUR,5)])
-      require!(BlueRegionalPolicy.field_result(:CUT) == :allowed,"K03-C eligible Cut blocked")
+      # Keep the native Bulbasaur contract; diagnose the compiled learnset
+      # and party identity rather than mocking compatibility or bypassing Cut.
+      cut_user = Pokemon.new(:BULBASAUR,5)
+      $player.party.replace([cut_user])
+      cut_result = BlueRegionalPolicy.field_result(:CUT)
+      cut_selected = BlueRegionalPolicy.field_result(:CUT,cut_user)
+      cut_diagnostic = {
+        "region"=>BlueRegionalPolicy.state["current"],
+        "badge"=>BlueRegions.local_achievements(BlueRegionalPolicy.state,"KANTO"),
+        "hm"=>cut_item, "hm_owned"=>BlueRegionalPolicy.hm_owned?(:CUT),
+        "move_exists"=>GameData::Move.exists?(:CUT),
+        "party_identity"=>$player.party.any? { |pk| pk.equal?(cut_user) },
+        "hp"=>cut_user.hp, "egg"=>cut_user.egg?, "fainted"=>cut_user.fainted?,
+        "compatible"=>cut_user.compatible_with_move?(:CUT),
+        "eligible"=>BlueRegionalPolicy.eligible_pokemon?(cut_user,:CUT),
+        "result"=>cut_result, "selected_result"=>cut_selected,
+        "native_candidates"=>[:BULBASAUR,:IVYSAUR,:VENUSAUR,:CHARMANDER,:RATTATA,:SANDSHREW,:ODDISH,:PARAS,:MEOWTH,:FARFETCHD].filter_map { |species|
+          next unless GameData::Species.exists?(species)
+          candidate = Pokemon.new(species,5)
+          data = GameData::Species.get(species)
+          [species,candidate.compatible_with_move?(:CUT),
+           data.respond_to?(:tutor_moves) && data.tutor_moves.include?(:CUT)]
+        }
+      }
+      stage("KANTO_K03C_INTEGRATED_CUT_DIAGNOSTIC:#{cut_diagnostic.inspect}")
+      puts "KANTO_K03C_INTEGRATED_CUT_DIAGNOSTIC:#{cut_diagnostic.inspect}"
+      require!(cut_result == :allowed && cut_selected == :allowed,
+        "K03-C eligible Cut blocked: #{cut_diagnostic.inspect}")
     ensure
       $bag.remove(cut_item,1) if cut_item && $bag.has?(cut_item)
       $player.party.replace(original_party)
