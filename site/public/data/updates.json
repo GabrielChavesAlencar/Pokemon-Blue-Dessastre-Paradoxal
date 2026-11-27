@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "734bc1ff2475fdb6913aee445ab84d37a33df5be",
+      "date": "2026-11-26T22:51:06-03:00",
+      "title": "Merge pull request #360 from GabrielChavesAlencar/qa/kanto-k03a-vermilion-corridor",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "a6b4ee6dca2a7daec3f17a2fb8132b80861fde9d",
+      "date": "2026-11-26T22:40:26-03:00",
+      "title": "Merge main into K03-A preserving Cerulean legacy doors and native receipt",
+      "category": "Melhorias"
+    },
+    {
       "sha": "0af524d5ff55baac96a41fe1022531da2bb0ab47",
       "date": "2026-11-26T22:31:57-03:00",
       "title": "Merge pull request #363 from GabrielChavesAlencar/fix/kanto-cerulean-door-reload",
@@ -26,6 +38,24 @@
       "category": "Correções"
     },
     {
+      "sha": "fdc35fec31ad046a967ce3d6c3ae01efa07722c2",
+      "date": "2026-11-26T22:07:57-03:00",
+      "title": "fix(kanto): synchronize portable Unova bundle with daycare walkway adapter",
+      "category": "Novidades"
+    },
+    {
+      "sha": "6befc503354f8b378bd46c0e1f7e0bef30e67a17",
+      "date": "2026-11-26T22:00:21-03:00",
+      "title": "fix(kanto): open one source-verified Route 5 tile to Day Care door",
+      "category": "Correções"
+    },
+    {
+      "sha": "2e42b8d7389a0620a79ae777d0b72b9f3b3dd676",
+      "date": "2026-11-26T21:51:59-03:00",
+      "title": "Merge validated Gary scale fix and trace original Day Care doorway collision",
+      "category": "Melhorias"
+    },
+    {
       "sha": "2964ac133ce21e7b0bf151206c5069ed8b3da691",
       "date": "2026-11-26T21:51:12-03:00",
       "title": "Merge pull request #362 from GabrielChavesAlencar/fix/kanto-gary-visible-player-height",
@@ -44,6 +74,12 @@
       "category": "Correções"
     },
     {
+      "sha": "29f54bb665228e5387529c2ea4206e76185a1f38",
+      "date": "2026-11-26T21:17:18-03:00",
+      "title": "test(kanto): traverse native Route 5 ledges and all real Day Care approaches",
+      "category": "Testes"
+    },
+    {
       "sha": "b8e0a69a48477f50deef6a30ef67eda6c8422227",
       "date": "2026-11-26T21:16:46-03:00",
       "title": "test(kanto): require actual rendered Gary scale receipt in native CI",
@@ -54,6 +90,18 @@
       "date": "2026-11-26T21:08:54-03:00",
       "title": "fix(kanto): match player opaque sprite height to actual Oak Lab Gary",
       "category": "Correções"
+    },
+    {
+      "sha": "db12b75374dabcc1b9b4caa4edf788637810ac3c",
+      "date": "2026-11-26T21:08:05-03:00",
+      "title": "fix(kanto): verify 152 native music map bindings including Day Care",
+      "category": "Correções"
+    },
+    {
+      "sha": "c89bc850d1efb74cdf078d63276f2d3a52b68f53",
+      "date": "2026-11-26T21:01:32-03:00",
+      "title": "Merge main scale hotfix and reconcile K03-A Day Care catalog regression gates",
+      "category": "Melhorias"
     },
     {
       "sha": "83b88b066d6b542e2b6e9bc0b1a5b03ee450ecb2",
@@ -72,6 +120,36 @@
       "date": "2026-11-26T20:37:29-03:00",
       "title": "fix(kanto): preserve native player scale and cap oversized charsets",
       "category": "Correções"
+    },
+    {
+      "sha": "bfe242c1f7798763aa8899577cae0846cc11b087",
+      "date": "2026-11-26T17:37:06-03:00",
+      "title": "K03-A: keep exact music and portal gates synchronized with Day Care map",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "49b43b55a61ac307e8855acd86858da018644e75",
+      "date": "2026-11-26T17:35:21-03:00",
+      "title": "Synchronize portable Unova BAT with K03-A installer and pilot inputs",
+      "category": "Novidades"
+    },
+    {
+      "sha": "98f74aab3fb42129fb64acaad68472cef3f8e969",
+      "date": "2026-11-26T17:34:52-03:00",
+      "title": "K03-A: enforce native Day Care persistence and exact 151 to 152 migration gates",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "6e724dfe4a8a92e6b47800f4346258bd5f6e3eaf",
+      "date": "2026-11-26T17:34:08-03:00",
+      "title": "K03-A: install original Day Care and native regional one-slot transactions",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "7288c5b36b6be03016855958bfc40fa86fc11219",
+      "date": "2026-11-26T17:22:04-03:00",
+      "title": "K03-A: native Underground corridor and Route 6 trainers; verify Day Care source",
+      "category": "Melhorias"
     },
     {
       "sha": "afd9bab6b4aeba0248574853f54268b50fa33366",
