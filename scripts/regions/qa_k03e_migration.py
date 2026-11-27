@@ -11,7 +11,7 @@ from unittest.mock import patch
 from audit import ROOT, KANTO, inventory, json_file, load
 import install_kanto as installer
 from server.ruby_marshal import RubyObject, RubyData
-from pilot import EVENT_CLASSES, PILOT_META, pilot_is_current, write_map
+from pilot import PILOT_META, pilot_is_current
 from k03e_contract import MAPS, candidate_manifest, migration_game, migration_pilot
 
 REPORT = ROOT/".blue-work/kanto-k03e-migration-proof.json"
@@ -131,17 +131,11 @@ def run():
     # every existing map byte intact (including native door transitions and
     # existing tileset IDs); splice only the proven new Route 2 door.
     require(len(preserved_paths)==155 and route2 is not None,"K03-E incomplete preservation set")
-    preserved_hashes = snapshot(game,preserved_paths)
-    for path in preserved_paths:
-        shutil.copyfile(game/path,pilot/path)
-    route_path, route_obj, new_door = route2
-    route_obj.attrs["@events"][1] = new_door
-    write_map(pilot/route_path,route_obj,EVENT_CLASSES)
+    preserved_hashes, route_path, route_expected = installer.preserve_k03e_predecessor(game,pilot,legacy)
+    require(set(preserved_hashes)==set(preserved_paths),"K03-E production preservation set differs")
+    preserved_hashes = {str(path): checksum for path, checksum in preserved_hashes.items()}
     require(snapshot(pilot,preserved_paths)==preserved_hashes,"K03-E staged baseline bytes changed")
-    route_actual=load(pilot/route_path).attrs
-    route_expected=load(game/route_path).attrs
-    route_expected["@events"][1]=new_door
-    require(route_actual==route_expected,"K03-E Route2 splice modified unrelated data")
+    require(load(pilot/route_path).attrs==route_expected,"K03-E Route2 splice modified unrelated data")
     files,mapping,_=installer.manifest(pilot,game,migration=legacy,candidate=True)
     print("KANTO_K03E_COMPILED_BASELINE_PRESERVED_OK:155 exact maps + one audited Route2 door",flush=True)
     touched=list(files)+[proof_path,installer.READY_GATE,installer.MARKER,Path("Data/blue-compile-request.txt"),Path("Data/PluginScripts.rxdata")]

@@ -16,7 +16,8 @@ from audit import ROOT, KANTO, json_file, inventory, allocate_kanto_ids, load
 from export_kanto import LOCATION_NAMES
 from server.ruby_marshal import RubyObject, text
 from cerulean_doors import verify_cerulean_doors
-from pilot import OUTPUT, SOURCE, PILOT_META, TYPES, build, pilot_is_current, revised_path
+from pilot import (OUTPUT, SOURCE, PILOT_META, TYPES, build, pilot_is_current,
+                   revised_path, EVENT_CLASSES, write_map)
 from verify_pilot import inspect
 
 PBS_NAMES = ("encounters_kanto.txt", "trainers_kanto.txt", "trainer_types_kanto.txt",
@@ -514,11 +515,77 @@ def legacy_proof(game, *, candidate=False):
     return proof
 
 
+def preserve_k03e_predecessor(game, pilot, proof):
+    """Stage an additive 156->160 upgrade without replacing existing events.
+
+    The real native compiler expands raw transfers into fade/sound sequences.
+    Do not substitute freshly generated raw maps for the compiled predecessor.
+    Only copy an owned map after its geometry, identity, event IDs and stable
+    allocation are checked. The new Route 2 door is separately source-audited.
+    This function writes to the prepared pilot only, never the installed game.
+    """
+    from k03e_contract import MAPS, WARPS
+    old = {int(k): v for k, v in proof["maps"].items()}
+    new = {int(k): v for k, v in json_file(pilot / PILOT_META)["maps"].items()}
+    if (len(old) != 156 or len(new) != 160 or
+            set(new) - set(old) != set(MAPS) or
+            any(new.get(sid) != mid for sid, mid in old.items())):
+        raise ValueError("K03-E predecessor mapping differs")
+    hashes = recorded_hashes(proof)
+    preserved = {}
+    route = None
+    # Validate the entire predecessor before changing the staged payload.
+    for sid, mid in old.items():
+        path = Path("Data") / f"Map{mid:03d}.rxdata"
+        prior, rebuilt = game / path, pilot / path
+        if (not recorded_digest(hashes.get(path.as_posix())) or
+                any(p.is_symlink() or not p.is_file() for p in (prior, rebuilt)) or
+                not prior.resolve().is_relative_to(game.resolve()) or
+                not rebuilt.resolve().is_relative_to(pilot.resolve())):
+            raise ValueError("K03-E missing owned predecessor: " + str(path))
+        legacy_map_identity(game, pilot, path)
+        old_obj, new_obj = load(prior), load(rebuilt)
+        if any(old_obj.attrs[k] != new_obj.attrs[k] for k in ("@width", "@height", "@data")):
+            raise ValueError(f"K03-E predecessor geometry differs {sid}")
+        previous, staged = old_obj.attrs["@events"], new_obj.attrs["@events"]
+        if sid == 18:
+            if 1 in previous or set(staged) != set(previous) | {1}:
+                raise ValueError("K03-E Route2 event IDs differ")
+            door = staged[1]
+            page = door.attrs["@pages"][0].attrs
+            dest, x, y, direction = WARPS[(18, 1)]
+            transfers = [op.attrs["@parameters"][:5] for op in page["@list"]
+                         if op.attrs["@code"] == 201]
+            if (door.attrs["@id"] != 1 or page["@trigger"] != 1 or
+                    transfers != [[0, new[dest], x, y, direction]]):
+                raise ValueError("K03-E Route2 audited door differs")
+            route = (path, old_obj, door)
+        else:
+            if set(previous) != set(staged):
+                raise ValueError(f"K03-E predecessor event IDs differ {sid}")
+            preserved[path] = digest(prior)
+    if len(preserved) != 155 or route is None:
+        raise ValueError("K03-E incomplete predecessor preservation")
+    for path, checksum in preserved.items():
+        raw = (game / path).read_bytes()
+        if hashlib.sha256(raw).hexdigest() != checksum:
+            raise ValueError("K03-E predecessor changed during preparation: " + str(path))
+        atomic(pilot / path, raw)
+    path, obj, door = route
+    obj.attrs["@events"][1] = door
+    write_map(pilot / path, obj, EVENT_CLASSES)
+    if load(pilot / path) != obj or any(digest(pilot / p) != h for p, h in preserved.items()):
+        raise ValueError("K03-E staged preservation verification failed")
+    return preserved, path, obj.attrs
+
+
 def migrate_existing(game, source, pilot, commit=False):
     proof = legacy_proof(game)
     mapping = {int(k): v for k, v in proof["maps"].items()}
     pilot = revised_path(pilot) if pilot.exists() else pilot
     build(source, game, pilot, existing=mapping)
+    if len(mapping) == 156 and len(json_file(pilot / PILOT_META)["maps"]) == 160:
+        preserve_k03e_predecessor(game, pilot, proof)
     return apply_install(game, pilot, commit, migration=proof)
 
 
