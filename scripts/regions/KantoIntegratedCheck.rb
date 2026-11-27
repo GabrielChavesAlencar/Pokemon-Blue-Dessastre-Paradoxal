@@ -216,6 +216,12 @@ module KantoIntegratedCheck
                "Gary #{version} native team is not battle-ready")
     end
 
+    [41,42,43].zip([:CHARMELEON,:WARTORTLE,:IVYSAUR]).each do |version,evolution|
+      data = GameData::Trainer.get(:BLUE_KANTO_RIVAL,"Blue",version)
+      require!(data.pokemon.map { |pk| pk[:species] } == [:PIDGEOTTO,:RATICATE,:KADABRA,evolution] &&
+        data.to_trainer.party.length == 4, "K03-C integrated rival profile #{version} invalid")
+    end
+    puts "KANTO_K03C_INTEGRATED_RIVAL_PROFILES_OK"
     stage("regional_policy_start")
     require!(defined?(BlueRegionalPolicy), "Regional policy plugin was not loaded")
     current_state = $PokemonGlobal.blue_regions

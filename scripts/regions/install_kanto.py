@@ -411,6 +411,41 @@ def broken_current_cerulean(game, mapping):
     return False
 
 
+def verify_ss_anne_rival(game, mapping):
+    """Check the actual installed source lanes and all three compiled-input PBS profiles."""
+    if "75" not in mapping:
+        return
+    obj = load(game / "Data" / f"Map{mapping['75']:03}.rxdata")
+    events = obj.attrs.get("@events", {})
+    for event_id, x in ((22,31),(26,32),(27,33)):
+        event = events.get(event_id)
+        if (not isinstance(event, RubyObject) or
+            (event.attrs.get("@x"), event.attrs.get("@y")) != (x,20) or
+            not any(page.attrs.get("@trigger") == 1 and any(
+                op.attrs.get("@code") == 355 and
+                text(op.attrs["@parameters"][0]) == "BlueKantoPilot.ss_anne_rival"
+                for op in page.attrs.get("@list", []))
+                for page in event.attrs.get("@pages", []))):
+            raise ValueError(f"S.S. Anne rival gate: missing source lane {event_id}")
+    trainers = (game / "PBS/trainers_kanto.txt").read_text(encoding="utf-8-sig")
+    headers = {line.strip() for line in trainers.splitlines()}
+    if not all(f"[BLUE_KANTO_RIVAL,Blue,{v}]" in headers for v in (41,42,43)):
+        raise ValueError("S.S. Anne rival gate: missing trainer profiles")
+
+
+def outdated_current_ss_anne(game, mapping):
+    if not isinstance(mapping, dict) or type(mapping.get("75")) is not int:
+        return False
+    city = game / "Data" / f"Map{mapping['75']:03}.rxdata"
+    if not city.is_file() or city.is_symlink():
+        return False
+    try:
+        verify_ss_anne_rival(game, mapping)
+    except ValueError as error:
+        return str(error).startswith("S.S. Anne rival gate:")
+    return False
+
+
 def legacy_proof(game):
     """Verify an exact published predecessor before transactional migration."""
     path = game / "Data/blue-kanto-install.json"
@@ -423,7 +458,8 @@ def legacy_proof(game):
     if (proof.get("schema") != 1 or proof.get("source") != "Essentials FRLG 21.1" or
             not isinstance(mapping, dict) or
             not (known_legacy_catalog(wanted, set(mapping)) or
-                 (set(mapping) == wanted and broken_current_cerulean(game, mapping))) or
+                 (set(mapping) == wanted and (broken_current_cerulean(game, mapping) or
+                                              outdated_current_ss_anne(game, mapping)))) or
             any(type(v) is not int or not 0 < v < 1000 for v in mapping.values()) or
             len(set(mapping.values())) != len(mapping) or
             marker.read_text(encoding="ascii").strip() !=
@@ -495,6 +531,7 @@ def verify_installed(game):
         raise ValueError(f"Kanto main installation missing {len(missing)} files; first: {missing[:5]}")
     if "43" in mapping:
         verify_cerulean_doors((game / "Data" / f"Map{mapping['39']:03}.rxdata").read_bytes(), mapping)
+    verify_ss_anne_rival(game, mapping)
     return {"status": "integrated_files_ready_for_native_QA",
             "maps": expected, "kanto_start": [mapping["7"],25,7],
             "decades_save_modified": False, "game_exe_tested": False}

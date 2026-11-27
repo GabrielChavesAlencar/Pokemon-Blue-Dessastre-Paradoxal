@@ -990,6 +990,9 @@ def install_events(source, target, mapping):
                          58: {3: "BlueKantoPilot.daycare_menu"},
                          65: {2: "BlueKantoPilot.heal"},
                          64: {7: "BlueKantoPilot.ticketmaster"},
+                         75: {22: "BlueKantoPilot.ss_anne_rival",
+                              26: "BlueKantoPilot.ss_anne_rival",
+                              27: "BlueKantoPilot.ss_anne_rival"},
                          76: {2: "BlueKantoPilot.captain"}}
         scripts = dict(script_events.get(original, {}))
         if original in (12, 27, 41, 66):
@@ -1323,7 +1326,32 @@ def install_events(source, target, mapping):
                 # The source event is an inaccessible teleporter-stage actor;
                 # the reachable Bill actor is Event008 at (7,6).
                 continue
+            if original == 75 and event_id == 23:
+                # Original rival actor: no foreign scripted movement or switches.
+                graphic = event.attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"]
+                scene = new_event(event, [command(355, b"BlueKantoPilot.ss_anne_rival")],
+                                  0, actor(event) if graphic else b"")
+                scene.attrs["@pages"][0].attrs["@through"] = True
+                done = copy.deepcopy(scene.attrs["@pages"][0])
+                done.attrs["@condition"].attrs.update({
+                    "@self_switch_valid": True, "@self_switch_ch": b"A"})
+                done.attrs["@graphic"].attrs.update({"@character_name": b"", "@tile_id": 0})
+                done.attrs.update({"@through": True, "@list": [command(0)]})
+                scene.attrs["@pages"].append(done)
+                selected[event_id] = scene
+                continue
             if event_id in scripts:
+                if original == 75 and event_id in (22, 26, 27):
+                    if (event.attrs["@x"], event.attrs["@y"]) != ({22:31,26:32,27:33}[event_id],20):
+                        raise ValueError("K03-C source rival trigger moved")
+                    scene = new_event(event, [command(355, b"BlueKantoPilot.ss_anne_rival")], 1, b"")
+                    done = copy.deepcopy(scene.attrs["@pages"][0])
+                    done.attrs["@condition"].attrs.update({
+                        "@self_switch_valid": True, "@self_switch_ch": b"A"})
+                    done.attrs.update({"@trigger": 0, "@through": True, "@list": [command(0)]})
+                    scene.attrs["@pages"].append(done)
+                    selected[event_id] = scene
+                    continue
                 if original == 39 and event_id in (15, 32, 34):
                     # Three source-verified triggers across the north bridge:
                     # never execute the source's switches 76/81/86 or Ruby.
@@ -1584,6 +1612,10 @@ def install_events(source, target, mapping):
                 # Viridian City is the TRUE story gate. The Forest buildings
                 # retain their original transfers, without extra tunnel locks.
                 operations = [warp]
+                if (original, event_id) == (72, 2):
+                    operations = if_scene(b"BlueKantoPilot.ss_anne_boarding_allowed?", [warp])
+                if (original, event_id) == (75, 15):
+                    operations = if_scene(b"BlueKantoPilot.ss_anne_captain_entry?", [warp])
                 if original == 10 and warp.attrs["@parameters"][1] == mapping[12]:
                     operations = [
                         command(355, f"BlueKantoPilot.prepare_viridian_mart_visit({mapping[12]}, {mart_intro_event_id})".encode()),

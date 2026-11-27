@@ -306,6 +306,10 @@ jobs:
               if(-not (Test-Path $vermilionProof)){throw 'K03-B native Vermilion proof missing'}
               Write-Host ("KANTO_K03B_NATIVE_VERMILION_REPORT:" + (Get-Content $vermilionProof -Raw).Trim())
               Write-Host 'KANTO_K03B_NATIVE_VERMILION_SAVE_RELOAD_OK'
+              $anneProof="$pilot/Data/blue-kanto-k03c-proof.txt"
+              if(-not (Test-Path $anneProof)){throw 'K03-C native S.S. Anne proof missing'}
+              Write-Host ("KANTO_K03C_NATIVE_SS_ANNE_REPORT:" + (Get-Content $anneProof -Raw).Trim())
+              Write-Host 'KANTO_K03C_BOARDING_CAPTAIN_CUT_SAVE_RELOAD_OK'
               $corridorTrace="$pilot/Data/blue-kanto-k03a-trace.txt"
               $corridorProof="$pilot/Data/blue-kanto-k03a-proof.txt"
               if(-not (Test-Path $corridorTrace) -or -not (Test-Path $corridorProof)){throw 'K03-A native corridor proof missing'}
