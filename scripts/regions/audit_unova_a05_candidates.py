@@ -208,7 +208,50 @@ def private_a04(root: Path, report_path: Path) -> dict:
     return report
 
 
-def audit(root: Path, report_path: Path|None=None) -> dict:
+def read_android_occupancy(path: Path) -> tuple[dict, set[int]]:
+    """Read tracked map paths from a multiregion manifest as exclusion evidence."""
+    path = a04.safe_path(path, file=True)
+    with path.open("rb") as stream:
+        limit = 12 * 1024 * 1024
+        payload = stream.read(limit + 1)
+    if not 0 < len(payload) <= limit:
+        block("manifesto Android vazio ou acima do limite")
+    doc = json.loads(payload)
+    if (not isinstance(doc, dict) or doc.get("schema") != 1 or doc.get("channel") != "multiregion"
+            or not re.fullmatch(r"[0-9a-f]{40}", str(doc.get("revision", "")))
+            or not isinstance(doc.get("files"), dict)):
+        block("manifesto Android multirregional invalido")
+
+    def digest(row):
+        return (row["sha256"] if isinstance(row, dict) and isinstance(row.get("sha256"), str)
+                and SHA.fullmatch(row["sha256"]) else None)
+
+    files = doc["files"]
+    mapinfos = digest(files.get("Data/MapInfos.rxdata"))
+    occupied = set()
+    for name, row in files.items():
+        parts = name.split("/")
+        if len(parts) != 2 or parts[0].casefold() != "data":
+            continue
+        mid = a04._map_id(parts[1])
+        if mid is None:
+            continue
+        if mid in occupied or not digest(row):
+            block("entrada de mapa Android duplicada ou sem SHA-256")
+        occupied.add(mid)
+    if not mapinfos or not 0 < len(occupied) <= a04.MAX_MAPS:
+        block("manifesto Android sem MapInfos ou mapas rastreados validos")
+    return {
+        "revision": doc["revision"],
+        "manifest_sha256": hashlib.sha256(payload).hexdigest(),
+        "mapinfos_sha256_declared": mapinfos,
+        "tracked_map_count": len(occupied),
+    }, occupied
+
+
+def audit(root: Path, report_path: Path|None=None, *, android_manifest: Path|None=None) -> dict:
+    if android_manifest is not None and report_path is None:
+        block("--android-manifest exige --a04-report")
     plan,b05_source,candidates,previous_occupied=validate_plan(root)
     result={
         "schema":1,"region":"UNOVA","phase":"A05",
@@ -277,6 +320,13 @@ def audit(root: Path, report_path: Path|None=None) -> dict:
     if collisions:
         result["blockers"].append("Novos candidatos ocupados no A04: "+
                                   ", ".join(map(str,collisions[:35])))
+    if android_manifest is not None:
+        evidence, android_ids = read_android_occupancy(android_manifest)
+        result["android_manifest"] = evidence
+        result["android_manifest_candidate_collisions"] = sorted(android_ids & candidates)
+        result["cross_platform_candidate_collisions"] = sorted((actual | android_ids) & candidates)
+        if PREFERRED <= actual | android_ids:
+            result["blockers"].append("Todos os IDs 518-599 aparecem ocupados no A04 ou no manifesto Android")
     if a04_report["overlaps"]:
         result["blockers"].append("Sobreposicoes entre snapshots A04 requerem revisao")
     result["blockers"].append(
@@ -332,6 +382,7 @@ def main(argv=None)->int:
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--project",type=Path,default=ROOT)
     parser.add_argument("--a04-report",type=Path)
+    parser.add_argument("--android-manifest", type=Path, help="comparar update.json multiregional com A04")
     parser.add_argument("--gui",action="store_true")
     parser.add_argument("--write",action="store_true")
     args=parser.parse_args(argv)
@@ -341,7 +392,7 @@ def main(argv=None)->int:
             if source is not None:
                 block("use --gui ou --a04-report, nao ambos")
             source=choose_gui(Path(args.project).absolute())
-        report=audit(args.project,source)
+        report=audit(args.project,source,android_manifest=args.android_manifest)
         if args.write or args.gui:
             target=save(args.project,report)
             print("A05_RELATORIO_PRIVADO="+str(target),file=sys.stderr)
