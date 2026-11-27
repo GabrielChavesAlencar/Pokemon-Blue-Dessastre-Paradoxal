@@ -2664,7 +2664,19 @@ module KantoNativeCheck
       $game_player.moveto(*approach.fetch("standing"))
       $game_player.direction = approach.fetch("direction") if $game_player.respond_to?(:direction=)
       $game_map.events.each_value { |ev| ev.clear_starting }
-      tree.start
+      # The earlier headless native run reached command 355 but DexNav
+      # accessed an uninitialized scene spriteset (005_Override.rb:12).
+      # Use the actual Scene_Map lifecycle only for the Cut animation.
+      # Do not override DexNav, pbCut, pbSmashEvent or event collision.
+      cut_scene_before = $scene
+      cut_scene = Scene_Map.new
+      begin
+        $scene = cut_scene
+        cut_scene.send(:createSpritesets)
+        File.open("Data/blue-kanto-k03d-cut-trace.txt","a") do |file|
+          file.puts("K03-D scene=#{cut_scene.class} created; map=#{$game_map.map_id}; event=#{tree_id}; commands=#{tree.list.map(&:code).inspect}")
+        end
+        tree.start
       interpreter = pbMapInterpreter
       require!(!interpreter.running?, "K03-D Cut interpreter busy")
       interpreter.setup_starting_event
@@ -2680,7 +2692,22 @@ module KantoNativeCheck
         $game_player.update
         $game_map.update
       end
-      require!(!interpreter.running?, "K03-D Cut event did not complete")
+        require!(!interpreter.running?, "K03-D Cut event did not complete")
+        File.open("Data/blue-kanto-k03d-cut-trace.txt","a") do |file|
+          file.puts("K03-D native Cut completed; event erased=#{tree.instance_variable_get(:@erased).inspect}")
+        end
+      rescue Exception => error
+        # EventScriptError may not inherit StandardError. Preserve the
+        # original diagnostic and fail closed rather than swallow it.
+        File.open("Data/blue-kanto-k03d-cut-trace.txt","a") { |file| file.puts(error.full_message) }
+        raise
+      ensure
+        begin
+          cut_scene.send(:disposeSpritesets) if cut_scene.respond_to?(:disposeSpritesets,true)
+        ensure
+          $scene = cut_scene_before
+        end
+      end
       require!($bag.quantity(anne_cut) == original_cut, "K03-D Cut consumed HM")
       city_after_cut = opening_component(vermilion,k03a_report.fetch("vermilion_center_landing"),
         reuse_loaded: true)
@@ -2714,7 +2741,7 @@ module KantoNativeCheck
       cut_transfer = cerulean_native_started_transfer!(door,surge_map_id,*selected)
       require!(cut_transfer["landing"] == gym_landing, "K03-D gym entry landing changed")
       cut_report = {"event"=>tree_id,"tree_xy"=>tree_xy,"before"=>false,
-        "after"=>true,"native_interpreter"=>true,"hm_preserved"=>true,
+        "after"=>true,"native_interpreter"=>true,"hm_preserved"=>true,"native_spriteset"=>true,
         "before_cells"=>city_comp.length,"after_cells"=>city_after_cut.length,
         "transfer"=>cut_transfer}
     ensure

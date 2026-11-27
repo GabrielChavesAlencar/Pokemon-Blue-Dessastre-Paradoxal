@@ -701,6 +701,16 @@ jobs:
           path: .blue-work/cerulean-police-migration-proof.json
           include-hidden-files: true
           if-no-files-found: error
+      - name: Preservar diagnostico nativo K03-D de Cut
+        if: always() && hashFiles('.blue-work/kanto-pilot/Data/blue-kanto-k03d-cut-trace.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k03d-cut-native-diagnostic
+          path: |
+            .blue-work/kanto-pilot/Data/blue-kanto-k03d-cut-trace.txt
+            .blue-work/kanto-pilot/Data/blue-kanto-k03d-proof.txt
+          include-hidden-files: true
+          if-no-files-found: error
       - name: Preservar recibos K03-C do navio e migracao
         if: always()
         uses: actions/upload-artifact@v4
