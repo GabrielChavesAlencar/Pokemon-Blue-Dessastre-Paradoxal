@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "20644ab2f7a0b4c56f54e761c4c3b3ecf878dc7c",
+      "date": "2026-11-27T14:12:06-03:00",
+      "title": "fix(kanto): restore Rocket behind Cerulean house and Dig reward (#371)",
+      "category": "Correções"
+    },
+    {
+      "sha": "07aae774752e1f928fcde48f068cc3bea284fd01",
+      "date": "2026-11-27T14:03:21-03:00",
+      "title": "fix(kanto): restore Cerulean Rocket NPC and encounter lanes on legacy maps, prove native rear exit Dig reward",
+      "category": "Correções"
+    },
+    {
       "sha": "0798465b33e8ee05203324dcc73a39462e269c60",
       "date": "2026-11-27T13:38:58-03:00",
       "title": "fix(kanto): real S.S. Ticket police gate and mobile Cerulean doors (#370)",
