@@ -36,8 +36,8 @@ Dir.mktmpdir do |root|
         :compiled
       end
     end
-    compiler.singleton_class.prepend(BlueSinnohSharedEvents::PreserveAuthoredMaps)
-    raise "Compiler result lost" unless compiler.main == :compiled
+    compiled = BlueSinnohSharedEvents.preserve_authored_maps { compiler.main }
+    raise "Compiler result lost" unless compiled == :compiled
     raise "World connections changed" unless File.binread("Data/map_connections.dat") == "verified world connections"
     raise "Authored map changed" unless File.binread("Data/Map446.rxdata") == "authored regional map"
     raise "Compiled data lost" unless File.binread("Data/encounters.dat") == "compiled encounters"
