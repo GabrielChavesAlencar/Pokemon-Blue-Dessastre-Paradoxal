@@ -23,6 +23,7 @@ on:
     paths:
       - 'RUN_UNOVA_MAPIDS.bat'
       - 'scripts/regions/audit_unova_*.py'
+      - 'scripts/regions/unova_*.py'
       - 'tests/test_unova_*.py'
       - 'data/regions/unova-*.json'
       - 'docs/UNOVA_*.md'
@@ -155,6 +156,8 @@ jobs:
           python -m py_compile scripts/regions/audit_unova_a14_sandbox.py
           python -m py_compile scripts/regions/unova_auto_mapids.py
 
+      - name: Conferir geometria original do corredor de abertura
+        run: python -m unittest discover -s tests -p 'test_unova_original_opening.py' -v
       - name: Empacotar RUN_UNOVA_MAPIDS.bat para download como ZIP
         uses: actions/upload-artifact@v4
         with:
