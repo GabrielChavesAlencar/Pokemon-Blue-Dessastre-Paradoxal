@@ -43,8 +43,6 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Active Kanto pilot build failed'}
           python scripts/regions/release_gate.py --pilot .blue-work/kanto-release-pilot
           if($LASTEXITCODE -ne 0){throw 'Active Kanto release gate failed'}
-          python -c "from pathlib import Path; from scripts.android.package_kanto import _metadata; d=_metadata(Path('.blue-work/kanto-release-pilot')); assert len(d['maps']) == 160; print('KANTO_K03E_ACTIVE_RELEASE_METADATA_OK')"
-          if($LASTEXITCODE -ne 0){throw 'Active Kanto package inputs or preserved save namespace are invalid'}
           python scripts/regions/export_kanto.py --preview .blue-work/kanto-release-pilot --output .blue-work/kanto-release-site.json
           if($LASTEXITCODE -ne 0){throw 'Active Kanto portal export failed'}
           python -c "import json; from pathlib import Path; a,b=(json.loads(Path(p).read_text(encoding='utf-8')) for p in ('site/public/data/kanto.json','.blue-work/kanto-release-site.json')); assert a['source']==b['source'] and all(sorted(a[k],key=lambda r:r['id'])==sorted(b[k],key=lambda r:r['id']) for k in ('locations','trainers')); print('KANTO_K03E_ACTIVE_PORTAL_MATCH_OK')"
@@ -937,6 +935,10 @@ jobs:
           Write-Host ("KANTO_K03E_ACTIVE_RELEASE_NATIVE_REPORT:" + (Get-Content $proof -Raw).Trim())
           Copy-Item .blue-work/kanto-release-clean-main.rxdata "$release/Data/Scripts.rxdata" -Force
           Remove-Item "$release/Data/blue-kanto-proof.rb","$release/Data/blue-kanto-walk-check.rb","$release/Data/blue-kanto-k03e-check.rb","$release/Data/blue-kanto-music-native-probe.rb" -ErrorAction Stop
+          # PluginScripts.rxdata is generated only by Game.exe. Validate package
+          # inputs after the native boot and restoration of clean Main.
+          python -c "from pathlib import Path; from scripts.android.package_kanto import _metadata; d=_metadata(Path('.blue-work/kanto-release-pilot')); assert len(d['maps']) == 160; print('KANTO_K03E_ACTIVE_RELEASE_METADATA_OK')"
+          if($LASTEXITCODE -ne 0){throw 'Active compiled Kanto package inputs or preserved save namespace are invalid'}
       # The Kanto ZIP is a separate compiled game. It cannot be the Decades ZIP.
       - name: Compilar versão mobile do piloto de Kanto
         if: github.event_name == 'push' && contains(github.event.head_commit.message, '[android-kanto-release]')
