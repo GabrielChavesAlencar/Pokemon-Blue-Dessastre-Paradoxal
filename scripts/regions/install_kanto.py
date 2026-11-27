@@ -218,7 +218,7 @@ def manifest(pilot, game, migration=None, *, candidate=False):
                 files[Path("Graphics") / name / path.name] = path
     # Previously omitted: the trainer portraits referenced by the
     # BLUE_KANTO_* PBS types. Import only these explicit names, never all art.
-    files.update(trainer_portraits(pilot, candidate=True) if candidate else trainer_portraits(pilot))
+    files.update(trainer_portraits(pilot, candidate=True) if 79 in mapping else trainer_portraits(pilot))
     for relative, source in files.items():
         if not source.is_file():
             raise ValueError("Arquivo de origem ausente: " + str(relative))
@@ -603,8 +603,8 @@ def verify_installed(game, *, candidate=False):
         raise ValueError("Unknown or incomplete Kanto main installation.")
     if not isinstance(mapping, dict) or len(mapping) != expected:
         raise ValueError(f"Older Kanto installation: {len(mapping) if isinstance(mapping,dict) else 0}/{expected} maps. Do not overwrite saves or merge IDs automatically.")
-    if candidate and set(mapping) != set(catalog["maps"]):
-        raise ValueError("Invalid candidate source map set")
+    if (candidate or "79" in catalog["maps"]) and set(mapping) != set(catalog["maps"]):
+        raise ValueError("Invalid K03-E source map set")
     if len(set(mapping.values())) != expected:
         raise ValueError("Duplicated Kanto map IDs.")
     start = marker.read_text(encoding="ascii").strip()

@@ -49,10 +49,16 @@ def inspect(game: Path, *, candidate=False) -> dict:
     trainer_specs = TRAINERS
     if candidate:
         import os
-        from k03e_contract import candidate_manifest, migration_pilot, TRAINERS as ROUTE11_TRAINERS
+        from k03e_contract import candidate_manifest, migration_pilot
         if os.getenv("GITHUB_ACTIONS") != "true" or game != migration_pilot(ROOT):
             raise ValueError("K03-E structural verification requires the isolated migration pilot")
         manifest = candidate_manifest(manifest)
+    from k03e_contract import MAPS, TRAINERS as ROUTE11_TRAINERS
+    corridor = {str(i): key for i, key in MAPS.items()}
+    active = corridor.keys() & manifest["maps"].keys()
+    if active:
+        if len(manifest["maps"]) != 160 or any(manifest["maps"].get(i) != key for i, key in corridor.items()):
+            raise ValueError("Incomplete K03-E catalogue")
         trainer_specs = {**TRAINERS, 79: ROUTE11_TRAINERS}
     expected = {int(source): name for source, name in manifest["maps"].items()}
     preview_only = set(manifest.get("preview_only", []))
@@ -281,10 +287,9 @@ def inspect(game: Path, *, candidate=False) -> dict:
             raise ValueError(f"Interior {inside}: missing entry from {outer}/{entry}")
         if mapping[outer] not in event_transfers(inside, exit_id):
             raise ValueError(f"Interior {inside}: missing return to {outer}/{entry}")
-    if candidate:
-        # The opt-in isolated migration must prove the audited corridor,
-        # not merely bypass the historical 156-map prohibition.
-        from k03e_contract import MAPS, WARPS
+    if active:
+        # Apply the same native corridor checks to both CI and release pilots.
+        from k03e_contract import WARPS
         if not set(MAPS).issubset(mapping) or set(MAPS) & preview_only:
             raise ValueError("K03-E missing functional source maps")
         for (source, eid), (dest, x, y, direction) in WARPS.items():

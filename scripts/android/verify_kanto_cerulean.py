@@ -41,19 +41,28 @@ def active_sources() -> dict:
     raise ValueError("Unknown Kanto publication catalog")
 
 
-def verify_k03e(mapping: dict, edges: set, pbs: str, music_rows: list[str]) -> None:
+def k03e_audio_paths() -> dict:
+    manifest = json.loads((ROOT / "data/kanto-music.json").read_text(encoding="utf-8"))
+    return {entry["number"]: entry["game_path"] for entry in manifest["files"]
+            if entry["kind"] == "BGM" and entry["number"] in {row["track"] for row in K03E_MUSIC}}
+
+
+def verify_k03e(mapping: dict, edges: set, pbs: str, music_rows: list[str],
+                 packaged_files: set, root: str = "") -> None:
     if frozenset((mapping["64"], mapping["79"])) not in edges:
         raise ValueError("K03-E Route 11/Vermilion connection absent from Android PBS")
     for trainer_class, name in K03E_TRAINERS.values():
         if f"[BLUE_KANTO_{trainer_class},{name},0]" not in pbs:
             raise ValueError(f"K03-E Android trainer missing: {name}")
     by_name = {name: source for source, name in K03E_MAPS.items()}
+    paths = k03e_audio_paths()
     for row in K03E_MUSIC:
+        path = paths[row["track"]]
         destination = str(mapping[str(by_name[row["map"]])])
         matches = [line.split("\t") for line in music_rows
                    if line.startswith(f"MAP\t{destination}\t")]
         if (len(matches) != 1 or len(matches[0]) != 5 or
-                matches[0][2] != str(row["track"])):
+                matches[0][2] != path.removeprefix("Audio/BGM/") or root + path not in packaged_files):
             raise ValueError(f"K03-E Android soundtrack missing or incorrect: {row['map']}")
 
 
@@ -191,7 +200,7 @@ def assert_delivery(path: Path, channel: str) -> dict:
         if count != expected_music_maps:
             raise ValueError(f"Stale Kanto music scope: {count}, expected {expected_music_maps}")
         if promoted:
-            verify_k03e(mapping, edges, pbs, music_rows)
+            verify_k03e(mapping, edges, pbs, music_rows, files, root)
     return {"channel": channel, "kanto_maps": len(expected_sources),
             "cerulean_sources": list(SOURCE_MAP_IDS),
             "music_maps": expected_music_maps,

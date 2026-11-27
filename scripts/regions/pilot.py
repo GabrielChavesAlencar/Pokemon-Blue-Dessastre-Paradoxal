@@ -1934,6 +1934,7 @@ def install_pbs(preview, target, mapping, manifest=None):
 
 
 def install_runtime(target, mapping, game, manifest=None):
+    isolated_manifest = manifest
     manifest = json_file(KANTO) if manifest is None else manifest
     names = LOCATION_NAMES
     save_app = SAVE_APP
@@ -2076,7 +2077,7 @@ def install_runtime(target, mapping, game, manifest=None):
     music = target / "Plugins/ZZZZ Blue Music/BlueMusic.rb"
     if music.is_file():
         shutil.copyfile(ROOT / "scripts/music/BlueMusic.rb", music)
-    compiled, _ = compile_bytes(ROOT, target, mapping, candidate_manifest=manifest if 79 in mapping else None)
+    compiled, _ = compile_bytes(ROOT, target, mapping, candidate_manifest=isolated_manifest)
     (data / "blue-kanto-music.txt").write_bytes(compiled)
 
 

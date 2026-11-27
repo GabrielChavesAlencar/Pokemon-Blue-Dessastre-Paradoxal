@@ -1,0 +1,477 @@
+{
+  "version": 1,
+  "status": "CANDIDATE_NOT_PUBLISHED",
+  "locations": [
+    {
+      "id": "kanto-diglett-entrance-route-2",
+      "name": "Caverna dos Diglett — entrada Rota 2",
+      "status": "experimental",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-route-11",
+      "name": "Rota 11",
+      "status": "experimental",
+      "methods": [
+        {
+          "id": "LandDay",
+          "slots": [
+            {
+              "species": "SPEAROW",
+              "chance": 35.0,
+              "min": 13,
+              "max": 17,
+              "weight": 35
+            },
+            {
+              "species": "DROWZEE",
+              "chance": 25.0,
+              "min": 11,
+              "max": 15,
+              "weight": 25
+            },
+            {
+              "species": "EKANS",
+              "chance": 20.0,
+              "min": 12,
+              "max": 15,
+              "weight": 20
+            },
+            {
+              "species": "SANDSHREW",
+              "chance": 20.0,
+              "min": 12,
+              "max": 15,
+              "weight": 20
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "LandNight",
+          "slots": [
+            {
+              "species": "SPEAROW",
+              "chance": 35.0,
+              "min": 13,
+              "max": 17,
+              "weight": 35
+            },
+            {
+              "species": "DROWZEE",
+              "chance": 25.0,
+              "min": 11,
+              "max": 15,
+              "weight": 25
+            },
+            {
+              "species": "EKANS",
+              "chance": 20.0,
+              "min": 12,
+              "max": 15,
+              "weight": 20
+            },
+            {
+              "species": "SANDSHREW",
+              "chance": 20.0,
+              "min": 12,
+              "max": 15,
+              "weight": 20
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "Water",
+          "slots": [
+            {
+              "species": "TENTACOOL",
+              "chance": 100.0,
+              "min": 5,
+              "max": 40,
+              "weight": 100
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "OldRod",
+          "slots": [
+            {
+              "species": "MAGIKARP",
+              "chance": 100.0,
+              "min": 5,
+              "max": 10,
+              "weight": 100
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "GoodRod",
+          "slots": [
+            {
+              "species": "HORSEA",
+              "chance": 40.0,
+              "min": 5,
+              "max": 15,
+              "weight": 40
+            },
+            {
+              "species": "KRABBY",
+              "chance": 40.0,
+              "min": 5,
+              "max": 15,
+              "weight": 40
+            },
+            {
+              "species": "MAGIKARP",
+              "chance": 20.0,
+              "min": 5,
+              "max": 15,
+              "weight": 20
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "SuperRod",
+          "slots": [
+            {
+              "species": "HORSEA",
+              "chance": 44.0,
+              "min": 15,
+              "max": 35,
+              "weight": 44
+            },
+            {
+              "species": "KRABBY",
+              "chance": 44.0,
+              "min": 15,
+              "max": 35,
+              "weight": 44
+            },
+            {
+              "species": "GYARADOS",
+              "chance": 10.0,
+              "min": 15,
+              "max": 25,
+              "weight": 10
+            },
+            {
+              "species": "PSYDUCK",
+              "chance": 1.0,
+              "min": 25,
+              "max": 35,
+              "weight": 1
+            },
+            {
+              "species": "SLOWPOKE",
+              "chance": 1.0,
+              "min": 25,
+              "max": 35,
+              "weight": 1
+            }
+          ],
+          "weightTotal": 100
+        }
+      ],
+      "trainers": [
+        "kanto-route-11-dave",
+        "kanto-route-11-eddie",
+        "kanto-route-11-dillon",
+        "kanto-route-11-jasper",
+        "kanto-route-11-bernie",
+        "kanto-route-11-braxton",
+        "kanto-route-11-hugo",
+        "kanto-route-11-darian",
+        "kanto-route-11-yasu",
+        "kanto-route-11-dirk"
+      ]
+    },
+    {
+      "id": "kanto-diglett-entrance-route-11",
+      "name": "Caverna dos Diglett — entrada Rota 11",
+      "status": "experimental",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-diglett-tunnel",
+      "name": "Caverna dos Diglett — túnel",
+      "status": "experimental",
+      "methods": [
+        {
+          "id": "CaveDay",
+          "slots": [
+            {
+              "species": "DIGLETT",
+              "chance": 95.0,
+              "min": 15,
+              "max": 22,
+              "weight": 95
+            },
+            {
+              "species": "DUGTRIO",
+              "chance": 5.0,
+              "min": 29,
+              "max": 31,
+              "weight": 5
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "CaveNight",
+          "slots": [
+            {
+              "species": "DIGLETT",
+              "chance": 95.0,
+              "min": 15,
+              "max": 22,
+              "weight": 95
+            },
+            {
+              "species": "DUGTRIO",
+              "chance": 5.0,
+              "min": 29,
+              "max": 31,
+              "weight": 5
+            }
+          ],
+          "weightTotal": 100
+        }
+      ],
+      "trainers": []
+    }
+  ],
+  "trainers": [
+    {
+      "id": "kanto-route-11-dave",
+      "name": "Dave",
+      "role": "Jovem treinador",
+      "location": "kanto-route-11",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "NIDORANmA",
+              "level": 18
+            },
+            {
+              "species": "NIDORINO",
+              "level": 18
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-route-11-eddie",
+      "name": "Eddie",
+      "role": "Jovem treinador",
+      "location": "kanto-route-11",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "EKANS",
+              "level": 21
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-route-11-dillon",
+      "name": "Dillon",
+      "role": "Jovem treinador",
+      "location": "kanto-route-11",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "SANDSHREW",
+              "level": 19
+            },
+            {
+              "species": "ZUBAT",
+              "level": 19
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-route-11-jasper",
+      "name": "Jasper",
+      "role": "Jogador",
+      "location": "kanto-route-11",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "BELLSPROUT",
+              "level": 18
+            },
+            {
+              "species": "ODDISH",
+              "level": 18
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-route-11-bernie",
+      "name": "Bernie",
+      "role": "Engenheiro",
+      "location": "kanto-route-11",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "MAGNEMITE",
+              "level": 18
+            },
+            {
+              "species": "MAGNEMITE",
+              "level": 18
+            },
+            {
+              "species": "MAGNETON",
+              "level": 18
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-route-11-braxton",
+      "name": "Braxton",
+      "role": "Engenheiro",
+      "location": "kanto-route-11",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "MAGNEMITE",
+              "level": 21
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-route-11-hugo",
+      "name": "Hugo",
+      "role": "Jogador",
+      "location": "kanto-route-11",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "POLIWAG",
+              "level": 18
+            },
+            {
+              "species": "HORSEA",
+              "level": 18
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-route-11-darian",
+      "name": "Darian",
+      "role": "Jogador",
+      "location": "kanto-route-11",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GROWLITHE",
+              "level": 18
+            },
+            {
+              "species": "VULPIX",
+              "level": 18
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-route-11-yasu",
+      "name": "Yasu",
+      "role": "Jovem treinador",
+      "location": "kanto-route-11",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "RATTATA",
+              "level": 17
+            },
+            {
+              "species": "RATTATA",
+              "level": 17
+            },
+            {
+              "species": "RATICATE",
+              "level": 17
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-route-11-dirk",
+      "name": "Dirk",
+      "role": "Jogador",
+      "location": "kanto-route-11",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "VOLTORB",
+              "level": 18
+            },
+            {
+              "species": "MAGNEMITE",
+              "level": 18
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "evidence": {
+    "revision": "3f53555ed82b3ffaad86422fae572130b0fca2a2",
+    "run_id": 46069590214,
+    "artifact_id": 15232801269,
+    "sha256": "f069f7522261d51c231f6e1ace66547e76d5803693153f7ff1d97245661cc957"
+  }
+}

@@ -9,7 +9,7 @@ import zlib
 from scripts.android.verify_kanto_cerulean import assert_delivery, EDGES, JOURNEY, KANTO_RUNTIME, KANTO_ATLAS, CERULEAN_DOORS
 from scripts.regions.kanto_wall_atlas import render_wall_atlas
 from scripts.regions.k03e_contract import MAPS, TRAINERS, MUSIC
-from scripts.android.verify_kanto_cerulean import verify_k03e
+from scripts.android.verify_kanto_cerulean import verify_k03e, k03e_audio_paths
 from scripts.official_rules.prepare_restore import RubyString, dump
 from server.ruby_marshal import integer
 
@@ -134,9 +134,14 @@ class KantoDeliveryTests(unittest.TestCase):
         pbs = "\n".join(f"[BLUE_KANTO_{kind},{name},0]" for kind, name in TRAINERS.values())
         edges = {frozenset((mapping["64"], mapping["79"]))}
         by_name = {name: source for source, name in MAPS.items()}
-        music = [f"MAP\t{mapping[str(by_name[row['map']])]}\t{row['track']}\t100\t100"
+        audio_paths = k03e_audio_paths()
+        track_names = {number: path.removeprefix("Audio/BGM/") for number, path in audio_paths.items()}
+        music = [f"MAP\t{mapping[str(by_name[row['map']])]}\t{track_names[row['track']]}\t100\t100"
                  for row in MUSIC]
-        verify_k03e(mapping, edges, pbs, music)
+        files = set(audio_paths.values())
+        verify_k03e(mapping, edges, pbs, music, files)
+        with self.assertRaisesRegex(ValueError, "soundtrack missing"):
+            verify_k03e(mapping, edges, pbs, music, set())
         for connection, trainers, tracks, error in (
             (set(), pbs, music, "connection absent"),
             (edges, pbs.replace("Dave", "Davi"), music, "trainer missing: Dave"),
@@ -144,7 +149,7 @@ class KantoDeliveryTests(unittest.TestCase):
             (edges, pbs, music + [music[0]], "soundtrack missing"),
         ):
             with self.subTest(error=error), self.assertRaisesRegex(ValueError, error):
-                verify_k03e(mapping, connection, trainers, tracks)
+                verify_k03e(mapping, connection, trainers, tracks, files)
 
     def test_legacy_police_script_rejected_in_both_channels(self):
         for channel in ("kanto", "multiregion"):
