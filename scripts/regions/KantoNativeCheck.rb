@@ -603,6 +603,24 @@ module KantoNativeCheck
     end
     require!(chosen, "K03-A original Day Care door inaccessible from all verified north seams")
     anchor,door = chosen
+    # Exercise the actual four physical tiles; the doorway is not a new
+    # teleport and the neighboring ledges must still prohibit uphill entry.
+    require!($game_map.data[23,27,1] == 0 &&
+      [22,24].all? { |x| $game_map.data[x,27,1] == 1212 &&
+        $game_map.terrain_tag(x,27).ledge }, "K03-A walkway altered neighboring ledges")
+    $game_player.moveto(23,28)
+    [27,26,25].each do |y|
+      require!($game_player.passable?(23,y+1,8), "K03-A walkway north step blocked #{y}")
+      $game_player.move_generic(8,true)
+      require!([$game_player.x,$game_player.y] == [23,y],
+        "K03-A native walkway step failed #{y}")
+    end
+    [22,24].each do |x|
+      $game_player.moveto(x,28)
+      require!(!$game_player.passable?(x,28,8), "K03-A neighboring ledge opened #{x}")
+    end
+    k03a_trace("KANTO_K03A_DAYCARE_WALKWAY_NATIVE_OK",{"steps"=>[[23,28],[23,27],[23,26],[23,25]],
+      "neighbor_ledges_preserved"=>true,"original_door"=>door.id})
     landing = north_transfer!(door,daycare)
     require!(landing == [4,7], "K03-A Day Care arrival differs")
     inside = opening_component(daycare,landing)

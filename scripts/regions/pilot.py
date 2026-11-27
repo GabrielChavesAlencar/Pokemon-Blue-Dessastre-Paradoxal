@@ -535,6 +535,42 @@ def new_event(event, ops, trigger, character):
     return clone
 
 
+def restore_route5_daycare_walkway(map_data, source_map):
+    """One authored adaptation of the imported map, never the donor or tileset.
+
+    Native K03-A job 140245780145 proves every north approach misses the
+    doorstep, blocked by ledge tile 1212 at y=27. Open only the tile directly
+    in front of source door [23,25]; leave all neighboring ledges untouched.
+    """
+    table = map_data.attrs["@data"]
+    raw = table.data
+    _, width, height, depth, count = struct.unpack_from("<5I", raw)
+    if depth != 3 or width <= 26 or height <= 29 or count != width*height*depth:
+        raise ValueError("K03-A unexpected Route 5 table")
+    original = source_map.attrs["@data"].data
+    if raw != original:
+        raise ValueError("K03-A staged Route 5 differs from source before walkway")
+    def cell(x,y,z):
+        return x+width*(y+height*z)
+    def stack(x,y):
+        return tuple(struct.unpack_from("<H", raw,20+2*cell(x,y,z))[0]
+                     for z in range(depth))
+    if (stack(23,25) != (434,1954,0) or stack(23,26) != (442,0,0)
+            or stack(23,28) != (385,0,0)
+            or any(stack(x,27) != (385,1212,0) for x in (22,23,24))):
+        raise ValueError("K03-A original door/ledge geometry changed")
+    door = source_map.attrs["@events"].get(1)
+    if not door or (door.attrs["@x"],door.attrs["@y"]) != (23,25):
+        raise ValueError("K03-A source Day Care entrance changed")
+    offset = 20+2*cell(23,27,1)
+    updated = bytearray(raw)
+    struct.pack_into("<H",updated,offset,0)
+    table.data = bytes(updated)
+    print("KANTO_K03A_DAYCARE_WALKWAY_ADAPTED:" + json.dumps({
+        "source_map":56,"xy":[23,27],"layer":1,"before":1212,"after":0,
+        "door":[23,25],"tiles_changed":1,"donor_unchanged":True}),flush=True)
+
+
 VIRIDIAN_SPIN_TILES = {919: 4, 927: 6, 935: 8, 943: 2}
 
 
@@ -1541,6 +1577,8 @@ def install_events(source, target, mapping):
                         warp,
                     ]
                 selected[event_id] = new_event(event, operations, trigger, character)
+        if original == 56 and 58 in mapping:
+            restore_route5_daycare_walkway(map_data, load(source / "Data" / "Map056.rxdata"))
         if original == 13:
             add_viridian_spin_tiles(map_data, selected)
         if original == 209:
