@@ -958,6 +958,48 @@ jobs:
           # inputs after the native boot and restoration of clean Main.
           python -c "from pathlib import Path; from scripts.android.package_kanto import _metadata; d=_metadata(Path('.blue-work/kanto-release-pilot')); assert len(d['maps']) == 160; print('KANTO_K03E_ACTIVE_RELEASE_METADATA_OK')"
           if($LASTEXITCODE -ne 0){throw 'Active compiled Kanto package inputs or preserved save namespace are invalid'}
+      - name: Testar corredor e Flash do Rock Tunnel no Game.exe isolado
+        shell: powershell
+        run: |
+          $candidate=(Resolve-Path .blue-work/kanto-k04-gameplay).Path
+          python scripts/regions/native_check.py $candidate --k04
+          if($LASTEXITCODE -ne 0){throw 'K04 native injection failed'}
+          $mesaFolder=Join-Path $env:RUNNER_TEMP 'blue-mesa'
+          Get-ChildItem -LiteralPath $mesaFolder -Recurse -File -Filter '*.dll' |
+            Where-Object { $_.FullName -match '[\\/]x64[\\/]' } |
+            ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $candidate }
+          $proof="$candidate/Data/blue-kanto-k04-proof.txt"
+          $errorFile="$candidate/Data/blue-kanto-error.txt"
+          for($attempt=1;$attempt -le 2;$attempt++){
+            $stdout=".blue-work/kanto-k04-native-out-$attempt.txt"
+            $stderr=".blue-work/kanto-k04-native-err-$attempt.txt"
+            $proc=Start-Process -FilePath "$candidate/Game.exe" -WorkingDirectory $candidate -WindowStyle Hidden -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+            $handle=$proc.Handle
+            if(-not $proc.WaitForExit(180000)){
+              Stop-Process -Id $proc.Id -ErrorAction SilentlyContinue
+              break
+            }
+            if(Test-Path $proof -PathType Leaf){break}
+            if(Test-Path $errorFile -PathType Leaf){break}
+            if(-not ((Get-Content $stdout,$stderr -Raw -ErrorAction SilentlyContinue) -match '(?i)compil')){break}
+            Write-Host 'KANTO_K04_FIRST_COMPILE_BOOT_RESTART'
+          }
+          if(!(Test-Path $proof -PathType Leaf) -or (Test-Path $errorFile -PathType Leaf)){
+            Get-Content $stdout,$stderr,"$candidate/Data/blue-kanto-k04-stage.txt",$errorFile,"$candidate/errorlog.txt" -ErrorAction SilentlyContinue | Select-Object -Last 120
+            throw 'K04 native corridor and Flash proof missing'
+          }
+          Write-Host ("KANTO_K04_NATIVE_CORRIDOR_REPORT:" + (Get-Content $proof -Raw).Trim())
+          Write-Host 'KANTO_K04_NATIVE_CORRIDOR_FLASH_OK'
+      - name: Guardar prova nativa K04 sem jogo ou save
+        if: always() && hashFiles('.blue-work/kanto-k04-gameplay-proof.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k04-native-gameplay-receipts
+          path: |
+            .blue-work/kanto-k04-gameplay/Data/blue-kanto-k04-proof.txt
+            .blue-work/kanto-k04-gameplay/Data/blue-kanto-k04-stage.txt
+            .blue-work/kanto-k04-gameplay/Data/blue-kanto-error.txt
+          if-no-files-found: ignore
       # The Kanto ZIP is a separate compiled game. It cannot be the Decades ZIP.
       - name: Compilar versão mobile do piloto de Kanto
         if: github.event_name == 'push' && contains(github.event.head_commit.message, '[android-kanto-release]')

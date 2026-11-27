@@ -5,7 +5,7 @@ import json
 import re
 from pathlib import Path
 
-from audit import KANTO, ROOT, allocate_kanto_ids, inventory, json_file, stable_source_order
+from audit import KANTO, ROOT, allocate_kanto_ids, inventory, json_file, load, stable_source_order, text
 from audit_cerulean_interiors import inspect_events, transfers
 
 K04 = (86, 87, 88, 90, 91)
@@ -100,11 +100,40 @@ def summarize(source, maps, mapping):
             "trainers": teams, "external_stub_ids": sorted(FORBIDDEN)}
 
 
+
+def flash_acquisition(source):
+    """Report anchored HM references without exporting any donor script text."""
+    _, paths = inventory(source)
+    pattern = re.compile(r"\b(HM05|HMFLASH)\b",re.I)
+    hits = []
+    for source_id, path in sorted(paths.items()):
+        events = load(path).attrs["@events"]
+        for eid, event in events.items():
+            for number, page in enumerate(event.attrs["@pages"],1):
+                for cmd in page.attrs["@list"]:
+                    params = cmd.attrs["@parameters"]
+                    if cmd.attrs["@code"] not in (111,355,655):
+                        continue
+                    for param in params:
+                        if not isinstance(param,(str,bytes)):
+                            continue
+                        script = text(param)
+                        ids = sorted({p.upper() for p in pattern.findall(script)})
+                        if ids:
+                            hits.append({"source":source_id,"event":eid,"page":number,
+                                         "xy":[event.attrs["@x"],event.attrs["@y"]],
+                                         "trigger":page.attrs["@trigger"],"item_ids":ids,
+                                         "reward_call": bool(re.search(r"\b(?:pbReceiveItem|pbItemBall)\b",script))})
+    return hits
+
+
 def main():
     source = ROOT / ".blue-work/frlg-source/Essentials FRLG"
     infos, files = inventory(ROOT / "game")
     candidate = candidate_mapping(json_file(KANTO), infos.keys() | files.keys())
     report = summarize(source, inspect_events(source, K04), candidate)
+    report["flash_acquisition"] = flash_acquisition(source)
+    print("KANTO_K04_FLASH_HM_ANCHORS:" + json.dumps(report["flash_acquisition"]), flush=True)
     # Source scripts and engine files are not included in the receipt.
     target = ROOT / ".blue-work/kanto-k04-source.json"
     target.write_text(json.dumps(report, ensure_ascii=True, indent=2) + "\n", encoding="utf-8")
