@@ -2399,8 +2399,9 @@ module KantoNativeCheck
     end
     $map_factory.setup(BlueKantoPilot.kanto_map_id(76))
     require!(!BlueKantoPilot.captain, "K03-C Cut awarded before rival")
-    second = BlueKantoPilot.kanto_map_id(75)
-    $map_factory.setup(second)
+    # Keep the rival map identity independent of the later Surge can pair.
+    anne_rival_map = BlueKantoPilot.kanto_map_id(75)
+    $map_factory.setup(anne_rival_map)
     [22,26,27].zip([31,32,33]).each do |id,x|
       ev = $game_map.events[id]
       north_callback!(ev,"BlueKantoPilot.ss_anne_rival")
@@ -2419,7 +2420,7 @@ module KantoNativeCheck
       battle_calls[calls..-1] == [[:BLUE_KANTO_RIVAL,"Blue",41]]*2,
       "K03-C rival version or repeat differs")
     state["pilot_wins"].delete("Blue") if inserted_legacy
-    require!(BlueKantoPilot::SS_ANNE_RIVAL_EVENTS.all? { |id| $game_self_switches[[second,id,"A"]] },
+    require!(BlueKantoPilot::SS_ANNE_RIVAL_EVENTS.all? { |id| $game_self_switches[[anne_rival_map,id,"A"]] },
       "K03-C rival completion not synchronized")
     # The ordinary source transfer events must be physically reachable
     # from their actual landings. No QA teleport is accepted as a link.
@@ -3125,7 +3126,7 @@ module KantoNativeCheck
     require!(north_state["field_events"]["KANTO"].count("SS_ANNE_CAPTAIN") == 1 &&
       $bag.quantity(anne_cut) == anne_quantity, "K03-C Cut grant lost or duplicated after reload")
     require!(north_state["pilot_wins"].include?(BlueKantoPilot::SS_ANNE_RIVAL_KEY) &&
-      BlueKantoPilot::SS_ANNE_RIVAL_EVENTS.all? { |id| $game_self_switches[[second,id,"A"]] },
+      BlueKantoPilot::SS_ANNE_RIVAL_EVENTS.all? { |id| $game_self_switches[[anne_rival_map,id,"A"]] },
       "K03-C rival victory or self switches lost after reload")
     anne_report["save_reload"] = true
     anne_report["cut_quantity"] = anne_quantity
