@@ -242,6 +242,28 @@ module KantoIntegratedCheck
     require!(BlueRegionalPolicy.field_result(:FLASH) == :hm,
              "Boulder did not advance Flash to its required HM05 gate")
     require!(BlueRegionalPolicy.field_result(:SURF) == :badge, "Surf unlocked without Soul Badge")
+    require!(BlueRegionalPolicy.field_result(:CUT) == :badge, "K03-C Cut without Cascade")
+    # Isolated temporary state, bag and team; do not change the subsequent
+    # integrated travel fixture's badge/crystal counts.
+    cut_state = Marshal.load(Marshal.dump(current_state))
+    original_party = $player.party.dup
+    cut_item = [:HM01,:HMCUT].find { |id| GameData::Item.exists?(id) }
+    require!(cut_item && !$bag.has?(cut_item), "K03-C unexpected Cut HM in fresh bag")
+    begin
+      $PokemonGlobal.blue_regions = cut_state
+      BlueRegions.award(cut_state,"KANTO","CASCADE")
+      require!(BlueRegionalPolicy.field_result(:CUT) == :hm,"K03-C missing Cut HM accepted")
+      require!($bag.add(cut_item,1),"K03-C unable to add temporary HM")
+      $player.party.replace([Pokemon.new(:PIDGEY,5)])
+      require!(BlueRegionalPolicy.field_result(:CUT) == :pokemon,"K03-C incompatible Pokemon accepted")
+      $player.party.replace([Pokemon.new(:BULBASAUR,5)])
+      require!(BlueRegionalPolicy.field_result(:CUT) == :allowed,"K03-C eligible Cut blocked")
+    ensure
+      $bag.remove(cut_item,1) if cut_item && $bag.has?(cut_item)
+      $player.party.replace(original_party)
+      $PokemonGlobal.blue_regions = current_state
+    end
+    puts "KANTO_K03C_INTEGRATED_CUT_POLICY_OK"
     base_total = $player.badge_count
     require!(BlueRegions.crystal_total(current_state, base_total) == base_total + 1,
              "Local Kanto badge was not added to Blue global stage once")

@@ -682,6 +682,18 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'K03-B real 151 to 156 migration proof failed'}
           python scripts/regions/qa_k00_migration.py --from-152
           if($LASTEXITCODE -ne 0){throw 'K03-B real 152 to 156 migration proof failed'}
+          python scripts/regions/qa_k00_migration.py --from-156
+          if($LASTEXITCODE -ne 0){throw 'K03-C real 156 to 156 migration proof failed'}
+      - name: Preservar recibos K03-C do navio e migracao
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k03c-ss-anne-proofs
+          path: |
+            .blue-work/k03c-migration-proof.json
+            .blue-work/kanto-pilot/Data/blue-kanto-k03c-proof.txt
+          include-hidden-files: true
+          if-no-files-found: error
       - name: Preservar recibo K03-A da migracao
         if: always() && hashFiles('.blue-work/k03a-migration-proof.json') != ''
         uses: actions/upload-artifact@v4

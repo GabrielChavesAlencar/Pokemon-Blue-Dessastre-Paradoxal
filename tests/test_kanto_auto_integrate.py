@@ -187,6 +187,24 @@ class KantoAutoIntegrationTests(unittest.TestCase):
         self.assertIn("--migrate-existing", self.calls[2])
         self.assertIn("--verify-installed", self.calls[3])
 
+    def test_current_count_legacy_ss_anne_retries_verified_migration(self):
+        import json
+        (self.game / auto.KANTO_MARKER).write_text("installed")
+        maps = {str(i): i + 300 for i in range(156)}
+        (self.game / auto.KANTO_MANIFEST).write_text(json.dumps({
+            "schema": 1, "source": "Essentials FRLG 21.1", "maps": maps}))
+        catalogue = self.project / "data/regions/kanto-source.json"
+        catalogue.parent.mkdir(parents=True)
+        catalogue.write_text(json.dumps({"maps": maps}))
+        def runner(argv, project, env):
+            self.calls.append(argv)
+            if len(self.calls) == 1:
+                raise ValueError("S.S. Anne rival gate: missing source lane 22")
+        result = auto.integrate(self.project, self.game, run=runner)
+        self.assertTrue(result["ready"])
+        self.assertIn("--migrate-existing", self.calls[2])
+        self.assertIn("--verify-installed", self.calls[3])
+
     def test_current_count_unrelated_error_never_rebuilds(self):
         import json
         (self.game / auto.KANTO_MARKER).write_text("installed")

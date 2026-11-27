@@ -1613,8 +1613,10 @@ def install_events(source, target, mapping):
                 # retain their original transfers, without extra tunnel locks.
                 operations = [warp]
                 if (original, event_id) == (72, 2):
+                    warp.attrs["@indent"] = 1
                     operations = if_scene(b"BlueKantoPilot.ss_anne_boarding_allowed?", [warp])
                 if (original, event_id) == (75, 15):
+                    warp.attrs["@indent"] = 1
                     operations = if_scene(b"BlueKantoPilot.ss_anne_captain_entry?", [warp])
                 if original == 10 and warp.attrs["@parameters"][1] == mapping[12]:
                     operations = [

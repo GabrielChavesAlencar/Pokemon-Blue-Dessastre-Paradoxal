@@ -2424,6 +2424,18 @@ module KantoNativeCheck
     # The ordinary source transfer events must be physically reachable
     # from their actual landings. No QA teleport is accepted as a link.
     sequence = [72,74,75,76].map { |id| BlueKantoPilot.kanto_map_id(id) }
+    city = BlueKantoPilot.kanto_map_id(64)
+    city_anchor = k03a_report.fetch("vermilion_center_landing")
+    city_comp = opening_component(city,city_anchor)
+    harbor_entries = [9,29,30].zip([26,27,28]).map do |id,x|
+      event = $game_map.events[id]
+      north_callback!(event,"BlueKantoPilot.harbor_gate(#{sequence.first}, 9, 7)")
+      require!([event.x,event.y,event.trigger] == [x,35,1] &&
+        north_event_reachable?(city_comp,event), "K03-C city harbor approach inaccessible #{id}")
+      [id,x,35]
+    end
+    city_return = k03a_chain([sequence.first,city],[9,16],city_anchor)
+    require!(city_return, "K03-C harbor cannot return to the Vermilion Center approach")
     anne_out = k03a_chain(sequence,[9,7],[4,8])
     anne_back = k03a_chain(sequence.reverse,[4,8],[9,16])
     require!(anne_out && anne_back, "K03-C physical harbor/captain roundtrip missing")
@@ -2432,7 +2444,8 @@ module KantoNativeCheck
     anne_b1 = k03a_chain([72,74,77].map { |id| BlueKantoPilot.kanto_map_id(id) },[9,7],[19,16])
     anne_b1_back = k03a_chain([77,74,72].map { |id| BlueKantoPilot.kanto_map_id(id) },[19,16],[9,16])
     require!(anne_deck && anne_deck_back && anne_b1 && anne_b1_back, "K03-C deck/B1F roundtrip missing")
-    anne_report = {"captain_out"=>anne_out,"captain_back"=>anne_back,"deck_out"=>anne_deck,
+    anne_report = {"city_entries"=>harbor_entries,"city_return"=>city_return,
+      "captain_out"=>anne_out,"captain_back"=>anne_back,"deck_out"=>anne_deck,
       "deck_back"=>anne_deck_back,"b1_out"=>anne_b1,"b1_back"=>anne_b1_back,
       "rival_versions"=>[41,42,43],"rival_defeat_retry"=>true}
     $map_factory.setup(BlueKantoPilot.kanto_map_id(76))
