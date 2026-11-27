@@ -43,6 +43,29 @@ class AndroidUpdatesTest(unittest.TestCase):
             z.writestr("Pokemon-Blue-Kanto-Android/ATUALIZAR-ANDROID.py", updater)
         return game, json.loads(marker)
 
+    def test_cerulean_same_revision_does_not_hide_stale_map(self):
+        from scripts.android.update_client import cerulean_integrity
+        files = {}
+        mapping = {str(source): 400 + source for source in (39,43,44,45,46,47,48)}
+        payloads = {"Data/blue-kanto-install.json": json.dumps({"maps": mapping}).encode()}
+        payloads.update({f"Data/Map{mid:03d}.rxdata": b"new map" for mid in mapping.values()})
+        payloads["Data/PluginScripts.rxdata"] = b"compiled"
+        for name, data in payloads.items():
+            target = self.root / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(data)
+            files[name] = {"size": len(data), "sha256": sha256_bytes(data)}
+        marker = {"schema": 1, "channel": "multiregion", "revision": self.a, "files": files}
+        (self.root / "Data/blue-update.json").write_text(json.dumps(marker))
+        (self.root / "Data/File A.rxdata").write_bytes(b"save")
+        self.assertEqual(cerulean_integrity(self.root, marker, marker), [])
+        (self.root / "Data/Map439.rxdata").write_bytes(b"old map")
+        self.assertEqual(cerulean_integrity(self.root, marker, marker), ["Data/Map439.rxdata"])
+        with patch("scripts.android.update_client.remote_update", return_value=({}, marker)):
+            self.assertEqual(main(["--game-dir", str(self.root), "--update"]), 3)
+        self.assertEqual((self.root / "Data/Map439.rxdata").read_bytes(), b"old map")
+        self.assertEqual((self.root / "Data/File A.rxdata").read_bytes(), b"save")
+
     def test_rejects_saves_and_traversal(self):
         for name in ("../Data/test.rxdata", "Data/../map", "Data/Game.rxdata",
                      "Data/File A.rxdata", "Data/Auto 1.rxdata", "Data/save1.rxdata",
