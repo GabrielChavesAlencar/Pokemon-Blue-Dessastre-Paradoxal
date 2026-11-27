@@ -719,6 +719,47 @@ jobs:
           if((Get-FileHash 'game/mkxp.json' -Algorithm SHA256).Hash -ne $originalConfig){throw 'Native save directory was changed'}
           python scripts/regions/install_kanto.py --apply --game game
           if($LASTEXITCODE -ne 0){throw 'Idempotent install check failed'}
+      - name: K03-E migracao transacional real e Game.exe integrado
+        shell: powershell
+        run: |
+          python scripts/regions/qa_k03e_migration.py
+          if($LASTEXITCODE -ne 0){throw 'K03-E real 156 to 160 migration failed'}
+          $candidate=(Resolve-Path .blue-work/kanto-k03e-migration-ci/game).Path
+          python scripts/regions/native_check.py $candidate --k03e
+          if($LASTEXITCODE -ne 0){throw 'K03-E integrated native injection failed'}
+          $mesaFolder=Join-Path $env:RUNNER_TEMP 'blue-mesa'
+          Get-ChildItem -LiteralPath $mesaFolder -Recurse -File -Filter '*.dll' |
+            Where-Object { $_.FullName -match '[\\/]x64[\\/]' } |
+            ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $candidate }
+          $proc=Start-Process -FilePath "$candidate/Game.exe" -WorkingDirectory $candidate -WindowStyle Hidden -PassThru -RedirectStandardOutput ".blue-work/kanto-k03e-integrated-out.txt" -RedirectStandardError ".blue-work/kanto-k03e-integrated-err.txt"
+          $handle=$proc.Handle
+          if(-not $proc.WaitForExit(180000)){
+            Stop-Process -Id $proc.Id -ErrorAction SilentlyContinue
+            Get-Content ".blue-work/kanto-k03e-integrated-err.txt","$candidate/Data/blue-kanto-error.txt" -ErrorAction SilentlyContinue | Select-Object -Last 100
+            throw 'K03-E integrated native test timed out'
+          }
+          $proof="$candidate/Data/blue-kanto-k03e-proof.txt"
+          if(-not (Test-Path $proof)){
+            Get-Content ".blue-work/kanto-k03e-integrated-out.txt",".blue-work/kanto-k03e-integrated-err.txt","$candidate/Data/blue-kanto-error.txt" -ErrorAction SilentlyContinue | Select-Object -Last 100
+            throw 'K03-E integrated native proof missing'
+          }
+          $receipt=(Get-Content $proof -Raw).Trim()
+          if($receipt -notmatch '"integrated_main"=>true'){throw 'K03-E receipt is not integrated'}
+          Write-Host ("KANTO_K03E_INTEGRATED_MAIN_REPORT:" + $receipt)
+          Write-Host 'KANTO_K03E_INTEGRATED_MAIN_NATIVE_OK'
+      - name: Preservar recibos migracao real K03-E
+        if: always() && hashFiles('.blue-work/kanto-k03e-migration-proof.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k03e-real-migration-native
+          path: |
+            .blue-work/kanto-k03e-migration-proof.json
+            .blue-work/kanto-k03e-migration-ci/game/Data/blue-kanto-k03e-proof.txt
+            .blue-work/kanto-k03e-migration-ci/game/Data/blue-kanto-error.txt
+            .blue-work/kanto-k03e-integrated-out.txt
+            .blue-work/kanto-k03e-integrated-err.txt
+          include-hidden-files: true
+          if-no-files-found: error
       - name: K00 - provar migracao 142 a 145 em copia descartavel com RXDATA real
         shell: powershell
         run: |

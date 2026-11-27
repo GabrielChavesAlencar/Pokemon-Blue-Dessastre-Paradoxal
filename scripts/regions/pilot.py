@@ -2083,9 +2083,11 @@ def install_runtime(target, mapping, game, manifest=None):
 def build(source, game, output, existing=None, *, manifest=None):
     output = output.resolve()
     if manifest is not None:
-        from k03e_contract import candidate_manifest
-        if (os.getenv("GITHUB_ACTIONS") != "true" or
-                output != (ROOT / ".blue-work/kanto-k03e-functional").resolve() or
+        from k03e_contract import candidate_manifest, migration_game, migration_pilot
+        isolated = (output == (ROOT / ".blue-work/kanto-k03e-functional").resolve()
+                    and game.resolve() == (ROOT / "game").resolve())
+        migrated = output == migration_pilot(ROOT) and game.resolve() == migration_game(ROOT)
+        if (os.getenv("GITHUB_ACTIONS") != "true" or not (isolated or migrated) or
                 manifest != candidate_manifest(json_file(KANTO))):
             raise ValueError("K03-E candidate must remain isolated in CI")
     work = (ROOT / ".blue-work").resolve()

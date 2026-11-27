@@ -36,7 +36,7 @@ def reachable(edges: dict[int, set[int]], start: int) -> set[int]:
     return seen
 
 
-def inspect(game: Path) -> dict:
+def inspect(game: Path, *, candidate=False) -> dict:
     game = game.resolve()
     workspace = (ROOT / ".blue-work").resolve()
     if not game.is_relative_to(workspace):
@@ -46,11 +46,19 @@ def inspect(game: Path) -> dict:
         raise ValueError("Not a prepared Kanto pilot")
     mapping = {int(source): int(dest) for source, dest in json_file(meta_path)["maps"].items()}
     manifest = json_file(KANTO)
+    trainer_specs = TRAINERS
+    if candidate:
+        import os
+        from k03e_contract import candidate_manifest, migration_pilot, TRAINERS as ROUTE11_TRAINERS
+        if os.getenv("GITHUB_ACTIONS") != "true" or game != migration_pilot(ROOT):
+            raise ValueError("K03-E structural verification requires the isolated migration pilot")
+        manifest = candidate_manifest(manifest)
+        trainer_specs = {**TRAINERS, 79: ROUTE11_TRAINERS}
     expected = {int(source): name for source, name in manifest["maps"].items()}
     preview_only = set(manifest.get("preview_only", []))
     if preview_only - expected.keys():
         raise ValueError("Preview map IDs do not exist in the Kanto manifest")
-    if preview_only & set(TRAINERS):
+    if preview_only & set(trainer_specs):
         raise ValueError("No trainer scripts can be installed on preview-only maps")
     if set(mapping) != set(expected) or len(set(mapping.values())) != len(expected):
         raise ValueError("Pilot map manifest is missing locations or contains duplicate destination IDs")
@@ -693,7 +701,7 @@ def inspect(game: Path) -> dict:
     # MAN-02: the source-proven 122 line-of-sight trainers require Event Touch,
     # with a non-triggering second page selected by self-switch A after victory.
     sight_count = 0
-    for original, profiles in TRAINERS.items():
+    for original, profiles in trainer_specs.items():
         for event_id, spec in profiles.items():
             event = maps[mapping[original]].attrs["@events"][event_id]
             pages = event.attrs["@pages"]
@@ -739,7 +747,7 @@ def inspect(game: Path) -> dict:
                 if original != 42 or event_id not in (11, 16):
                     if "pbNoticePlayer(get_self)" not in script:
                         raise ValueError(f"Trainer {original}/{event_id} will not alert the player")
-    if sight_count != 137:  # Previously 122, plus 15 source Route24/25 trainers.
+    if sight_count != (147 if candidate else 137):  # K03-E adds ten source sight trainers.
         raise ValueError(f"Source-proven trainer sight count changed: {sight_count}")
 
     # Route connections are bidirectional, but transfer events are directed.
@@ -815,7 +823,7 @@ def inspect(game: Path) -> dict:
                         (47,4): "BlueKantoPilot.cerulean_wall_map",
                         **{(39,eid): "BlueKantoPilot.cerulean_rocket" for eid in (26,37,38)}})
         verify_cerulean_police(maps[mapping[39]].attrs["@events"])
-    for source_id, entries in TRAINERS.items():
+    for source_id, entries in trainer_specs.items():
         for event_id, spec in entries.items():
             kind, name = spec[:2]
             key = f"KANTO_{source_id:03d}_{event_id:03d}"

@@ -15,10 +15,13 @@ from prepare_restore import Marshal, RubyString, dump
 def prepare(game, integrated=False, k03e=False):
     game = game.resolve()
     if k03e:
-        if integrated or os.getenv("GITHUB_ACTIONS") != "true" or game != (ROOT / ".blue-work/kanto-k03e-functional").resolve():
+        from k03e_contract import migration_game
+        migrated = game == migration_game(ROOT)
+        if integrated or os.getenv("GITHUB_ACTIONS") != "true" or not (migrated or game == (ROOT / ".blue-work/kanto-k03e-functional").resolve()):
             raise ValueError("K03-E requires a disposable CI candidate")
         from audit import json_file
-        if len(json_file(game/PILOT_META)["maps"]) != 160:
+        marker = game/"Data/blue-kanto-install.json" if migrated else game/PILOT_META
+        if len(json_file(marker)["maps"]) != 160:
             raise ValueError("K03-E candidate must contain 160 maps")
     if integrated:
         # Integrated proof modifies Main only on a disposable GitHub runner.
@@ -27,7 +30,7 @@ def prepare(game, integrated=False, k03e=False):
             raise ValueError("Integrated Main injection is allowed only on a CI copy of game/")
         if not (game / "Data/blue-kanto-start.txt").is_file():
             raise ValueError("The CI game has no installed Kanto marker")
-    elif not game.is_relative_to((ROOT / ".blue-work").resolve()) or not (game / PILOT_META).is_file():
+    elif not k03e and (not game.is_relative_to((ROOT / ".blue-work").resolve()) or not (game / PILOT_META).is_file()):
         raise ValueError("Native proof requires a dedicated Kanto build under .blue-work.")
     if not integrated and not k03e:
         # Stage-16 preflight runs on the exact compiled, disposable Kanto pilot

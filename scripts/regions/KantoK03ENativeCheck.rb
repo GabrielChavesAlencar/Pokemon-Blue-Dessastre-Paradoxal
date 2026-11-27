@@ -54,7 +54,19 @@ module KantoK03ENativeCheck
 
   def self.run
     SaveData.initialize_bootup_values
+    integrated = !File.file?("Kanto pilot.json")
+    if integrated
+      spawn = BlueRegionStart.kanto_spawn
+      registry = BlueRegionStart.kanto_compact_maps(spawn)
+      require!(BlueRegionStart.kanto_integrated? && registry && registry.size == 160,
+        "K03-E main native ready gate rejected 160 maps")
+      BlueRegionStart.define_singleton_method(:choose_initial) { "KANTO" }
+    end
     Game.start_new
+    if integrated
+      require!($game_map.map_id == spawn[0] && BlueKantoPilot.kanto_current?,
+        "K03-E main start did not enter Kanto")
+    end
     Object.send(:define_method,:pbMessage) { |*args| args[1].is_a?(Array) ? 0 : nil }
     Object.send(:define_method,:pbConfirmMessage) { |*args| true }
     # Setup of disposable controlled battle fixture, not a claimed campaign playthrough.
@@ -130,8 +142,10 @@ module KantoK03ENativeCheck
     report = {"map_ids"=>ids,"forward"=>forward,"reverse"=>reverse,"transfer_receipts"=>receipts,
       "trainers"=>trainers,"defeat_retry"=>true,"save_reload"=>true,"controlled_battle_results"=>true,
       "manual_gameplay"=>false}
+    report["integrated_main"] = integrated
     File.write("Data/blue-kanto-k03e-proof.txt",report.inspect)
     puts "KANTO_K03E_NATIVE_CORRIDOR_REPORT:#{report.inspect}"
     puts "KANTO_K03E_ROUTE11_DIGLETT_TRAINERS_SAVE_RELOAD_OK"
+    puts "KANTO_K03E_INTEGRATED_MAIN_NATIVE_OK" if integrated
   end
 end

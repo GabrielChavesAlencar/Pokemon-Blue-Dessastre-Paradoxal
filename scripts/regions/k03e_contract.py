@@ -25,3 +25,14 @@ def candidate_manifest(baseline):
     if len(baseline["maps"]) != 156 or set(map(int, baseline["maps"])) & MAPS.keys():
         raise ValueError("K03-E baseline changed")
     return {**baseline, "maps": {**baseline["maps"], **{str(i): k for i,k in MAPS.items()}}}
+
+def migration_game(root):
+    return (root / ".blue-work/kanto-k03e-migration-ci/game").resolve()
+
+def migration_pilot(root):
+    return (root / ".blue-work/kanto-k03e-migration-ci/rebuilt-pilot").resolve()
+
+def require_migration_game(root, game):
+    import os
+    if os.getenv("GITHUB_ACTIONS") != "true" or game.resolve() != migration_game(root):
+        raise ValueError("K03-E candidate migration is restricted to its disposable CI game")
