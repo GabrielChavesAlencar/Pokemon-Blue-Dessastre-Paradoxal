@@ -23,6 +23,7 @@ on:
     paths:
       - 'RUN_UNOVA_MAPIDS.bat'
       - 'scripts/regions/audit_unova_*.py'
+      - 'scripts/regions/unova_*.py'
       - 'tests/test_unova_*.py'
       - 'data/regions/unova-*.json'
       - 'docs/UNOVA_*.md'
@@ -48,6 +49,8 @@ jobs:
           python scripts/regions/audit_unova_e08_readiness.py
           python scripts/regions/audit_unova_sp04_npcs.py
           python scripts/regions/unova_sp05_cheren_pilot.py
+      - name: Conferir geometria original do corredor de abertura
+        run: python -m unittest discover -s tests -p 'test_unova_original_opening.py' -v
           python scripts/regions/audit_unova_u07_events.py --simulate-demo
           python scripts/regions/audit_unova_g01_state_schema.py --check
           python scripts/regions/audit_unova_g01_chapter_machine.py --check
