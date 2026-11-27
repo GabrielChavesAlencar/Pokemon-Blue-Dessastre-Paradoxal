@@ -576,6 +576,61 @@ def compatible_patch(release, installed, manifest):
     return min(matching, key=lambda row: row["size"]) if matching else None
 
 
+def cerulean_integrity(root, installed, manifest):
+    """Audit the actual map, runtime and compiled cache, not just the marker."""
+    if installed["channel"] != "multiregion" or manifest["channel"] != "multiregion":
+        raise ValueError("Diagnostico Cerulean exige o canal multirregional.")
+    if installed["revision"] != manifest["revision"]:
+        raise ValueError("Atualize para a revisao publicada antes do diagnostico.")
+    registry_name = "Data/blue-kanto-install.json"
+    registry = _local_target(root, registry_name)
+    tracked = manifest["files"]
+    names = [registry_name, "Data/PluginScripts.rxdata", "Data/Scripts.rxdata",
+             "Data/blue-mobile-build.txt", "Data/blue-mobile.txt",
+             "Plugins/ZZZZZ Blue Kanto Pilot/KantoPilot.rb",
+             "Plugins/ZZZZ Blue Story and Presentation/Regions.rb"]
+    registry_meta = tracked.get(registry_name)
+    if (registry_meta and registry.is_file() and
+            sha256_file(registry) == registry_meta["sha256"]):
+        mapping = json.loads(registry.read_text(encoding="utf8"))["maps"]
+        for source in ("39", "43", "44", "45", "46", "47", "48"):
+            mid = mapping.get(source)
+            if type(mid) is not int or not 0 < mid < 1000:
+                raise ValueError("MapID de Cerulean invalido: " + source)
+            names.append(f"Data/Map{mid:03d}.rxdata")
+    else:
+        print("Registro de mapas divergente: nao sera usado para escolher MapIDs.")
+    mismatches = []
+    print("Pasta auditada:", root)
+    print("Revisao declarada:", installed["revision"])
+    for name in names:
+        expected = tracked.get(name) or manifest.get("immutable", {}).get(name)
+        if not expected:
+            print("SEM REFERENCIA:", name)
+            continue
+        target = _local_target(root, name)
+        good = (target.is_file() and target.stat().st_size == expected["size"] and
+                sha256_file(target) == expected["sha256"])
+        print("OK:" if good else "DIVERGENTE:", name, flush=True)
+        if not good:
+            mismatches.append(name)
+    return mismatches
+
+
+def cerulean_logs(root):
+    for name in ("Data/blue-mobile-build.txt", "Data/blue-android-runtime.txt",
+                 "Data/blue-android-event-error.txt", "errorlog.txt"):
+        path = _local_target(root, name)
+        print("\n--- " + name + " ---")
+        if not path.is_file():
+            print("Nao encontrado.")
+            continue
+        with path.open("rb") as stream:
+            stream.seek(max(0, path.stat().st_size - 24000))
+            content = stream.read().decode("utf-8", errors="replace")
+        print("\n".join(content.splitlines()[-65:]))
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(
         description="Fast incremental updates for a CLOSED JoiPlay installation, without backups.")
@@ -584,6 +639,8 @@ def main(argv=None):
                         help="Download/apply ONLY changed files from a compatible delta.")
     parser.add_argument("--full", action="store_true",
                         help="Explicit fallback: download full ZIP but replace only changed files, no backup.")
+    parser.add_argument("--diagnose-cerulean", action="store_true",
+                        help="Read-only audit of Cerulean map files, compiled scripts and local error logs.")
     args = parser.parse_args(argv)
     root = args.game_dir.expanduser().resolve()
     if (root / "Data/blue-sinnoh-shared-qa.txt").is_file():
@@ -591,7 +648,19 @@ def main(argv=None):
     info = read_installed(root)
     release, manifest = remote_update(info)
     verify_forward_revision(info["revision"], manifest["revision"])
+    if args.diagnose_cerulean:
+        try:
+            mismatches = cerulean_integrity(root, info, manifest)
+            print("Arquivos divergentes:", len(mismatches))
+            return 3 if mismatches else 0
+        finally:
+            cerulean_logs(root)
     if info["revision"] == manifest["revision"] and not args.full:
+        if info["channel"] == "multiregion":
+            mismatches = cerulean_integrity(root, info, manifest)
+            if mismatches:
+                print("Revisao igual, mas arquivos divergentes. Execute --diagnose-cerulean.")
+                return 3
         print("O jogo ja esta atualizado:", info["revision"])
         return 0
     print("Versao instalada:", info["revision"])

@@ -291,7 +291,7 @@ jobs:
               $ceruleanRegression="$pilot/Data/blue-kanto-cerulean-regression.txt"
               if(-not (Test-Path $ceruleanRegression)){throw 'Cerulean police/roundtrip native receipt missing'}
               $ceruleanMarkers=Get-Content $ceruleanRegression
-              foreach($marker in @('KANTO_CERULEAN_POLICE_BEFORE_AFTER_BILL_OK','KANTO_CERULEAN_NATIVE_ROUNDTRIP_OK','KANTO_CERULEAN_POLICE_PACKAGED_NATIVE_AND_CACHE_REFRESH_OK')){
+              foreach($marker in @('KANTO_CERULEAN_POLICE_BEFORE_AFTER_BILL_OK','KANTO_CERULEAN_NATIVE_ROUNDTRIP_OK','KANTO_CERULEAN_POLICE_PACKAGED_NATIVE_AND_CACHE_REFRESH_OK','KANTO_CERULEAN_PHYSICAL_LEGACY_DIALOGUE_AND_DOOR_RECOVERY_OK')){
                 if($ceruleanMarkers -notcontains $marker){throw "Missing native marker: $marker"}
               }
               $ceruleanMarkers | Write-Host

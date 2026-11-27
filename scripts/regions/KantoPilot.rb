@@ -136,6 +136,18 @@ module BlueKantoPilot
   end
 
   def self.npc_dialogue(source_map, source_event, index)
+    # Physical JoiPlay report: Map321/Event13 retained the three pre-K02-C
+    # npc_dialogue calls in a saved interpreter/event list. The current
+    # catalogue intentionally no longer contains these two police actors.
+    # Resolve ONLY these known old calls, on the actual Cerulean map.
+    if source_map == 39 && [13,25].include?(source_event) &&
+        index.is_a?(Integer) && index.between?(0,2) &&
+        kanto_current? && $game_map && $game_map.map_id == kanto_map_id(39)
+      if index == 0
+        pbMessage(cerulean_guard_message(source_event))
+      end
+      return
+    end
     @npc_dialogues ||= begin
       raise "Kanto NPC dialogue table not installed" unless File.file?(NPC_DIALOGUE_FILE)
       load_data(NPC_DIALOGUE_FILE).each_with_object({}) do |entry, rows|
@@ -1035,10 +1047,19 @@ module BlueKantoPilot
     false
   end
 
+  def self.cerulean_guard_message(id)
+    if id == 25 && cerulean_house_open?
+      t("You may pass. The investigation continues.",
+        "Pode passar. A investigação continua.")
+    else
+      t("Team Rocket robbed this house. We are investigating.",
+        "A Equipe Rocket roubou esta casa. Estamos investigando.")
+    end
+  end
+
   def self.cerulean_police
     return unless kanto_current?
-    pbMessage(t("Team Rocket robbed this house. We are investigating.",
-                "A Equipe Rocket roubou esta casa. Estamos investigando."))
+    pbMessage(cerulean_guard_message(13))
   end
 
   def self.cerulean_house_owner
@@ -2396,6 +2417,16 @@ module BlueKantoPilot
   # Native text is now authored directly into both on-disk guard pages.
   # Convert the same two legacy pages in cached saves as well, so a
   # subsequent refresh cannot restore the old Ruby callback on JoiPlay.
+  def self.legacy_cerulean_guard_commands?(commands,id)
+    return false unless commands && commands.last && commands.last.code == 0
+    scripts = commands[0...-1]
+    return false unless scripts.all? { |op| [355,655].include?(op.code) }
+    lines = scripts.flat_map { |op| op.parameters[0].to_s.split("\n").map(&:strip) }
+    lines == ["BlueKantoPilot.cerulean_police"] ||
+      (!lines.empty? && lines.length <= 3 &&
+        lines == (0...lines.length).map { |i| "BlueKantoPilot.npc_dialogue(39, #{id}, #{i})" })
+  end
+
   def self.sync_cerulean_police_dialogue(map)
     return unless map && kanto_current? && map.map_id == kanto_map_id(39) && kanto_map_id(43)
     pt = defined?(BlueLocale) && BlueLocale.enabled?
@@ -2411,14 +2442,14 @@ module BlueKantoPilot
       lists = authored && authored.respond_to?(:pages) ? authored.pages.map { |page| page.list } : []
       lists << guard.list
       lists.compact.each do |commands|
-        next unless commands.length == 2 && commands.last.code == 0
+        next unless legacy_cerulean_guard_commands?(commands,id) ||
+          commands.map(&:code) == [101,0]
         op = commands.first
-        next unless (op.code == 355 && op.parameters[0].to_s == "BlueKantoPilot.cerulean_police") || op.code == 101
         next if op.code == 101 && op.parameters == [message]
         native = op.dup
         native.code = 101
         native.parameters = [message]
-        commands[0] = native
+        commands.replace([native,commands.last])
       end
     end
   end
@@ -2447,10 +2478,16 @@ module BlueKantoPilot
     # eight doors already exist. Require both original adapted guard pages.
     [13,25].each do |id|
       guard = map.events[id]
-      next if guard && (guard.character_name.to_s.empty? ||
-        Array(guard.list).any? { |op| op.code == 101 ||
-          (op.code == 355 && op.parameters[0].to_s == "BlueKantoPilot.cerulean_police") })
-      stale << id
+      raw = guard && guard.instance_variable_get(:@event)
+      active_index = id == 13 ? 0 : 1
+      pages = raw && raw.respond_to?(:pages) ? raw.pages : []
+      native = pages.length == 2 &&
+        pages[active_index].list.map(&:code) == [101,0] &&
+        pages[1-active_index].list.map(&:code) == [0]
+      current = guard && (guard.character_name.to_s.empty? ?
+        Array(guard.list).map(&:code) == [0] :
+        Array(guard.list).map(&:code) == [101,0])
+      stale << id unless native && current
     end
     return false if stale.empty?
     path = format("Data/Map%03d.rxdata",map.map_id)
@@ -2483,6 +2520,7 @@ module BlueKantoPilot
       map.events.each_value { |event| event.refresh }
     end
     sync_cerulean_police_dialogue(map)
+    reloaded
   end
 end
 
@@ -2498,11 +2536,15 @@ Game_Map.prepend(BlueKantoPilot::CeruleanQuestMapSetup) if defined?(Game_Map)
 
 module BlueKantoPilot::CeruleanQuestMapLoad
   def createSpritesets(*args)
-    if $map_factory && $map_factory.respond_to?(:maps)
-      $map_factory.maps.each { |map| BlueKantoPilot.sync_loaded_cerulean_map(map) }
-    else
-      BlueKantoPilot.sync_loaded_cerulean_map($game_map)
-    end
+    maps = $map_factory && $map_factory.respond_to?(:maps) ? Array($map_factory.maps) : []
+    (maps + [$game_map]).compact.uniq.each { |map| BlueKantoPilot.sync_loaded_cerulean_map(map) }
+    super
+  end
+
+  def createSingleSpriteset(*args)
+    map = $map_factory && $map_factory.respond_to?(:maps) && args[0].is_a?(Integer) ?
+      $map_factory.maps[args[0]] : nil
+    BlueKantoPilot.sync_loaded_cerulean_map(map || $game_map)
     super
   end
 end
@@ -2633,6 +2675,12 @@ module BlueKantoPilot
       end
       return nil
     end
+    # A JoiPlay save can skip the expected spriteset/setup hook. Recheck
+    # the actual current map at a canonical doorstep, before fetching the
+    # event reference. Never reload a map while an interpreter is running.
+    canonical_step = CERULEAN_DOOR_STEPS.values.include?([from,direction]) ||
+      (from == [14,29] && direction == 8)
+    sync_loaded_cerulean_map($game_map) if canonical_step
     CERULEAN_INTERIOR_DOORS.each do |id,source|
       event = $game_map.events[id]
       next unless event.is_a?(Game_Event) && event.respond_to?(:trigger) &&
