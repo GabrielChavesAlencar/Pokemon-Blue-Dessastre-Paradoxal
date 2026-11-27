@@ -9,6 +9,7 @@ from pathlib import Path
 from unittest.mock import patch
 from audit import ROOT, KANTO, inventory, json_file, load
 import install_kanto as installer
+from server.ruby_marshal import RubyObject, RubyData
 from k03e_contract import MAPS, candidate_manifest, migration_game, migration_pilot
 
 REPORT = ROOT/".blue-work/kanto-k03e-migration-proof.json"
@@ -18,6 +19,42 @@ def require(condition,message):
 
 def snapshot(game, paths):
     return {str(p): installer.digest(game/p) if (game/p).is_file() else None for p in paths}
+
+def differences(old, new, path, rows, limit=120):
+    """Report exact inert Marshal differences without accepting any divergence."""
+    if len(rows) >= limit:
+        return
+    def record(kind, a, b):
+        def short(v):
+            if isinstance(v, (RubyObject, RubyData)):
+                return v.name
+            if isinstance(v, (bytes, str)) and len(v) > 200:
+                return repr(v[:200]) + f"... ({len(v)} units)"
+            return repr(v)[:240]
+        rows.append({"path": path, "kind": kind, "old": short(a), "new": short(b)})
+    if type(old) is not type(new):
+        record("type", type(old).__name__, type(new).__name__)
+    elif isinstance(old, RubyObject):
+        if old.name != new.name:
+            record("class", old.name, new.name)
+        else:
+            differences(old.attrs, new.attrs, path, rows, limit)
+    elif isinstance(old, RubyData):
+        if old != new:
+            record("native_data", old.name + ":" + __import__("hashlib").sha256(old.data).hexdigest(),
+                   new.name + ":" + __import__("hashlib").sha256(new.data).hexdigest())
+    elif isinstance(old, dict):
+        if old.keys() != new.keys():
+            record("keys", sorted(old.keys(), key=str), sorted(new.keys(), key=str))
+        for key in sorted(old.keys() & new.keys(), key=str):
+            differences(old[key], new[key], f"{path}/{key}", rows, limit)
+    elif isinstance(old, list):
+        if len(old) != len(new):
+            record("length", len(old), len(new))
+        for i, (a, b) in enumerate(zip(old, new)):
+            differences(a, b, f"{path}/{i}", rows, limit)
+    elif old != new:
+        record("value", old, new)
 
 def run():
     if os.getenv("GITHUB_ACTIONS")!="true" or os.name!="nt":
@@ -48,6 +85,7 @@ def run():
     require(not set(mapping.values()).intersection(int(p.stem[3:]) for p in foreign),"K03-E foreign map collision")
     # Map bytes can differ because new tilesets are appended. Compare native
     # original geometry and every previous event, allowing only the new door.
+    baseline_differences = []
     for sid,mid in old.items():
         path=Path(f"Data/Map{mid:03d}.rxdata")
         old_map=load(game/path).attrs
@@ -55,9 +93,21 @@ def run():
         require(all(old_map[k]==new_map[k] for k in ("@width","@height","@data")),f"K03-E changed baseline geometry {sid}")
         old_events,new_events=old_map["@events"],new_map["@events"]
         if sid=="18":
-            require(set(new_events)-set(old_events)=={1} and all(new_events[k]==v for k,v in old_events.items()),"K03-E Route2 changed unrelated events")
-        else:
-            require(old_events==new_events,f"K03-E changed baseline events {sid}")
+            require(set(new_events)-set(old_events)=={1},"K03-E Route2 door set changed")
+            new_events = {k:v for k,v in new_events.items() if k != 1}
+        if old_events != new_events:
+            rows = []
+            differences(old_events, new_events, f"Map{int(sid):03d}/events", rows)
+            entry = {"source": int(sid), "destination": mid,
+                     "old_file_sha256": installer.digest(game/path),
+                     "new_file_sha256": installer.digest(pilot/path),
+                     "differences": rows}
+            baseline_differences.append(entry)
+            print("KANTO_K03E_BASELINE_EVENT_DIFF:" + json.dumps(entry, ensure_ascii=True), flush=True)
+    if baseline_differences:
+        detail = ROOT/".blue-work/kanto-k03e-baseline-event-diff.json"
+        detail.write_text(json.dumps(baseline_differences, ensure_ascii=True, indent=2), encoding="utf8")
+        raise ValueError("K03-E changed baseline events: " + ",".join(str(row["source"]) for row in baseline_differences))
     touched=list(files)+[proof_path,installer.READY_GATE,installer.MARKER,Path("Data/blue-compile-request.txt"),Path("Data/PluginScripts.rxdata")]
     before=snapshot(game,touched+protected)
     # Actual writes and rollback, failure injected only at final verification.
