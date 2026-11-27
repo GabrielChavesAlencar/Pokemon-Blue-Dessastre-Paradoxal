@@ -38,6 +38,8 @@ jobs:
           }
           python scripts/regions/ensure_source.py
           if($LASTEXITCODE -ne 0){throw 'Pinned FRLG source preparation failed'}
+          python scripts/regions/audit_k04_rock_tunnel.py
+          if($LASTEXITCODE -ne 0){throw 'K04 Rock Tunnel source inventory failed'}
           # Prove the default release build first, using all inputs from this SHA.
           python scripts/regions/pilot.py --output .blue-work/kanto-release-pilot
           if($LASTEXITCODE -ne 0){throw 'Active Kanto pilot build failed'}
@@ -137,6 +139,14 @@ jobs:
           Copy-Item .blue-work/kanto-pilot/Data/Scripts.rxdata .blue-work/kanto-clean-main.rxdata
           python scripts/regions/native_check.py .blue-work/kanto-pilot
           if($LASTEXITCODE -ne 0){throw 'Native check preparation failed'}
+      - name: Guardar inventário K04 Rock Tunnel (sem arquivos do jogo)
+        if: always() && hashFiles('.blue-work/kanto-k04-source.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k04-source-inventory
+          path: .blue-work/kanto-k04-source.json
+          include-hidden-files: true
+          if-no-files-found: error
       - name: Preservar recibo K02-C da fonte e migracao isolada
         if: always()
         uses: actions/upload-artifact@v4
