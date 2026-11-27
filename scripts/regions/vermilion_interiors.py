@@ -12,6 +12,11 @@ from server.ruby_marshal import text
 
 INTERIORS = {68,69,70,71}
 ITEMS = {"BIKEVOUCHER","OLDROD"}
+DOORS = {68:(16,[16,17],[5,10],1,[5,11],[16,18]),
+         69:(14,[23,17],[4,7],3,[4,8],[23,18]),
+         70:(15,[32,24],[4,7],3,[4,8],[32,25]),
+         71:(13,[13,6],[4,7],3,[4,8],[13,7])}
+REWARDS = {(68,13):"BIKEVOUCHER",(71,1):"OLDROD"}
 GIFT = re.compile(r"\s*(?:pbReceiveItem|\$bag\.add)\s*\(\s*:(BIKEVOUCHER|OLDROD)\s*(?:,\s*1\s*)?\)\s*")
 
 def inspect_source(source: Path):
@@ -55,7 +60,12 @@ def inspect_source(source: Path):
         returns = [(e["event"],w) for e in rows[mid]["events"] for w in e["warps"] if w[0] == 64]
         if len(doors) != 1 or len(returns) != 1:
             raise ValueError(f"K03-B expected unique original door/return {mid}: {doors!r}/{returns!r}")
-    if sorted(rewards.values()) != sorted(ITEMS):
+    for mid,(eid,xy,landing,rid,rxy,back) in DOORS.items():
+        city = next(e for e in rows[64]["events"] if e["event"] == eid)
+        interior = next(e for e in rows[mid]["events"] if e["event"] == rid)
+        if city["xy"] != xy or (mid,*landing) not in city["warps"] or interior["xy"] != rxy or (64,*back) not in interior["warps"]:
+            raise ValueError(f"K03-B original door geometry differs {mid}")
+    if rewards != REWARDS:
         raise ValueError(f"K03-B expected exactly one source voucher and rod gift: {rewards!r}")
     print("KANTO_K03B_SOURCE_IDENTITY_OK:"+json.dumps([[m,e,i] for (m,e),i in rewards.items()]),flush=True)
     return {"maps":rows,"rewards":rewards}

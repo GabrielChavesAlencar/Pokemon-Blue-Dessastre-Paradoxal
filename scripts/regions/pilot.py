@@ -21,7 +21,6 @@ from kanto_overworld import (MissingActorGraphic, safely_adapt_source_field_even
                              source_item_ball, source_npc_dialogue, source_sign_dialogue,
                              source_obstacle, CERULEAN_FURNITURE, source_cerulean_furniture)
 from kanto_npc_locale import install_npc_locale, npc_literals
-from vermilion_interiors import inspect_source
 from kanto_locale_audit import write_audit
 from kanto_wall_atlas import render_wall_atlas
 from server.ruby_marshal import RubyObject, dumps_simple, text
@@ -906,7 +905,10 @@ def install_events(source, target, mapping):
     mart_intro_event_id = max(mart_events) + 1
     preview_only = set(json_file(KANTO).get("preview_only", []))
     catalogue_items = catalogue(target, "items")
-    vermilion = inspect_source(source) if {68,69,70,71} <= mapping.keys() else None
+    vermilion = None
+    if {68,69,70,71} <= mapping.keys():
+        from vermilion_interiors import inspect_source
+        vermilion = inspect_source(source)
     if vermilion and not {"BIKEVOUCHER", "OLDROD"} <= catalogue_items:
         raise ValueError("K03-B native reward items absent")
     field_inventory, skipped_items, pending_review, missing_graphics = [], [], [], []

@@ -376,7 +376,6 @@ module KantoNativeCheck
     $map_factory.setup(center)
     center_exit = $game_map.events.values.find { |e| Array(e.list).any? { |op| op.code == 201 && op.parameters[1] == city } }
     anchor = north_transfer!(center_exit,city)
-    component = opening_component(city,anchor)
     records = []
     rewards = []
     (68..71).each do |source|
@@ -399,6 +398,13 @@ module KantoNativeCheck
             BlueRegionTravel.regional_item?(item),"K03-B reward not a regional key item")
           before = $bag.quantity(item)
           require!(before == 0,"K03-B unexpected reward already owned")
+          Object.send(:define_method,:pbConfirmMessage) { |*args| false }
+          begin
+            require!(!BlueKantoPilot.vermilion_gift(source,event.id,item) &&
+              $bag.quantity(item) == 0,"K03-B declined gift granted item")
+          ensure
+            Object.send(:define_method,:pbConfirmMessage) { |*args| true }
+          end
           require!(BlueKantoPilot.vermilion_gift(source,event.id,item) &&
             BlueKantoPilot.vermilion_gift(source,event.id,item) &&
             $bag.quantity(item) == 1,"K03-B reward missing or duplicated")
