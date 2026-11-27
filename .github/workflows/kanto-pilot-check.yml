@@ -220,6 +220,11 @@ jobs:
               if(-not (Test-Path $nativeAudio)){throw "Native Kanto F6 AudioFile probe missing"}
               if(-not ((Get-Content $nativeAudio -Raw) -match "PASS_NATIVE_AUDIOFILE_DISPATCH_NOT_AUDIBLE")){throw "Kanto music F6 native probe did not pass"}
               Get-Content $nativeAudio
+              $scaleProof="$pilot/Data/blue-kanto-gary-scale-proof.txt"
+              if(-not (Test-Path $scaleProof)){throw 'Gary native sprite scale proof missing'}
+              $scaleText=Get-Content $scaleProof -Raw
+              if($scaleText -notmatch 'KANTO_GARY_VISIBLE_PLAYER_SCALE_REPORT:' -or $scaleText -notmatch 'KANTO_GARY_VISIBLE_PLAYER_SCALE_OK'){throw 'Gary native sprite scale proof invalid'}
+              Get-Content $scaleProof
               $northProof="$pilot/Data/blue-kanto-k00-cerulean-proof.txt"
               if(-not (Test-Path $northProof)){throw 'K00-C native Cerulean proof missing'}
               Get-Content $northProof

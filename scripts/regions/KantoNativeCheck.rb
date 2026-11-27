@@ -1484,12 +1484,28 @@ module KantoNativeCheck
       factor = BlueKantoPilot.player_overworld_zoom(player_height)
       require!((player_height * factor - gary_height).abs < 0.01,
         "Player and Gary visible heights diverged")
-      puts "KANTO_GARY_VISIBLE_PLAYER_SCALE_REPORT:#{{
-        'gary_charset'=>BlueKantoPilot.cerulean_rival_graphic,
-        'gary_height'=>gary_height,'player_charset'=>$game_player.character_name,
-        'player_height'=>player_height,'zoom'=>factor,
-        'rendered_height'=>player_height*factor}.inspect}"
-      puts "KANTO_GARY_VISIBLE_PLAYER_SCALE_OK"
+      # Exercise the actual Sprite_Character hook, not just the ratio helper.
+      viewport = Viewport.new(0,0,Graphics.width,Graphics.height)
+      sprite = nil
+      begin
+        sprite = Sprite_Character.new(viewport,$game_player)
+        2.times { sprite.update }
+        visible = BlueKantoPilot.overworld_visible_height(sprite.bitmap,
+          sprite.instance_variable_get(:@cw),sprite.instance_variable_get(:@ch))
+        require!(visible && (visible * sprite.zoom_y - gary_height).abs < 0.01 &&
+          (sprite.zoom_x - sprite.zoom_y).abs < 0.01,
+          "Actual rendered player sprite does not match Gary")
+        report = "KANTO_GARY_VISIBLE_PLAYER_SCALE_REPORT:#{{'gary_charset'=>BlueKantoPilot.cerulean_rival_graphic,
+          'gary_height'=>gary_height,'player_charset'=>$game_player.character_name,
+          'player_height'=>visible,'zoom'=>sprite.zoom_y,
+          'rendered_height'=>visible*sprite.zoom_y,'native_sprite'=>true}.inspect}"
+        File.write("Data/blue-kanto-gary-scale-proof.txt",report+"\nKANTO_GARY_VISIBLE_PLAYER_SCALE_OK\n")
+        puts report
+        puts "KANTO_GARY_VISIBLE_PLAYER_SCALE_OK"
+      ensure
+        sprite.dispose if sprite && !sprite.disposed?
+        viewport.dispose if viewport && !viewport.disposed?
+      end
     ensure
       player_bitmap.dispose
     end
