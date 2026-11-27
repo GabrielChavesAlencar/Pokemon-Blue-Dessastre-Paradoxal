@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "567039bf04322ca5af8f595ae53fe630e72817e4",
+      "date": "2026-11-27T14:43:57-03:00",
+      "title": "Kanto K03-C: S.S. Anne, rival, capitão e Cut com regressões Cerulean",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "69b31e26a3bf45190be7dfc31b5908bfbb0ff2c3",
+      "date": "2026-11-27T14:34:40-03:00",
+      "title": "Merge current main into K03-C; preserve Cerulean hotfixes and regenerate portable Unova bundle",
+      "category": "Novidades"
+    },
+    {
+      "sha": "c46093689271cf0559f21280105b021fc259c4c8",
+      "date": "2026-11-27T14:30:05-03:00",
+      "title": "fix(ci): restore single Kanto workflow and require integrated Cut receipts",
+      "category": "Correções"
+    },
+    {
       "sha": "20644ab2f7a0b4c56f54e761c4c3b3ecf878dc7c",
       "date": "2026-11-27T14:12:06-03:00",
       "title": "fix(kanto): restore Rocket behind Cerulean house and Dig reward (#371)",
@@ -110,6 +128,12 @@
       "category": "Documentação"
     },
     {
+      "sha": "4579a8b51a6913a810fc789cfa556520eecaa727",
+      "date": "2026-11-27T11:34:37-03:00",
+      "title": "ci(kanto): require integrated Cut receipt and synchronize current main",
+      "category": "Melhorias"
+    },
+    {
       "sha": "b994d183fbb305fa8b5424cd342628c1bf51ce0a",
       "date": "2026-11-27T11:25:28-03:00",
       "title": "docs: indexar roadmap Codex de Johto no README",
@@ -122,16 +146,64 @@
       "category": "Documentação"
     },
     {
+      "sha": "12c7216029a232fcc5d95c09c1bb98cd04ada6d2",
+      "date": "2026-11-27T11:23:32-03:00",
+      "title": "test(kanto): use audited native Cut user, preserve negative gates and sync main",
+      "category": "Testes"
+    },
+    {
       "sha": "549eea9eff18d0a916aaafefe8c90fce400b85f2",
       "date": "2026-11-27T11:14:31-03:00",
       "title": "docs: linkar roteiro operacional Unova no README",
       "category": "Novidades"
     },
     {
+      "sha": "7267920cc6d13b8bd0d4434b4d7614f7e7116b76",
+      "date": "2026-11-27T11:14:28-03:00",
+      "title": "test(kanto): diagnose native Cut eligibility without relaxing Bulbasaur gate",
+      "category": "Testes"
+    },
+    {
       "sha": "ef29c244b86743958a871e876bb69e4d329cc258",
       "date": "2026-11-27T11:14:22-03:00",
       "title": "docs(unova): roteiro operacional Codex para campanha nativa e releases Windows Android",
       "category": "Novidades"
+    },
+    {
+      "sha": "26c4776498122b59480aad5b64ed6bf86c3a8fd4",
+      "date": "2026-11-27T11:03:28-03:00",
+      "title": "fix(kanto): preserve S.S. Anne rival map identity across Surge and save reload",
+      "category": "Correções"
+    },
+    {
+      "sha": "7eb02933fde4e916b7df95a0140f0688debedba5",
+      "date": "2026-11-27T10:47:59-03:00",
+      "title": "fix(kanto): synchronize S.S. Anne rival catalog gates and portable Unova bundle",
+      "category": "Novidades"
+    },
+    {
+      "sha": "b9dc7fe672da581cca1fe48ccdd3667e2b982ff6",
+      "date": "2026-11-27T10:32:47-03:00",
+      "title": "docs(kanto): synchronize S.S. Anne trainer catalogue and K03-C roadmap",
+      "category": "Documentação"
+    },
+    {
+      "sha": "cb4e329fe691aad3662d427f27b0927150d690e2",
+      "date": "2026-11-27T10:31:54-03:00",
+      "title": "test(kanto): prove same-catalogue ship migration and regional Cut policy",
+      "category": "Testes"
+    },
+    {
+      "sha": "8857451e06eb0548ff1210d1792894d80bb05098",
+      "date": "2026-11-27T10:30:52-03:00",
+      "title": "feat(kanto): restore original S.S. Anne rival and guarded captain route with native proofs",
+      "category": "Novidades"
+    },
+    {
+      "sha": "cd77f98947772502b1687b6a0d7dd7f6d2435afd",
+      "date": "2026-11-27T10:20:06-03:00",
+      "title": "fix(kanto): enforce S.S. Anne boarding and captain Cut transaction; add native regression",
+      "category": "Correções"
     },
     {
       "sha": "c37778eed3819fe589b9ce7d02b474e7289456a3",
