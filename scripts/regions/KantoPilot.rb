@@ -1035,6 +1035,7 @@ module BlueKantoPilot
   # K02-C: keep donor switch 87/88 out of the shared save. Bill's
   # verified local quest unlocks the original front and rear doors.
   CERULEAN_ROCKET_KEY = "KANTO_039_026".freeze
+  CERULEAN_ROCKET_EVENTS = [26,37,38].freeze
   def self.cerulean_house_open?
     return false unless kanto_current?
     # The actual regional ticket in the Bag controls the police position.
@@ -1244,11 +1245,11 @@ module BlueKantoPilot
       return false
     end
     progress["pilot_cerulean_dig_awarded"] = true
-    [26,37,38].each do |id|
+    CERULEAN_ROCKET_EVENTS.each do |id|
       $game_self_switches[[$game_map.map_id,id,"A"]] = true
     end
     $game_map.need_refresh = true
-    pbMessage(t("You recovered TM28!", "Você recuperou a TM28!"))
+    pbMessage(t("You recovered TM28 (Dig)!", "Você recuperou a TM28 (Dig)!"))
     true
   end
 
@@ -2385,7 +2386,7 @@ module BlueKantoPilot
     return false unless $game_self_switches && $PokemonGlobal &&
       kanto_current? && kanto_map_id(43) && map_id == kanto_map_id(39)
     desired = {13=>cerulean_house_open?,25=>cerulean_house_open?}
-    [26,37,38].each { |id| desired[id] = !!progress["pilot_cerulean_dig_awarded"] }
+    CERULEAN_ROCKET_EVENTS.each { |id| desired[id] = !!progress["pilot_cerulean_dig_awarded"] }
     changed = false
     desired.each do |id, value|
       key = [map_id,id,"A"]
@@ -2469,6 +2470,41 @@ module BlueKantoPilot
       op.parameters[0] == 0 && op.parameters[1] == destination }
   end
 
+  # Event 26 is the original visible Grunt; 37/38 are the original
+  # invisible encounter lanes. A legacy map can lack any of the three,
+  # even when the eight doors and both police pages have been repaired.
+  def self.cerulean_rocket_callback?(commands)
+    Array(commands).map(&:code) == [355,0] &&
+      commands.first.parameters[0].to_s == "BlueKantoPilot.cerulean_rocket"
+  end
+
+  def self.cerulean_rocket_authored?(event,id)
+    return false unless event && event.respond_to?(:pages) && event.pages.length == 2
+    active,done = event.pages
+    active.trigger == (id == 26 ? 0 : 2) &&
+      active.graphic.character_name.to_s.empty? == (id != 26) &&
+      cerulean_rocket_callback?(active.list) &&
+      done.list.map(&:code) == [0] && done.graphic.character_name.to_s.empty? &&
+      done.through && done.condition.self_switch_valid &&
+      done.condition.self_switch_ch.to_s == "A"
+  end
+
+  def self.cerulean_rocket_stale?(event,id)
+    return true unless event.is_a?(Game_Event)
+    raw = event.instance_variable_get(:@event)
+    return true unless cerulean_rocket_authored?(raw,id)
+    return true if event.instance_variable_get(:@erased) ||
+      [event.x,event.y] != [raw.x,raw.y]
+    if progress["pilot_cerulean_dig_awarded"]
+      !event.character_name.to_s.empty? || !event.through ||
+        Array(event.list).map(&:code) != [0]
+    else
+      event.trigger != (id == 26 ? 0 : 2) ||
+        event.character_name.to_s.empty? != (id != 26) ||
+        !cerulean_rocket_callback?(event.list)
+    end
+  end
+
   def self.reload_stale_cerulean_doors(map)
     return false unless map && kanto_current? && map.map_id == kanto_map_id(39)
     destinations = CERULEAN_INTERIOR_DOORS.transform_values { |source| kanto_map_id(source) }
@@ -2495,6 +2531,8 @@ module BlueKantoPilot
         Array(guard.list).map(&:code) == [101,0])
       stale << id unless native && current
     end
+    rocket_stale = CERULEAN_ROCKET_EVENTS.select { |id| cerulean_rocket_stale?(map.events[id],id) }
+    stale.concat(rocket_stale)
     return false if stale.empty?
     path = format("Data/Map%03d.rxdata",map.map_id)
     return false unless File.file?(path)
@@ -2515,6 +2553,8 @@ module BlueKantoPilot
       active = id == 13 ? 0 : 1
       e && e.pages.length == 2 && e.pages[active].list.map(&:code) == [101,0] &&
         e.pages[1-active].list.map(&:code) == [0] }
+    return false unless CERULEAN_ROCKET_EVENTS.all? { |id|
+      cerulean_rocket_authored?(authored.events[id],id) }
     sync_cerulean_quest_pages(map.map_id)
     stale.uniq.each do |id|
       raw = authored.events.fetch(id)
@@ -2529,6 +2569,7 @@ module BlueKantoPilot
       end
     end
     puts "KANTO_CERULEAN_STALE_DOORS_RELOADED:#{stale.inspect}"
+    cerulean_mobile_trace("rocket repaired=#{rocket_stale.inspect} rewarded=#{!!progress["pilot_cerulean_dig_awarded"]}") unless rocket_stale.empty?
     true
   end
 
@@ -2551,6 +2592,7 @@ module BlueKantoPilot::CeruleanQuestMapSetup
   def setup(map_id, *args)
     BlueKantoPilot.sync_cerulean_quest_pages(map_id)
     result = super
+    BlueKantoPilot.reload_stale_cerulean_doors(self)
     BlueKantoPilot.sync_cerulean_police_dialogue(self)
     result
   end
@@ -2781,14 +2823,18 @@ module BlueKantoPilot
   end
 
   def self.cerulean_mobile_refresh
-    return unless $game_map && kanto_current? && $game_map.map_id == kanto_map_id(39)
+    unless $game_map && kanto_current? && $game_map.map_id == kanto_map_id(39)
+      @cerulean_mobile_map_key = nil
+      return
+    end
     return if defined?(pbMapInterpreterRunning?) && pbMapInterpreterRunning?
-    key = [$game_map,cerulean_house_open?]
+    key = [$game_map,cerulean_house_open?,!!progress["pilot_cerulean_dig_awarded"]]
     return if @cerulean_mobile_map_key == key
     sync_loaded_cerulean_map($game_map)
     @cerulean_mobile_map_key = key
     front,side = $game_map.events[13],$game_map.events[25]
-    cerulean_mobile_trace("map=#{$game_map.map_id} ticket=#{bill_ticket_in_bag?} front=#{front && front.character_name} side=#{side && side.character_name} doors=#{CERULEAN_INTERIOR_DOORS.keys.select { |id| $game_map.events[id] }.inspect}")
+    rocket = $game_map.events[26]
+    cerulean_mobile_trace("map=#{$game_map.map_id} ticket=#{bill_ticket_in_bag?} front=#{front && front.character_name} side=#{side && side.character_name} doors=#{CERULEAN_INTERIOR_DOORS.keys.select { |id| $game_map.events[id] }.inspect} rocket=#{rocket && rocket.character_name} rocket_xy=#{rocket && [rocket.x,rocket.y]} dig_awarded=#{!!progress["pilot_cerulean_dig_awarded"]}")
   end
 end
 

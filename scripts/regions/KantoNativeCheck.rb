@@ -719,7 +719,21 @@ module KantoNativeCheck
     require!(!staged_bag.has?(:BICYCLE) && !staged_bag.has?(:BIKEVOUCHER) &&
              local_items["items"].include?([:BICYCLE,1]) && $bag.quantity(:BICYCLE)==1,
              "K02-C staged regional travel leaked or lost the bicycle")
-    $map_factory.setup(city)
+    # Begin from the original rear exit of the ransacked house, not a
+    # fabricated Rocket teleport. Reproduce the legacy city with missing
+    # Grunt and encounter lanes while doors and police remain intact.
+    rear = cerulean_native_return_proof(mapping[48],[4,2],3,city,[31,8])
+    require!(rear["destination_loaded"], "Rocket rear exit not loaded")
+    rear_component = opening_component(city,[31,8])
+    $game_map.events.delete(26)
+    [37,38].each { |id| $game_map.events.delete(id) }
+    [26,37,38].each { |id| $game_self_switches[[city,id,"A"]] = true }
+    old_guard = $game_map.events[25]
+    old_door = $game_map.events[27]
+    state_before = Marshal.dump(state)
+    BlueKantoPilot.sync_loaded_cerulean_map($game_map)
+    require!($game_map.events[25].equal?(old_guard) && $game_map.events[27].equal?(old_door) &&
+      Marshal.dump(state) == state_before, "Rocket recovery changed guard, door or progress")
     require!(GameData::Trainer.get(:BLUE_KANTO_ROCKET,"Grunt",6).pokemon.length > 0,"K02-C native Grunt6 missing")
     require!(GameData::Item.exists?(:TM28) && GameData::Item.get(:TM28).move == :DIG &&
              (GameData::Item.get(:TM28).is_TM? || GameData::Item.get(:TM28).is_TR?),
@@ -731,16 +745,44 @@ module KantoNativeCheck
                "K02-C required Cerulean actor sprite missing #{id}")
     end
     [26,37,38].each { |id| north_callback!($game_map.events[id],"BlueKantoPilot.cerulean_rocket") }
+    approach = opening_action_witness(rear_component,$game_map.events[26])
+    require!(approach, "Rocket not reachable on foot from rear exit")
     tm_before = $bag.quantity(:TM28)
     losses_remaining["Grunt"] = 1
-    require!(!BlueKantoPilot.cerulean_rocket && !state.fetch("pilot_wins",[]).include?(BlueKantoPilot::CERULEAN_ROCKET_KEY) &&
-             $bag.quantity(:TM28)==tm_before,"K02-C defeat granted reward")
-    require!(BlueKantoPilot.cerulean_rocket && $bag.quantity(:TM28)==tm_before+1,"K02-C Rocket retry/reward failed")
+    # Dispatch the recovered NPC through the real native interpreter.
+    # Only battle result and message rendering are controlled in QA.
+    2.times do |attempt|
+      $game_player.moveto(*approach.fetch("standing"))
+      $game_player.direction = approach.fetch("direction") if $game_player.respond_to?(:direction=)
+      $game_map.events.each_value { |event| event.clear_starting }
+      rocket = $game_map.events.fetch(26)
+      rocket.start
+      interpreter = pbMapInterpreter
+      require!(!interpreter.running?, "Rocket interpreter busy")
+      interpreter.setup_starting_event
+      require!(interpreter.running? && interpreter.instance_variable_get(:@event_id) == 26,
+        "Rocket native event not selected")
+      interpreter.update
+      require!(!interpreter.running?, "Rocket native event did not complete")
+      if attempt == 0
+        require!(!state.fetch("pilot_wins",[]).include?(BlueKantoPilot::CERULEAN_ROCKET_KEY) &&
+          $bag.quantity(:TM28)==tm_before && !$game_self_switches[[city,26,"A"]],
+          "K02-C defeat granted reward or removed Grunt")
+      else
+        require!(state["pilot_cerulean_dig_awarded"] && $bag.quantity(:TM28)==tm_before+1,
+          "K02-C Rocket retry/reward failed")
+      end
+    end
+    puts "KANTO_CERULEAN_ROCKET_REAR_EXIT_REPORT:#{[rear,approach].inspect}"
     require!(BlueKantoPilot.cerulean_rocket && $bag.quantity(:TM28)==tm_before+1 &&
              battle_calls.count { |r| r==[:BLUE_KANTO_ROCKET,"Grunt",6] }==2,"K02-C repeat reward/battle")
     $game_map.events.each_value { |event| event.refresh }
     require!([26,37,38].all? { |id| $game_self_switches[[city,id,"A"]] &&
              $game_map.events[id].character_name.to_s.empty? },"K02-C Rocket pages not hidden")
+    BlueKantoPilot.sync_loaded_cerulean_map($game_map)
+    require!([26,37,38].all? { |id| $game_map.events[id].character_name.to_s.empty? &&
+      $game_map.events[id].through && $game_map.events[id].list.map(&:code) == [0] },
+      "Completed Rocket reappeared after recovery")
     {"manual_gameplay"=>false,"witnesses"=>witnesses,"police_after_bill"=>police,"bicycle"=>1,"voucher"=>0,
      "tm28"=>$bag.quantity(:TM28),"rocket_retry"=>true,"voucher_fixture"=>false,"vermilion"=>vermilion_report,
      "native_bike_handlers"=>true,"regional_bag_staging"=>true,"required_actor_sprites"=>true,
@@ -3185,7 +3227,7 @@ module KantoNativeCheck
         e.fetch("native_return").fetch("destination_loaded") },
       "Cerulean roundtrip receipt incomplete")
     File.write("Data/blue-kanto-cerulean-regression.txt",
-      "KANTO_CERULEAN_POLICE_BEFORE_AFTER_BILL_OK\nKANTO_CERULEAN_NATIVE_ROUNDTRIP_OK\nKANTO_CERULEAN_POLICE_PACKAGED_NATIVE_AND_CACHE_REFRESH_OK\nKANTO_CERULEAN_PHYSICAL_LEGACY_DIALOGUE_AND_DOOR_RECOVERY_OK\nKANTO_CERULEAN_REAL_TICKET_AND_STANDING_DOOR_OK\n")
+      "KANTO_CERULEAN_POLICE_BEFORE_AFTER_BILL_OK\nKANTO_CERULEAN_NATIVE_ROUNDTRIP_OK\nKANTO_CERULEAN_POLICE_PACKAGED_NATIVE_AND_CACHE_REFRESH_OK\nKANTO_CERULEAN_PHYSICAL_LEGACY_DIALOGUE_AND_DOOR_RECOVERY_OK\nKANTO_CERULEAN_REAL_TICKET_AND_STANDING_DOOR_OK\nKANTO_CERULEAN_ROCKET_REAR_EXIT_NATIVE_DIG_ONCE_OK\n")
     File.write("Data/blue-kanto-k02c-native-proof.txt", interiors_report.inspect)
     puts "KANTO_K02C_NATIVE_INTERIORS_REPORT:#{interiors_report.inspect}"
     puts "KANTO_K02C_INTERIORS_BIKE_ROCKET_SAVE_RELOAD_OK"
