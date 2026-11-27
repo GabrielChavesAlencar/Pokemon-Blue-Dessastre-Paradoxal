@@ -2,6 +2,36 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3fbc798fed47b3f62df6f765737c4c8cecefbbbd",
+      "date": "2026-11-27T00:09:39-03:00",
+      "title": "Update Sinnoh source audits for the unified title",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "2c936481312d71b35cd700f5e7fdf5231db6c87b",
+      "date": "2026-11-27T00:00:59-03:00",
+      "title": "Protect authored Sinnoh maps around the complete compiler chain",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "b84f778db3e967196dd4444749443bfde14bf3ed",
+      "date": "2026-11-26T23:54:27-03:00",
+      "title": "Preserve shared maps before the native compiler clears outputs",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "c399df180712c2b11e57aa01741f2a92fcaa3bdf",
+      "date": "2026-11-26T23:44:38-03:00",
+      "title": "Document the unified Blue-Story startup and local Sinnoh sources",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "d9a0f8c0f038b374e590d7ccd3bcf1599c0a80ad",
+      "date": "2026-11-26T23:39:59-03:00",
+      "title": "Start Sinnoh in the managed Blue-Story campaign",
+      "category": "Melhorias"
+    },
+    {
       "sha": "734bc1ff2475fdb6913aee445ab84d37a33df5be",
       "date": "2026-11-26T22:51:06-03:00",
       "title": "Merge pull request #360 from GabrielChavesAlencar/qa/kanto-k03a-vermilion-corridor",
@@ -120,6 +150,72 @@
       "date": "2026-11-26T20:37:29-03:00",
       "title": "fix(kanto): preserve native player scale and cap oversized charsets",
       "category": "Correções"
+    },
+    {
+      "sha": "d682111aa4ea7533c0d659aa1eecf86900da402a",
+      "date": "2026-11-26T20:00:53-03:00",
+      "title": "Sync Sinnoh barrier pages without replacing event refresh",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "6816cb1094c7119c8b0833f5b7beaedb800bccdb",
+      "date": "2026-11-26T19:46:42-03:00",
+      "title": "Verify Sinnoh movement below the known Kanto guard",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "bbf5b03d34eac0a17c091ff596e8826bf737189c",
+      "date": "2026-11-26T19:37:52-03:00",
+      "title": "Read Mount Coronet map binding in native Sinnoh checks",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "fe46f8b150f3466992f6f80b23220f3467325fe9",
+      "date": "2026-11-26T19:15:31-03:00",
+      "title": "Use the shared Route 210 binding in field traversal checks",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "c15944335ccf65e615d2220a3b815682b42e73f1",
+      "date": "2026-11-26T19:11:56-03:00",
+      "title": "Use reserved Route 210 map IDs in shared Sinnoh story",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "af9bf004e3049407f9f99db21017a14be843bf22",
+      "date": "2026-11-26T19:00:54-03:00",
+      "title": "Record shared Windows QA and isolate private Johto packaging",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "1530da52f89210a8b4be81095bd4c877622c3423",
+      "date": "2026-11-26T18:56:04-03:00",
+      "title": "Keep Johto available in local Sinnoh JoiPlay QA",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "23dca93d163f4c615c86f0e5ba68dfc3484a230f",
+      "date": "2026-11-26T18:53:16-03:00",
+      "title": "Restore Android contract CI and track shared Sinnoh QA",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "e7e416645b9fcf812d2e82aa9eef28b199364e63",
+      "date": "2026-11-26T18:49:03-03:00",
+      "title": "Recover interrupted shared Sinnoh installs and retry author redirects",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "297f36279449feaa312213fff59229c4de19d8c5",
+      "date": "2026-11-26T18:30:08-03:00",
+      "title": "Assert the native shared Sinnoh start and Twinleaf agent in CI",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "59ba96f3c56a6a9bdf587bc975b5a0b38a798e41",
+      "date": "2026-11-26T18:26:47-03:00",
+      "title": "Merge current main and reserve Sinnoh slots after Kanto 151",
+      "category": "Melhorias"
     },
     {
       "sha": "bfe242c1f7798763aa8899577cae0846cc11b087",
@@ -908,6 +1004,120 @@
       "category": "Documentação"
     },
     {
+      "sha": "11644bf0bb3fea7e30ca266417422d1f30891342",
+      "date": "2026-11-26T07:50:05-03:00",
+      "title": "Cover shared Sinnoh in the full title menu regression",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "8a614fc6e085532758a239a8f892fca278d2e895",
+      "date": "2026-11-26T07:38:58-03:00",
+      "title": "Preserve authored Sinnoh maps through native compilation",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "f408ee6097591386b6f6de3e2169bb0cb8e0076e",
+      "date": "2026-11-26T07:28:28-03:00",
+      "title": "Pin shared Sinnoh identities and preserve foreign maps during story staging",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "67a06d2ccc59d0a25c8dcb8b4187d4bf79a654ab",
+      "date": "2026-11-26T07:15:12-03:00",
+      "title": "Accept Ruby interface checks in shared Sinnoh map events",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "f3299c51af27ea1f3be004dad48d71ca1db40ade",
+      "date": "2026-11-26T07:09:16-03:00",
+      "title": "Bind the authored Windworks event to the shared catalogue",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "c3474456e18c822a2f39c4d4d9f6fd636990e34a",
+      "date": "2026-11-26T07:01:48-03:00",
+      "title": "Validate Windworks against the shared regional connection layer",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "cbaf04d540135486cc206a9e4f2b77b828b7a500",
+      "date": "2026-11-26T06:47:57-03:00",
+      "title": "Reserve stable Sinnoh MapIDs and keep Android QA isolated",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "bcc261e8662819dbfecd43e46ae9c4f1e2ffd146",
+      "date": "2026-11-26T06:37:41-03:00",
+      "title": "Stage shared Sinnoh with scoped event handlers and regional PBS",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "6218ff987f4f7a83c80b32fbba5b268289017e2c",
+      "date": "2026-11-26T06:27:37-03:00",
+      "title": "Merge remote-tracking branch 'origin/sinnoh-f12d-integrated-gameplay' into sinnoh-shared-blue-story",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "053d5110b4c9ab50f814128b448bd782ec42502c",
+      "date": "2026-11-26T06:27:11-03:00",
+      "title": "Merge branch 'main' into sinnoh-shared-blue-story",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "f63d7100bfe4f1b3e99a37ee729c0a137be70992",
+      "date": "2026-11-26T00:03:47-03:00",
+      "title": "docs(sinnoh): describe real map preparation and required native travel receipts",
+      "category": "Documentação"
+    },
+    {
+      "sha": "dd62e7f96b29d27c6ae798644d491e12a4b804fa",
+      "date": "2026-11-26T00:03:39-03:00",
+      "title": "ci(sinnoh): generate real shared candidate on disposable Windows base without publishing",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "955910a2e5d4c01bda8e5255865b72a827df7b21",
+      "date": "2026-11-26T00:02:49-03:00",
+      "title": "test(sinnoh): cover map candidate staging and no false activation",
+      "category": "Testes"
+    },
+    {
+      "sha": "b60aad0829f9a5fe6980da9ef61b7ce3ee40a43a",
+      "date": "2026-11-26T00:02:41-03:00",
+      "title": "feat(sinnoh): generate 144-map shared world candidate without pilot configuration",
+      "category": "Novidades"
+    },
+    {
+      "sha": "7bd0da30d290c97246aa97d2299a232d2bf8c96e",
+      "date": "2026-11-25T23:59:25-03:00",
+      "title": "docs(sinnoh): specify shared menu and Twinleaf travel acceptance",
+      "category": "Documentação"
+    },
+    {
+      "sha": "53f65e95e4ec5b43d41d82cb831c850f7c38e060",
+      "date": "2026-11-25T23:59:18-03:00",
+      "title": "test(sinnoh): reject travel agent outside the initial town",
+      "category": "Testes"
+    },
+    {
+      "sha": "a17d3daff91333208e328ba7160757bb2f2126f2",
+      "date": "2026-11-25T23:59:12-03:00",
+      "title": "fix(sinnoh): require regional transport in the actual Twinleaf Town map",
+      "category": "Correções"
+    },
+    {
+      "sha": "da0db393e2744e4da5fa70324369ca097571411b",
+      "date": "2026-11-25T23:58:52-03:00",
+      "title": "test(sinnoh): verify shared New Game never launches isolated QA",
+      "category": "Testes"
+    },
+    {
+      "sha": "ff8717c955caabe7bc310fb42816a4ec00453180",
+      "date": "2026-11-25T23:58:43-03:00",
+      "title": "fix(sinnoh): keep normal New Game inside the shared world",
+      "category": "Correções"
+    },
+    {
       "sha": "98b07acb1f899bdfa7d541369632f1649843cd6e",
       "date": "2026-11-25T23:45:05-03:00",
       "title": "Merge PR #341: recover legacy Kanto map drift during Windows migration",
@@ -944,9 +1154,273 @@
       "category": "Melhorias"
     },
     {
+      "sha": "c02c910659a80c39591701cfd41c6122b71e20e0",
+      "date": "2026-11-25T22:52:24-03:00",
+      "title": "Refresh embedded installer and regional travel regression",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "a32587b8184f07529d6a9ca4435cda9ef000e1cf",
+      "date": "2026-11-25T22:46:25-03:00",
+      "title": "Keep shared Sinnoh compatible with older runtime and CI fixtures",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "e3233416c5fc1d0a134aa28c62ecdc4aefe02457",
+      "date": "2026-11-25T22:43:40-03:00",
+      "title": "Prepare shared Sinnoh installation and travel for Blue-Story",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "a2ac85fe4a27bf8d273c3d770e9b55dcf461e60d",
+      "date": "2026-11-25T21:55:18-03:00",
+      "title": "Sinnoh: keep overlay hashing outside the native compiler",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "31f846afcd7b3d26c6290346f3075e7b3bc491a7",
+      "date": "2026-11-25T21:34:10-03:00",
+      "title": "Sinnoh: validate Surf-dependent lake progression in serialized maps",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "dcaf93cf0b756d07b265530021cfbc5dc0e21e5f",
+      "date": "2026-11-25T17:48:16-03:00",
+      "title": "Recover source-matched northern Rock approach with native collision gate",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "f3ad15612c892bfb4e42e9d59f230abda5bcb8f3",
+      "date": "2026-11-25T17:28:04-03:00",
+      "title": "Recognize exact preserved lake portal geometry without replacing protected events",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "1ff5d34acb63c3d92fa6d8396af927958abe2748",
+      "date": "2026-11-25T17:20:06-03:00",
+      "title": "Record complete Surf proof and rejected lake interval results",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "1b5023ce30cfd7c2ddb8b4e2baf70b8b36d63534",
+      "date": "2026-11-25T17:19:11-03:00",
+      "title": "Recover pinned northern lake approach and enforce complete commander sequence",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "0de93ca547c8b711e55b2351f24de6c119b682d8",
+      "date": "2026-11-25T17:12:27-03:00",
+      "title": "Preserve occupied lake borders and record repeated Surf and Verity evidence",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "837a3b4c2eadaa3ddde5ee56517ee805429c2aa8",
+      "date": "2026-11-25T17:11:27-03:00",
+      "title": "Recover uniquely aligned empty donor lake seams and require return paths",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "56834e71c82fe42a8e4517e61d700ebbf3e5a954",
+      "date": "2026-11-25T17:06:52-03:00",
+      "title": "Record verified native Surf baseline and complete CI receipts",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "4474df94abd92700df1e82a4458bcc23d9cfb82f",
+      "date": "2026-11-25T17:06:05-03:00",
+      "title": "Verify full bidirectional native Surf route and exact shoreline receipts",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "c80a73bbc677baeb9b728e7d8bd69ca41537c172",
+      "date": "2026-11-25T17:01:10-03:00",
+      "title": "Recover exact reciprocal Verity lake return candidate without replacing existing gates",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "be47827c04604d915c45817bdf84c571efff7e33",
+      "date": "2026-11-25T16:56:28-03:00",
+      "title": "Initialize and restore native Pokemon context for Surf verification",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "7741cfa04377a9946fcc9e5970d7e95b9ddc3a61",
+      "date": "2026-11-25T16:51:38-03:00",
+      "title": "Record verified source downloads and observed CI counts",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "6c7b6a662fbe83e27930166d683f3ea313f8f4c7",
+      "date": "2026-11-25T16:50:58-03:00",
+      "title": "Recover directed lake Surf shore components and return paths",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "82041f46b03440966a0050d122f727a3991c62e2",
+      "date": "2026-11-25T16:44:47-03:00",
+      "title": "Record observed CI counts without granting Surf acceptance",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "9c3dd5fd456f9c2845317dfcf9f96b813a579a7c",
+      "date": "2026-11-25T16:44:27-03:00",
+      "title": "Retry official Sinnoh source redirect with bounded backoff",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "35cb545a0f2efebcd722d26fbd643b5389ce80e7",
+      "date": "2026-11-25T16:43:11-03:00",
+      "title": "Require native regional Surf receipts and real party denial checks",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "da88bafdb3c55f945343f0a2f8000fd2334188c5",
+      "date": "2026-11-25T16:38:34-03:00",
+      "title": "Recover regional Surf pickup from existing Cynthia and test native shoreline jumps",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "d4fe6d4082e56cd0eeb6163731fd8e76db474f38",
+      "date": "2026-11-25T16:31:51-03:00",
+      "title": "Allow shore-facing without boarding and exercise conditional Surf guard",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "d8daa214ae35614f9cb4bdccafe60e898f6b16ec",
+      "date": "2026-11-25T16:30:56-03:00",
+      "title": "Bind verified lake Surf routes to private native movement and collision probes",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "93b0eaf6d4571470e70162fc6cccdfac3cd9c1f6",
+      "date": "2026-11-25T16:23:34-03:00",
+      "title": "Handle isolated Surf denial and record matched lake source evidence",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "ada9edd7217c9d7c9dd71ac78565429888ca7526",
+      "date": "2026-11-25T16:22:52-03:00",
+      "title": "Stage regional HM03 pickup transaction and separate conditional lake component graph",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "dce1de6577894dfa350da70cd6bd9ec58c3214ec",
+      "date": "2026-11-25T16:15:56-03:00",
+      "title": "Preserve native F12D acceptance and recover lake entry component with conditional Surf witnesses",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "b8fb3a08d4ebf9d486612506ceef5ed020261404",
+      "date": "2026-11-25T16:06:45-03:00",
+      "title": "Fix occupied Rock placement regression and preserve exact Valor cave threshold",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "29f32d24c9783f40717b52f48a7533e833f3b009",
+      "date": "2026-11-25T15:56:30-03:00",
+      "title": "Initialize native movement state and repair exact stale Valor corridor references from pinned donor geometry",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "01d46fd19df6a689046a7f0bb422c037df4d9032",
+      "date": "2026-11-25T15:45:38-03:00",
+      "title": "Isolate inherited official diagnostic requests and recover source-pinned lake entrances transactionally",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "d35425651178300e2e30573bbb9cb8dfce7d2d41",
+      "date": "2026-11-25T15:31:36-03:00",
+      "title": "Restore private Sinnoh map hashes at native compiler boundary and model existing lake portal arrivals",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "d9295be538806e7ad54ee546551829d6f7f28cb0",
+      "date": "2026-11-25T15:18:55-03:00",
+      "title": "Require native Sinnoh stage receipts and recover original lake seams behind full sequence gate",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "957360cecc36c9611bec32f03780e204afcfee46",
+      "date": "2026-11-25T15:07:09-03:00",
+      "title": "Supply additive private Sinnoh trainer types and Works Key to unblock actual 144-map installer",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "afd6d443cf228c8d740d4f6c2298e0125c3aae85",
+      "date": "2026-11-25T14:57:16-03:00",
+      "title": "Run actual private Sinnoh compiler and collision transaction gate on Windows CI",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "3ed9d8e1e6b3f9b5f19627348d983a0a99e1c9a5",
+      "date": "2026-11-25T14:55:19-03:00",
+      "title": "Stage pinned Decades Sinnoh candidate behind native collision, item transaction and launch proof",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "ae62bbdfbc9212820993149c1a56c7a53c94704e",
+      "date": "2026-11-25T14:41:21-03:00",
+      "title": "Resolve ordered Game_Player receipts and strengthen integrated Sinnoh lake and runtime gates",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "2973d7ed8fe52b509007b925bbbb37de9107bfdb",
+      "date": "2026-11-25T14:34:49-03:00",
+      "title": "Preserve proven Celestic geometry and five-event fixture as mandatory regression",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "c1af2b494daaa9d6cdcb4cab17df679b81fe4214",
+      "date": "2026-11-25T14:33:46-03:00",
+      "title": "F12D integrated: bind proven payload to isolated installer with pre-chase and compiler gates",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "31d5cf0f966c0b92b91ff987161a93b0ac9eb789",
+      "date": "2026-11-25T14:32:53-03:00",
+      "title": "F12D integrated: handle missing regional item, verify player methods and Valor Cavern Rock geometry",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "7d7cb244ba4f68a110784e124b20cf5eb2fdb947",
+      "date": "2026-11-25T14:25:49-03:00",
+      "title": "F12D integrated: obtain local engine and SecretPotion receipts from existing Blue CI installation",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "15a386ee90bc1c7c1fca3402921be9971fe09764",
+      "date": "2026-11-25T14:24:50-03:00",
+      "title": "F12D integrated: exact four-event vertex cut with global serialized proof",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "7a77759f59260f73aad7a6792c8fc0500a358ad9",
+      "date": "2026-11-25T14:24:11-03:00",
+      "title": "Fix PNG signature assertion in integrated asset regression",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "a3b67db33ff39cf2c4ad325c63cd10bae70e8b50",
+      "date": "2026-11-25T14:23:49-03:00",
+      "title": "F12D integrated: authored sprites, private engine reference preflight, installer entry and source retry",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "bd30f1385b999475535e2a5c0493c38486c53943",
+      "date": "2026-11-25T14:08:05-03:00",
+      "title": "Integrate approved #337; implement scoped story progression gates and independent lake fixtures",
+      "category": "Melhorias"
+    },
+    {
       "sha": "a1bd21f00825567bc24e3c9538f1df67ebd33b21",
       "date": "2026-11-25T14:06:21-03:00",
       "title": "Merge PR #337: Sinnoh Rock cost attribution",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "1f35cbb9beb8964b4bd00a3931a8abc7a581ffad",
+      "date": "2026-11-25T14:05:48-03:00",
+      "title": "Sinnoh F12D: integrated authorial geometry and SecretPotion/lake gameplay compiler",
       "category": "Melhorias"
     },
     {
