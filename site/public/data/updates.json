@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "93e166f3fdceab1570b49bdce1e0affac69f23c5",
+      "date": "2026-11-27T20:19:42-03:00",
+      "title": "Merge pull request #376 from GabrielChavesAlencar/codex/unova-f01-mapids-windows-android",
+      "category": "Novidades"
+    },
+    {
+      "sha": "3d130197c530c249b069728ec7d17b2ec1b0704c",
+      "date": "2026-11-27T20:06:15-03:00",
+      "title": "Unova F01: exclude cross-platform MapID conflicts",
+      "category": "Novidades"
+    },
+    {
       "sha": "4c21940ae4936adb1919c0052007e3f2812b077d",
       "date": "2026-11-27T19:44:03-03:00",
       "title": "Merge pull request #373 from GabrielChavesAlencar/kanto-k03e-route11-diglett",
