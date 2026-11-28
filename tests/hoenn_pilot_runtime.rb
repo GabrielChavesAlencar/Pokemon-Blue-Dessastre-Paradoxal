@@ -25,6 +25,13 @@ class Game_Map
   end
 end
 
+class Pokemon
+  attr_reader :species, :level
+  def initialize(species, level)
+    @species, @level = species, level
+  end
+end
+
 class HoennDummyPlayer
   attr_accessor :has_pokedex, :has_running_shoes, :gender
   attr_reader :party, :healed
@@ -38,23 +45,43 @@ class HoennDummyPlayer
   def heal_party
     @healed += 1
   end
+  def party_full?
+    @party.length >= 6
+  end
+  def able_pokemon_count
+    @party.length
+  end
 end
 
 class HoennDummyBag
   attr_reader :items
-  attr_accessor :can_add
+  attr_accessor :can_add, :room
   def initialize
     @items = Hash.new(0)
     @can_add = true
+    @room = 999
   end
   def add(item, count)
     return false unless @can_add
-    @items[item] += count
+    added = [@room, count].min
+    @items[item] += added
+    @room -= added
+    added == count
+  end
+  def add_all(item, count)
+    @room >= count && add(item, count)
+  end
+end
+
+class PokemonMapFactory
+  def isPassableFromEdge?(_x, _y)
     true
   end
 end
 
 class HoennDummyAvatar
+  attr_accessor :transparent
+  def refresh_charset; end
   attr_reader :x, :y
   def initialize
     @x, @y = 10, 18
@@ -88,10 +115,11 @@ module TrainerBattle
   @history = []
   class << self
     attr_reader :history
-    attr_accessor :result
+    attr_accessor :result, :on_start
     def start(*args)
       @history << args
-      @result != false
+      @on_start&.call
+      @result.nil? ? true : @result
     end
   end
 end
@@ -100,9 +128,10 @@ module WildBattle
   @history = []
   class << self
     attr_reader :history
+    attr_accessor :result
     def start(*args)
       @history << args
-      true
+      @result
     end
   end
 end
@@ -126,14 +155,19 @@ def pbConfirmMessage(message)
   $confirm_starter
 end
 
-def pbAddPokemonSilent(species, level)
-  return false unless $give_pokemon
-  $player.party << [species, level]
+def pbAddToPartySilent(pokemon)
+  return false if !$give_pokemon || $player.party_full?
+  $player.party << pokemon unless $pretend_gift
   true
 end
 
-def setBattleRule(rule)
-  $battles << rule
+def setBattleRule(*rules)
+  $battles.concat(rules)
+end
+
+def pbCharacterSelect
+  $profile_choices += 1
+  $player.gender = $selected_profile
 end
 
 def pbGetTimeNow
@@ -209,6 +243,14 @@ Dir.mktmpdir("blue-hoenn-runtime-") do |dir|
     check(BlueHoennPilot.state["birch_rescue_active"], "Rescue flag missing")
     check(!BlueHoennPilot.choose_starter(:TREECKO), "Old lab object must not give starter")
     check(!BlueHoennPilot.choose_birch_ball(:PIKACHU), "Unlisted species accepted")
+    $game_map.map_id = 701
+    check(!BlueHoennPilot.choose_birch_ball(:TREECKO), "Bag outside Route 101 awarded a starter")
+    $game_map.map_id = 703
+    occupied_party = Array.new(6) { Pokemon.new(:POOCHYENA, 5) }
+    $player.party.replace(occupied_party)
+    check(!BlueHoennPilot.choose_birch_ball(:TREECKO), "Full party got a misplaced starter")
+    check(BlueHoennPilot.starter.nil? && $player.party == occupied_party, "Full party changed save")
+    $player.party.clear
     $give_pokemon = false
     check(!BlueHoennPilot.choose_birch_ball(:TREECKO), "Failed party add granted starter")
     check(BlueHoennPilot.starter.nil?, "Failed starter persisted")
@@ -216,12 +258,28 @@ Dir.mktmpdir("blue-hoenn-runtime-") do |dir|
     $confirm_starter = false
     check(!BlueHoennPilot.choose_birch_ball(:TREECKO), "Declining selection granted starter")
     $confirm_starter = true
-    check(BlueHoennPilot.choose_birch_ball(:TREECKO), "Starter/rescue not completed")
-    check($player.party == [[:TREECKO, 5]], "Wrong starter")
+    $pretend_gift = true
+    check(!BlueHoennPilot.choose_birch_ball(:TREECKO) && BlueHoennPilot.starter.nil?,
+          "Engine response alone persisted a gift without inserting it in the party")
+    $pretend_gift = false
+    WildBattle.result = false
+    check(!BlueHoennPilot.choose_birch_ball(:TREECKO), "Defeat completed the rescue")
+    check(!BlueHoennPilot.state["birch_rescued"] && !BlueHoennPilot.state["met_birch"] &&
+          BlueHoennPilot.state["birch_rescue_active"], "Loss closed the rescue retry")
+    check($player.party.map { |pkmn| [pkmn.species, pkmn.level] } == [[:TREECKO, 5]], "Wrong starter")
+    check(!BlueHoennPilot.rival_103 && !BlueHoennPilot.birch, "Defeat unlocked later opening events")
+    saved_rescue = Marshal.dump($PokemonGlobal.blue_regions)
+    $PokemonGlobal.blue_regions = Marshal.load(saved_rescue)
+    WildBattle.result = true
+    check(BlueHoennPilot.route_birch, "The actual route entrance did not retry after reload")
+    check(BlueHoennPilot.starter == :TREECKO && $player.party.length == 1,
+          "Retry changed the claimed starter or added another")
+    check(!BlueHoennPilot.route_birch, "Rescue repeated after victory")
     BlueHoennPilot.heal
     check($center_registered == 1, "Oldale did not register respawn point")
     check($healing_jingle == "Pkmn healing", "Center did not play the recovery fanfare")
-    check(WildBattle.history == [[:ZIGZAGOON, 2]], "Zigzagoon battle missing/repeated")
+    check(WildBattle.history == [[:ZIGZAGOON, 2], [:ZIGZAGOON, 2]],
+          "Zigzagoon battle did not start once per attempt")
     check(BlueHoennPilot.state["birch_rescued"], "Rescue not saved")
     check($bag.items[:POKEBALL] == 0, "Five balls awarded too early")
     check(!BlueHoennPilot.choose_birch_ball(:TORCHIC), "Second initial duplicated")
@@ -230,11 +288,18 @@ Dir.mktmpdir("blue-hoenn-runtime-") do |dir|
     check(BlueHoennPilot.rival_103, "Route 103 rival battle not started")
     check(TrainerBattle.history == [[:RIVAL1, "May", 210]], "Wrong May starter counter")
     check(!BlueHoennPilot.rival_103, "Rival replayed after first battle")
-    check($battles == ["canLose", "canLose"], "Tutorial battles cannot lose")
+    check($battles == ["canLose", "cannotRun", "disablePokeballs",
+                       "canLose", "cannotRun", "disablePokeballs", "canLose"],
+          "Rescue or rival battle rules changed")
     $bag.can_add = false
     check(!BlueHoennPilot.birch, "Full bag did not postpone reward")
     check(!$player.has_pokedex, "Full bag granted Pokédex")
     $bag.can_add = true
+    $bag.room = 3
+    check(!BlueHoennPilot.birch, "Partially full bag did not postpone reward")
+    check($bag.items[:POKEBALL] == 0 && BlueHoennPilot.state["balls_at_lab_pending"],
+          "A failed handoff gave some of the five balls")
+    $bag.room = 5
     check(BlueHoennPilot.birch, "Pokédex reward not granted")
     check($player.has_pokedex, "Pokédex not activated")
     check($bag.items[:POKEBALL] == 5, "Lab must grant five balls once")
@@ -250,22 +315,115 @@ Dir.mktmpdir("blue-hoenn-runtime-") do |dir|
     check(!BlueHoennPilot.choose_birch_ball(:MUDKIP), "Starter duplicated after reload")
     check($bag.items[:POKEBALL] == 5, "Reload changed bag reward")
 
-    # Loss is a completed tutorial encounter; the next story event must open.
+    $PokemonGlobal.blue_regions["hoenn_pilot"] = {
+      "starter" => "MUDKIP", "met_birch" => true, "balls_at_lab_pending" => true
+    }
+    $player = HoennDummyPlayer.new(1)
+    $player.party << [:MUDKIP, 5]
+    $bag = HoennDummyBag.new
+    TrainerBattle.result = false
+    check(!BlueHoennPilot.rival_103, "Rival defeat advanced the story")
+    check(TrainerBattle.history.last == [:RIVAL1, "Brendan", 212],
+          "Wrong Brendan team counter")
+    check(!BlueHoennPilot.state["rival_103_done"], "Defeat was saved as a victory")
+    check($player.healed == 1, "Defeated player cannot retry")
+    check(!BlueHoennPilot.birch, "Defeat unlocked Birch's rewards")
+    BlueHoennPilot.mother
+    check(!$player.has_pokedex && !$player.has_running_shoes && $bag.items[:POKEBALL] == 0,
+          "Early rewards leaked after defeat")
+
+    $PokemonGlobal.blue_regions = Marshal.load(Marshal.dump($PokemonGlobal.blue_regions))
+    TrainerBattle.result = true
+    check(BlueHoennPilot.rival_103, "Rival retry lost after reload")
+    check(TrainerBattle.history.last(2) == [[:RIVAL1, "Brendan", 212]] * 2,
+          "Rival retry changed teams")
+    check(BlueHoennPilot.birch, "Victory did not unlock Birch's rewards")
+    check(BlueHoennPilot.mother, "Victory did not unlock Running Shoes")
+    check($player.has_pokedex && $player.has_running_shoes && $bag.items[:POKEBALL] == 5,
+          "Victory rewards incomplete")
+    check(!BlueHoennPilot.rival_103 && !BlueHoennPilot.birch,
+          "Completed rival or lab reward could be repeated")
+    check($bag.items[:POKEBALL] == 5, "Revisit duplicated Balls")
+
     $PokemonGlobal.blue_regions["hoenn_pilot"] = {
       "starter" => "MUDKIP", "met_birch" => true
     }
-    $player.gender = 1
-    TrainerBattle.result = false
-    check(BlueHoennPilot.rival_103, "Rival loss did not complete")
-    check(TrainerBattle.history.last == [:RIVAL1, "Brendan", 212],
-          "Wrong Brendan team counter")
-    check(BlueHoennPilot.state["rival_103_done"], "Loss not persisted")
+    $player.party.clear
+    calls = TrainerBattle.history.length
+    check(!BlueHoennPilot.rival_103 && TrainerBattle.history.length == calls,
+          "Rival started without an able party")
+    $player.party << Pokemon.new(:MUDKIP, 5)
+    TrainerBattle.result = :aborted
+    check(!BlueHoennPilot.rival_103 && !BlueHoennPilot.state["rival_103_done"],
+          "A non-victory result advanced the rival encounter")
+    TrainerBattle.result = true
+    old_region = $PokemonGlobal.blue_regions
+    old_flags = BlueHoennPilot.state
+    other_region = {"current" => "DECADES"}
+    calls = TrainerBattle.history.length
+    heals = $player.healed
+    TrainerBattle.on_start = proc do
+      check(!BlueHoennPilot.rival_103, "A second rival battle began while the first was active")
+      $PokemonGlobal.blue_regions = other_region
+    end
+    check(!BlueHoennPilot.rival_103, "A battle completed in a different regional state")
+    check(TrainerBattle.history.length == calls + 1 && $player.healed == heals &&
+          !old_flags["rival_103_done"] && other_region == {"current" => "DECADES"},
+          "Interrupted battle changed a different save or recorded a victory")
+    TrainerBattle.on_start = nil
+    $PokemonGlobal.blue_regions = old_region
+    check(BlueHoennPilot.rival_103, "Interrupted rival encounter could not be retried")
 
-    # Legacy pilot saves got five Poké Balls during starter selection.
-    # Missing pending flag must NOT grant them again on migration.
+    # Older saves recorded completion regardless of battle result. Preserve
+    # their progress because the old flags cannot distinguish win from loss.
+    $PokemonGlobal.blue_regions["hoenn_pilot"] = {
+      "starter" => "MUDKIP", "met_birch" => true, "rival_103_done" => true
+    }
+    $player.has_pokedex = false
+    check(!BlueHoennPilot.rival_103, "Completed legacy rival reopened")
     check(BlueHoennPilot.birch, "Legacy game cannot receive Pokédex")
     check($bag.items[:POKEBALL] == 5, "Migrated legacy reward duplicated")
     check($player.has_pokedex, "Legacy Pokédex lost")
+
+    factory = PokemonMapFactory.new
+    BlueHoennPilot::STARTERS.product([0, 1]).each do |species, profile|
+      $profile_choices = 0
+      $selected_profile = profile
+      $player = HoennDummyPlayer.new
+      $bag = HoennDummyBag.new
+      $game_player = HoennDummyAvatar.new
+      $PokemonGlobal.blue_regions = {
+        "initial" => "HOENN", "current" => "HOENN", "hoenn_pilot" => {"profile_pending" => true}
+      }
+      $game_map = Game_Map.new(701)
+      BlueHoennPilot.choose_profile
+      BlueHoennPilot.choose_profile
+      check($profile_choices == 1 && $player.gender == profile && $game_player.transparent == false,
+            "Opening profile was repeated or applied incorrectly")
+      BlueHoennPilot.clock
+      BlueHoennPilot.mother
+      check(BlueHoennPilot.home_exit_allowed?, "Clock and mother did not open the exit")
+      $game_map.map_id = 703
+      check(BlueHoennPilot.route_birch, "Birch event missing for #{species}/#{profile}")
+      check(!factory.isPassableFromEdge?(10, -1), "Rescue allowed walking north into Oldale")
+      check(factory.isPassableFromEdge?(10, 20), "Rescue blocked walking back toward Littleroot")
+      WildBattle.result = false
+      check(!BlueHoennPilot.choose_birch_ball(species), "Loss completed the rescue")
+      check(!factory.isPassableFromEdge?(10, -1), "Defeat lifted the north exit gate")
+      $PokemonGlobal.blue_regions, $player = Marshal.load(Marshal.dump([$PokemonGlobal.blue_regions, $player]))
+      WildBattle.result = true
+      check(BlueHoennPilot.route_birch, "Rescue did not reopen after loading #{species}/#{profile}")
+      check(factory.isPassableFromEdge?(10, -1), "Victory kept Oldale blocked")
+      check($player.party.map(&:species) == [species], "Reload changed the starter species or count")
+      check(!BlueHoennPilot.choose_birch_ball(species), "Reload allowed a second starter")
+    end
+
+    $PokemonGlobal.blue_regions = {"initial" => "DECADES", "current" => "HOENN"}
+    $game_map = Game_Map.new(700)
+    $profile_choices = 0
+    BlueHoennPilot.choose_profile
+    check($profile_choices == 0 && factory.isPassableFromEdge?(10, -1),
+          "Interregional arrival started the new-game profile or blocked normal movement")
 
     $PokemonGlobal.blue_regions["current"] = "JOHTO"
     previous = Marshal.dump($PokemonGlobal.blue_regions)
