@@ -33,6 +33,21 @@ class HoennH00Tests(unittest.TestCase):
         self.assertEqual(scope_for("Sootopolis City (STORMING)", [], True, 0), "donor_variant_or_filler")
         self.assertEqual(scope_for("Unverified house", [], True, 1), "scope_review_required")
 
+    def test_scope_distinguishes_story_interiors_optional_and_donor_scenes(self):
+        cases = (
+            ("Granite Cave B1F", ["Granite Cave", "Dungeons"], "emerald_story_dungeon_reference"),
+            ("Petalburg Gym", ["Petalburg City", "Cities"], "emerald_story_location_reference"),
+            ("Room", ["Petalburg City", "Cities"], "city_or_route_interior_reference"),
+            ("Captain's Office", ["Abandoned Ship", "Dungeons"], "emerald_optional_reference"),
+            ("Route 124_U", ["Underwater Maps", "Special"], "emerald_underwater_reference"),
+            ("Boat transition", ["Cutscene Maps", "Special"], "donor_scene_or_integration_reference"),
+            ("Routes", ["Hoenn"], "donor_scene_or_integration_reference"),
+            ("Delta Episode Cutscene 1", ["Cutscene Maps"], "donor_variant_or_filler"),
+        )
+        for name, parents, scope in cases:
+            with self.subTest(name=name):
+                self.assertEqual(scope_for(name, parents, True, 1), scope)
+
     def test_terrain_must_fit_the_native_table(self):
         packed = struct.pack("<5I3H", 3, 1, 1, 3, 3, 1, 0, 0)
         world = RubyObject("RPG::Map", {
@@ -54,6 +69,15 @@ class HoennH00Tests(unittest.TestCase):
             "record": "857,North,80,810,South,0",
             "source_ids": [147, 76], "edge_lengths": [80, 360], "shared_tiles": 0,
         }])
+
+    def test_shared_johto_and_sinnoh_claims_are_checked(self):
+        payload = {
+            "Data/MapInfos.rxdata": bytes((4, 8)) + b"{" + integer(1) + b"i" + integer(700) + b"i" + integer(1),
+            "Data/blue-johto-main-preview.json": json.dumps({"map_ids": [700]}).encode(),
+            "Data/blue-sinnoh-shared.json": json.dumps({"map_ids": [700]}).encode(),
+        }
+        with self.assertRaisesRegex(ValueError, "duas regiões"):
+            inspect_delivery(payload.__getitem__, set(payload) | {"Data/Map700.rxdata"})
 
     def test_ownership_collision_fails_before_reading_any_map(self):
         payload = {
