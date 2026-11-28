@@ -26,11 +26,11 @@ class KantoK05MigrationTests(unittest.TestCase):
         for size,sids in eligible.items():
             mapping={i:new[i] for i in sids}
             self.assertEqual(predecessor_edits(mapping,new),expected[size])
-            drift=dict(mapping)
-            key=next(iter(mapping))
-            drift[key]=999
-            with self.assertRaises(ValueError):
-                predecessor_edits(drift,new)
+            for key in sorted(mapping):
+                with self.subTest(size=size,drift=key):
+                    drift={**mapping,key:999}
+                    with self.assertRaises(ValueError):
+                        predecessor_edits(drift,new)
         self.assertEqual(set(eligible),set(expected))
 
     def test_reject_any_lavender_shortcut(self):

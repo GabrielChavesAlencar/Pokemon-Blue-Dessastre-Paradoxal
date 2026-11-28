@@ -644,10 +644,14 @@ def main(argv=None):
                         help="Read-only audit of Cerulean map files, compiled scripts and local error logs.")
     parser.add_argument("--source", action="store_true",
                         help="Use a receita Kanto fixada em vez de um ZIP do jogo.")
+    parser.add_argument("--source-stage", choices=("k05","k06"),
+                        help="Escolher a etapa de uma receita oficial já obtida.")
     parser.add_argument("--source-work-dir", type=Path,
                         help="Pasta separada para compilar com o JoiPlay (somente com --source).")
+    parser.add_argument("--source-ci",action="store_true",help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
-    if (args.source and (args.full or args.diagnose_cerulean)) or (args.source_work_dir and not args.source):
+    if ((args.source and (args.full or args.diagnose_cerulean)) or
+        ((args.source_work_dir or args.source_stage or args.source_ci) and not args.source)):
         parser.error("--source não pode ser combinado com ZIP completo ou diagnóstico")
     root = args.game_dir.expanduser().resolve()
     if (root / "Data/blue-sinnoh-shared-qa.txt").is_file():
@@ -656,12 +660,19 @@ def main(argv=None):
     if args.source:
         if info["channel"] != "multiregion":
             raise ValueError("A atualização pela fonte é somente para o canal multirregional.")
-        recipe = Path(__file__).resolve().with_name("source_update.py")
+        stamp=info.get("source_update") or {}
+        stage=args.source_stage or ("k06" if stamp.get("stage")=="K06_APPROACH" else "k05")
+        filename={"k05":"source_update.py","k06":"k06_source_candidate.py"}[stage]
+        recipe = Path(__file__).resolve().with_name(filename)
         if not recipe.is_file():
-            recipe = Path.home()/".cache/pokemon-blue-android/k05/scripts/android/source_update.py"
+            recipe = Path.home()/".cache"/"pokemon-blue-android"/stage/"scripts/android"/filename
         if not recipe.is_file():
-            raise ValueError("A receita Kanto não está instalada. Use o código publicado para começar.")
+            raise ValueError(f"A receita Kanto {stage.upper()} não está instalada. Use a revisão oficial publicada.")
         command = [sys.executable,str(recipe),"--game-dir",str(root),"--source-workflow"]
+        if args.source_ci:
+            if stage!="k06" or os.getenv("GITHUB_ACTIONS")!="true":
+                raise ValueError("O teste da receita só pode rodar no ambiente de CI.")
+            command.append("--ci")
         if args.source_work_dir:
             command.extend(("--work-dir",str(args.source_work_dir.resolve())))
         if args.update:

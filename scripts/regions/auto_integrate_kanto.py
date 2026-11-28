@@ -22,6 +22,9 @@ ROOT = Path(__file__).resolve().parents[2]
 # pilot verification, hash checks, backups, marker-last commit and rollback.
 KANTO_IMPORTER = "scripts/regions/install_kanto.py"
 KANTO_SOURCE_BOOTSTRAP = "scripts/regions/ensure_source.py"
+K06_APPROACH = "scripts/regions/k06_windows_approach.py"
+K06_RELEASE = Path("data/regions/k06-approach-release.json")
+K06_READY = Path("Data/blue-kanto-k06-approach.json")
 KANTO_MARKER = Path("Data/blue-kanto-start.txt")
 KANTO_MANIFEST = Path("Data/blue-kanto-install.json")
 STATUS_FILE = Path(".blue-work/kanto-install-status.json")
@@ -164,6 +167,21 @@ def integrate(project: Path = ROOT, game: Path | None = None,
     def invoke(script: str, *args: str) -> None:
         run([sys.executable, script, *args], project, env)
 
+    def done(info: dict) -> dict:
+        # The seven-map stage is additive. Never route its install errors into
+        # a fresh Kanto import or describe a failed overlay as complete.
+        if (project/K06_RELEASE).is_file():
+            prior=(game/K06_READY).is_file()
+            try:
+                invoke(K06_APPROACH,"--game",str(game))
+            except (OSError,ValueError,RuntimeError,subprocess.CalledProcessError) as err:
+                reason=_failure("Passagem de Celadon K06",err)
+                print("[KANTO AUTO]",reason,flush=True)
+                return _persist(project,{**info,"status":"manual_k06_migration_required",
+                                         "k06_approach":False,"reason":reason})
+            info={**info,"k06_approach":True,"changed":bool(info["changed"] or not prior)}
+        return _persist(project,info)
+
     state = detect_existing(game)
     if state == "unverified":
         try:
@@ -215,7 +233,7 @@ def integrate(project: Path = ROOT, game: Path | None = None,
                     invoke(KANTO_IMPORTER, "--game", str(game), "--migrate-existing", "--apply")
                     invoke(KANTO_IMPORTER, "--game", str(game), "--verify-installed")
                     recompiling = ensure_rival_compilation(project, game)
-                    return _persist(project, {"status": "integrated", "changed": True,
+                    return done({"status": "integrated", "changed": True,
                                               "source": f"verified_{old_count}_to_{target_count}_migration",
                                               "rival_compile_requested": recompiling})
                 except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError) as migration_error:
@@ -235,11 +253,11 @@ def integrate(project: Path = ROOT, game: Path | None = None,
             reason = _failure("Atualizacao opcional do plugin Kanto", err)
             print("[KANTO AUTO]", reason, flush=True)
             recompiling = ensure_rival_compilation(project, game)
-            return _persist(project, {"status": "already_integrated_runtime_preserved",
+            return done({"status": "already_integrated_runtime_preserved",
                                       "changed": False, "reason": reason,
                                       "rival_compile_requested": recompiling})
         recompiling = ensure_rival_compilation(project, game)
-        return _persist(project, {"status": "already_integrated", "changed": False,
+        return done({"status": "already_integrated", "changed": False,
                                   "rival_compile_requested": recompiling})
 
     try:
@@ -257,7 +275,7 @@ def integrate(project: Path = ROOT, game: Path | None = None,
                 invoke(KANTO_IMPORTER, "--game", str(game), "--apply")
                 invoke(KANTO_IMPORTER, "--game", str(game), "--verify-installed")
                 recompiling = ensure_rival_compilation(project, game)
-                return _persist(project, {"status": "integrated", "changed": True,
+                return done({"status": "integrated", "changed": True,
                                           "source": "cached_verified_pilot",
                                           "rival_compile_requested": recompiling})
             except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError) as cached_error:
@@ -277,7 +295,7 @@ def integrate(project: Path = ROOT, game: Path | None = None,
         print("[KANTO AUTO] Kanto integrado. O motor ainda precisa compilar PBS.",
               flush=True)
         recompiling = ensure_rival_compilation(project, game)
-        return _persist(project, {"status": "integrated", "changed": True,
+        return done({"status": "integrated", "changed": True,
                                   "rival_compile_requested": recompiling})
     except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError) as err:
         reason = _failure("Download/montagem/instalacao de Kanto", err)

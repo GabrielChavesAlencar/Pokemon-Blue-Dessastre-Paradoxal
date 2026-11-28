@@ -350,5 +350,33 @@ class KantoAutoIntegrationTests(unittest.TestCase):
         self.assertIn("if result['changed']:", installer)
 
 
+
+    def test_k06_overlay_runs_after_verified_fresh_or_existing_k05(self):
+        flag=self.project/auto.K06_RELEASE
+        flag.parent.mkdir(parents=True)
+        flag.write_text("{}",encoding="utf8")  # subprocess validates actual schema
+        for installed in (False,True):
+            with self.subTest(installed=installed):
+                if installed:
+                    (self.game/auto.KANTO_MANIFEST).write_text("{}",encoding="utf8")
+                self.calls.clear()
+                result=auto.integrate(self.project,self.game,run=self.invoke)
+                self.assertTrue(result["ready"] and result["k06_approach"])
+                self.assertEqual(self.calls[-1][1],auto.K06_APPROACH)
+                self.assertTrue(any("--verify-installed" in one for one in self.calls[:-1]))
+
+    def test_k06_overlay_error_does_not_reimport_or_claim_ready(self):
+        flag=self.project/auto.K06_RELEASE
+        flag.parent.mkdir(parents=True)
+        flag.touch()
+        def runner(argv,project,env):
+            self.invoke(argv,project,env)
+            if argv[1]==auto.K06_APPROACH:
+                raise RuntimeError("base indisponível")
+        result=auto.integrate(self.project,self.game,run=runner)
+        self.assertEqual(result["status"],"manual_k06_migration_required")
+        self.assertFalse(result["ready"] or result["k06_approach"])
+        self.assertEqual(self.calls[-1][1],auto.K06_APPROACH)
+
 if __name__ == "__main__":
     unittest.main()
