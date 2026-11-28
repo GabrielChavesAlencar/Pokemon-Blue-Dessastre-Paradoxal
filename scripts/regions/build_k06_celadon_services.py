@@ -5,16 +5,17 @@ import copy
 import json
 import os
 import re
+import shutil
+from fnmatch import fnmatchcase
 from pathlib import Path
 
 from audit import KANTO, ROOT, inventory, json_file, load, text
 from audit_k06_celadon_services import CITY_DOORS, DEFERRED, INTERIORS, STORE, summarize
 from build_k05_city import digest
 from k04_gameplay import sprite
-from k06_approach_migration import INSTALL, verify_native_graph
+from k06_approach_migration import INSTALL, SAVE, verify_native_graph
 from pbs import catalogue
 from pilot import EVENT_CLASSES, command, new_event, write_map
-from qa_k04_migration import copy_for_ci
 
 BASE = ".blue-work/kanto-k06-integrated"
 OUTPUT = ".blue-work/kanto-k06-services-fixture"
@@ -118,6 +119,24 @@ def append_terrain(source, target, donors, original_infos, mapping, infos, tiles
         raise ValueError("Registered foreign tileset changed")
 
 
+def copy_celadon_fixture(baseline, target):
+    # Bulk copy never imports any saves. Carry only the byte-exact sentinel
+    # from stage_ci so the verifier can detect an accidental write to it.
+    sentinel = baseline / SAVE
+    expected = b"test save marker; not actual game data"
+    if sentinel.is_symlink() or sentinel.read_bytes() != expected:
+        raise ValueError("K06 fixture is missing the exact synthetic save sentinel")
+    def ignore_saved_data(_folder, names):
+        patterns = ("game_*.rxdata", "game.rxdata", "*.sav", "*.rxsave", "save*", "backups")
+        return [name for name in names if any(fnmatchcase(name.casefold(), p) for p in patterns)]
+
+    shutil.copytree(baseline, target, ignore=ignore_saved_data)
+    copy = target / SAVE
+    copy.parent.mkdir(exist_ok=True)
+    with copy.open("xb") as stream:
+        stream.write(expected)
+
+
 def stage_services(source, baseline, target, report):
     verify_native_graph(baseline)
     stamp = json_file(baseline / INSTALL)
@@ -135,7 +154,7 @@ def stage_services(source, baseline, target, report):
         if digest(source_files[sid]) != by_source[sid]["sha256"]:
             raise ValueError(f"Celadon pinned source map changed: {sid}")
         donors[sid] = load(source_files[sid])
-    copy_for_ci(baseline, target)
+    copy_celadon_fixture(baseline, target)
     append_terrain(source, target, donors, original_infos, mapping, infos, tiles)
     if any(infos[mid] != info for mid, info in old_info.items()):
         raise ValueError("The existing map registry was changed")
@@ -198,9 +217,9 @@ def stage_services(source, baseline, target, report):
     changed = {mapping[sid] for sid in (114, *STORE)}
     if any(digest(path) != digest(after_paths[mid]) for mid, path in files.items() if mid not in changed):
         raise ValueError("Unrelated map bytes changed")
-    for rel in ("saves/K06-SYNTHETIC-SENTINEL.rxdata", "Game.ini", "mkxp.json", "PBS/map_connections_kanto.txt"):
+    for rel in (SAVE, "Game.ini", "mkxp.json", "PBS/map_connections_kanto.txt"):
         before, after = baseline / rel, target / rel
-        if before.is_symlink() or after.is_symlink() or (before.is_file() and digest(before) != digest(after)):
+        if before.is_symlink() or after.is_symlink() or not after.is_file() or digest(before) != digest(after):
             raise ValueError(f"Unrelated protected file changed: {rel}")
     verify_native_graph(target)
     return {"status": "K06_CELADON_PRIVATE_FIXTURE", "candidate_slots": CANDIDATES,

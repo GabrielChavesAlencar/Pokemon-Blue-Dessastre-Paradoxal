@@ -1,10 +1,11 @@
 from pathlib import Path
 import sys
+from tempfile import TemporaryDirectory
 import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"scripts/regions"))
-from audit_k06_celadon_services import script_groups, typed_services
-from build_k06_celadon_services import CANDIDATES, FLOORS, allocate, commands_for
+from audit_k06_celadon_services import script_groups, typed_services, vending_controls
+from build_k06_celadon_services import CANDIDATES, FLOORS, allocate, commands_for, copy_celadon_fixture, SAVE
 
 
 class CeladonSourceReceiptsTest(unittest.TestCase):
@@ -55,3 +56,31 @@ class CeladonSourceReceiptsTest(unittest.TestCase):
         rows[-1]["destination"] = 122
         with self.assertRaises(ValueError):
             commands_for(rows, mapping)
+
+    def test_copies_only_the_exact_synthetic_save(self):
+        with TemporaryDirectory() as folder:
+            root = Path(folder)
+            baseline, copy = root/"before", root/"copy"
+            sentinel = baseline/SAVE
+            sentinel.parent.mkdir(parents=True)
+            (sentinel.parent/"arbitrary.rxdata").write_bytes(b"never copy this")
+            sentinel.write_bytes(b"unexpected marker")
+            with self.assertRaises(ValueError):
+                copy_celadon_fixture(baseline, copy)
+            self.assertFalse(copy.exists())
+            sentinel.write_bytes(b"test save marker; not actual game data")
+            copy_celadon_fixture(baseline, copy)
+            self.assertEqual((copy/SAVE).read_bytes(), sentinel.read_bytes())
+            self.assertEqual(list((copy/SAVE).parent.iterdir()), [copy/SAVE])
+
+    def test_vending_records_pure_numeric_money_operands(self):
+        out = vending_controls({"commands":[
+            {"code":111,"parameters":[7,200,0],"indent":2},
+            {"code":125,"parameters":[1,0,200],"indent":3},
+            {"code":125,"parameters":[1,1,9],"indent":3},
+        ]}, ["$player.money -= 300; unrelated()"])
+        self.assertEqual(out, [
+            {"operation":"native_gold_condition","operand":200,"at_least":True,"indent":2},
+            {"operation":"native_gold_change","operand":200,"increase":False,"indent":3},
+            {"operation":"typed_money_operand","operator":"-=","amount":300},
+        ])

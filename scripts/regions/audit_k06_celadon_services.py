@@ -64,6 +64,29 @@ def typed_services(code):
             "interaction_calls":sorted(set(HOUSE_CALL.findall(code)))}
 
 
+# One observed vending-machine page. Read only typed amounts and opcodes;
+# never persist source dialogue, choices or expressions.
+MONEY_EXPRESSION = re.compile(
+    r"\$(?:player|Trainer)\.money\s*(>=|<=|==|>|<|-=|\+=|=)\s*([0-9]{1,6})(?![0-9])")
+
+
+def vending_controls(page, scripts):
+    out = []
+    for cmd in page["commands"]:
+        code, args = cmd["code"], cmd["parameters"]
+        if (code == 125 and len(args) == 3 and args[0] in (0, 1)
+                and args[1] == 0 and type(args[2]) is int and 0 < args[2] <= 1_000_000):
+            out.append({"operation": "native_gold_change", "indent": cmd["indent"],
+                        "operand": args[2], "increase": args[0] == 0})
+        if (code == 111 and len(args) == 3 and args[0] == 7
+                and type(args[1]) is int and 0 < args[1] <= 1_000_000 and args[2] in (0, 1)):
+            out.append({"operation": "native_gold_condition", "indent": cmd["indent"],
+                        "operand": args[1], "at_least": args[2] == 0})
+    out += [{"operation": "typed_money_operand", "operator": op, "amount": int(n)}
+            for script in scripts for op, n in MONEY_EXPRESSION.findall(script)]
+    return out
+
+
 def summarize(source,catalog):
     old=set(map(int,catalog["maps"]))
     if publication_catalog(catalog["maps"])!=178 or not {114,*STORE}<=old or old&set(INTERIORS):
@@ -86,7 +109,8 @@ def summarize(source,catalog):
             for page in event["pages"]:
                 effects=[{"op":op["code"],"indent":op["indent"],**typed} for op in page["commands"]
                          if (typed:=selectors(op))]
-                parts=[typed_services(code) for code in script_groups(page["commands"])]
+                scripts=list(script_groups(page["commands"]))
+                parts=[typed_services(code) for code in scripts]
                 shops=[x for part in parts for x in part["shops"]]
                 rewards=[x for part in parts for x in part["rewards"]]
                 calls=sorted({x for part in parts for x in part["interaction_calls"]})
@@ -94,7 +118,8 @@ def summarize(source,catalog):
                     services.append({"source":sid,"event":eid,"at":event["xy"],"page":page["page"],
                                      "trigger":page["trigger"],"conditions":audit_conditions(page["condition"]),
                                      "effects":effects,"shops":shops,"rewards":rewards,"calls":calls,
-                                     "item_arguments":[arg for part in parts for arg in part["item_arguments"]] })
+                                     "item_arguments":[arg for part in parts for arg in part["item_arguments"]],
+                                     **({"money":vending_controls(page,scripts)} if (sid,eid)==(122,2) else {})})
     if {x["event"]:x["destination"] for x in warps if x["source"]==114}!=CITY_DOORS:
         raise ValueError("Native Celadon entrances changed")
     if {x["destination"] for x in warps if x["source"]==123 and x["event"]==1}!=set(range(117,122)):
