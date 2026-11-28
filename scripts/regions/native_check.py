@@ -28,14 +28,23 @@ def prepare(game, integrated=False, k03e=False, k04=False, k05_city=False, k05_t
         stage = (ROOT / f".blue-work/kanto-k05-{kind}").resolve()
         from build_k05_product import PRODUCT_APP, PRODUCT_NAME
         product = (ROOT / ".blue-work" / PRODUCT_NAME).resolve()
+        from qa_k05_migration import locations, require_candidate_game
+        migration=False
         if k05_tower and game==product and os.getenv("GITHUB_ACTIONS")=="true":
             kind,SAVE_APP="product",PRODUCT_APP
+        elif k05_tower and game in {locations(n)[1].resolve() for n in (156,160,165)}:
+            old_count=require_candidate_game(game)
+            isolation=game/"Data/blue-k05-ci-isolated.txt"
+            migration=(isolation.is_file() and isolation.read_text("ascii")==str(old_count))
+            if not migration:
+                raise ValueError("Missing K05 migrated CI isolation witness")
+            SAVE_APP=f"Kanto K05 Migrated {old_count} CI"
         elif os.getenv("GITHUB_ACTIONS") != "true" or game != stage:
             raise ValueError("K05 requires its disposable fixture only")
-        marker = json_file(game / PILOT_META)
+        marker = json_file(game / ("Data/blue-kanto-install.json" if migration else PILOT_META))
         if (not save_namespace_valid(game, SAVE_APP) or len(marker["maps"]) != (178 if k05_tower else 171)
-                or marker.get("save_app") != SAVE_APP
-                or marker.get(f"k05_{kind}_fixture_only") is not True
+                or (not migration and (marker.get("save_app") != SAVE_APP or
+                    marker.get(f"k05_{kind}_fixture_only") is not True))
                 or any(marker["maps"].get(str(k)) != mid for k, mid in slots.items())):
             raise ValueError("K05 fixture identity or save isolation is missing")
     if k04:

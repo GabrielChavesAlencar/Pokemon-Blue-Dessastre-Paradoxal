@@ -29,6 +29,35 @@ def locations(size):
     return seed,game,pilot
 
 
+def require_candidate_game(game):
+    target=game.resolve()
+    if os.getenv("GITHUB_ACTIONS")!="true" or os.name!="nt":
+        raise ValueError("K05 install candidate is Windows Actions only")
+    for size in (156,160,165):
+        if target==locations(size)[1].resolve():
+            return size
+    raise ValueError("K05 candidate game path is not a guarded workspace")
+
+
+def require_candidate_pilot(pilot):
+    if os.getenv("GITHUB_ACTIONS")!="true" or os.name!="nt" or pilot.resolve() not in {
+        locations(size)[2].resolve() for size in (156,160,165)}:
+        raise ValueError("K05 candidate pilot path is not a guarded workspace")
+
+
+def seed_165():
+    # K04 is the still-active exact 165-map recipe. Reuse the signed preboot
+    # artifact built earlier against the same game/, not a raw donor archive.
+    if os.getenv("GITHUB_ACTIONS")!="true" or os.name!="nt":
+        raise ValueError("K05 historical seed requires Windows Actions")
+    seed,_,_=locations(165)
+    seed.parent.mkdir(parents=True,exist_ok=True)
+    copy_for_ci(ROOT/"game",seed)
+    result=installer.apply_install(seed,WORK/"kanto-k05-baseline",True)
+    require(result["maps"]==165 and installer.verify_installed(seed)["maps"]==165,
+            "Could not seed a source-valid 165-map K04 installation")
+
+
 def run(size):
     require(os.getenv("GITHUB_ACTIONS")=="true" and os.name=="nt" and size in (156,160,165),
             "K05 migration only runs against known Windows CI workspaces")
@@ -49,7 +78,7 @@ def run(size):
     checked={}
     def exercise_copy(target,prepared,commit,*,migration=None,**kwargs):
         require(target==game and prepared==pilot and commit and migration==proof,"Installer chose unexpected migration")
-        staged,mapping,_=installer.manifest(prepared,target,migration=migration)
+        staged,mapping,_=installer.manifest(prepared,target,migration=migration,candidate="k05")
         mapping={str(sid):mid for sid,mid in mapping.items()}
         edits=predecessor_edits(original_maps,mapping)
         mutated={Path("Data")/f"Map{original_maps[str(sid)]:03}.rxdata" for sid in edits}
@@ -67,7 +96,7 @@ def run(size):
             return original_atomic(path,payload)
         try:
             with patch.object(installer,"atomic",side_effect=fail):
-                original_apply(target,prepared,True,migration=migration)
+                original_apply(target,prepared,True,migration=migration,**kwargs)
         except IOError as error:
             require(str(error)=="synthetic K05 late rollback","Unexpected installer exception")
         require(fired and track(game,prior)==prior and track(game,protected)==before,
@@ -80,9 +109,9 @@ def run(size):
                         "other_maps_preserved":len(foreign),"disposable_save_unchanged":True,"rollback":True})
         return result
     with patch.object(installer,"apply_install",side_effect=exercise_copy):
-        result=installer.migrate_existing(game,installer.SOURCE,pilot,True)
+        result=installer.migrate_existing(game,installer.SOURCE,pilot,True,candidate="k05")
     final=json_file(game/PROOF)["maps"]
-    require(result["maps"]==READY_COUNT and installer.verify_installed(game)["maps"]==READY_COUNT and
+    require(result["maps"]==READY_COUNT and installer.verify_installed(game,candidate="k05")["maps"]==READY_COUNT and
             all(final.get(k)==v for k,v in {**original_maps,**published_destinations()}.items()),
             "K05 main installed proof did not retain historical identities")
     app=f"Kanto K05 Migrated {size} CI"
@@ -98,4 +127,9 @@ def run(size):
 if __name__=="__main__":
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("prior",type=int,choices=[156,160,165])
-    run(parser.parse_args().prior)
+    parser.add_argument("--seed-165",action="store_true")
+    a=parser.parse_args()
+    if a.seed_165:
+        require(a.prior==165,"Wrong seed option")
+        seed_165()
+    run(a.prior)

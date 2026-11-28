@@ -43,11 +43,14 @@ KANTO_RUNTIME_DATA = (
 KANTO_LOCALE = Path("Data/blue-kanto-locale.dat")
 
 
-def trainer_portraits(pilot, *, candidate=False):
+def trainer_portraits(pilot, *, candidate=False, lavender=False):
     """Every trainer type copied by pilot.install_pbs must follow maps."""
     folder = pilot / "Graphics" / "Trainers"
     result = {}
-    for name in (*PORTRAITS, "BLUE_KANTO_GAMBLER.png") if candidate else PORTRAITS:
+    names = (*PORTRAITS, "BLUE_KANTO_GAMBLER.png") if candidate else PORTRAITS
+    if lavender:
+        names += ("BLUE_KANTO_RIVAL_TOWER.png",)
+    for name in names:
         source = folder / name
         if not source.is_file() or not source.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"):
             raise ValueError(f"Missing or invalid Kanto trainer portrait: {name}")
@@ -138,6 +141,11 @@ def check_migration_target(game, pilot, relative, source, proof):
 
 def install_catalogue(game, candidate=False):
     catalog = json_file(KANTO)
+    if candidate=="k05":
+        from build_k05_product import append_candidate
+        from qa_k05_migration import require_candidate_game
+        require_candidate_game(game)
+        return append_candidate(catalog)
     if candidate:
         from k03e_contract import candidate_manifest, require_migration_game
         require_migration_game(ROOT, game)
@@ -149,7 +157,7 @@ def manifest(pilot, game, migration=None, *, candidate=False):
     catalog = install_catalogue(game, candidate)
     if not pilot_is_current(pilot):
         raise ValueError("Piloto antigo ou ausente; reconstrua a copia.")
-    proof = inspect(pilot, candidate=True) if candidate else inspect(pilot)
+    proof = inspect(pilot, candidate=candidate) if candidate else inspect(pilot)
     expected_count = len(catalog["maps"])
     if proof["maps"] != expected_count:
         raise ValueError(f"A auditoria nao confirmou {expected_count} mapas.")
@@ -217,7 +225,7 @@ def manifest(pilot, game, migration=None, *, candidate=False):
                 files[Path("Graphics") / name / path.name] = path
     # Previously omitted: the trainer portraits referenced by the
     # BLUE_KANTO_* PBS types. Import only these explicit names, never all art.
-    files.update(trainer_portraits(pilot, candidate=True) if 79 in mapping else trainer_portraits(pilot))
+    files.update(trainer_portraits(pilot,candidate=79 in mapping,lavender=93 in mapping))
     for relative, source in files.items():
         if not source.is_file():
             raise ValueError("Arquivo de origem ausente: " + str(relative))
@@ -302,18 +310,18 @@ def repair_portraits(game, commit=False):
 
 def apply_install(game, pilot, commit=False, migration=None, *, candidate=False):
     if candidate:
-        install_catalogue(game, True)
+        install_catalogue(game, candidate)
         if migration is None:
-            raise ValueError("K03-E candidate requires an owned predecessor")
+            raise ValueError("Candidate requires an owned predecessor")
     if (game / MARKER).exists() and migration is None:
         raise ValueError("Kanto ja instalado: recusar IDs duplicados.")
     if migration is None:
         files, mapping, original_hashes = manifest(pilot, game)
     else:
-        current_proof = legacy_proof(game, candidate=True) if candidate else legacy_proof(game)
+        current_proof = legacy_proof(game, candidate=candidate) if candidate else legacy_proof(game)
         if current_proof != migration:
             raise ValueError("Kanto manifest changed during migration")
-        files, mapping, original_hashes = (manifest(pilot, game, migration=migration, candidate=True)
+        files, mapping, original_hashes = (manifest(pilot, game, migration=migration, candidate=candidate)
                                            if candidate else manifest(pilot, game, migration=migration))
     plan = {"status": "dry_run", "maps": len(mapping), "files": len(files),
             "start": [mapping[7], 25, 7], "map_ids": mapping}
@@ -368,7 +376,7 @@ def apply_install(game, pilot, commit=False, migration=None, *, candidate=False)
         atomic(game / MARKER, start.encode("ascii"))
         if migration is not None:
             # Keep the final installed verification inside the rollback boundary.
-            verify_installed(game, candidate=True) if candidate else verify_installed(game)
+            verify_installed(game, candidate=candidate) if candidate else verify_installed(game)
             plan["recovered_legacy_maps"] = [
                 str(rel) for rel in files if rel.as_posix() in {
                     f"Data/Map{mid:03d}.rxdata" for mid in migration["maps"].values()
@@ -401,6 +409,9 @@ def known_legacy_catalog(wanted, previous):
         published = wanted - {"58"}
         return previous in (published, published - interiors, published - interiors - north)
     diglett = {"23", "79", "81", "82"}
+    if len(wanted)==178:
+        from k05_contract import predecessor_sets
+        return previous in predecessor_sets(wanted).values()
     if len(wanted) == 165:
         from k04_corridor import published_destinations
         rock = published_destinations().keys()
@@ -586,7 +597,28 @@ def preserve_k03e_predecessor(game, pilot, proof):
     return preserved, path, obj.attrs
 
 
-def migrate_existing(game, source, pilot, commit=False):
+def migrate_existing(game, source, pilot, commit=False, *, candidate=False):
+    if candidate=="k05":
+        from build_k05_product import compose
+        from qa_k05_migration import require_candidate_game
+        size=require_candidate_game(game)
+        if pilot != (ROOT/".blue-work/kanto-k05-migration-ci"/f"rebuild-{size}").resolve() or pilot.exists():
+            raise ValueError("K05 candidate may rebuild only its fresh CI pilot")
+        from k05_migration import prepare as prepare_k05
+        from tempfile import TemporaryDirectory
+        catalog=install_catalogue(game,candidate)
+        proof=legacy_proof(game,candidate=candidate)
+        # K04 already installed owns all historical maps. Build a real
+        # 165-map baseline from the normal importer, then append K05 once.
+        old={int(k):v for k,v in proof["maps"].items()}
+        with TemporaryDirectory(prefix=".k05-upgrade-",dir=pilot.parent) as root:
+            baseline=Path(root)/"baseline"
+            build(source,game,baseline,existing=old)
+            compose(source,baseline,pilot,catalog)
+        prepare_k05(game,pilot,proof)
+        return apply_install(game,pilot,commit,migration=proof,candidate=candidate)
+    if candidate:
+        raise ValueError("Unsupported candidate migration")
     proof = legacy_proof(game)
     mapping = {int(k): v for k, v in proof["maps"].items()}
     pilot = revised_path(pilot) if pilot.exists() else pilot
@@ -615,10 +647,16 @@ def verify_installed(game, *, candidate=False):
         raise ValueError(f"Older Kanto installation: {len(mapping) if isinstance(mapping,dict) else 0}/{expected} maps. Do not overwrite saves or merge IDs automatically.")
     if (candidate or "79" in catalog["maps"]) and set(mapping) != set(catalog["maps"]):
         raise ValueError("Invalid K03-E source map set")
-    if expected == 165:
+    if expected >= 165:
         from k04_corridor import published_destinations
         if any(mapping.get(key) != value for key, value in published_destinations().items()):
             raise ValueError("Invalid K04 reserved map IDs")
+    if expected==178:
+        from k05_contract import published_destinations
+        if any(mapping.get(key)!=value for key,value in published_destinations().items()):
+            raise ValueError("Invalid K05 reserved map IDs")
+        if not (game/"Graphics/Trainers/BLUE_KANTO_RIVAL_TOWER.png").is_file():
+            raise ValueError("Missing K05 rival portrait")
     if len(set(mapping.values())) != expected:
         raise ValueError("Duplicated Kanto map IDs.")
     start = marker.read_text(encoding="ascii").strip()

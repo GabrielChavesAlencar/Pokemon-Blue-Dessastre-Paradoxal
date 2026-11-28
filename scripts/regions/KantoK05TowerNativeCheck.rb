@@ -146,7 +146,14 @@ module KantoK05TowerNativeCheck
 
   def self.run
     SaveData.initialize_bootup_values
+    integrated = !File.file?("Kanto pilot.json")
+    if integrated
+      registry = BlueRegionStart.kanto_compact_maps(BlueRegionStart.kanto_spawn)
+      want(BlueRegionStart.kanto_integrated? && registry && registry.size==178 &&
+           BlueRegionStart.request_initial("KANTO"), "installed 178-map Main could not start Kanto")
+    end
     Game.start_new
+    want(!integrated || BlueKantoPilot.kanto_current?, "integrated Main chose another region")
     seen = []
     Object.send(:define_method,:pbMessage) { |message,*_args| seen << message; nil }
     $player.party.replace([Pokemon.new(:BULBASAUR,20)])
@@ -181,7 +188,7 @@ module KantoK05TowerNativeCheck
     want($game_map.map_id==609 && [$game_player.x,$game_player.y]==[18,7], "native exit did not return to Lavender")
     gameplay = first_visit!(seen)
     report = {"native_up"=>up,"native_down"=>down,"summit_gate"=>blocked,
-              "native_scope_exists"=>scope_in_catalog,"remained_in_scope"=>true,"first_visit_gameplay"=>gameplay,"manual_playthrough"=>false,"published"=>false}
+              "native_scope_exists"=>scope_in_catalog,"remained_in_scope"=>true,"integrated_main"=>integrated,"first_visit_gameplay"=>gameplay,"manual_playthrough"=>false,"published"=>false}
     File.write("Data/blue-kanto-k05-tower-native-proof.txt",report.inspect)
     puts "KANTO_K05_TOWER_NATIVE_STAIRS_OK"
   end
