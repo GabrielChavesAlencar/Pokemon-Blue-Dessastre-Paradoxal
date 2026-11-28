@@ -60,9 +60,17 @@ jobs:
           & "$env:ProgramFiles/7-Zip/7z.exe" x $mesa "-o$driver" -y | Out-Null
           if ($LASTEXITCODE -ne 0) { throw 'Falha na extração do Mesa.' }
           $env:BLUE_QA_STAGE = "$env:BLUE_QA_ROOT-Compilar-Fontes/game"
-          Get-ChildItem -LiteralPath $driver -Recurse -File -Filter '*.dll' |
-            Where-Object { $_.Directory.Name -eq 'x64' } |
-            ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $env:BLUE_QA_STAGE }
+          $injected = @(
+            Get-ChildItem -LiteralPath $driver -Recurse -File -Filter '*.dll' |
+              Where-Object { $_.Directory.Name -eq 'x64' } |
+              ForEach-Object {
+                $destination = Join-Path $env:BLUE_QA_STAGE $_.Name
+                if (-not (Test-Path -LiteralPath $destination)) {
+                  Copy-Item -LiteralPath $_.FullName -Destination $destination
+                  $destination
+                }
+              }
+          )
           @'
           import os
           from pathlib import Path
@@ -87,9 +95,7 @@ jobs:
               raise SystemExit("Game.exe não produziu o recibo de compilação.")
           '@ | python -
           if ($LASTEXITCODE -ne 0) { throw 'Falha na compilação nativa.' }
-          Get-ChildItem -LiteralPath $driver -Recurse -File -Filter '*.dll' |
-            Where-Object { $_.Directory.Name -eq 'x64' } |
-            ForEach-Object { Remove-Item -LiteralPath (Join-Path $env:BLUE_QA_STAGE $_.Name) }
+          foreach ($file in $injected) { Remove-Item -LiteralPath $file }
       - name: Verificar e finalizar instalação
         run: |
           python scripts/android/world_source_update.py $env:BLUE_QA_ROOT $env:GITHUB_RUN_NUMBER $env:GITHUB_SHA
