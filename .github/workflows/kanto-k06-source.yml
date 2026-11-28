@@ -88,6 +88,8 @@ jobs:
               if((Get-FileHash -LiteralPath $sentinel -Algorithm SHA256).Hash.ToLowerInvariant() -ne $candidate.save_sentinel_sha256){
                 throw 'The integrated K06 route touched its test save'
               }
+              python scripts/regions/k06_approach_migration.py --verify-compiled-ci
+              if($LASTEXITCODE -ne 0){throw 'Integrated K06 compiled graph differs from the verified approach'}
               Write-Host 'KANTO_K06_INTEGRATED_NATIVE_APPROACH_OK'
             }
           }

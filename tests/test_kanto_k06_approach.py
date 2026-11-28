@@ -1,12 +1,14 @@
 """Verify only exact original approaches can enter the disposable test graph."""
 from pathlib import Path
 import sys
+import json
+from unittest.mock import patch
 from tempfile import TemporaryDirectory
 import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"scripts/regions"))
 from audit_k06_rocket import audit_conditions, selectors
-from k06_approach_migration import require_hashes, sha_bytes
+from k06_approach_migration import require_hashes, sha_bytes, verify_k05_android_predecessor
 from build_k06_approach import APPROACH, EXACT_SEAMS, TEMP_GATES, TRANSFERS, planned_connections, verify_source
 
 
@@ -50,3 +52,25 @@ class K06ApproachTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,"not the recorded baseline"):
                 require_hashes(root,[rel],{rel:sha_bytes(b"edited")})
             self.assertEqual(path.read_bytes(),b"owned")
+
+    def test_android_predecessor_requires_actual_source_inventory_digest(self):
+        from scripts.android.source_update import PRODUCT_REVISION, installed_provenance
+        from scripts.android.update_client import MARKER
+        recipe="4bda388e0f6d07763c95cfd9877ce337e61f9cb9"
+        with TemporaryDirectory() as temp:
+            root=Path(temp).resolve()
+            path=root/MARKER
+            path.parent.mkdir()
+            mark={"schema":1,"revision":PRODUCT_REVISION,"channel":"multiregion",
+                  "files":{"Data/Map373.rxdata":{"size":2,"sha256":"a"*64}}}
+            mark["source_update"]=installed_provenance(mark["files"],recipe)
+            path.write_text(json.dumps(mark),encoding="utf8")
+            maps={"kanto":dict(enumerate(range(178))),"hoenn":dict(enumerate(range(199)))}
+            with patch("scripts.android.source_update.protected_map_inventory",return_value=(maps,{})) as check:
+                self.assertEqual(verify_k05_android_predecessor(root)[0],mark)
+                check.assert_called_once()
+                mark["files"]["Data/Map373.rxdata"]["size"]=3
+                path.write_text(json.dumps(mark),encoding="utf8")
+                with self.assertRaisesRegex(ValueError,"verified source-built K05"):
+                    verify_k05_android_predecessor(root)
+                self.assertEqual(check.call_count,1)

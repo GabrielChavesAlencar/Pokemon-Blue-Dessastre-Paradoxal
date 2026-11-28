@@ -2,6 +2,114 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "497b880e176b88cd94480c378e77b9b8ab7a8427",
+      "date": "2026-11-28T05:32:07-03:00",
+      "title": "Corrigir leitura do recibo de publicação K05 Android",
+      "category": "Correções"
+    },
+    {
+      "sha": "d6395d734a7b91a373261dde9c5151d81d0856ac",
+      "date": "2026-11-28T05:31:45-03:00",
+      "title": "Capture ANSI workflow logs privately for the existing proof gate",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "1a720aa7aa0b36c99f98a71138ec7d28d5b97125",
+      "date": "2026-11-28T05:31:02-03:00",
+      "title": "Publicar receita verificada K05 Android sem dados do jogo",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "7899b30ce3a4cb49d3ffcb8b054ff5f39ebcb47d",
+      "date": "2026-11-28T05:30:11-03:00",
+      "title": "Android K05: atualização pela fonte sem redistribuição",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "0a8d0264576a542240db21a08469b34209eb0128",
+      "date": "2026-11-28T05:08:58-03:00",
+      "title": "Require exact crash-recovery proof before publishing K05 Android recipe",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "4bda388e0f6d07763c95cfd9877ce337e61f9cb9",
+      "date": "2026-11-28T05:08:23-03:00",
+      "title": "Recover interrupted Kanto source updates before retrying on Android",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "4dfe9f5656fc64fe2c8f1c437e18bda73710d206",
+      "date": "2026-11-28T05:05:48-03:00",
+      "title": "Publish the exact verified Android K05 updater recipe without game assets",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "d7ba4cdf1ee201f91b0779abd402a65525ccb8a3",
+      "date": "2026-11-28T04:55:01-03:00",
+      "title": "Route K05 through the Android updater without a redistributed game archive",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "e9840084543dbe37b9bd2bc2d18dde95a614858a",
+      "date": "2026-11-28T04:36:19-03:00",
+      "title": "Install only Kanto assets and required caches after native compilation",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "7eee91589c41ef8addbb336996078cc5c2cb0313",
+      "date": "2026-11-28T04:23:09-03:00",
+      "title": "Launch the disposable Android compiler from a verified short game root",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "68670a2bda1b9a9f173816a0bd6b5b0631fc5336",
+      "date": "2026-11-28T04:09:35-03:00",
+      "title": "Normalize the isolated JoiPlay compiler and separate K05 product from recipe identity",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "5b2880da5fb2f2a6429fd1a4d498bf68b53295a2",
+      "date": "2026-11-28T03:55:47-03:00",
+      "title": "Treat verified refusal of uncompiled Android updates as a passing guard",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "b12d9b9d5ca9d55a9e9baecfde3e8667a3336d1a",
+      "date": "2026-11-28T03:46:14-03:00",
+      "title": "Resolve Windows temporary paths before source-update isolation checks",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "0ad0edd5533d16e1aa32cc6af11a4ada31330ffc",
+      "date": "2026-11-28T03:44:26-03:00",
+      "title": "Stage source-fetched JoiPlay updates locally with hash checks and rollback",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "0eaf9401b2d9e828e8549f7c7fea28c5de748157",
+      "date": "2026-11-28T03:43:38-03:00",
+      "title": "K05: ativar Lavender e a primeira visita à Pokémon Tower",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "04195118c8b9570c982f398f141fc77e8b8dab1f",
+      "date": "2026-11-28T03:28:02-03:00",
+      "title": "Align Android delivery regression with the verified 178-map catalog",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "81e72291bfdcf66255a260467adfb0c23fa63275",
+      "date": "2026-11-28T03:19:55-03:00",
+      "title": "Keep historical Kanto and audio fixtures valid after Lavender activation",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "93796a77aedc4fca5d04b85fd3be2cad90d123a6",
+      "date": "2026-11-28T03:06:53-03:00",
+      "title": "Fix active Lavender website expectations and standalone installer regressions",
+      "category": "Melhorias"
+    },
+    {
       "sha": "439d6a7f1bced7fc228f3c84c8765b3a412cf2ae",
       "date": "2026-11-28T03:04:49-03:00",
       "title": "Merge pull request #388 from GabrielChavesAlencar/codex/hoenn-zip-rights-gate",
@@ -14,9 +122,57 @@
       "category": "Melhorias"
     },
     {
+      "sha": "43c73b46ea2c930a81a6bd54737eafc9f78cb0da",
+      "date": "2026-11-28T02:57:31-03:00",
+      "title": "Activate verified Lavender catalog and preserve historical Windows and Android checks",
+      "category": "Melhorias"
+    },
+    {
       "sha": "cd1ce06811799d8f3f37267db3c523f0fac66e92",
       "date": "2026-11-28T02:57:13-03:00",
       "title": "ci: separate Hoenn ZIP publication from source checks",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "3c326fd05777ec383c5405d8bd0db2ab3e402873",
+      "date": "2026-11-28T02:47:09-03:00",
+      "title": "Audit Lavender portal delta and gate unverified bundled Hoenn redistribution",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "3e463f3c32d8825bfb997eb41e79c27e8e62d3ed",
+      "date": "2026-11-28T02:33:11-03:00",
+      "title": "Check skipped Lavender upgrades against pinned 156 and 160 map installers",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "ab6413fbd23e3c3f13a8832d3a7f0cc1a24a4550",
+      "date": "2026-11-28T02:19:16-03:00",
+      "title": "Exercise the ordinary K04-to-K05 transaction and native Main in CI",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "6d4e445d3ec3a1122421cb9c6f1f3a29f2fc3f0f",
+      "date": "2026-11-28T02:10:12-03:00",
+      "title": "Prove composable K05 product build with pinned maps and skip-upgrade contracts",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "321750ea3f46cb40e5623ffe7334d861230cb776",
+      "date": "2026-11-28T01:58:55-03:00",
+      "title": "Stage native Lavender services and first-visit Tower encounters and trainers",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "91b91194ec4affeb2e8f7b188576f53074f6d851",
+      "date": "2026-11-28T01:45:25-03:00",
+      "title": "Retain original ghost warning contacts below Lavender Tower summit",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "78c7fb03dad6c63e38ffcbae61dd12a0da357776",
+      "date": "2026-11-28T01:30:25-03:00",
+      "title": "Prove native Lavender Tower stairs and summit gate in disposable CI",
       "category": "Melhorias"
     },
     {
@@ -26,9 +182,33 @@
       "category": "Melhorias"
     },
     {
+      "sha": "ff55f5f7d08ee1b8a8e99a432f57136b74e730c2",
+      "date": "2026-11-28T01:17:26-03:00",
+      "title": "Stage all seven native Tower floors with a closed summit and retain CI receipts",
+      "category": "Melhorias"
+    },
+    {
       "sha": "40482772ecc995a1a26c1c64734a895dac209340",
       "date": "2026-11-28T01:12:53-03:00",
       "title": "Audit the Hoenn H00 baseline on Windows and Android",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "2043d687adedc067dd1cf855eef598870ad46176",
+      "date": "2026-11-28T01:09:00-03:00",
+      "title": "Exercise Lavender's natural crossing, reciprocal doors, native services and save reload",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "a282393842b20034adac3fd31650b02f6294b84b",
+      "date": "2026-11-28T00:59:06-03:00",
+      "title": "Stage Lavender terrain and reciprocal original service doors in isolated CI",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "853d926d6286ba4b8416cdc4d23a9a8df9f29f96",
+      "date": "2026-11-28T00:45:48-03:00",
+      "title": "Start K05 with a read-only Lavender and Pokémon Tower audit",
       "category": "Melhorias"
     },
     {

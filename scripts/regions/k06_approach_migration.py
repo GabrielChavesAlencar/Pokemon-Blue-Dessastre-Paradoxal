@@ -9,7 +9,7 @@ from tempfile import TemporaryDirectory
 
 from audit import ROOT, inventory, json_file, load
 from build_k05_city import digest
-from build_k06_approach import APPROACH, apply_events, planned_connections, verify_source
+from build_k06_approach import APPROACH, EXACT_SEAMS, TEMP_GATES, TRANSFERS, apply_events, planned_connections, verify_source
 from install_kanto import apply_install, atomic, recorded_hashes, verify_installed
 from pilot import EVENT_CLASSES, write_map
 from qa_k04_migration import copy_for_ci, isolated_config, save_namespace_valid
@@ -85,6 +85,66 @@ def plan(game, source, receipt, trusted_files=None):
     return changes,result
 
 
+def verify_native_graph(game, compiled=False):
+    """Verify compiled K06 contents, no paths to Saffron or later sublots."""
+    game=game.resolve()
+    stamp=json_file(checked_file(game,INSTALL))
+    mapping={int(k):v for k,v in stamp["maps"].items()}
+    if len(mapping)!=178 or mapping.get(93)!=609 or len(set(mapping.values()))!=178:
+        raise ValueError("K06 compiled registry no longer preserves the 178 K05 IDs")
+    controlled={mapping[i] for i in APPROACH}
+    expected=[(mapping[a],side,n,mapping[b],other,z) for a,side,n,b,other,z in EXACT_SEAMS]
+    text=checked_file(game,CONNECTIONS).read_text("utf-8-sig")
+    _,rows=planned_connections(text,mapping)
+    if rows!=[",".join(map(str,row)) for row in expected]:
+        raise ValueError("K06 active PBS contains a shortcut or missing seam")
+    for sid in APPROACH:
+        native=load(checked_file(game,f"Data/Map{mapping[sid]:03}.rxdata")).attrs["@events"]
+        owned={e:(at,dst,xy,direction) for (s,e),(at,dst,xy,direction) in TRANSFERS.items() if s==sid}
+        if set(native)!=owned.keys():
+            raise ValueError(f"K06 unexpected native events on {sid}")
+        for eid,(at,dst,xy,direction) in owned.items():
+            e=native[eid].attrs
+            pages=e["@pages"]
+            if (e["@x"],e["@y"])!=at or len(pages)!=1 or pages[0].attrs["@trigger"]!=1:
+                raise ValueError(f"K06 native door position or trigger changed: {sid}/{eid}")
+            ops=[command.attrs for command in pages[0].attrs["@list"]]
+            warps=[x["@parameters"][:5] for x in ops if x["@code"]==201]
+            if (sid,eid) in TEMP_GATES:
+                if warps or not any(x["@code"]==355 and b"Saffron" in x["@parameters"][0] for x in ops):
+                    raise ValueError(f"K06 closed Saffron guard changed: {sid}/{eid}")
+            elif warps!=[[0,mapping[dst],*xy,direction]]:
+                raise ValueError(f"K06 exact native transfer changed: {sid}/{eid}: {warps}")
+    if compiled:
+        data=load(checked_file(game,"Data/map_connections.dat"))
+        got=[frozenset((r[0],r[3])) for r in data if {r[0],r[3]}&controlled]
+        wanted=[frozenset((r[0],r[3])) for r in expected]
+        if len(got)!=len(wanted) or set(got)!=set(wanted):
+            raise ValueError("K06 compiled connections differ from its two approved seams")
+    return {"count":len(mapping),"seams":len(expected),"compiled":compiled}
+
+
+def verify_k05_android_predecessor(game):
+    """Use the device's verified K05 inventory, never the CI's file hashes."""
+    from scripts.android.source_update import (
+        PRODUCT_REVISION, installed_provenance, protected_map_inventory, RECOVERY_FILE
+    )
+    from scripts.android.update_client import read_installed
+    game=game.resolve()
+    if (game/RECOVERY_FILE).exists():
+        raise ValueError("Complete the interrupted K05 update before attempting K06.")
+    installed=read_installed(game)
+    stamp=installed.get("source_update")
+    recipe="4bda388e0f6d07763c95cfd9877ce337e61f9cb9"
+    if (installed["channel"]!="multiregion" or installed["revision"]!=PRODUCT_REVISION
+            or stamp!=installed_provenance(installed["files"],recipe)):
+        raise ValueError("K06 requires the verified source-built K05 predecessor.")
+    regions,paths=protected_map_inventory(game,installed)
+    if len(regions["kanto"])!=178 or len(regions["hoenn"])!=199:
+        raise ValueError("K06 predecessor does not have the two complete regional registries.")
+    return installed,paths
+
+
 def stage_ci():
     """Apply the plan only to a fresh throwaway Windows CI installation."""
     if os.getenv("GITHUB_ACTIONS")!="true" or os.name!="nt":
@@ -110,6 +170,7 @@ def stage_ci():
         raise ValueError("Unexpected K06 migration scope")
     for rel,data in changes.items():
         atomic(game/rel,data)
+    verify_native_graph(game)
     if (before["maps"]!=json_file(game/INSTALL)["maps"] or verify_installed(game)["maps"]!=178
             or any(digest(game/rel)!=value for rel,value in state.items() if rel not in exact)):
         raise ValueError("A K06 migration changed unrelated maps, runtime configuration or save")
@@ -123,4 +184,14 @@ def stage_ci():
 
 
 if __name__=="__main__":
-    stage_ci()
+    import argparse
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--verify-compiled-ci",action="store_true")
+    args=parser.parse_args()
+    if args.verify_compiled_ci:
+        if os.getenv("GITHUB_ACTIONS")!="true" or os.name!="nt":
+            raise ValueError("K06 integrated native verification is CI only")
+        proof=verify_native_graph(ROOT/CI_PATH,compiled=True)
+        print("KANTO_K06_INTEGRATED_COMPILED_GRAPH_OK:"+json.dumps(proof))
+    else:
+        stage_ci()
