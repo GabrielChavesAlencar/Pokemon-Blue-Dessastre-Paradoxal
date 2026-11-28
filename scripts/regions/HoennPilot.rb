@@ -587,20 +587,33 @@ module BlueHoennPilot
 
   def self.rival_103
     flags = state
-    return false unless flags && starter
+    chosen = starter
+    player = $player
+    return false unless flags && chosen && player && player.able_pokemon_count > 0
     return false unless flags["birch_rescued"] || flags["met_birch"]
-    return false if flags["rival_103_done"]
-    name = rival_name
-    pbMessage(_INTL("{1}: Vamos testar nossos Pokémon antes de voltar a Littleroot!", name))
-    setBattleRule("canLose")
-    victory = TrainerBattle.start(:RIVAL1, name, RIVAL_VERSIONS.fetch(starter))
-    $player.heal_party if $player && $player.respond_to?(:heal_party)
-    # A canLose result is a completed story battle whether victory or loss.
-    flags["rival_103_done"] = true
-    pbMessage(victory ?
-      _INTL("{1}: Você batalhou muito bem! Volte ao laboratório de Birch.", name) :
-      _INTL("{1}: Foi uma boa batalha! Volte ao laboratório de Birch.", name))
-    true
+    return false if flags["rival_103_done"] || @rival_103_in_progress
+
+    @rival_103_in_progress = true
+    begin
+      name = rival_name
+      pbMessage(_INTL("{1}: Vamos testar nossos Pokémon antes de voltar a Littleroot!", name))
+      setBattleRule("canLose")
+      victory = TrainerBattle.start(:RIVAL1, name, RIVAL_VERSIONS.fetch(chosen))
+      return false unless $player.equal?(player) && state.equal?(flags)
+
+      player.heal_party
+      unless victory == true
+        pbMessage(localized(
+          "{1}: Heal up and come back when you're ready for a rematch.",
+          "{1}: Cure sua equipe e volte quando quiser uma revanche.", name))
+        return false
+      end
+      flags["rival_103_done"] = true
+      pbMessage(_INTL("{1}: Você batalhou muito bem! Volte ao laboratório de Birch.", name))
+      true
+    ensure
+      @rival_103_in_progress = false
+    end
   end
 
   def self.birch
@@ -623,7 +636,7 @@ module BlueHoennPilot
       return false
     end
     if flags["balls_at_lab_pending"]
-      unless $bag && $bag.add(:POKEBALL, 5)
+      unless $bag && $bag.add_all(:POKEBALL, 5)
         pbMessage(_INTL("Birch: Abra espaço na Bolsa para receber cinco Poké Bolas."))
         return false
       end
