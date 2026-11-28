@@ -11,6 +11,7 @@ from pathlib import Path
 from scripts.music import compile_kanto_music as compiler
 from scripts.regions.k03e_contract import MAPS as K03E_MAPS
 from scripts.regions.k04_corridor import MAPS as K04_MAPS
+from scripts.regions.k05_contract import MAPS as K05_MAPS
 
 ROOT = Path(__file__).resolve().parents[1]
 FILES = ("data/regions/kanto-source.json", "data/kanto-music.json",
@@ -32,7 +33,7 @@ class KantoMusicPhaseOneTests(unittest.TestCase):
         self.rules = self.read("data/kanto-music-rules.json")
         # F1–F5 regressions use the exact pre-K03-E catalog and rules.
         self.source["maps"] = {k:v for k,v in self.source["maps"].items()
-                               if int(k) not in (K03E_MAPS.keys() | K04_MAPS.keys())}
+                               if int(k) not in (K03E_MAPS.keys() | K04_MAPS.keys() | K05_MAPS.keys())}
         (self.project / "data/regions/kanto-source.json").write_text(
             json.dumps(self.source), encoding="utf-8")
         self.rules["maps"] = [row for row in self.rules["maps"]

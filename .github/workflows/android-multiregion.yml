@@ -238,6 +238,17 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          # K05 and following phases must not redistribute the inherited
+          # Hoenn assets merely because they compile in the shared game.
+          # This is intentionally a scope check, not technical acceptance.
+          $kanto = Get-Content 'data/regions/kanto-source.json' -Raw | ConvertFrom-Json
+          if($kanto.maps.'93' -eq 'LAVENDER_TOWN'){
+            $hoenn = (Get-Content 'data/regions/hoenn-source.json' -Raw | ConvertFrom-Json).source
+            if($hoenn.public_redistribution_approved -ne $true -or $hoenn.credits_status -ne 'VERIFIED_PER_ASSET'){
+              Write-Host 'ANDROID_PUBLICATION_WITHHELD: public Hoenn redistribution scope is not verified. Compilation is not publication.'
+              exit 0
+            }
+          }
           $tag="android-multiregion-${{ github.run_number }}-"+'${{ github.sha }}'.Substring(0,7)
           @'
           ZIP para JoiPlay + RPG Maker Plugin (nao APK), com Decades, Kanto e Hoenn.

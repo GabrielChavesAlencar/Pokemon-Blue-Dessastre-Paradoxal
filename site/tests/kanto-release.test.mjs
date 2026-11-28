@@ -13,18 +13,18 @@ const model={byId:new Map(catalog.species.map(p=>[p.id,p]))};
 const loc=id=>kanto.locations.find(v=>v.id===id);
 
 test('Kanto prototype states are explicit and the route 23 exception stays visible',()=>{
-  assert.equal(kanto.locations.length,165);
-  assert.equal(kanto.trainers.length,202);
+  assert.equal(kanto.locations.length,178);
+  assert.equal(kanto.trainers.length,216);
   assert.equal(kanto.locations.filter(x=>x.status==='preview').length,35);
   assert.equal(kanto.locations.filter(x=>x.status==='encounter_review').length,1);
-  assert.equal(kanto.locations.filter(x=>x.status==='experimental').length,129);
+  assert.equal(kanto.locations.filter(x=>x.status==='experimental').length,142);
   assert.ok(kanto.locations.filter(x=>x.status==='preview').every(x=>!x.methods.length&&!x.trainers.length));
   const route23=kantoLocation(model,kanto,loc('kanto-route-23'));
   assert.match(route23,/Encontros temporariamente suspensos/);
   assert.match(route23,/método duplicado/);
   const preview=kanto.locations.find(x=>x.status==='preview');
   assert.match(kantoLocation(model,kanto,preview),/Somente cenário/);
-  assert.match(kantoIndex(model,kanto,'localizacoes'),/165 locais e 202 treinadores/);
+  assert.match(kantoIndex(model,kanto,'localizacoes'),/178 locais e 216 treinadores/);
   assert.doesNotMatch(route23,/Trecho de Pallet Town a Pewter City/);
 });
 test('Rota 11 e a Caverna dos Diglett mantêm os encontros e os treinadores verificados',()=>{
@@ -130,7 +130,7 @@ test('rotas e fichas distinguem nível do PBS, taxa original do slot e evoluçã
   assert.match(kantoBalanceNote('league'),/Elite Four e campeão/);
 });
 
-test('Rock Tunnel mantém duas rotas, um Centro e dois andares sem antecipar Lavender',()=>{
+test('Rock Tunnel mantém duas rotas, um Centro e dois andares com a primeira visita a Lavender',()=>{
   const ids=['route-9','route-10','rock-tunnel-center','rock-tunnel-1f','rock-tunnel-b1f'];
   const locations=ids.map(id=>loc('kanto-'+id));
   for(const row of locations)assert.equal(row.status,'experimental');
@@ -139,5 +139,15 @@ test('Rock Tunnel mantém duas rotas, um Centro e dois andares sem antecipar Lav
   const allen=kanto.trainers.filter(t=>t.name==='Allen'&&t.location==='kanto-rock-tunnel-b1f');
   assert.equal(allen.length,1);
   assert.equal(allen[0].variants.length,1);
-  assert.equal(loc('kanto-lavender-town'),undefined);
+  assert.equal(loc('kanto-lavender-town').status,'experimental');
+  assert.deepEqual(loc('kanto-lavender-town').methods,[]);
+  for(let level=1;level<=7;level++){
+    const floor=loc('kanto-pokemon-tower-'+level+'f');
+    assert.deepEqual(floor.methods.map(m=>m.id),level>=3?['CaveDay','CaveNight']:[]);
+  }
+  const jody=kanto.trainers.filter(t=>t.name==='Jody'&&t.location.startsWith('kanto-pokemon-tower-'));
+  assert.deepEqual(jody.map(t=>t.location).sort(),['kanto-pokemon-tower-4f','kanto-pokemon-tower-5f']);
+  const rival=kanto.trainers.find(t=>t.id==='kanto-blue-tower');
+  assert.deepEqual(rival.variants.map(v=>v.team.at(-1).species),['CHARMELEON','WARTORTLE','IVYSAUR']);
+  assert.equal(loc('kanto-pokemon-tower-7f').trainers.length,0);
 });

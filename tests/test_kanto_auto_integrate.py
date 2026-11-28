@@ -4,12 +4,14 @@ These fixtures NEVER download FRLG, touch a user's game/ or run Game.exe.
 """
 import importlib.util
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 spec = importlib.util.spec_from_file_location(
     "kanto_auto_integration", ROOT / "scripts/regions/auto_integrate_kanto.py")
 auto = importlib.util.module_from_spec(spec)
@@ -200,6 +202,37 @@ class KantoAutoIntegrationTests(unittest.TestCase):
                 else:
                     self.assertEqual(result["status"], "manual_migration_required")
                     self.assertEqual(len(self.calls), 1)
+
+    def test_k05_auto_allows_exact_three_predecessors_only(self):
+        import json
+        from scripts.regions.k03e_contract import MAPS as diglett
+        from scripts.regions.k04_corridor import MAPS as rock
+        from scripts.regions.k05_contract import MAPS as lavender
+        (self.game / auto.KANTO_MARKER).write_text("installed")
+        catalog = self.project / "data/regions/kanto-source.json"
+        catalog.parent.mkdir(parents=True)
+        maps = {str(i): i+100 for i in range(200,356)}
+        map_set = lambda group: {str(i):key for i,key in group.items()}
+        variants = [dict(maps)]
+        for group in (diglett,rock,lavender):
+            maps.update(map_set(group))
+            variants.append(dict(maps))
+        catalog.write_text(json.dumps({"maps":maps}))
+        for old in variants[:-1] + [{**variants[0],"23":600}]:
+            self.calls.clear()
+            (self.game/auto.KANTO_MANIFEST).write_text(json.dumps({
+                "schema":1,"source":"Essentials FRLG 21.1","maps":old}))
+            def runner(argv, project, env):
+                self.calls.append(argv)
+                if len(self.calls)==1:
+                    raise ValueError("Previous Kanto catalogue")
+            actual=auto.integrate(self.project,self.game,run=runner)
+            if len(old)==157:
+                self.assertEqual(actual["status"],"manual_migration_required")
+                self.assertEqual(len(self.calls),1)
+            else:
+                self.assertEqual(actual["source"],f"verified_{len(old)}_to_178_migration")
+                self.assertIn("--migrate-existing",self.calls[2])
 
     def test_current_count_broken_cerulean_door_retries_verified_migration(self):
         import json

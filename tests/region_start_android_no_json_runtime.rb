@@ -218,6 +218,31 @@ Dir.mktmpdir("blue-joiplay-no-json") do |directory|
     check(BlueRegionStart.kanto_integrated? && BlueRegionStart.hoenn_integrated?, "K04 gate affected Hoenn")
     puts "KANTO_K04_165_READY_GATE_NO_JSON_OK"
 
+    lavender = ((93..98).to_a + (100..106).to_a).each_with_index.to_h { |sid, index| [sid.to_s,609+index] }
+    before_lavender = k04_maps.reject { |source,dst| lavender.key?(source) || lavender.value?(dst) }
+    (921..998).each do |id|
+      break if before_lavender.size==165
+      before_lavender[id.to_s]=id
+    end
+    check(before_lavender.size==165,"bad K05 predecessor fixture")
+    k05_maps=before_lavender.merge(lavender)
+    k05_maps.values.each { |id| File.write(sprintf("Data/Map%03d.rxdata",id),"kanto") }
+    write_kanto_registry.call(k05_maps,178)
+    check(BlueRegionStart.kanto_compact_maps(kanto_home)==k05_maps && BlueRegionStart.kanto_integrated?,
+          "178-map K05 rejected without JSON")
+    write_kanto_registry.call(k05_maps.merge("104"=>620,"105"=>619),178)
+    check(!BlueRegionStart.kanto_integrated?,"K05 gate accepted swapped Tower floors")
+    write_kanto_registry.call(k05_maps.merge("90"=>608,"91"=>607),178)
+    check(!BlueRegionStart.kanto_integrated?,"K05 gate accepted swapped K04 floors")
+    write_kanto_registry.call(k05_maps,178)
+    File.delete("Data/Map621.rxdata")
+    check(!BlueRegionStart.kanto_integrated?,"K05 gate ignored missing summit map")
+    File.write("Data/Map621.rxdata","kanto")
+    check(BlueRegionStart.kanto_integrated? && BlueRegionStart.hoenn_integrated?,
+          "K05 readiness checks affected Hoenn")
+    puts "KANTO_K05_178_READY_GATE_NO_JSON_OK"
+
+
     check(BlueRegionStart.request_initial("DECADES"),
           "Decades new game blocked by missing JSON")
     check(BlueRegionStart.choose_initial == "DECADES",

@@ -20,10 +20,10 @@ class KantoPhaseSixAuditTests(unittest.TestCase):
         rows=phase6.classify_catalog(ROOT,self.manifest)
         self.assertEqual(len(rows),64)
         self.assertEqual(sum(x["status"]=="VINCULADA" for x in rows),38)
-        self.assertEqual(sum(x["status"]=="PENDENTE_EVENTO" for x in rows),20)
-        self.assertEqual(sum(x["status"]=="MAPA_AUSENTE" for x in rows),6)
+        self.assertEqual(sum(x["status"]=="PENDENTE_EVENTO" for x in rows),22)
+        self.assertEqual(sum(x["status"]=="MAPA_AUSENTE" for x in rows),4)
         self.assertEqual({x["number"] for x in rows if x["status"]=="MAPA_AUSENTE"},
-                         set(phase6.ABSENT_KANTO_AREAS))
+                         set(phase6.ABSENT_KANTO_AREAS)-{38,39})
         self.assertEqual(sum(x["kind"]=="ME" and x["status"]=="VINCULADA" for x in rows),6)
         self.assertEqual(sum(x["kind"]=="BGM" and x["status"]=="VINCULADA" for x in rows),32)
         self.assertEqual({x["number"] for x in rows if x["status"]=="VINCULADA"},
@@ -37,7 +37,7 @@ class KantoPhaseSixAuditTests(unittest.TestCase):
 
     def test_unknown_cinematics_and_ME_cannot_be_pretended_active(self):
         rows={r["number"]:r for r in phase6.classify_catalog(ROOT,self.manifest)}
-        for n in (1,2,4,5,16,20,22,24,26,33,42,43,44,46,49,51,58,60,71,73):
+        for n in (1,2,4,5,16,20,22,24,26,33,38,39,42,43,44,46,49,51,58,60,71,73):
             self.assertEqual(rows[n]["status"],"PENDENTE_EVENTO")
         self.assertEqual(rows[72]["status"],"VINCULADA")
         self.assertEqual(rows[70]["status"],"VINCULADA")
