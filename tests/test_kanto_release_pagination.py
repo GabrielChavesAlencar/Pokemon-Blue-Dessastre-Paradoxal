@@ -4,6 +4,8 @@ import io
 import json
 import sys
 import unittest
+from unittest.mock import patch
+from urllib.error import HTTPError
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -95,6 +97,37 @@ class KantoReleaseHistoryTests(unittest.TestCase):
         self.assertTrue(calls[1][0].endswith("per_page=100&page=2"))
         self.assertEqual(calls[0][1], "Bearer fake-token")
         self.assertEqual(calls[0][2], 45)
+
+    @patch("scripts.android.select_previous_kanto_releases.time.sleep")
+    def test_transient_gateway_failure_retries_same_page_and_preserves_history(self, sleep):
+        old = release(1, "2026-11-01T12:00:00Z")
+        calls = []
+        def opener(request, timeout):
+            page = request.full_url.rpartition("=")[2]
+            calls.append(page)
+            if page == "1":
+                return io.BytesIO(json.dumps([{"tag_name": "other"}] * 100).encode())
+            if calls.count("2") == 1:
+                raise HTTPError(request.full_url, 502, "Bad Gateway", {}, None)
+            return io.BytesIO(json.dumps([old]).encode())
+        repo = "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal"
+        pages = fetch_release_pages(repo, "fake", opener=opener)
+        self.assertEqual(calls, ["1", "2", "2"])
+        self.assertEqual(pages[1], [old])
+        sleep.assert_called_once_with(2)
+
+    @patch("scripts.android.select_previous_kanto_releases.time.sleep")
+    def test_permanent_error_is_not_retried_and_gateway_retry_is_bounded(self, sleep):
+        repo = "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal"
+        for code, count in ((403, 1), (502, 4)):
+            calls = []
+            def opener(request, timeout):
+                calls.append(request.full_url)
+                raise HTTPError(request.full_url, code, "simulated", {}, None)
+            with self.subTest(code=code), self.assertRaises(HTTPError):
+                fetch_release_pages(repo, "fake", opener=opener)
+            self.assertEqual(len(calls), count)
+        self.assertEqual([c.args[0] for c in sleep.call_args_list], [2, 5, 12])
 
     def test_api_http_blocks_missing_token_invalid_shape_and_truncated_history(self):
         repo = "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal"
