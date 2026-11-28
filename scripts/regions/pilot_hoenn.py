@@ -116,7 +116,7 @@ from hoenn_presentation import apply_presentation, add_littleroot_trees
 from hoenn_qa_phase12 import audit_generated as audit_integrated
 
 from hoenn_catalog import (
-    CATALOG_REVISION, MAP_RANGE, UPSTREAM, approved_source_ids, validate_mapping,
+    MAP_RANGE, PILOT_CATALOG_REVISION, UPSTREAM, approved_source_ids, validate_mapping,
 )
 
 SOURCE_MAPS = {
@@ -132,7 +132,7 @@ SOURCE_MAPS = {
     **SOURCE_MAPS_STAGE9,
     **SOURCE_MAPS_STAGE10,
 }
-def catalog_source_ids(revision=CATALOG_REVISION):
+def catalog_source_ids(revision=PILOT_CATALOG_REVISION):
     """Check that every approved MapKey has a builder definition."""
     keys = approved_source_ids(revision)
     if not keys <= SOURCE_MAPS.keys():
@@ -286,7 +286,7 @@ def open_tile(map_data, tileset, x, y):
 # Source IDs are displayed in the QA menu; native IDs are written only to the
 # PRIVATE installed pilot. Each target is a free standing floor tile, never a
 # donor event, door threshold, water warp or a guessed fixed coordinate.
-def build_test_stops(maps, tiles, mapped_ids, *, catalog_revision=CATALOG_REVISION):
+def build_test_stops(maps, tiles, mapped_ids, *, catalog_revision=PILOT_CATALOG_REVISION):
     expected = catalog_source_ids(catalog_revision)
     if maps.keys() != expected or mapped_ids.keys() != expected or tiles.keys() != expected:
         raise ValueError(f"Teleporte Hoenn exige os {len(expected)} mapas aprovados e remapeados")
@@ -329,7 +329,7 @@ def build_test_stops(maps, tiles, mapped_ids, *, catalog_revision=CATALOG_REVISI
     return stops
 
 
-def serialize_test_stops(stops, *, catalog_revision=CATALOG_REVISION):
+def serialize_test_stops(stops, *, catalog_revision=PILOT_CATALOG_REVISION):
     expected = catalog_source_ids(catalog_revision)
     if len(stops) != len(expected) or {r[0] for r in stops} != expected:
         raise ValueError("Catálogo de teleporte de Hoenn incompleto")
@@ -570,7 +570,7 @@ def append_event(map_data, name, x, y, page):
     events = map_data.attrs["@events"]
     if any((obj.attrs["@x"], obj.attrs["@y"]) == (x, y) for obj in events.values()):
         raise ValueError(f"Eventos Hoenn se sobrepõem em {(x, y)}")
-    n = len(events) + 1
+    n = max(events, default=0) + 1
     events[n] = ruby("RPG::Event", id=n, name=name.encode("ascii"), x=x, y=y, pages=[page])
     return n
 
@@ -2240,7 +2240,7 @@ def build_overlay(game, source):
     ).encode("utf-8")
     overlay["Data/blue-hoenn-compile-request.txt"] = (UPSTREAM + "\n").encode("ascii")
     report = {"region": "HOENN", "kind": "ISOLATED_HOENN_TEST", "source_commit": UPSTREAM,
-              "catalog_revision": CATALOG_REVISION,
+              "catalog_revision": PILOT_CATALOG_REVISION,
               "start": [ids[START[0]], *START[1:]], "maps": ids, "save_profile": PROFILE,
               "trainer_bindings": [{**binding, "destination_map_id": ids[102]}
                                    for binding in trainer_bindings],

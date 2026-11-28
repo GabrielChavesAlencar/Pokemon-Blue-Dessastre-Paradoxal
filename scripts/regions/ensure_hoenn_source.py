@@ -208,7 +208,7 @@ class PinnedDownloader:
     def collect(self) -> dict:
         # First obtain the minimum source to discover tileset dependencies.
         files = [
-            "Data/MapInfos.rxdata", "Data/Tilesets.rxdata",
+            "Data/MapInfos.rxdata", "Data/Tilesets.rxdata", "Data/Map015.rxdata",
             "PBS/map_connections.txt", "PBS/encounters.txt",
             *(f"Data/Map{mid:03}.rxdata" for mid in SOURCE_MAPS),
         ]
