@@ -310,6 +310,11 @@ module KantoK04NativeCheck
     first = trainer_witness(ids,90,[24,7])
     lower = trainer_witness(ids,91,lower_landing)
     warn_flag = BlueKantoPilot.progress.fetch("regional_pokecenters",{})["KANTO"]
+    trace("CENTER_CHECKPOINT_STATE", {
+      "native"=>BlueRegionalRespawn.checkpoint, "regional"=>warn_flag,
+      "hook_installed"=>Object.ancestors.include?(BlueRegionalRespawn::NativeCheckpoints),
+      "recognized_center"=>BlueRegionalRespawn.real_center?("KANTO",ids.fetch(88))
+    })
     require!(warn_flag && warn_flag[0] == ids.fetch(88), "native Center checkpoint wasn't saved for Kanto")
     checkpoint = BlueRegionalRespawn.checkpoint
     scene = Scene_Map.new

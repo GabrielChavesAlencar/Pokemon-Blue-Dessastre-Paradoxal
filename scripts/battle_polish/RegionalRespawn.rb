@@ -4,6 +4,7 @@
 module BlueRegionalRespawn
   REGIONS = %w[DECADES KANTO JOHTO HOENN SINNOH].freeze
   KANTO_CENTER_SOURCE = 11  # FRLG Viridian City, first real Pokemon Center
+  KANTO_ROCK_TUNNEL_CENTER_SOURCE = 88
   HOENN_CENTER_SOURCE = 13  # Oldale Town, first real Pokemon Center
 
   def self.state
@@ -166,7 +167,13 @@ module BlueRegionalRespawn
 
   def self.real_center?(region, id)
     return false unless region_map?(region, id)
-    return true if region == "KANTO" && kanto_maps[KANTO_CENTER_SOURCE] == id
+    if region == "KANTO"
+      # Rock Tunnel's remapped Center must work even when map-info names are
+      # not loaded by the runtime. Resolve the original identity, not Map606
+      # or a localized display name. The native nurse still sets the point.
+      maps = kanto_maps
+      return true if [KANTO_CENTER_SOURCE,KANTO_ROCK_TUNNEL_CENTER_SOURCE].any? { |sid| maps[sid] == id }
+    end
     return true if region == "HOENN" && hoenn_maps[HOENN_CENTER_SOURCE] == id
     info = defined?($data_mapinfos) && $data_mapinfos && $data_mapinfos[id]
     info && info.respond_to?(:name) &&

@@ -64,10 +64,10 @@ check(Object.ancestors.count(BlueRegionalRespawn::NativeCheckpoints)==1,"double 
 Dir.mktmpdir("blue-region-blackout") do |dir|
   Dir.chdir(dir) do
     Dir.mkdir("Data")
-    [77,79,300,301,302,310,311,326,601,602,713,813].each do |id|
+    [77,79,300,301,302,310,311,326,601,602,605,606,713,813].each do |id|
       File.write(sprintf("Data/Map%03d.rxdata",id),"fixture")
     end
-    File.write("Kanto pilot.json",'{"maps":{"5":300,"6":301,"7":302,"10":310,"11":311,"26":326}}')
+    File.write("Kanto pilot.json",'{"maps":{"5":300,"6":301,"7":302,"10":310,"11":311,"26":326,"87":605,"88":606}}')
     $data_mapinfos=Array.new(815)
     $data_mapinfos[77]=MapInfo.new("Cherryhill City")
     $data_mapinfos[79]=MapInfo.new("Cherryhill Pokémon Center")
@@ -127,6 +127,23 @@ Dir.mktmpdir("blue-region-blackout") do |dir|
     pbStartOver
     check([$game_map.map_id,$player_x,$player_y,$player_dir]==[79,4,6,2],
           "Decades nurse visit forgotten after returning")
+    # The new Center must be identified through the campaign registry even
+    # if the engine has not provided any localized map-info name.
+    state["current"]="KANTO"
+    $data_mapinfos=nil
+    $game_map.map_id=606;$player_x=7;$player_y=4;$player_dir=8
+    pbSetPokemonCenter
+    check(state["regional_pokecenters"]["KANTO"]==[606,7,4,8],
+          "Rock Tunnel Center was not remembered without MapInfos")
+    $game_map.map_id=605;$player_x=9;$player_y=30;$player_dir=2
+    pbSetPokemonCenter
+    check(state["regional_pokecenters"]["KANTO"]==[606,7,4,8],
+          "outdoor Route 10 was incorrectly remembered as a Center")
+    $PokemonGlobal.pokecenterMapId=79
+    state["regional_pokecenter_owner"]="DECADES"
+    pbStartOver
+    check([$game_map.map_id,$player_x,$player_y,$player_dir]==[606,7,4,8],
+          "cross-region blackout did not restore the Rock Tunnel Center point")
     # A loaded legacy save with no regional campaign must remain native.
     $PokemonGlobal.blue_regions=nil
     $PokemonGlobal.pokecenterMapId=311
