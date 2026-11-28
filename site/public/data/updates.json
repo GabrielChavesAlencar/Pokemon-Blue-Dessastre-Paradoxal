@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "439d6a7f1bced7fc228f3c84c8765b3a412cf2ae",
+      "date": "2026-11-28T03:04:49-03:00",
+      "title": "Merge pull request #388 from GabrielChavesAlencar/codex/hoenn-zip-rights-gate",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "73ddd661a04c65532951b00e5a1b6e124f1e805b",
+      "date": "2026-11-28T02:57:56-03:00",
+      "title": "ci: retain existing Android workflow line endings",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "cd1ce06811799d8f3f37267db3c523f0fac66e92",
+      "date": "2026-11-28T02:57:13-03:00",
+      "title": "ci: separate Hoenn ZIP publication from source checks",
+      "category": "Melhorias"
+    },
+    {
       "sha": "2cb6a2b8e26d27d9097b3a00408f16f60a998b1c",
       "date": "2026-11-28T01:28:15-03:00",
       "title": "Merge pull request #381 from GabrielChavesAlencar/codex/hoenn-h00",
