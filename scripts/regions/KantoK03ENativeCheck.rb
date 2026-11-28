@@ -8,9 +8,9 @@ module KantoK03ENativeCheck
     raise message unless value
   end
 
-  def self.door!(leg,anchor)
+  def self.door!(leg,anchor,native_ledges: false, settle_motion: false)
     map, dest, id = leg.values_at("from_map","to_map","event_id")
-    component = C.opening_component(map,anchor)
+    component = C.opening_component(map,anchor,[],false,native_ledges)
     event = $game_map.events.fetch(id)
     landing = C.north_transfer!(event,dest)
     require!(landing == leg["to_xy"],"K03-E source landing changed")
@@ -19,6 +19,19 @@ module KantoK03ENativeCheck
     begin
       $scene = scene
       scene.send(:createSpritesets)
+      if settle_motion
+        # The collision search can jump an actual ledge. moveto does not
+        # clear the game's jump/move timers. Let the native animation finish
+        # before requesting the next independent contact sample.
+        deadline = System.uptime + 3
+        while ($game_player.moving? || $game_player.jumping?) && System.uptime < deadline
+          Graphics.update
+          $game_player.update
+        end
+        require!(!$game_player.moving? && !$game_player.jumping?,
+          "native movement did not settle before door #{map}/#{id}")
+        require!(!$game_temp.encounter_triggered, "a random encounter blocked movement at #{map}/#{id}")
+      end
       choices = {2=>[0,1],4=>[-1,0],6=>[1,0],8=>[0,-1]}.filter_map do |dir,(dx,dy)|
         from = [event.x-dx,event.y-dy]
         next unless component.key?(from)
@@ -26,6 +39,7 @@ module KantoK03ENativeCheck
         [from,dir,$game_player.passable?(*from,dir)]
       end.sort_by { |from,_dir,passable| [passable ? 0 : 1,component.fetch(from)] }
       selected = nil
+      observed = []
       choices.each do |from,dir,passable|
         $game_player.moveto(*from)
         $game_map.events.each_value { |e| e.clear_starting }
@@ -36,12 +50,15 @@ module KantoK03ENativeCheck
           Graphics.update
           $game_player.update
         end
+        observed << [from,dir,passable,[$game_player.x,$game_player.y],
+                     $game_player.jumping?,$game_temp.encounter_triggered,
+                     $game_map.events.values.select(&:starting).map(&:id)] if settle_motion
         if event.starting
           selected = [from,dir,passable]
           break
         end
       end
-      require!(selected,"K03-E door failed real Player Touch #{map}/#{id}")
+      require!(selected,"K03-E door failed real Player Touch #{map}/#{id}; samples=#{observed.inspect}")
       C.cerulean_native_started_transfer!(event,dest,*selected)
     ensure
       begin

@@ -185,13 +185,17 @@ def integrate(project: Path = ROOT, game: Path | None = None,
                 k03e_migration = (target_count == 160 and old_count == 156 and
                                   k03e_sources <= target_maps.keys() and
                                   set(old_maps) == target_maps.keys() - k03e_sources)
+                rock_sources = {"86", "87", "88", "90", "91"}
+                k04_migration = (target_count == 165 and old_count == 160 and
+                                 rock_sources | k03e_sources <= target_maps.keys() and
+                                 set(old_maps) == target_maps.keys() - rock_sources)
                 candidate = (legacy.get("schema") == 1 and
                              legacy.get("source") == "Essentials FRLG 21.1" and
                              ((target_count == 145 and old_count == 142) or
                               (target_count == 151 and old_count in (142, 145)) or
                               (target_count == 152 and old_count in (142, 145, 151)) or
                               (target_count == 156 and old_count in (142, 145, 151, 152)) or
-                              k03e_migration or
+                              k03e_migration or k04_migration or
                               (target_count == old_count and target_count >= 151 and
                                ("Cerulean door" in str(err) or
                                 "S.S. Anne rival gate:" in str(err)))) and

@@ -20,6 +20,7 @@ from scripts.android.package import compiled_region
 from server.ruby_marshal import loads, RubyObject
 from scripts.regions.kanto_wall_atlas import render_wall_atlas
 from scripts.regions.k03e_contract import MAPS as K03E_MAPS, MUSIC as K03E_MUSIC, TRAINERS as K03E_TRAINERS
+from scripts.regions.k04_corridor import publication_catalog, published_destinations
 from scripts.regions.cerulean_doors import CERULEAN_DOORS, verify_cerulean_doors
 
 SOURCE_MAP_IDS = ("39", "42", "43", "44", "45", "46", "47", "48", "53", "54", "55", "58")
@@ -33,12 +34,8 @@ KANTO_ATLAS = "Plugins/ZZZZZ Blue Kanto Pilot/KantoWallMap.png"
 def active_sources() -> dict:
     path = ROOT / "data/regions/kanto-source.json"
     maps = json.loads(path.read_text(encoding="utf-8"))["maps"]
-    promoted = {str(source): name for source, name in K03E_MAPS.items()}
-    present = maps.keys() & promoted.keys()
-    if (not present and len(maps) == 156) or (
-            len(maps) == 160 and all(maps.get(key) == name for key, name in promoted.items())):
-        return maps
-    raise ValueError("Unknown Kanto publication catalog")
+    publication_catalog(maps)
+    return maps
 
 
 def k03e_audio_paths() -> dict:
@@ -75,7 +72,8 @@ def assert_delivery(path: Path, channel: str) -> dict:
         raise ValueError("Unrecognized Android channel")
     root, marker = roots[channel]
     expected_sources = active_sources()
-    promoted = len(expected_sources) == 160
+    promoted = "79" in expected_sources
+    rock_tunnel = "90" in expected_sources
     expected_music_maps = EXPECTED_MUSIC_MAPS + (len(K03E_MUSIC) if promoted else 0)
     with ZipFile(path) as archive:
         files = set(archive.namelist())
@@ -100,6 +98,8 @@ def assert_delivery(path: Path, channel: str) -> dict:
             native = root + f"Data/Map{destination:03d}.rxdata"
             if native not in files or archive.getinfo(native).file_size < 128:
                 raise ValueError(f"Source Map{source} was not compiled for Android")
+        if rock_tunnel and any(mapping.get(i) != dest for i,dest in published_destinations().items()):
+            raise ValueError("Android Rock Tunnel MapIDs do not match the stable K04 append")
         verify_cerulean_doors(archive.read(root + f"Data/Map{mapping['39']:03}.rxdata"), mapping)
         # Native connections must use the DESTINATION MapIDs, never the FRLG
         # donor IDs. This also catches old connected-map files in a new ZIP.
@@ -121,6 +121,16 @@ def assert_delivery(path: Path, channel: str) -> dict:
         for left, right in EDGES:
             if frozenset((mapping[left], mapping[right])) not in edges:
                 raise ValueError(f"Missing Cerulean edge Map{left}/Map{right}")
+        if rock_tunnel:
+            for left,right in (("39","86"),("86","87")):
+                if frozenset((mapping[left],mapping[right])) not in edges:
+                    raise ValueError(f"Android Rock Tunnel connection absent Map{left}/Map{right}")
+            metadata_text = archive.read(root + "PBS/map_metadata_kanto.txt").decode("utf-8-sig")
+            blocks = dict(re.findall(r"(?ms)^\[(\d+)\][^\n]*\n(.*?)(?=^\[|\Z)",metadata_text))
+            for sid in ("86","87","88","90","91"):
+                block = blocks.get(str(mapping[sid]),"")
+                if not block or bool(re.search(r"(?im)^DarkMap\s*=\s*true\s*$",block)) != (sid in ("90","91")):
+                    raise ValueError(f"Android Rock Tunnel darkness metadata wrong Map{sid}")
         trainer_pbs = root + "PBS/trainers_kanto.txt"
         if trainer_pbs not in files:
             raise ValueError("Kanto trainers PBS missing")
@@ -152,6 +162,8 @@ def assert_delivery(path: Path, channel: str) -> dict:
                 raise ValueError("Kanto Day Care runtime missing")
         if b"def self.vermilion_gift" not in rival:
             raise ValueError("K03-B Vermilion reward runtime missing")
+        if rock_tunnel and b"def self.route2_flash" not in rival:
+            raise ValueError("Android Rock Tunnel Flash acquisition runtime missing")
         compiled_region(cache, "KantoPilot.rb", rival)
         if root + KANTO_ATLAS not in files or archive.read(root + KANTO_ATLAS) != render_wall_atlas():
             raise ValueError("Kanto authored atlas absent or differs from release policy")

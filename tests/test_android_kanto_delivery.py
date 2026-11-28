@@ -10,6 +10,7 @@ from scripts.android.verify_kanto_cerulean import assert_delivery, EDGES, JOURNE
 from scripts.regions.kanto_wall_atlas import render_wall_atlas
 from scripts.regions.k03e_contract import MAPS, TRAINERS, MUSIC
 from scripts.android.verify_kanto_cerulean import verify_k03e, k03e_audio_paths
+from scripts.regions.k04_corridor import published_destinations
 from scripts.official_rules.prepare_restore import RubyString, dump
 from server.ruby_marshal import integer
 
@@ -83,15 +84,21 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class KantoDeliveryTests(unittest.TestCase):
-    def fixture(self, channel, omit=None, short=None, omit_rival=False, omit_ticket=False, omit_bike=False, invalid_dig=False, atlas="authored", missing_door=None, legacy_guard=None):
+    def fixture(self, channel, omit=None, short=None, omit_rival=False, omit_ticket=False, omit_bike=False, invalid_dig=False, atlas="authored", missing_door=None, legacy_guard=None, rock_fault=None):
         manifest = json.loads((ROOT / "data/regions/kanto-source.json").read_text("utf8"))
-        mapping = {source: 600 + index for index, source in enumerate(manifest["maps"])}
+        mapping = {source: 700 + index for index, source in enumerate(manifest["maps"])}
+        mapping.update(published_destinations())
+        if rock_fault == "slots":
+            mapping["90"], mapping["91"] = mapping["91"], mapping["90"]
         root, marker = (("Pokemon-Blue-Kanto-Android/", "Kanto pilot.json")
                         if channel == "kanto" else
                         ("Pokemon-Blue-Android/", "Data/blue-kanto-install.json"))
         source = (ROOT / "scripts/battle_polish/Journey.rb").read_bytes()
         travel = (ROOT / "scripts/battle_polish/RegionTravel.rb").read_bytes()
         rival = (ROOT / "scripts/regions/KantoPilot.rb").read_bytes()
+        if rock_fault != "flash":
+            field = (ROOT / "scripts/regions/KantoK04Field.rb").read_bytes()
+            rival += b"\n" + field.strip() + b"\n"
         scripts = [[RubyString(b"Journey.rb"), RubyString(zlib.compress(source))],
                    [RubyString(b"RegionTravel.rb"), RubyString(zlib.compress(travel))],
                    [RubyString(b"KantoPilot.rb"), RubyString(zlib.compress(rival))]]
@@ -105,7 +112,13 @@ class KantoDeliveryTests(unittest.TestCase):
                 if original != omit:
                     archive.writestr(root + f"Data/Map{destination:03}.rxdata",
                                      b"map" if original == short else (city_fixture(mapping, missing_door, legacy_guard) if original == "39" else b"m" * 128))
-            edges = (*EDGES, ("64", "79"))
+            edges = (*EDGES, ("64", "79"), ("39","86"))
+            if rock_fault != "seam":
+                edges += (("86","87"),)
+            archive.writestr(root + "PBS/map_metadata_kanto.txt", "\n".join(
+                f"[{mapping[i]}]\nName = Fixture" +
+                ("\nDarkMap = true" if i in ("90","91") and not (i == "91" and rock_fault == "dark") else "")
+                for i in published_destinations()))
             archive.writestr(root + "PBS/map_connections_kanto.txt", "\n".join(
                 f"{mapping[a]},North,0,{mapping[b]},South,0" for a, b in edges))
             archive.writestr(root + "PBS/trainers_kanto.txt",
@@ -135,8 +148,15 @@ class KantoDeliveryTests(unittest.TestCase):
         for channel in ("kanto", "multiregion"):
             with self.subTest(channel=channel):
                 proof = assert_delivery(self.fixture(channel), channel)
-                self.assertEqual(proof["kanto_maps"], 160)
+                self.assertEqual(proof["kanto_maps"], 165)
                 self.assertEqual(proof["cerulean_police_native_pages"], 2)
+
+    def test_k04_zip_refuses_wrong_ids_missing_seam_darkness_or_flash(self):
+        for fault, message in (("slots","stable K04 append"),("seam","connection absent"),
+                              ("dark","darkness metadata"),("flash","Flash acquisition runtime")):
+            with self.subTest(fault=fault):
+                with self.assertRaisesRegex(ValueError,message):
+                    assert_delivery(self.fixture("multiregion", rock_fault=fault),"multiregion")
 
     def test_promoted_k03e_requires_all_trainers_seam_and_music(self):
         mapping = {str(key): 600 + index for index, key in enumerate(MAPS)}

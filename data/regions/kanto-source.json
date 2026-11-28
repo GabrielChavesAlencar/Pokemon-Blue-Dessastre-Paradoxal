@@ -165,7 +165,12 @@
     "23": "DIGLETT_ENTRANCE_ROUTE_2",
     "79": "ROUTE_11",
     "81": "DIGLETT_ENTRANCE_ROUTE_11",
-    "82": "DIGLETT_TUNNEL"
+    "82": "DIGLETT_TUNNEL",
+    "86": "ROUTE_9",
+    "87": "ROUTE_10",
+    "88": "ROCK_TUNNEL_CENTER",
+    "90": "ROCK_TUNNEL_1F",
+    "91": "ROCK_TUNNEL_B1F"
   },
   "preview_only": [
     57,

@@ -10,6 +10,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts/regions"))
 from k03e_contract import MAPS, MUSIC
 from k03e_release_inputs import promote_inputs
+from k04_corridor import MAPS as K04_MAPS
+from export_kanto import slug
 from scripts.music.compile_kanto_music import compile_bytes
 
 
@@ -23,6 +25,12 @@ class K03EReleaseInputsTests(unittest.TestCase):
         self.site = read(ROOT / "site/public/data/kanto.json")
         self.music = read(ROOT / "data/kanto-music-rules.json")
         self.evidence = read(ROOT / "data/regions/kanto-k03e-portal-delta.json")
+        # K03-E is a historical promotion fixture independent of K04.
+        self.source["maps"] = {i: key for i,key in self.source["maps"].items()
+                               if int(i) not in K04_MAPS}
+        rock_ids = {slug(key) for key in K04_MAPS.values()}
+        self.site["locations"] = [row for row in self.site["locations"] if row["id"] not in rock_ids]
+        self.site["trainers"] = [row for row in self.site["trainers"] if row["location"] not in rock_ids]
         self.active_triplet = copy.deepcopy((self.source, self.site, self.music))
         self.source["maps"] = {i: key for i,key in self.source["maps"].items()
                                if int(i) not in MAPS}

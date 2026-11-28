@@ -14,6 +14,7 @@ from pathlib import Path
 from audit import KANTO, ROOT, json_file, stable_source_order
 from export_kanto import location_names, slug
 from k03e_contract import MAPS
+from k04_corridor import MAPS as K04_MAPS, publication_catalog
 from pbs import ENCOUNTER_REVIEW_SOURCE_IDS
 
 BADGES = (
@@ -40,10 +41,12 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
     dex = json_file(root / "site/public/data/catalog.json")
     expected_ids = {int(key) for key in manifest["maps"]}
     audited_names = location_names(manifest)
-    promoted = "ROUTE_11" in audited_names
-    map_total, trainer_total, wild_totals = (
-        (160, 173, (30, 107, 71)) if promoted else (156, 163, (28, 99, 68))
-    )
+    count = publication_catalog(manifest["maps"])
+    map_total, trainer_total, wild_totals = {
+        156: (156, 163, (28, 99, 68)),
+        160: (160, 173, (30, 107, 71)),
+        165: (165, 202, (34, 119, 72)),
+    }[count]
     if len(expected_ids) != map_total:
         raise ValueError("Kanto catalog differs from the audited stable map identities")
     expected_order = stable_source_order(expected_ids)
@@ -57,8 +60,10 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
         raise ValueError("Cerulean interiors are not appended after the 145 published save IDs")
     if expected_order[151:152] != [58] or expected_order[152:156] != [68,69,70,71] or manifest["maps"].get("58") != "DAY_CARE":
         raise ValueError("Day Care must follow the 151 published save IDs")
-    if expected_order[156:] != (list(MAPS) if promoted else []):
+    if expected_order[156:160] != (list(MAPS) if count >= 160 else []):
         raise ValueError("K03-E must append the four corridor maps after the 156 published IDs")
+    if expected_order[160:] != (list(K04_MAPS) if count == 165 else []):
+        raise ValueError("K04 must append the five Rock Tunnel maps after the 160 published IDs")
     if set(manifest["maps"].values()) != set(audited_names):
         raise ValueError("Kanto catalog differs from the audited stable map identities")
     preview = set(manifest["preview_only"])

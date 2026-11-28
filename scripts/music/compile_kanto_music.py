@@ -21,6 +21,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(ROOT))
 
 from scripts.regions.k03e_contract import MAPS, MUSIC, candidate_manifest as expected_manifest
+from scripts.regions.k04_corridor import publication_catalog
 
 OUTPUT = Path("Data/blue-kanto-music.txt")
 MAGIC = "BLUE_KANTO_MUSIC_V1"
@@ -103,7 +104,7 @@ def compile_bytes(project: Path, game: Path, mapping: dict, *, candidate_manifes
         raise ValueError("Kanto source map catalog changed unexpectedly")
     k03e_sources = {str(i): key for i, key in MAPS.items()}
     active = set(k03e_sources) & maps.keys()
-    promoted = len(maps) == 160 and all(maps.get(i) == key for i, key in k03e_sources.items())
+    promoted = publication_catalog(maps) >= 160
     k03e_names = set(k03e_sources.values())
     configured = [row for row in rules["maps"] if row.get("map") in k03e_names]
     if promoted:

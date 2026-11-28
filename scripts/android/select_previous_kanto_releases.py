@@ -13,6 +13,7 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.error
 import urllib.request
 
@@ -69,6 +70,25 @@ def select_releases(payload: object) -> tuple[list[str], int, int]:
     return tags, len(pages), len(matches)
 
 
+def fetch_page(request, opener):
+    """Retry only temporary errors on this idempotent GET; never skip a page."""
+    for delay in (2, 5, 12, None):
+        try:
+            with opener(request, timeout=45) as response:
+                return json.load(response)
+        except urllib.error.HTTPError as error:
+            if delay is None or error.code not in (500, 502, 503, 504):
+                raise
+            error.close()
+        except urllib.error.URLError as error:
+            if delay is None or not isinstance(error.reason, TimeoutError):
+                raise
+        except TimeoutError:
+            if delay is None:
+                raise
+        time.sleep(delay)
+
+
 def fetch_release_pages(repo: str, token: str, *,
                         opener=None, max_pages: int = 100) -> list[list[dict]]:
     """Query complete GitHub release history without a PowerShell native pipe.
@@ -93,8 +113,7 @@ def fetch_release_pages(repo: str, token: str, *,
             "User-Agent": "Blue-Kanto-Android-Release-Selector",
             "X-GitHub-Api-Version": "2022-11-28",
         })
-        with opener(request, timeout=45) as response:
-            items = json.load(response)
+        items = fetch_page(request, opener)
         if not isinstance(items, list) or len(items) > 100 or not all(
                 isinstance(entry, dict) for entry in items):
             raise ValueError(f"GitHub release page {page} is malformed")

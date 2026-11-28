@@ -55,11 +55,16 @@ def inspect(game: Path, *, candidate=False) -> dict:
         manifest = candidate_manifest(manifest)
     from k03e_contract import MAPS, TRAINERS as ROUTE11_TRAINERS
     corridor = {str(i): key for i, key in MAPS.items()}
+    from k04_corridor import publication_catalog, TRAINERS as K04_TRAINERS
+    count = publication_catalog(manifest["maps"])
     active = corridor.keys() & manifest["maps"].keys()
     if active:
-        if len(manifest["maps"]) != 160 or any(manifest["maps"].get(i) != key for i, key in corridor.items()):
+        if count not in (160, 165) or any(manifest["maps"].get(i) != key for i, key in corridor.items()):
             raise ValueError("Incomplete K03-E catalogue")
         trainer_specs = {**TRAINERS, 79: ROUTE11_TRAINERS}
+    if count == 165:
+        trainer_specs = {**trainer_specs, **{sid: {eid: tuple(profile.split(",")) for eid, profile in entries.items()}
+                                             for sid, entries in K04_TRAINERS.items()}}
     expected = {int(source): name for source, name in manifest["maps"].items()}
     preview_only = set(manifest.get("preview_only", []))
     if preview_only - expected.keys():
@@ -782,6 +787,8 @@ def inspect(game: Path, *, candidate=False) -> dict:
                         raise ValueError(f"Trainer {original}/{event_id} will not alert the player")
     # Both the isolated candidate and the active catalogue add the same ten.
     expected_sight_count = 137 + (len(ROUTE11_TRAINERS) if active else 0)
+    if count == 165:
+        expected_sight_count += 30
     if sight_count != expected_sight_count:
         raise ValueError(f"Source-proven trainer sight count changed: {sight_count}; expected {expected_sight_count}")
 

@@ -13,7 +13,6 @@ import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from audit import ROOT, KANTO, json_file, inventory, allocate_kanto_ids, load
-from export_kanto import LOCATION_NAMES
 from server.ruby_marshal import RubyObject, text
 from cerulean_doors import verify_cerulean_doors
 from pilot import (OUTPUT, SOURCE, PILOT_META, TYPES, build, pilot_is_current,
@@ -402,6 +401,12 @@ def known_legacy_catalog(wanted, previous):
         published = wanted - {"58"}
         return previous in (published, published - interiors, published - interiors - north)
     diglett = {"23", "79", "81", "82"}
+    if len(wanted) == 165:
+        from k04_corridor import published_destinations
+        rock = published_destinations().keys()
+        if rock <= wanted:
+            baseline = wanted - rock
+            return previous == baseline
     if len(wanted) == 160 and diglett <= wanted:
         baseline = wanted - diglett
         return previous == baseline or known_legacy_catalog(baseline, previous)
@@ -493,6 +498,8 @@ def legacy_proof(game, *, candidate=False):
     hashes = recorded_hashes(proof)
     infos, files = inventory(game)
     source_names = catalog["maps"]
+    from export_kanto import location_names
+    names = location_names(catalog)
     for source_id, map_id in mapping.items():
         rel = f"Data/Map{map_id:03d}.rxdata"
         target = game / rel
@@ -503,7 +510,7 @@ def legacy_proof(game, *, candidate=False):
                 (target.exists() and not target.is_file())):
             raise ValueError("Legacy Kanto map ownership not proven: " + rel)
         if map_id not in files or hashes[rel] != digest(files[map_id]):
-            expected_name = LOCATION_NAMES[source_names[source_id]]
+            expected_name = names[source_names[source_id]]
             if text(info.attrs.get("@name", b"")) != expected_name:
                 raise ValueError("Legacy Kanto map registry name differs: " + rel)
             print("[KANTO MIGRATION] " + ("missing" if map_id not in files else "checksum drift") +
@@ -586,6 +593,9 @@ def migrate_existing(game, source, pilot, commit=False):
     build(source, game, pilot, existing=mapping)
     if len(mapping) == 156 and len(json_file(pilot / PILOT_META)["maps"]) == 160:
         preserve_k03e_predecessor(game, pilot, proof)
+    if len(mapping) == 160 and len(json_file(pilot / PILOT_META)["maps"]) == 165:
+        from k04_migration import prepare
+        prepare(game, pilot, proof)
     return apply_install(game, pilot, commit, migration=proof)
 
 
@@ -605,6 +615,10 @@ def verify_installed(game, *, candidate=False):
         raise ValueError(f"Older Kanto installation: {len(mapping) if isinstance(mapping,dict) else 0}/{expected} maps. Do not overwrite saves or merge IDs automatically.")
     if (candidate or "79" in catalog["maps"]) and set(mapping) != set(catalog["maps"]):
         raise ValueError("Invalid K03-E source map set")
+    if expected == 165:
+        from k04_corridor import published_destinations
+        if any(mapping.get(key) != value for key, value in published_destinations().items()):
+            raise ValueError("Invalid K04 reserved map IDs")
     if len(set(mapping.values())) != expected:
         raise ValueError("Duplicated Kanto map IDs.")
     start = marker.read_text(encoding="ascii").strip()
@@ -662,7 +676,11 @@ def sync_runtime(game, commit=False):
     current = digest(target)
     if current != recorded:
         raise ValueError("Kanto runtime was edited locally; refusing overwrite.")
-    wanted = digest(source)
+    body = source.read_bytes()
+    if verified["maps"] == 165:
+        from k04_gameplay import runtime_payload
+        body = runtime_payload(body)
+    wanted = hashlib.sha256(body).hexdigest()
     if wanted == current:
         return {"status": "runtime_current", "changed": False}
     if not commit:
@@ -683,7 +701,7 @@ def sync_runtime(game, commit=False):
     if trigger_before is not None:
         atomic(backup / "Data/blue-compile-request.txt", trigger_before)
     try:
-        atomic(target, source.read_bytes())
+        atomic(target, body)
         if digest(target) != wanted:
             raise IOError("Failed verifying new Kanto runtime")
         proof["installed_sha256"][str(rel)] = wanted

@@ -78,6 +78,8 @@ KANTO_DAY_CARE_SOURCE_IDS = (58,)  # append after all 151 published slots
 KANTO_VERMILION_INTERIOR_SOURCE_IDS = (68, 69, 70, 71)  # append after 152
 
 
+KANTO_DIGLETT_SOURCE_IDS = (23, 79, 81, 82)  # K03-E published slots
+
 def stable_source_order(wanted):
     chosen = set(wanted)
     stable = (*KANTO_PHASE10_SOURCE_IDS, *KANTO_PHASE11_EARLY_SOURCE_IDS,
@@ -85,7 +87,8 @@ def stable_source_order(wanted):
               *KANTO_PHASE12_SOURCE_IDS, *KANTO_PHASE13_SOURCE_IDS,
               *KANTO_PHASE14_SOURCE_IDS, *KANTO_CERULEAN_NORTH_SOURCE_IDS,
               *KANTO_CERULEAN_INTERIOR_SOURCE_IDS, *KANTO_DAY_CARE_SOURCE_IDS,
-              *KANTO_VERMILION_INTERIOR_SOURCE_IDS)
+              *KANTO_VERMILION_INTERIOR_SOURCE_IDS, *KANTO_DIGLETT_SOURCE_IDS,
+              86, 87, 88, 90, 91)
     result = [source for source in stable if source in chosen]
     result.extend(sorted(chosen - set(stable)))
     return result
@@ -193,10 +196,20 @@ def allocate_kanto_ids(wanted, occupied, existing=None):
     reserved = range(452, 596)
     if set(existing.values()).intersection(reserved):
         raise ValueError("Existing Kanto mapping collides with reserved Sinnoh IDs")
+    from scripts.regions.k04_corridor import published_destinations
+    rock_slots = {int(sid): mid for sid, mid in published_destinations().items()}
+    pinned = {sid: mid for sid, mid in rock_slots.items() if sid in wanted}
+    for sid, mid in pinned.items():
+        if sid in existing:
+            if existing[sid] != mid:
+                raise ValueError(f"K04 source {sid} is not at its reserved map ID {mid}")
+        elif mid in occupied:
+            raise ValueError(f"K04 reserved map ID {mid} is already occupied")
+    blocked = set(rock_slots.values())
     free = (mid for mid in range(max(300, max(occupied, default=0) + 1), 1000)
-            if mid not in reserved)
-    ids = {n: existing[n] if n in existing else next(free, None)
-           for n in stable_source_order(wanted)}
+            if mid not in reserved and mid not in blocked)
+    ids = {n: (existing[n] if n in existing else pinned[n] if n in pinned
+               else next(free, None)) for n in stable_source_order(wanted)}
     if None in ids.values():
         raise ValueError("No free map IDs in the supported 1–999 range.")
     return ids

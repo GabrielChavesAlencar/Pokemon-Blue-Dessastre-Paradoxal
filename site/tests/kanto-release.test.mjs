@@ -13,18 +13,18 @@ const model={byId:new Map(catalog.species.map(p=>[p.id,p]))};
 const loc=id=>kanto.locations.find(v=>v.id===id);
 
 test('Kanto prototype states are explicit and the route 23 exception stays visible',()=>{
-  assert.equal(kanto.locations.length,160);
-  assert.equal(kanto.trainers.length,173);
+  assert.equal(kanto.locations.length,165);
+  assert.equal(kanto.trainers.length,202);
   assert.equal(kanto.locations.filter(x=>x.status==='preview').length,35);
   assert.equal(kanto.locations.filter(x=>x.status==='encounter_review').length,1);
-  assert.equal(kanto.locations.filter(x=>x.status==='experimental').length,124);
+  assert.equal(kanto.locations.filter(x=>x.status==='experimental').length,129);
   assert.ok(kanto.locations.filter(x=>x.status==='preview').every(x=>!x.methods.length&&!x.trainers.length));
   const route23=kantoLocation(model,kanto,loc('kanto-route-23'));
   assert.match(route23,/Encontros temporariamente suspensos/);
   assert.match(route23,/método duplicado/);
   const preview=kanto.locations.find(x=>x.status==='preview');
   assert.match(kantoLocation(model,kanto,preview),/Somente cenário/);
-  assert.match(kantoIndex(model,kanto,'localizacoes'),/160 locais e 173 treinadores/);
+  assert.match(kantoIndex(model,kanto,'localizacoes'),/165 locais e 202 treinadores/);
   assert.doesNotMatch(route23,/Trecho de Pallet Town a Pewter City/);
 });
 test('Rota 11 e a Caverna dos Diglett mantêm os encontros e os treinadores verificados',()=>{
@@ -128,4 +128,16 @@ test('rotas e fichas distinguem nível do PBS, taxa original do slot e evoluçã
   assert.match(rival,/Rivais e chefes de história/);
   assert.doesNotMatch(rival,/Primeiro desafio de ginásio/);
   assert.match(kantoBalanceNote('league'),/Elite Four e campeão/);
+});
+
+test('Rock Tunnel mantém duas rotas, um Centro e dois andares sem antecipar Lavender',()=>{
+  const ids=['route-9','route-10','rock-tunnel-center','rock-tunnel-1f','rock-tunnel-b1f'];
+  const locations=ids.map(id=>loc('kanto-'+id));
+  for(const row of locations)assert.equal(row.status,'experimental');
+  assert.deepEqual(locations.map(row=>row.methods.length),[2,6,0,2,2]);
+  assert.deepEqual(locations.map(row=>row.trainers.length),[9,6,0,7,7]);
+  const allen=kanto.trainers.filter(t=>t.name==='Allen'&&t.location==='kanto-rock-tunnel-b1f');
+  assert.equal(allen.length,1);
+  assert.equal(allen[0].variants.length,1);
+  assert.equal(loc('kanto-lavender-town'),undefined);
 });

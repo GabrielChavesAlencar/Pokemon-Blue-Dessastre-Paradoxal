@@ -36,6 +36,8 @@ REQUIRED_BASELINES = (
     # Keep the bad install as a migration input, NEVER as a download target.
     "android-multiregion-hotfix-31-e7200ef",
     "android-multiregion-82-e23ff33",
+    # Retain the last device-confirmed build while combined Kanto QA is pending.
+    "android-multiregion-208-20644ab",
 )
 
 

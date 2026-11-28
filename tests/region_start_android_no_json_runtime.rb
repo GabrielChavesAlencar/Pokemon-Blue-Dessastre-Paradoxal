@@ -196,6 +196,28 @@ Dir.mktmpdir("blue-joiplay-no-json") do |directory|
     Object.send(:remove_const, :JSON)
     puts "KANTO_K03B_156_READY_GATE_NO_JSON_OK"
 
+    # Construct an independent synthetic legacy/append registry without reusing
+    # the provisional source keys or destinations from the older mock above.
+    k04 = {"86"=>604, "87"=>605, "88"=>606, "90"=>607, "91"=>608}
+    before_rock = expanded.reject { |source, dest| k04.key?(source) || k04.value?(dest) }
+    ["23","79","81","82"].each_with_index { |source,index| before_rock[source] = 600 + index unless before_rock.key?(source) }
+    (800..920).each do |id|
+      break if before_rock.size == 160
+      before_rock[id.to_s] = id
+    end
+    check(before_rock.size == 160 && before_rock.values.uniq.size == 160,"bad K04 predecessor fixture")
+    k04_maps = before_rock.merge(k04)
+    k04_maps.values.each { |id| File.write(sprintf("Data/Map%03d.rxdata",id), "kanto") }
+    write_kanto_registry.call(k04_maps,165)
+    check(BlueRegionStart.kanto_integrated?, "165-map K04 rejected without JSON")
+    write_kanto_registry.call(k04_maps.merge("90"=>k04_maps["91"],"91"=>k04_maps["90"]),165)
+    check(!BlueRegionStart.kanto_integrated?, "165-map ready gate accepted swapped Rock Tunnel floors")
+    write_kanto_registry.call(k04_maps,160)
+    check(!BlueRegionStart.kanto_integrated?, "165-map ready gate accepted stale predecessor count")
+    write_kanto_registry.call(k04_maps,165)
+    check(BlueRegionStart.kanto_integrated? && BlueRegionStart.hoenn_integrated?, "K04 gate affected Hoenn")
+    puts "KANTO_K04_165_READY_GATE_NO_JSON_OK"
+
     check(BlueRegionStart.request_initial("DECADES"),
           "Decades new game blocked by missing JSON")
     check(BlueRegionStart.choose_initial == "DECADES",
