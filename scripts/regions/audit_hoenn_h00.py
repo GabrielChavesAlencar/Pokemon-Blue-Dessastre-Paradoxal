@@ -15,10 +15,10 @@ from hoenn_qa_phase1 import (
     check_tree, load_tree, require_private_path,
 )
 from ensure_hoenn_source import sha_git
-from hoenn_catalog import MAP_RANGE, validate_manifest, verify_markers
+from hoenn_catalog import CATALOG_REVISION, MAP_RANGE, approved_source_ids, validate_manifest, verify_markers
 from hoenn_qa_phase2 import audit_map, inspect_connections
 from hoenn_qa_phase3 import parse_compiled_encounters, parse_reference_encounters
-from install_hoenn import MANIFEST, SOURCE_MAPS, verify_installed
+from install_hoenn import MANIFEST, verify_installed
 from scripts.android.build_manifest import verify_manifest
 from scripts.android.package import verify_archive
 from server.ruby_marshal import RubyData, RubyObject, loads, text
@@ -158,6 +158,7 @@ def source_inventory(tree_path: Path, source: Path) -> dict:
     encounters, encounter_audit = parse_reference_encounters(
         checked("PBS/encounters.txt").decode("utf-8-sig"), map_ids)
     checked("PBS/map_connections.txt")
+    catalogued = approved_source_ids(CATALOG_REVISION)
     rows = []
     for map_id in sorted(map_ids):
         raw = checked(f"Data/Map{map_id:03}.rxdata")
@@ -184,7 +185,7 @@ def source_inventory(tree_path: Path, source: Path) -> dict:
             })
         rows.append({
             "source_id": map_id, "name": name, "parents": parents, "sha256": digest(raw),
-            "catalogued": map_id in SOURCE_MAPS, "has_terrain": has_terrain,
+            "catalogued": map_id in catalogued, "has_terrain": has_terrain,
             "dimensions": [world.attrs["@width"], world.attrs["@height"]],
             "tileset": tile_id, "tileset_name": text(tile["@tileset_name"]),
             "tileset_tables": sorted(key for key in tile if key in {"@passages", "@priorities", "@terrain_tags"}),
@@ -201,13 +202,13 @@ def source_inventory(tree_path: Path, source: Path) -> dict:
     return {
         "revision": UPSTREAM, "map_count": len(rows),
         "tileset_count": sum(isinstance(tile, RubyObject) for tile in tiles),
-        "catalogued": len(SOURCE_MAPS),
+        "catalogued": len(catalogued),
         "scope_counts": dict(Counter(row["scope"] for row in rows)),
         "scope_review_ids": [row["source_id"] for row in rows if row["scope"] == "scope_review_required"],
         "identical_non_empty_rxdata": {row["source_id"]: row["identical_rxdata_to"]
                                      for row in rows if "identical_rxdata_to" in row},
         "primary_routes": routes,
-        "uncatalogued_routes": {number: mid for number, mid in routes.items() if mid not in SOURCE_MAPS},
+        "uncatalogued_routes": {number: mid for number, mid in routes.items() if mid not in catalogued},
         "route_classification_basis": "exact source names and physical terrain",
         "encounter_audit": encounter_audit, "maps": rows,
     }

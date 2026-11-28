@@ -192,6 +192,9 @@ Para cada subfase use inventário H00, fonte autorizada e geometria nativa. Reut
 - Rival_103 e Birch: May/Brendan e equipe conforme perfil e inicial; derrota/retry sem avanço indevido, Pokédex/Poké Balls/Running Shoes uma vez. Reusar cura e Mart reais; entrar/sair de todas as casas, placas e portas. Preservar tabela R102 (Poochyena, Zigzagoon, Wurmple, Lotad, Seedot, Ralts, Surskit); conferir taxas da fonte.
 - Petalburg: trocar norman_intro textual por cena autoral real de tutorial de captura do Wally com Ralts, sem alterar party do jogador; flags independentes, bloquear Norman até quatro badges. Testar R102→Petalburg e retorno.
 - Gate HOENN_H03_RIVAL_POKEDEX_WALLY_OK.
+- O catálogo compartilhado revisão 2 incorpora as casas de Oldale (MapKey 15) e mantém os 199 pares instalados. As duas portas retornam a pontos distintos de Oldale. O Centro, o Mart e as três placas usam os serviços e o diálogo da campanha. O único recurso novo de instalação é a geometria baixada do commit de origem já fixado.
+- Em Petalburg, o jogador orienta Wally pelo menu da cena de batalha. O tutorial usa a animação e a resolução de captura do motor. Cancelar permite nova tentativa. A captura altera somente a flag regional e Norman exige as quatro primeiras insígnias locais.
+- Ensaio Windows automatizado com Game.exe: ida e volta pelas duas casas, Centro e Mart, travessia da Rota 102 até Petalburg e de volta, cancelamento e captura concluída com party, Bolsa, PC e estatísticas intactos. As escolhas do tutorial foram fornecidas pelo ensaio e a animação foi executada pelo motor.
 
 ### H04 — Rustboro, R104, Petalburg Woods, R116 e Devon
 - Floresta: recruta Aqua, empregado, item e bloqueio, treinadores, itens visíveis/ocultos, saídas norte/sul e floricultura/Wailmer Pail. Rustboro: todas as casas, escola, Devon e ginásio; Roxanne e puzzle, STONE/TM/uma esmeralda, aquisição de Cut na casa correta. Não confundir desbloqueio por badge com aquisição do HM.

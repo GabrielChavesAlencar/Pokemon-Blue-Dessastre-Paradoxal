@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[2]
 CATALOG = json.loads((ROOT / "data/regions/hoenn-map-catalog.json").read_text("utf-8"))
 UPSTREAM = CATALOG["source_commit"]
 CATALOG_REVISION = CATALOG["active_revision"]
+PILOT_CATALOG_REVISION = 1
 LEGACY_SOURCE_IDS = frozenset(CATALOG["revisions"]["1"])
 MAP_RANGE = range(700, 1000)
 INSTALL_STATUS = "INTEGRATED_FILES_READY_FOR_NATIVE_QA"

@@ -11,7 +11,7 @@ import json
 import re
 from pathlib import Path
 
-from hoenn_catalog import CATALOG_REVISION, approved_source_ids
+from hoenn_catalog import PILOT_CATALOG_REVISION, approved_source_ids
 
 from hoenn_audio import AUDIO_LABELS, RECOVERY_DEST
 from server.ruby_marshal import loads
@@ -80,7 +80,7 @@ def localized_map_name(name: str) -> str:
 def audit_generated(maps: dict, names: dict[int, str],
                     bgm: dict[int, str], stage10_ids: set[int], *,
                     audio_labels: tuple[str, ...] = AUDIO_LABELS,
-                    catalog_revision: int = CATALOG_REVISION) -> dict:
+                    catalog_revision: int = PILOT_CATALOG_REVISION) -> dict:
     expected = approved_source_ids(catalog_revision)
     if maps.keys() != expected or names.keys() != expected or bgm.keys() != expected:
         raise ValueError(f"QA11: os {len(expected)} mapas aprovados precisam de nomes e música explícitos")
