@@ -6835,6 +6835,559 @@
         "kanto-rock-tunnel-b1f-sofia",
         "kanto-rock-tunnel-b1f-cooper"
       ]
+    },
+    {
+      "id": "kanto-lavender-town",
+      "name": "Lavender Town",
+      "status": "experimental",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-lavender-center",
+      "name": "Lavender Pokémon Center",
+      "status": "experimental",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-lavender-mart",
+      "name": "Lavender Poké Mart",
+      "status": "experimental",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-lavender-house",
+      "name": "Lavender House",
+      "status": "experimental",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-lavender-name-rater",
+      "name": "Name Rater's House",
+      "status": "experimental",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-lavender-fuji-house",
+      "name": "Mr. Fuji's House",
+      "status": "experimental",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-pokemon-tower-1f",
+      "name": "Pokémon Tower - 1F",
+      "status": "experimental",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-pokemon-tower-2f",
+      "name": "Pokémon Tower - 2F",
+      "status": "experimental",
+      "methods": [],
+      "trainers": [
+        "kanto-blue-tower"
+      ]
+    },
+    {
+      "id": "kanto-pokemon-tower-3f",
+      "name": "Pokémon Tower - 3F",
+      "status": "experimental",
+      "methods": [
+        {
+          "id": "CaveDay",
+          "slots": [
+            {
+              "species": "GASTLY",
+              "chance": 50.0,
+              "min": 13,
+              "max": 19,
+              "weight": 100
+            },
+            {
+              "species": "GASTLY",
+              "chance": 40.0,
+              "min": 13,
+              "max": 19,
+              "weight": 80
+            },
+            {
+              "species": "CUBONE",
+              "chance": 4.5,
+              "min": 15,
+              "max": 15,
+              "weight": 9
+            },
+            {
+              "species": "CUBONE",
+              "chance": 4.5,
+              "min": 17,
+              "max": 17,
+              "weight": 9
+            },
+            {
+              "species": "HAUNTER",
+              "chance": 1.0,
+              "min": 20,
+              "max": 20,
+              "weight": 2
+            }
+          ],
+          "weightTotal": 200
+        },
+        {
+          "id": "CaveNight",
+          "slots": [
+            {
+              "species": "GASTLY",
+              "chance": 50.0,
+              "min": 13,
+              "max": 19,
+              "weight": 100
+            },
+            {
+              "species": "GASTLY",
+              "chance": 40.0,
+              "min": 13,
+              "max": 19,
+              "weight": 80
+            },
+            {
+              "species": "CUBONE",
+              "chance": 4.5,
+              "min": 15,
+              "max": 15,
+              "weight": 9
+            },
+            {
+              "species": "CUBONE",
+              "chance": 4.5,
+              "min": 17,
+              "max": 17,
+              "weight": 9
+            },
+            {
+              "species": "HAUNTER",
+              "chance": 1.0,
+              "min": 20,
+              "max": 20,
+              "weight": 2
+            }
+          ],
+          "weightTotal": 200
+        }
+      ],
+      "trainers": [
+        "kanto-pokemon-tower-3f-hope",
+        "kanto-pokemon-tower-3f-carly",
+        "kanto-pokemon-tower-3f-patricia"
+      ]
+    },
+    {
+      "id": "kanto-pokemon-tower-4f",
+      "name": "Pokémon Tower - 4F",
+      "status": "experimental",
+      "methods": [
+        {
+          "id": "CaveDay",
+          "slots": [
+            {
+              "species": "GASTLY",
+              "chance": 50.0,
+              "min": 13,
+              "max": 19,
+              "weight": 100
+            },
+            {
+              "species": "GASTLY",
+              "chance": 36.0,
+              "min": 13,
+              "max": 19,
+              "weight": 72
+            },
+            {
+              "species": "CUBONE",
+              "chance": 4.5,
+              "min": 15,
+              "max": 15,
+              "weight": 9
+            },
+            {
+              "species": "CUBONE",
+              "chance": 4.5,
+              "min": 17,
+              "max": 17,
+              "weight": 9
+            },
+            {
+              "species": "HAUNTER",
+              "chance": 5.0,
+              "min": 20,
+              "max": 20,
+              "weight": 10
+            }
+          ],
+          "weightTotal": 200
+        },
+        {
+          "id": "CaveNight",
+          "slots": [
+            {
+              "species": "GASTLY",
+              "chance": 50.0,
+              "min": 13,
+              "max": 19,
+              "weight": 100
+            },
+            {
+              "species": "GASTLY",
+              "chance": 36.0,
+              "min": 13,
+              "max": 19,
+              "weight": 72
+            },
+            {
+              "species": "CUBONE",
+              "chance": 4.5,
+              "min": 15,
+              "max": 15,
+              "weight": 9
+            },
+            {
+              "species": "CUBONE",
+              "chance": 4.5,
+              "min": 17,
+              "max": 17,
+              "weight": 9
+            },
+            {
+              "species": "HAUNTER",
+              "chance": 5.0,
+              "min": 20,
+              "max": 20,
+              "weight": 10
+            }
+          ],
+          "weightTotal": 200
+        }
+      ],
+      "trainers": [
+        "kanto-pokemon-tower-4f-laurel",
+        "kanto-pokemon-tower-4f-jody",
+        "kanto-pokemon-tower-4f-paula"
+      ]
+    },
+    {
+      "id": "kanto-pokemon-tower-5f",
+      "name": "Pokémon Tower - 5F",
+      "status": "experimental",
+      "methods": [
+        {
+          "id": "CaveDay",
+          "slots": [
+            {
+              "species": "GASTLY",
+              "chance": 50.0,
+              "min": 13,
+              "max": 19,
+              "weight": 100
+            },
+            {
+              "species": "GASTLY",
+              "chance": 36.0,
+              "min": 13,
+              "max": 19,
+              "weight": 72
+            },
+            {
+              "species": "CUBONE",
+              "chance": 4.5,
+              "min": 15,
+              "max": 15,
+              "weight": 9
+            },
+            {
+              "species": "CUBONE",
+              "chance": 4.5,
+              "min": 17,
+              "max": 17,
+              "weight": 9
+            },
+            {
+              "species": "HAUNTER",
+              "chance": 5.0,
+              "min": 20,
+              "max": 20,
+              "weight": 10
+            }
+          ],
+          "weightTotal": 200
+        },
+        {
+          "id": "CaveNight",
+          "slots": [
+            {
+              "species": "GASTLY",
+              "chance": 50.0,
+              "min": 13,
+              "max": 19,
+              "weight": 100
+            },
+            {
+              "species": "GASTLY",
+              "chance": 36.0,
+              "min": 13,
+              "max": 19,
+              "weight": 72
+            },
+            {
+              "species": "CUBONE",
+              "chance": 4.5,
+              "min": 15,
+              "max": 15,
+              "weight": 9
+            },
+            {
+              "species": "CUBONE",
+              "chance": 4.5,
+              "min": 17,
+              "max": 17,
+              "weight": 9
+            },
+            {
+              "species": "HAUNTER",
+              "chance": 5.0,
+              "min": 20,
+              "max": 20,
+              "weight": 10
+            }
+          ],
+          "weightTotal": 200
+        }
+      ],
+      "trainers": [
+        "kanto-pokemon-tower-5f-ruth",
+        "kanto-pokemon-tower-5f-tammy",
+        "kanto-pokemon-tower-5f-karina",
+        "kanto-pokemon-tower-5f-jody"
+      ]
+    },
+    {
+      "id": "kanto-pokemon-tower-6f",
+      "name": "Pokémon Tower - 6F",
+      "status": "experimental",
+      "methods": [
+        {
+          "id": "CaveDay",
+          "slots": [
+            {
+              "species": "GASTLY",
+              "chance": 50.0,
+              "min": 14,
+              "max": 19,
+              "weight": 100
+            },
+            {
+              "species": "GASTLY",
+              "chance": 35.0,
+              "min": 14,
+              "max": 19,
+              "weight": 70
+            },
+            {
+              "species": "CUBONE",
+              "chance": 4.5,
+              "min": 17,
+              "max": 17,
+              "weight": 9
+            },
+            {
+              "species": "CUBONE",
+              "chance": 4.5,
+              "min": 19,
+              "max": 19,
+              "weight": 9
+            },
+            {
+              "species": "HAUNTER",
+              "chance": 3.0,
+              "min": 21,
+              "max": 21,
+              "weight": 6
+            },
+            {
+              "species": "HAUNTER",
+              "chance": 3.0,
+              "min": 23,
+              "max": 23,
+              "weight": 6
+            }
+          ],
+          "weightTotal": 200
+        },
+        {
+          "id": "CaveNight",
+          "slots": [
+            {
+              "species": "GASTLY",
+              "chance": 50.0,
+              "min": 14,
+              "max": 19,
+              "weight": 100
+            },
+            {
+              "species": "GASTLY",
+              "chance": 35.0,
+              "min": 14,
+              "max": 19,
+              "weight": 70
+            },
+            {
+              "species": "CUBONE",
+              "chance": 4.5,
+              "min": 17,
+              "max": 17,
+              "weight": 9
+            },
+            {
+              "species": "CUBONE",
+              "chance": 4.5,
+              "min": 19,
+              "max": 19,
+              "weight": 9
+            },
+            {
+              "species": "HAUNTER",
+              "chance": 3.0,
+              "min": 21,
+              "max": 21,
+              "weight": 6
+            },
+            {
+              "species": "HAUNTER",
+              "chance": 3.0,
+              "min": 23,
+              "max": 23,
+              "weight": 6
+            }
+          ],
+          "weightTotal": 200
+        }
+      ],
+      "trainers": [
+        "kanto-pokemon-tower-6f-angelica",
+        "kanto-pokemon-tower-6f-jennifer",
+        "kanto-pokemon-tower-6f-emilia"
+      ]
+    },
+    {
+      "id": "kanto-pokemon-tower-7f",
+      "name": "Pokémon Tower - 7F",
+      "status": "experimental",
+      "methods": [
+        {
+          "id": "CaveDay",
+          "slots": [
+            {
+              "species": "GASTLY",
+              "chance": 50.0,
+              "min": 15,
+              "max": 19,
+              "weight": 100
+            },
+            {
+              "species": "GASTLY",
+              "chance": 25.0,
+              "min": 15,
+              "max": 19,
+              "weight": 50
+            },
+            {
+              "species": "HAUNTER",
+              "chance": 7.5,
+              "min": 23,
+              "max": 23,
+              "weight": 15
+            },
+            {
+              "species": "HAUNTER",
+              "chance": 7.5,
+              "min": 25,
+              "max": 25,
+              "weight": 15
+            },
+            {
+              "species": "CUBONE",
+              "chance": 5.0,
+              "min": 17,
+              "max": 17,
+              "weight": 10
+            },
+            {
+              "species": "CUBONE",
+              "chance": 5.0,
+              "min": 19,
+              "max": 19,
+              "weight": 10
+            }
+          ],
+          "weightTotal": 200
+        },
+        {
+          "id": "CaveNight",
+          "slots": [
+            {
+              "species": "GASTLY",
+              "chance": 50.0,
+              "min": 15,
+              "max": 19,
+              "weight": 100
+            },
+            {
+              "species": "GASTLY",
+              "chance": 25.0,
+              "min": 15,
+              "max": 19,
+              "weight": 50
+            },
+            {
+              "species": "HAUNTER",
+              "chance": 7.5,
+              "min": 23,
+              "max": 23,
+              "weight": 15
+            },
+            {
+              "species": "HAUNTER",
+              "chance": 7.5,
+              "min": 25,
+              "max": 25,
+              "weight": 15
+            },
+            {
+              "species": "CUBONE",
+              "chance": 5.0,
+              "min": 17,
+              "max": 17,
+              "weight": 10
+            },
+            {
+              "species": "CUBONE",
+              "chance": 5.0,
+              "min": 19,
+              "max": 19,
+              "weight": 10
+            }
+          ],
+          "weightTotal": 200
+        }
+      ],
+      "trainers": []
     }
   ],
   "trainers": [
@@ -13010,6 +13563,422 @@
             {
               "species": "SLOWPOKE",
               "level": 20
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-pokemon-tower-3f-hope",
+      "name": "Hope",
+      "role": "Médium",
+      "location": "kanto-pokemon-tower-3f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GASTLY",
+              "level": 23
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-pokemon-tower-3f-carly",
+      "name": "Carly",
+      "role": "Médium",
+      "location": "kanto-pokemon-tower-3f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GASTLY",
+              "level": 24
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-pokemon-tower-3f-patricia",
+      "name": "Patricia",
+      "role": "Médium",
+      "location": "kanto-pokemon-tower-3f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GASTLY",
+              "level": 22
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-pokemon-tower-4f-laurel",
+      "name": "Laurel",
+      "role": "Médium",
+      "location": "kanto-pokemon-tower-4f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GASTLY",
+              "level": 23
+            },
+            {
+              "species": "GASTLY",
+              "level": 23
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-pokemon-tower-4f-jody",
+      "name": "Jody",
+      "role": "Médium",
+      "location": "kanto-pokemon-tower-4f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GASTLY",
+              "level": 22
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-pokemon-tower-4f-paula",
+      "name": "Paula",
+      "role": "Médium",
+      "location": "kanto-pokemon-tower-4f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GASTLY",
+              "level": 24
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-pokemon-tower-5f-ruth",
+      "name": "Ruth",
+      "role": "Médium",
+      "location": "kanto-pokemon-tower-5f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GASTLY",
+              "level": 22
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-pokemon-tower-5f-tammy",
+      "name": "Tammy",
+      "role": "Médium",
+      "location": "kanto-pokemon-tower-5f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "HAUNTER",
+              "level": 23
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-pokemon-tower-5f-karina",
+      "name": "Karina",
+      "role": "Médium",
+      "location": "kanto-pokemon-tower-5f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GASTLY",
+              "level": 24
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-pokemon-tower-6f-angelica",
+      "name": "Angelica",
+      "role": "Médium",
+      "location": "kanto-pokemon-tower-6f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GASTLY",
+              "level": 22
+            },
+            {
+              "species": "GASTLY",
+              "level": 22
+            },
+            {
+              "species": "GASTLY",
+              "level": 22
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-pokemon-tower-6f-jennifer",
+      "name": "Jennifer",
+      "role": "Médium",
+      "location": "kanto-pokemon-tower-6f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GASTLY",
+              "level": 24
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-pokemon-tower-6f-emilia",
+      "name": "Emilia",
+      "role": "Médium",
+      "location": "kanto-pokemon-tower-6f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GASTLY",
+              "level": 24
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-blue-tower",
+      "name": "Gary (Pokémon Tower)",
+      "role": "Rival de Kanto",
+      "location": "kanto-pokemon-tower-2f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": "BULBASAUR",
+          "team": [
+            {
+              "species": "PIDGEOTTO",
+              "level": 25,
+              "moves": [
+                "QUICKATTACK",
+                "GUST",
+                "WHIRLWIND",
+                "SANDATTACK"
+              ]
+            },
+            {
+              "species": "KADABRA",
+              "level": 20,
+              "moves": [
+                "CONFUSION",
+                "DISABLE",
+                "KINESIS",
+                "TELEPORT"
+              ]
+            },
+            {
+              "species": "EXEGGCUTE",
+              "level": 23,
+              "moves": [
+                "CONFUSION",
+                "LEECHSEED",
+                "HYPNOSIS",
+                "REFLECT"
+              ]
+            },
+            {
+              "species": "GYARADOS",
+              "level": 22,
+              "moves": [
+                "THRASH",
+                "BITE"
+              ]
+            },
+            {
+              "species": "CHARMELEON",
+              "level": 25,
+              "moves": [
+                "EMBER",
+                "METALCLAW",
+                "SMOKESCREEN",
+                "GROWL"
+              ]
+            }
+          ]
+        },
+        {
+          "starter": "CHARMANDER",
+          "team": [
+            {
+              "species": "PIDGEOTTO",
+              "level": 25,
+              "moves": [
+                "QUICKATTACK",
+                "GUST",
+                "WHIRLWIND",
+                "SANDATTACK"
+              ]
+            },
+            {
+              "species": "KADABRA",
+              "level": 20,
+              "moves": [
+                "CONFUSION",
+                "DISABLE",
+                "KINESIS",
+                "TELEPORT"
+              ]
+            },
+            {
+              "species": "EXEGGCUTE",
+              "level": 22,
+              "moves": [
+                "CONFUSION",
+                "LEECHSEED",
+                "HYPNOSIS",
+                "REFLECT"
+              ]
+            },
+            {
+              "species": "GROWLITHE",
+              "level": 22,
+              "moves": [
+                "EMBER",
+                "ROAR",
+                "LEER",
+                "ODORSLEUTH"
+              ]
+            },
+            {
+              "species": "WARTORTLE",
+              "level": 25,
+              "moves": [
+                "WATERGUN",
+                "BITE",
+                "RAPIDSPIN",
+                "WITHDRAW"
+              ]
+            }
+          ]
+        },
+        {
+          "starter": "SQUIRTLE",
+          "team": [
+            {
+              "species": "PIDGEOTTO",
+              "level": 25,
+              "moves": [
+                "QUICKATTACK",
+                "GUST",
+                "WHIRLWIND",
+                "SANDATTACK"
+              ]
+            },
+            {
+              "species": "KADABRA",
+              "level": 20,
+              "moves": [
+                "CONFUSION",
+                "DISABLE",
+                "KINESIS",
+                "TELEPORT"
+              ]
+            },
+            {
+              "species": "GROWLITHE",
+              "level": 22,
+              "moves": [
+                "EMBER",
+                "ROAR",
+                "LEER",
+                "ODORSLEUTH"
+              ]
+            },
+            {
+              "species": "GYARADOS",
+              "level": 23,
+              "moves": [
+                "THRASH",
+                "BITE"
+              ]
+            },
+            {
+              "species": "IVYSAUR",
+              "level": 25,
+              "moves": [
+                "VINEWHIP",
+                "RAZORLEAF",
+                "POISONPOWDER",
+                "SLEEPPOWDER"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-pokemon-tower-5f-jody",
+      "name": "Jody",
+      "role": "Médium",
+      "location": "kanto-pokemon-tower-5f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GASTLY",
+              "level": 22
             }
           ]
         }

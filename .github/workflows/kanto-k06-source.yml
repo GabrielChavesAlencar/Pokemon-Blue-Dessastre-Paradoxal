@@ -1,0 +1,125 @@
+name: "Kanto K06: auditar Celadon e Rocket"
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/regions/audit_k06_rocket.py'
+      - 'scripts/regions/build_k06_approach.py'
+      - 'scripts/regions/k06_approach_migration.py'
+      - 'scripts/regions/k06_windows_approach.py'
+      - 'data/regions/k06-approach-release.json'
+      - 'scripts/regions/auto_integrate_kanto.py'
+      - 'tests/test_kanto_auto_integrate.py'
+      - 'scripts/regions/KantoK06ApproachNativeCheck.rb'
+      - 'scripts/regions/native_check.py'
+      - 'tests/test_kanto_k06_approach.py'
+      - '.github/workflows/kanto-k06-source.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  intake:
+    runs-on: windows-2022
+    timeout-minutes: 25
+    env:
+      GALLIUM_DRIVER: llvmpipe
+      ALSOFT_DRIVERS: 'null'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Auditar a fonte fixada sem carregar scripts ou jogo
+        shell: powershell
+        run: |
+          python scripts/regions/ensure_source.py
+          if($LASTEXITCODE -ne 0){throw 'Pinned K06 source unavailable'}
+          python scripts/regions/audit_k06_rocket.py
+          if($LASTEXITCODE -ne 0){throw 'K06 source witness could not be generated'}
+      - name: Montar a ligação física de Lavender a Celadon em cópia separada
+        shell: powershell
+        run: |
+          python -m unittest discover -s tests -p 'test_kanto_k06_approach.py'
+          if($LASTEXITCODE -ne 0){throw 'K06 approach unit contracts failed'}
+          python -m unittest discover -s tests -p 'test_kanto_auto_integrate.py'
+          if($LASTEXITCODE -ne 0){throw 'K06 launcher routing contract failed'}
+          python scripts/install_game.py --apply --skip-kanto
+          if($LASTEXITCODE -ne 0){throw 'Cannot prepare disposable Decades game'}
+          python scripts/regions/pilot.py --output .blue-work/kanto-k06-baseline
+          if($LASTEXITCODE -ne 0){throw 'Cannot prepare exact released K05 baseline'}
+          python scripts/regions/build_k06_approach.py
+          if($LASTEXITCODE -ne 0){throw 'K06 approach fixture failed'}
+          python scripts/regions/k06_approach_migration.py
+          if($LASTEXITCODE -ne 0){throw 'K06 integrated K05 migration fixture failed'}
+      - name: Percorrer Lavender e Celadon pela passagem subterrânea no Game.exe
+        shell: powershell
+        run: |
+          $ProgressPreference='SilentlyContinue'
+          $mesa=Join-Path $env:RUNNER_TEMP 'k06-mesa.7z'
+          Invoke-WebRequest -UseBasicParsing 'https://github.com/pal1000/mesa-dist-win/releases/download/26.2.6/mesa3d-26.2.6-release-mingw.7z' -OutFile $mesa
+          if((Get-FileHash -LiteralPath $mesa -Algorithm SHA256).Hash.ToLower() -ne 'da0f71d9181b672c1918f3c342f11118c687f6059a46b16502845160733cc388'){throw 'Mesa checksum failed'}
+          $dir=Join-Path $env:RUNNER_TEMP 'k06-mesa'
+          & "$env:ProgramFiles/7-Zip/7z.exe" x $mesa "-o$dir" -y | Out-Null
+          if($LASTEXITCODE -ne 0){throw 'Mesa extraction failed'}
+          $roots=@{pilot='.blue-work/kanto-k06-approach'; integrated='.blue-work/kanto-k06-integrated'}
+          foreach($key in @('pilot','integrated')){
+            $root=(Resolve-Path $roots[$key]).Path
+            python scripts/regions/native_check.py $root --k06-approach
+            if($LASTEXITCODE -ne 0){throw "K06 $key native fixture injection failed"}
+            Get-ChildItem -LiteralPath $dir -Recurse -File -Filter '*.dll' |
+              Where-Object { $_.Directory.Name -eq 'x64' } |
+              ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $root }
+            $proof="$root/Data/blue-kanto-k06-approach-proof.txt"
+            $bad="$root/Data/blue-kanto-error.txt"
+            for($attempt=1;$attempt -le 2;$attempt++){
+              $stdout="k06-source-receipts/$key-native-out-$attempt.txt"
+              $stderr="k06-source-receipts/$key-native-err-$attempt.txt"
+              $proc=Start-Process -FilePath "$root/Game.exe" -WorkingDirectory $root -WindowStyle Hidden -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+              $handle=$proc.Handle
+              if(-not $proc.WaitForExit(180000)){ Stop-Process -Id $proc.Id; break }
+              if((Test-Path $proof) -or (Test-Path $bad)){break}
+              if($attempt -ne 1 -or -not ((Get-Content $stdout,$stderr -Raw -ErrorAction SilentlyContinue) -match '(?i)compil')){break}
+            }
+            foreach($file in @($proof,$bad,"$root/Data/blue-kanto-k06-native-stages.txt")){
+              if(Test-Path -LiteralPath $file -PathType Leaf){Copy-Item -LiteralPath $file -Destination ('k06-source-receipts/' + $key + '-' + (Split-Path -Leaf $file))}
+            }
+            if(!(Test-Path $proof -PathType Leaf) -or (Test-Path $bad -PathType Leaf)){
+              Get-Content $stdout,$stderr,$bad,"$root/Data/blue-kanto-k06-native-stages.txt" -ErrorAction SilentlyContinue | Select-Object -Last 130
+              throw 'K06 bidirectional route proof missing'
+            }
+            Write-Host 'KANTO_K06_NATIVE_APPROACH_OK'
+            if($key -eq 'integrated'){
+              $sentinel=Join-Path $root 'saves/K06-SYNTHETIC-SENTINEL.rxdata'
+              $candidate=Get-Content 'k06-source-receipts/kanto-k06-integrated-plan.json' -Raw | ConvertFrom-Json
+              if((Get-FileHash -LiteralPath $sentinel -Algorithm SHA256).Hash.ToLowerInvariant() -ne $candidate.save_sentinel_sha256){
+                throw 'The integrated K06 route touched its test save'
+              }
+              python scripts/regions/k06_approach_migration.py --verify-compiled-ci
+              if($LASTEXITCODE -ne 0){throw 'Integrated K06 compiled graph differs from the verified approach'}
+              Write-Host 'KANTO_K06_INTEGRATED_NATIVE_APPROACH_OK'
+            }
+          }
+      - name: Exercitar a entrada normal do Blue-Story com a passagem K06 ativa
+        if: hashFiles('data/regions/k06-approach-release.json') != ''
+        shell: powershell
+        run: |
+          if(Test-Path -LiteralPath '.blue-work/kanto-pilot'){throw 'Unexpected preexisting Kanto launcher fixture'}
+          Move-Item -LiteralPath '.blue-work/kanto-k06-baseline' -Destination '.blue-work/kanto-pilot'
+          python scripts/regions/auto_integrate_kanto.py
+          if($LASTEXITCODE -ne 0){throw 'Normal launcher did not seed Kanto and apply the K06 overlay'}
+          $first=Get-Content '.blue-work/kanto-install-status.json' -Raw | ConvertFrom-Json
+          if(!$first.ready -or !$first.changed -or !$first.k06_approach){throw 'First K06 launcher status is wrong'}
+          python scripts/regions/auto_integrate_kanto.py
+          if($LASTEXITCODE -ne 0){throw 'Normal launcher could not reopen the K06 installation'}
+          $second=Get-Content '.blue-work/kanto-install-status.json' -Raw | ConvertFrom-Json
+          if(!$second.ready -or $second.changed -or !$second.k06_approach){throw 'Repeat K06 launcher status is wrong'}
+          $installed=Get-Content 'game/Data/blue-kanto-install.json' -Raw | ConvertFrom-Json
+          if($installed.content_stage -ne 'K06_APPROACH'){throw 'Installed K06 product marker absent'}
+          Write-Host 'KANTO_K06_CANONICAL_LAUNCHER_FRESH_AND_REPEAT_OK'
+      - name: Preservar somente recibo de IDs e dependências
+        if: always() && hashFiles('k06-source-receipts/kanto-k06-source.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k06-source-inventory
+          path: k06-source-receipts/
+          if-no-files-found: error

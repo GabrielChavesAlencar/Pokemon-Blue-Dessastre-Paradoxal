@@ -8,6 +8,7 @@ sys.path.insert(0,str(ROOT/'scripts/official_rules'))
 from prepare_restore import Marshal,RubyString,dump
 from server.ruby_marshal import loads
 from scripts.android.build_manifest import installed_manifest, verify_manifest
+from scripts.android.k05_package_contract import verify_registry as verify_k05_registry
 from scripts.android.early_input import install as install_early_input, verify as verify_early_input
 sys.path.insert(0,str(ROOT/'scripts/regions'))
 import sinnoh_shared
@@ -64,6 +65,7 @@ def verify_regions(game):
         p = game / name
         if not p.is_file() or p.is_symlink() or p.stat().st_size == 0:
             raise ValueError('Missing mandatory Android shared region file: '+name)
+    verify_k05_registry(lambda rel: (game/rel).read_bytes())
     compiled = (game/'Data/PluginScripts.rxdata').read_bytes()
     # Regression for the real Android crash: the package must contain the
     # updated RegionStart.rb in BOTH the files and compiled plugin scripts.
@@ -123,6 +125,7 @@ def verify_archive(output,revision,source_sha=None,channel='decades',*,sinnoh_qa
                     raise ValueError('Empty Android region runtime: '+name)
             def read_region(name):
                 return archive.read(base + name)
+            verify_k05_registry(read_region)
             kanto = json.loads(read_region("Data/blue-kanto-install.json"))
             kanto_maps = kanto.get("maps", {})
             if len(kanto_maps) <= 100:

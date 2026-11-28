@@ -448,6 +448,24 @@ module BlueHoennPilot
     $game_map && $game_map.map_id == metadata[1][101]
   end
 
+  # The north border of Route 101 leads to Oldale. Keep the return to
+  # Littleroot open while the rescue is active.
+  def self.birch_exit_blocked?(destination_y)
+    return false unless destination_y < 0
+    region = $PokemonGlobal&.blue_regions
+    return false unless region.is_a?(Hash) && region["current"] == "HOENN"
+    flags = region["hoenn_pilot"]
+    return false unless flags.is_a?(Hash) && flags["birch_rescue_active"]
+    !flags["birch_rescued"] && !flags["met_birch"] && on_birch_route?
+  end
+
+  module Route101RescueGate
+    def isPassableFromEdge?(x, y)
+      return false if BlueHoennPilot.birch_exit_blocked?(y)
+      super
+    end
+  end
+
   def self.route_birch
     flags = state
     return false unless flags && on_birch_route?
@@ -569,23 +587,33 @@ module BlueHoennPilot
 
   def self.rival_103
     flags = state
-    return false unless flags && starter
+    chosen = starter
+    player = $player
+    return false unless flags && chosen && player && player.able_pokemon_count > 0
     return false unless flags["birch_rescued"] || flags["met_birch"]
-    return false if flags["rival_103_done"]
-    name = rival_name
-    pbMessage(_INTL("{1}: Vamos testar nossos Pokémon antes de voltar a Littleroot!", name))
-    setBattleRule("canLose")
-    victory = TrainerBattle.start(:RIVAL1, name, RIVAL_VERSIONS.fetch(starter))
-    $player.heal_party if $player && $player.respond_to?(:heal_party)
-    unless victory
-      pbMessage(localized(
-        "{1}: Heal up and come back when you're ready for a rematch.",
-        "{1}: Cure sua equipe e volte quando quiser uma revanche.", name))
-      return false
+    return false if flags["rival_103_done"] || @rival_103_in_progress
+
+    @rival_103_in_progress = true
+    begin
+      name = rival_name
+      pbMessage(_INTL("{1}: Vamos testar nossos Pokémon antes de voltar a Littleroot!", name))
+      setBattleRule("canLose")
+      victory = TrainerBattle.start(:RIVAL1, name, RIVAL_VERSIONS.fetch(chosen))
+      return false unless $player.equal?(player) && state.equal?(flags)
+
+      player.heal_party
+      unless victory == true
+        pbMessage(localized(
+          "{1}: Heal up and come back when you're ready for a rematch.",
+          "{1}: Cure sua equipe e volte quando quiser uma revanche.", name))
+        return false
+      end
+      flags["rival_103_done"] = true
+      pbMessage(_INTL("{1}: Você batalhou muito bem! Volte ao laboratório de Birch.", name))
+      true
+    ensure
+      @rival_103_in_progress = false
     end
-    flags["rival_103_done"] = true
-    pbMessage(_INTL("{1}: Você batalhou muito bem! Volte ao laboratório de Birch.", name))
-    true
   end
 
   def self.birch
@@ -3769,3 +3797,4 @@ if defined?(MenuHandlers)
   })
 end
 
+PokemonMapFactory.prepend(BlueHoennPilot::Route101RescueGate) if defined?(PokemonMapFactory)

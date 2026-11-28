@@ -170,7 +170,20 @@
     "87": "ROUTE_10",
     "88": "ROCK_TUNNEL_CENTER",
     "90": "ROCK_TUNNEL_1F",
-    "91": "ROCK_TUNNEL_B1F"
+    "91": "ROCK_TUNNEL_B1F",
+    "93": "LAVENDER_TOWN",
+    "94": "LAVENDER_CENTER",
+    "95": "LAVENDER_MART",
+    "96": "LAVENDER_HOUSE",
+    "97": "LAVENDER_NAME_RATER",
+    "98": "LAVENDER_FUJI_HOUSE",
+    "100": "POKEMON_TOWER_1F",
+    "101": "POKEMON_TOWER_2F",
+    "102": "POKEMON_TOWER_3F",
+    "103": "POKEMON_TOWER_4F",
+    "104": "POKEMON_TOWER_5F",
+    "105": "POKEMON_TOWER_6F",
+    "106": "POKEMON_TOWER_7F"
   },
   "preview_only": [
     57,

@@ -47,7 +47,12 @@ def inspect(game: Path, *, candidate=False) -> dict:
     mapping = {int(source): int(dest) for source, dest in json_file(meta_path)["maps"].items()}
     manifest = json_file(KANTO)
     trainer_specs = TRAINERS
-    if candidate:
+    if candidate=="k05":
+        from build_k05_product import append_candidate
+        from qa_k05_migration import require_candidate_pilot
+        require_candidate_pilot(game)
+        manifest=append_candidate(manifest)
+    elif candidate:
         import os
         from k03e_contract import candidate_manifest, migration_pilot
         if os.getenv("GITHUB_ACTIONS") != "true" or game != migration_pilot(ROOT):
@@ -59,10 +64,10 @@ def inspect(game: Path, *, candidate=False) -> dict:
     count = publication_catalog(manifest["maps"])
     active = corridor.keys() & manifest["maps"].keys()
     if active:
-        if count not in (160, 165) or any(manifest["maps"].get(i) != key for i, key in corridor.items()):
+        if count not in (160, 165, 178) or any(manifest["maps"].get(i) != key for i, key in corridor.items()):
             raise ValueError("Incomplete K03-E catalogue")
         trainer_specs = {**TRAINERS, 79: ROUTE11_TRAINERS}
-    if count == 165:
+    if count >= 165:
         trainer_specs = {**trainer_specs, **{sid: {eid: tuple(profile.split(",")) for eid, profile in entries.items()}
                                              for sid, entries in K04_TRAINERS.items()}}
     expected = {int(source): name for source, name in manifest["maps"].items()}
@@ -787,7 +792,7 @@ def inspect(game: Path, *, candidate=False) -> dict:
                         raise ValueError(f"Trainer {original}/{event_id} will not alert the player")
     # Both the isolated candidate and the active catalogue add the same ten.
     expected_sight_count = 137 + (len(ROUTE11_TRAINERS) if active else 0)
-    if count == 165:
+    if count >= 165:
         expected_sight_count += 30
     if sight_count != expected_sight_count:
         raise ValueError(f"Source-proven trainer sight count changed: {sight_count}; expected {expected_sight_count}")
@@ -1000,10 +1005,13 @@ def inspect(game: Path, *, candidate=False) -> dict:
         raise ValueError(f"Required Kanto event scripts are missing: {missing}")
 
     seen = reachable(edges, mapping[5])
-    active_ids = {dest for source, dest in mapping.items() if source not in preview_only}
+    sealed = {106} if count==178 else set()
+    if sealed and mapping[106] in seen:
+        raise ValueError("K05 reached the summit before K07")
+    active_ids = {dest for source, dest in mapping.items() if source not in preview_only|sealed}
     if not active_ids.issubset(seen):
         missing = [expected[source] for source, dest in mapping.items()
-                   if source not in preview_only and dest not in seen]
+                   if source not in preview_only|sealed and dest not in seen]
         raise ValueError(f"Maps unreachable FROM Pallet by real transfer direction: {missing}")
     backwards = {map_id: set() for map_id in ids}
     for origin, destinations in edges.items():
@@ -1012,7 +1020,7 @@ def inspect(game: Path, *, candidate=False) -> dict:
     returnable = reachable(backwards, mapping[5])
     if not active_ids.issubset(returnable):
         trapped = [expected[source] for source, dest in mapping.items()
-                   if source not in preview_only and dest not in returnable]
+                   if source not in preview_only|sealed and dest not in returnable]
         raise ValueError(f"Maps without a directed route BACK to Pallet: {trapped}")
     route = [5, 9, 10, 18, 19, 24, 20, 25, 28, 32, 33, 34,
              36, 37, 38, 39, 40, 41, 42,

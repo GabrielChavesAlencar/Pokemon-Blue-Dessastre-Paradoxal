@@ -29,6 +29,7 @@ from server.ruby_marshal import RubyObject, loads, text
 PINNED_TREE = "c3876ecea7545eb3a91b9c8748d7e2b13f07805d"
 TREE_URL = ("https://api.github.com/repos/SocomSeal/The-PMon-World-Project/"
             "git/trees/" + PINNED_TREE + "?recursive=1")
+INSTALL_TREE = ROOT / "data/regions/hoenn-install-tree.json"
 WORK = ROOT / ".blue-work"
 EXPECTED_MAPS = len(catalog_source_ids())
 PINNED_MAPINFOS_SHA256 = "7a69152de41a8b70df3199182e09d04e2f1be2db73a2ab509137571e4d8ade15"

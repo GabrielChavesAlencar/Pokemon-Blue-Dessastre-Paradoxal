@@ -50,6 +50,9 @@ def invoke(game: Path, *flags: str) -> None:
     """Stream progress instead of hiding slow first-time Hoenn downloads."""
     script = SOURCE_BOOTSTRAP if flags == ("--bootstrap-source",) else INSTALLER
     args = [] if script == SOURCE_BOOTSTRAP else ["--game", str(game), *flags]
+    if flags == ("--apply",) and not ZIP.is_file():
+        from hoenn_qa_phase1 import INSTALL_TREE
+        args.extend(("--inventory", str(INSTALL_TREE)))
     cmd = [sys.executable, "-X", "utf8", str(script), *args]
     LOG.parent.mkdir(parents=True, exist_ok=True)
     print("[HOENN AUTO] >", " ".join(str(x) for x in cmd[3:]), flush=True)

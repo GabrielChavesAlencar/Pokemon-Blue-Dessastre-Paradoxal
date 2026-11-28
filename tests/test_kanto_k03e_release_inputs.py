@@ -25,10 +25,12 @@ class K03EReleaseInputsTests(unittest.TestCase):
         self.site = read(ROOT / "site/public/data/kanto.json")
         self.music = read(ROOT / "data/kanto-music-rules.json")
         self.evidence = read(ROOT / "data/regions/kanto-k03e-portal-delta.json")
+        from scripts.regions.k05_contract import MAPS as K05_MAPS
+        later={**K04_MAPS,**K05_MAPS}
         # K03-E is a historical promotion fixture independent of K04.
         self.source["maps"] = {i: key for i,key in self.source["maps"].items()
-                               if int(i) not in K04_MAPS}
-        rock_ids = {slug(key) for key in K04_MAPS.values()}
+                               if int(i) not in later}
+        rock_ids = {slug(key) for key in later.values()}
         self.site["locations"] = [row for row in self.site["locations"] if row["id"] not in rock_ids]
         self.site["trainers"] = [row for row in self.site["trainers"] if row["location"] not in rock_ids]
         self.active_triplet = copy.deepcopy((self.source, self.site, self.music))

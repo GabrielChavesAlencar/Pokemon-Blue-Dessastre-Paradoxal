@@ -18,6 +18,7 @@ on:
       - 'tests/test_hoenn_main_integration.py'
       - 'tests/test_hoenn_stage10.py'
       - 'tests/hoenn_main_gate_runtime.rb'
+      - 'tests/hoenn_pilot_runtime.rb'
       - 'tests/hoenn_main_travel_runtime.rb'
       - '.github/workflows/hoenn-main-integration.yml'
       - 'scripts/regions/audit_hoenn_h00.py'
@@ -26,6 +27,8 @@ on:
   pull_request:
     branches: [main]
     paths:
+      - 'scripts/regions/HoennPilot.rb'
+      - 'tests/hoenn_pilot_runtime.rb'
       - 'scripts/regions/install_hoenn.py'
       - 'scripts/regions/auto_integrate_hoenn.py'
       - 'scripts/regions/pilot_hoenn.py'
@@ -70,6 +73,8 @@ jobs:
           python -m unittest discover -s tests -p 'test_hoenn_stage10.py' -v
       - name: Hoenn H00 inventory contracts
         run: python -m unittest discover -s tests -p 'test_hoenn_h00.py' -v
+      - name: Hoenn opening profiles, starters and rescue
+        run: ruby tests/hoenn_pilot_runtime.rb scripts/regions/HoennPilot.rb
       - name: Hoenn New Game release gate
         run: ruby tests/hoenn_main_gate_runtime.rb scripts/battle_polish/RegionStart.rb
       - name: Main Hoenn travel and Littleroot NPC

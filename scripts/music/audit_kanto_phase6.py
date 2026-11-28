@@ -41,7 +41,12 @@ def classify_catalog(root: Path, manifest: dict[str, Any]) -> list[dict[str, Any
     rules = compile_music.load_json(root / "data/kanto-music-rules.json")
     source = compile_music.load_json(root / "data/regions/kanto-source.json")
     symbols = list(source["maps"].values())
-    for n, marker in ABSENT_KANTO_AREAS.items():
+    from scripts.regions.k05_contract import MAPS as K05
+    absent=dict(ABSENT_KANTO_AREAS)
+    if all(source["maps"].get(str(i))==role for i,role in K05.items()):
+        absent.pop(38)  # now present, but no approved playback binding
+        absent.pop(39)
+    for n, marker in absent.items():
         if any(marker in symbol for symbol in symbols):
             raise ValueError(f"Kanto missing-map status outdated for soundtrack {n}")
     active = enabled_numbers(root)
@@ -59,10 +64,10 @@ def classify_catalog(root: Path, manifest: dict[str, Any]) -> list[dict[str, Any
             "number": n, "kind": item["kind"], "filename": item["filename"],
             "bytes": item["bytes"], "git_blob_sha": item["git_blob_sha"],
             "status": ("VINCULADA" if n in active else
-                       "MAPA_AUSENTE" if n in ABSENT_KANTO_AREAS else "PENDENTE_EVENTO"),
+                       "MAPA_AUSENTE" if n in absent else "PENDENTE_EVENTO"),
             "reason": ("associated with audited Kanto runtime rule" if n in active else
-                       "destination is absent from imported 142 Kanto maps"
-                       if n in ABSENT_KANTO_AREAS else
+                       "destination is absent from the imported Kanto catalog"
+                       if n in absent else
                        "event or music segment requires implementation/audit"),
             "bindings": by_number.get(n, []),
             "engine_playback": "BLOQUEADA_AMBIENTE",

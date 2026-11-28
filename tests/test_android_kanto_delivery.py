@@ -148,7 +148,7 @@ class KantoDeliveryTests(unittest.TestCase):
         for channel in ("kanto", "multiregion"):
             with self.subTest(channel=channel):
                 proof = assert_delivery(self.fixture(channel), channel)
-                self.assertEqual(proof["kanto_maps"], 165)
+                self.assertEqual(proof["kanto_maps"], 178)
                 self.assertEqual(proof["cerulean_police_native_pages"], 2)
 
     def test_k04_zip_refuses_wrong_ids_missing_seam_darkness_or_flash(self):
