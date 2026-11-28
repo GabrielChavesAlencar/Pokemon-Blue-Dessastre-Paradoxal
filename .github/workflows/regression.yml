@@ -43,6 +43,7 @@ jobs:
           ruby tests/hoenn_stage6_runtime.rb scripts/regions/HoennPilot.rb
           ruby tests/hoenn_stage7_runtime.rb scripts/regions/HoennPilot.rb
           ruby tests/hoenn_stage8_runtime.rb scripts/regions/HoennPilot.rb
+          ruby tests/hoenn_h08_daycare_runtime.rb scripts/regions/HoennPilot.rb
           ruby tests/hoenn_stage9_runtime.rb scripts/regions/HoennPilot.rb
           ruby tests/hoenn_stage10_runtime.rb scripts/regions/HoennPilot.rb
           ruby tests/hoenn_qa_phase4_runtime.rb scripts/regions/HoennPilot.rb
