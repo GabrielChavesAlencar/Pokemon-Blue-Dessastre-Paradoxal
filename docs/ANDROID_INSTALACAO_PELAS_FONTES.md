@@ -4,6 +4,9 @@ O ZIP inicial contém o atualizador e este guia. Ele não contém mapas,
 gráficos, áudios, executáveis do jogo ou saves. O atualizador baixa a receita
 publicada no GitHub do Blue e obtém os arquivos da base Decades, de Kanto e de
 Hoenn das fontes já fixadas e verificadas pelo instalador do projeto.
+O inventário de instalação de Hoenn registra caminhos, tamanhos e hashes.
+Cada receita que acrescentar recursos deve atualizar esse inventário com os
+registros da revisão original já auditada.
 
 ## Primeira instalação
 
