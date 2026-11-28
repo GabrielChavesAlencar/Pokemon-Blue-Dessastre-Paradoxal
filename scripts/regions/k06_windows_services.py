@@ -7,7 +7,7 @@ import os
 import tempfile
 from pathlib import Path
 
-from audit import KANTO, ROOT, inventory, json_file
+from audit import KANTO, ROOT, inventory, json_file, load, text
 from audit_k06_celadon_services import summarize
 from build_k06_celadon_services import CANDIDATES, STORE, stage_services
 from ensure_source import prepare
@@ -24,8 +24,8 @@ RUNTIME = "Plugins/ZZZZZ Blue Kanto Pilot/KantoPilot.rb"
 REGION = "Plugins/ZZZZ Blue Story and Presentation/RegionStart.rb"
 RECEIPT = "Data/blue-kanto-k06-services.json"
 EXPECTED_FLAG = {"schema":1,"stage":STAGE,"source_maps":list(CANDIDATES)}
-OWNED = {"Data/MapInfos.rxdata","Data/Tilesets.rxdata","PBS/map_metadata_kanto.txt",
-         "PBS/items_kanto.txt",RUNTIME}
+REGISTRY = {"Data/MapInfos.rxdata","Data/Tilesets.rxdata"}
+OWNED = {"PBS/map_metadata_kanto.txt","PBS/items_kanto.txt",RUNTIME}
 BACKUP_K06 = "k06-approach"
 BACKUP_SERVICES = "k06-services"
 
@@ -64,6 +64,28 @@ def asset_paths(game, staged):
     return paths
 
 
+def registry_binding(game, extras, parent):
+    """Bind new interiors to their native registry, not transient Marshal bytes.
+
+    Essentials can rewrite the shared Tilesets container at regular boot.
+    The updater appends to the exact prior container and proves that existing
+    rows were preserved; later boots must preserve these four actual bindings.
+    """
+    infos, paths = inventory(game)
+    tiles = load(checked_file(game,"Data/Tilesets.rxdata"))
+    binding = {}
+    for sid, mid in extras.items():
+        info = infos[mid].attrs
+        tile_id = load(paths[mid]).attrs["@tileset_id"]
+        if not 0 < tile_id < len(tiles) or tiles[tile_id] is None or info["@parent_id"] != parent:
+            raise ValueError("Registro nativo de tileset ou mapa de Celadon inválido.")
+        tile = tiles[tile_id].attrs
+        binding[sid] = {"map_id":mid,"title":text(info["@name"]),
+                        "tile_id":tile_id,"sheet":text(tile["@tileset_name"]),
+                        "autotiles":[text(raw) for raw in tile["@autotile_names"]]}
+    return binding
+
+
 def verify_services(game, proof=None):
     game = game.resolve()
     proof = proof or json_file(checked_file(game,INSTALL))
@@ -83,6 +105,8 @@ def verify_services(game, proof=None):
     infos,files = inventory(game)
     if not set(mapping.values()) <= (infos.keys()&files.keys()):
         raise ValueError("Mapas de Celadon ausentes no registro.")
+    if registry_binding(game, extras, base["114"]) != details.get("native_registry"):
+        raise ValueError("O motor mudou vínculos nativos dos quatro interiores de Celadon.")
     verify_native_graph(game,mapping={int(k):v for k,v in base.items()})
     if (checked_file(game,READY).read_text("ascii").strip()!=f"BLUE_KANTO_READY_V1,182,{base['7']}"
             or b"BlueKantoCeladonServices" not in checked_file(game,RUNTIME).read_bytes()):
@@ -93,7 +117,7 @@ def verify_services(game, proof=None):
     if not (OWNED | owned_maps | added_maps | {REGION,READY}) <= expected or any(
             not safe_path(name) or name not in hashes for name in expected):
         raise ValueError("Escopo de verificação final inválido.")
-    require_hashes(game, expected, hashes)
+    require_hashes(game, expected-REGISTRY, hashes)
     return {"maps":182,"stage":STAGE,"kanto_start":[base["7"],25,7]}
 
 
@@ -128,15 +152,19 @@ def install(game):
     old_maps,new_maps = map_scope(proof["maps"])
     old_hash = recorded_hashes(proof)
     require_hashes(game, old_maps|OWNED, old_hash)
+    prior_registry = {rel:journal.checked_row(game/rel) for rel in REGISTRY}
+    if None in prior_registry.values():
+        raise ValueError("Registro nativo principal ausente.")
     source = prepare()
     with tempfile.TemporaryDirectory(prefix="k06-services-",dir=ROOT/".blue-work") as work:
         stage = Path(work).resolve()/"game"
         witness = stage_services(source,game,stage,summarize(source,json_file(KANTO)),windows_product=True)
         (stage/REGION).write_bytes((ROOT/"scripts/battle_polish/RegionStart.rb").read_bytes())
-        paths = old_maps|new_maps|OWNED|asset_paths(game,stage)|{REGION,READY}
+        paths = old_maps|new_maps|OWNED|REGISTRY|asset_paths(game,stage)|{REGION,READY}
         details = {"schema":1,"stage":STAGE,"base_maps":proof["maps"],
                    "new_maps":{str(k):v for k,v in CANDIDATES.items()},"verified_paths":sorted(paths),
                    "unchanged_old_map_count":witness["unrelated_maps_byte_identical"]}
+        details["native_registry"] = registry_binding(stage, details["new_maps"], proof["maps"]["114"])
         (stage/RECEIPT).write_text(json.dumps(details,sort_keys=True)+"\n",encoding="utf8")
         (stage/COMPILE).write_bytes(b"compile")
         if any(not safe_path(name) for name in paths):
@@ -152,6 +180,8 @@ def install(game):
             old = journal.checked_row(game/rel)
             if rel in old_maps|OWNED and (old is None or old["sha256"] != old_hash[rel]):
                 raise ValueError("O registro anterior mudou durante a montagem.")
+            if rel in REGISTRY and old!=prior_registry[rel]:
+                raise ValueError("O registro nativo mudou durante a montagem.")
             if rel in new_maps|{RECEIPT} and old is not None:
                 raise ValueError("Celadon não sobrescreve mapas ou recibos desconhecidos.")
             if row!=old:
