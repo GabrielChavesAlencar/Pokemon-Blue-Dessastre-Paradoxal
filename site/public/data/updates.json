@@ -2,6 +2,54 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d58101eed9bf3d7f8f2c30a07d627ab351370f0d",
+      "date": "2026-11-28T12:51:25-03:00",
+      "title": "Merge pull request #386 from GabrielChavesAlencar/codex/hoenn-h04-local-cut",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "913403db07c9e88902788b30a4cbac15203bc966",
+      "date": "2026-11-28T12:47:10-03:00",
+      "title": "Merge remote-tracking branch 'origin/main' into codex/hoenn-h04-local-cut",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "67a490689ffc77228c6fb35fce9bc44a1cd99dee",
+      "date": "2026-11-28T12:47:09-03:00",
+      "title": "Hoenn H04: escadas de Rustboro e travessia de Rusturf",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "59afa3a7c73f9aea53b8eb592ebea3315965d92e",
+      "date": "2026-11-28T12:45:57-03:00",
+      "title": "Galar: pesquisa, planejamento e atlas visual [skip ci]",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "87d54cf6ddd68eb70eb671210374df5584bcab79",
+      "date": "2026-11-28T12:38:22-03:00",
+      "title": "Merge remote-tracking branch 'origin/main' into codex/hoenn-h04-local-cut",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "962e273ea65c31bd5dcb1c19b8503521e31373d4",
+      "date": "2026-11-28T12:38:20-03:00",
+      "title": "Hoenn H04: desafio de Roxanne e PokéNav regional",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "76874bc6494469dfb77827b3707c5cd626a994e2",
+      "date": "2026-11-28T12:31:15-03:00",
+      "title": "Alola: pesquisa USUM, planejamento e atlas visual [skip ci]",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "2a417f9136d7e70799c25c8a7ac01285c800d54c",
+      "date": "2026-11-28T12:28:43-03:00",
+      "title": "Merge remote-tracking branch 'origin/main' into codex/hoenn-h04-local-cut",
+      "category": "Melhorias"
+    },
+    {
       "sha": "00ab8379ea766d48670a29ea888c392991abc05d",
       "date": "2026-11-28T12:27:11-03:00",
       "title": "Merge pull request #403 from GabrielChavesAlencar/codex/hoenn-h03-oldale",
@@ -353,6 +401,12 @@
       "sha": "3c326fd05777ec383c5405d8bd0db2ab3e402873",
       "date": "2026-11-28T02:47:09-03:00",
       "title": "Audit Lavender portal delta and gate unverified bundled Hoenn redistribution",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "b73ccc6af412ff021997d621ef073fedec86f78a",
+      "date": "2026-11-28T02:45:30-03:00",
+      "title": "Hoenn H04: require the local Cut receipt for field use",
       "category": "Melhorias"
     },
     {

@@ -26,7 +26,7 @@ from hoenn_catalog import (
 from hoenn_qa_phase1 import check_source, check_tree
 from pilot_hoenn import (
     EVENT_CLASSES, START, UPSTREAM, SOURCE_MAPS, Source, allocate_hoenn_map_ids,
-    append_event, build_overlay, event_page, hoenn_maps_in_use, open_tile,
+    append_event, build_overlay, command, event_page, hoenn_maps_in_use, open_tile,
     plan_hoenn_map_ids, ruby, serialize,
 )
 from prepare_hoenn_source import inspect_zip
@@ -55,6 +55,13 @@ OLDALE_SIGNS = (("TOWN", 11, 9), ("CENTER", 7, 16), ("MART", 15, 6))
 JOURNAL = "Data/.blue-hoenn-install-journal.json"
 LOCK = "Data/.blue-hoenn-install.lock"
 SURF_LAYOUT = 2
+RUSTBORO_LAYOUT = 1
+RUSTBORO_LAYOUT_FIELD = "rustboro_layout"
+RUSTBORO_LAYOUT_SOURCES = (24, 48, 157)
+RUSTBORO_STAIRS = (((4, 19), (4, 3)), ((5, 58), (27, 58)), ((25, 58), (47, 58)))
+RUSTURF_ROCKS = ((29, 9), (29, 10))
+RUSTURF_GATE_CHECK = b"BlueHoennPilot.rusturf_shortcut_open?"
+RUSTURF_GATE_DENIED = b"BlueHoennPilot.rusturf_east_gate"
 PLUGIN = "Plugins/ZZZZZ Blue Hoenn Pilot/HoennPilot.rb"
 REQUIRED = (
     "Data/MapInfos.rxdata", "Data/Tilesets.rxdata", PLUGIN,
@@ -145,6 +152,10 @@ def verify_installed(game: Path, *, allow_pending: bool = False) -> dict:
             raise ValueError("MapInfos não contém todos os MapIDs aprovados de Hoenn.")
     if OLDALE_HOUSES in maps:
         verify_oldale_doors(lambda rel: safe_file(game, rel).read_bytes(), maps)
+    if RUSTBORO_LAYOUT_FIELD in data:
+        if type(data[RUSTBORO_LAYOUT_FIELD]) is not int or data[RUSTBORO_LAYOUT_FIELD] != RUSTBORO_LAYOUT:
+            raise ValueError("Revisão desconhecida das conexões de Rustboro.")
+        verify_rustboro_layout(load_rustboro_maps(lambda rel: safe_file(game, rel).read_bytes(), maps), maps)
     return {"status": "integrated_files_ready_for_native_QA", "maps": len(maps),
             "start": data["start"], "town": data["town"], "schema": data["schema"],
             "shared_save": True, "game_exe_tested_here": False}
@@ -315,26 +326,134 @@ def oldale_overlay(read, mapping: dict[int, int], source: Source | None = None) 
     }
 
 
+def load_rustboro_maps(read, mapping):
+    return {key: loads(read(map_path(mapping[key]))) for key in RUSTBORO_LAYOUT_SOURCES}
+
+
+def rustboro_event(world, name, at):
+    events = [event.attrs for event in world.attrs["@events"].values()
+              if event.attrs["@name"] == name.encode("ascii")]
+    if len(events) != 1 or (events[0]["@x"], events[0]["@y"]) != at:
+        raise ValueError(f"Evento obrigatório de Rustboro ausente ou deslocado: {name}")
+    return events[0]
+
+
+def rustboro_stairs(map_id):
+    for number, (first, second) in enumerate(RUSTBORO_STAIRS, 1):
+        yield f"HN4_RustboroStair_{number}_A", first, (map_id, second[0], second[1] + 1)
+        yield f"HN4_RustboroStair_{number}_B", second, (map_id, first[0], first[1] + 1)
+
+
+def rusturf_doors(mapping):
+    yield 48, "HN_DOOR_98_A", (8, 1), (mapping[157], 34, 20)
+    yield 157, "HN_DOOR_98_B", (34, 21), (mapping[48], 8, 2)
+
+
+def verify_rustboro_layout(worlds, mapping) -> None:
+    transfers = [(24, name, at, dest, False) for name, at, dest in rustboro_stairs(mapping[24])]
+    transfers.extend((key, name, at, dest, True) for key, name, at, dest in rusturf_doors(mapping))
+    for key, name, at, dest, gated in transfers:
+        pages = rustboro_event(worlds[key], name, at)["@pages"]
+        if len(pages) != 1 or pages[0].attrs["@trigger"] != 1:
+            raise ValueError(f"Gatilho de Rustboro não auditado: {name}")
+        commands = [cmd.attrs for cmd in pages[0].attrs["@list"]]
+        targets = [(cmd["@parameters"][:4], cmd["@indent"]) for cmd in commands if cmd["@code"] == 201]
+        if targets != [([0, *dest], int(gated))]:
+            raise ValueError(f"Transferência de Rustboro não auditada: {name}")
+        if gated:
+            first = commands[0]
+            if (first["@code"] != 111 or first["@indent"] != 0 or
+                    first["@parameters"] != [12, RUSTURF_GATE_CHECK]):
+                raise ValueError(f"Porta de Rusturf sem a condição de Rock Smash: {name}")
+    for number, at in enumerate(RUSTURF_ROCKS, 1):
+        name = f"HN4_RusturfRock_{number}"
+        event = rustboro_event(worlds[157], name, at)
+        if len(event["@pages"]) != 2:
+            raise ValueError(f"Pedra de Rusturf incompleta: {name}")
+        initial, cleared = (p.attrs for p in event["@pages"])
+        cleared_condition = cleared["@condition"].attrs
+        if (initial["@through"] or initial["@trigger"] != 0 or not cleared["@through"] or
+                cleared_condition["@self_switch_valid"] is not True or
+                cleared_condition["@self_switch_ch"] != b"A"):
+            raise ValueError(f"Bloqueio da pedra de Rusturf inválido: {name}")
+
+
+def rustboro_overlay(game: Path, read, mapping) -> dict[str, bytes]:
+    worlds = load_rustboro_maps(read, mapping)
+    houses, tunnel = worlds[24], worlds[157]
+    tiles = loads(read("Data/Tilesets.rxdata"))
+    house_tiles = tiles[houses.attrs["@tileset_id"]]
+    for name, (x, y), (dest, dest_x, dest_y) in rustboro_stairs(mapping[24]):
+        if not (open_tile(houses, house_tiles, x, y) and open_tile(houses, house_tiles, dest_x, dest_y)):
+            raise ValueError(f"Escada de Rustboro sem piso auditado: {name}")
+        append_event(houses, name, x, y, event_page(warp=(dest, dest_x, dest_y), touch=True))
+
+    for key, name, at, dest in rusturf_doors(mapping):
+        pages = rustboro_event(worlds[key], name, at)["@pages"]
+        if len(pages) != 1 or pages[0].attrs["@trigger"] != 1:
+            raise ValueError(f"A porta de Rusturf diverge do gatilho auditado: {name}")
+        original = pages[0].attrs["@list"]
+        old_targets = [c.attrs["@parameters"][:4] for c in original if c.attrs["@code"] == 201]
+        if old_targets != [[0, *dest]]:
+            raise ValueError(f"A porta de Rusturf diverge da conexão auditada: {name}")
+        denied = command(355, RUSTURF_GATE_DENIED)
+        denied.attrs["@indent"] = 1
+        wrapped = original[:-1]
+        for cmd in wrapped:
+            cmd.attrs["@indent"] += 1
+        pages[0].attrs["@list"] = [
+            command(111, 12, RUSTURF_GATE_CHECK), *wrapped,
+            command(411), denied, command(412), command(0),
+        ]
+
+    sprite = "Object_RockSmash"
+    art = safe_file(game, f"Graphics/Characters/{sprite}.png")
+    if not art.is_file() or not art.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"):
+        raise ValueError("Sprite local para Rock Smash ausente.")
+    for number, (x, y) in enumerate(RUSTURF_ROCKS, 1):
+        if not open_tile(tunnel, tiles[tunnel.attrs["@tileset_id"]], x, y):
+            raise ValueError("Piso das pedras de Rusturf indisponível.")
+        page = event_page(script="nil", sprite=sprite)
+        event_id = append_event(tunnel, f"HN4_RusturfRock_{number}", x, y, page)
+        page.attrs["@list"][0] = command(355, f"BlueHoennPilot.rusturf_rock({event_id})".encode("ascii"))
+        cleared = event_page(script="nil")
+        cleared.attrs["@condition"].attrs["@self_switch_valid"] = True
+        cleared.attrs["@through"] = True
+        cleared.attrs["@list"] = [command(0)]
+        tunnel.attrs["@events"][event_id].attrs["@pages"].append(cleared)
+
+    verify_rustboro_layout(worlds, mapping)
+    return {map_path(mapping[key]): serialize(world, EVENT_CLASSES) for key, world in worlds.items()}
+
+
 def migration_file_set(transaction: dict, backup: Path) -> frozenset[str]:
     version = transaction.get("schema")
     if version == 1:
         return MIGRATION_FILES
-    if version != 2:
+    if version not in (2, 3):
         raise ValueError("Versão desconhecida de recuperação de Hoenn.")
     previous_raw = safe_file(backup, MANIFEST.as_posix()).read_bytes()
     recorded = transaction["files"].get(MANIFEST.as_posix())
     if not isinstance(recorded, list) or not recorded or sha(previous_raw) != recorded[0]:
         raise ValueError("Manifesto de backup de Hoenn inválido.")
-    previous = validate_manifest(json.loads(previous_raw))
+    previous_manifest = json.loads(previous_raw)
+    previous = validate_manifest(previous_manifest)
+    extras = set()
     houses_id = transaction.get("oldale_houses")
-    if (OLDALE_HOUSES in previous or type(houses_id) is not int or houses_id not in MAP_RANGE or
-            houses_id in previous.values()):
-        raise ValueError("MapID novo de Oldale inválido na recuperação.")
-    houses_file = map_path(houses_id)
-    recorded_houses = transaction["files"].get(houses_file)
-    if not isinstance(recorded_houses, list) or len(recorded_houses) != 2 or recorded_houses[0] is not None:
-        raise ValueError("Estado anterior das casas de Oldale inválido na recuperação.")
-    return MIGRATION_FILES | {MAP_INFOS, MAP_METADATA, map_path(previous[OLDALE]), houses_file}
+    if version == 2 or houses_id is not None:
+        if (OLDALE_HOUSES in previous or type(houses_id) is not int or houses_id not in MAP_RANGE or
+                houses_id in previous.values()):
+            raise ValueError("MapID novo de Oldale inválido na recuperação.")
+        houses_file = map_path(houses_id)
+        recorded_houses = transaction["files"].get(houses_file)
+        if not isinstance(recorded_houses, list) or len(recorded_houses) != 2 or recorded_houses[0] is not None:
+            raise ValueError("Estado anterior das casas de Oldale inválido na recuperação.")
+        extras.update((MAP_INFOS, MAP_METADATA, map_path(previous[OLDALE]), houses_file))
+    if version == 3:
+        if RUSTBORO_LAYOUT_FIELD in previous_manifest:
+            raise ValueError("O backup de Rustboro contém uma revisão já migrada.")
+        extras.update(map_path(previous[key]) for key in RUSTBORO_LAYOUT_SOURCES)
+    return MIGRATION_FILES | extras
 
 
 def recover_migration(game: Path) -> bool:
@@ -374,6 +493,7 @@ def recover_migration(game: Path) -> bool:
 
 def commit_migration(
     game: Path, previous: dict, changes: dict, *, oldale_houses: int | None = None,
+    rustboro_layout: bool = False,
 ) -> tuple[dict, Path]:
     paths = {rel: safe_file(game, rel) for rel in changes}
     backup = migration_backup(datetime.now(timezone.utc).strftime("hoenn-v2-%Y%m%dT%H%M%S%fZ"))
@@ -388,6 +508,8 @@ def commit_migration(
     transaction = {"schema": 1, "backup": backup.name, "files": hashes}
     if oldale_houses is not None:
         transaction.update(schema=2, oldale_houses=oldale_houses)
+    if rustboro_layout:
+        transaction["schema"] = 3
     if set(changes) != migration_file_set(transaction, backup):
         raise ValueError("Arquivos inesperados na migração de Hoenn.")
     atomic(journal, json.dumps(transaction).encode("utf-8"))
@@ -431,8 +553,9 @@ def migrate_existing(game: Path, commit: bool) -> dict:
     if layout not in (None, SURF_LAYOUT) or (layout == SURF_LAYOUT and patched != raw):
         raise ValueError("O manifesto de Hoenn declara conexões que não estão instaladas.")
     plugin = Path(__file__).with_name("HoennPilot.rb").read_bytes()
+    needs_rustboro = CATALOG_REVISION >= 2 and RUSTBORO_LAYOUT_FIELD not in proof
     if (proof["schema"] == 2 and proof["catalog_revision"] == CATALOG_REVISION and
-            layout == SURF_LAYOUT and previous[PLUGIN] == plugin):
+            layout == SURF_LAYOUT and previous[PLUGIN] == plugin and not needs_rustboro):
         return {**result, "catalog_migration_pending": False, "catalog_changed": False}
     maps = {source: loads(safe_file(game, f"Data/Map{dest:03}.rxdata").read_bytes())
             for source, dest in mapping.items()}
@@ -456,6 +579,17 @@ def migrate_existing(game: Path, commit: bool) -> dict:
 
         changed_maps = oldale_overlay(read_oldale, ownership)
 
+    if needs_rustboro:
+        for key in RUSTBORO_LAYOUT_SOURCES:
+            rel = map_path(ownership[key])
+            previous[rel] = safe_file(game, rel).read_bytes()
+
+        def read_rustboro(rel):
+            return previous[rel] if rel in previous else safe_file(game, rel).read_bytes()
+
+        changed_maps.update(rustboro_overlay(game, read_rustboro, ownership))
+        proof[RUSTBORO_LAYOUT_FIELD] = RUSTBORO_LAYOUT
+
     proof.update(schema=2, catalog_revision=CATALOG_REVISION,
                  legacy_maps=dict(proof.get("legacy_maps", proof["maps"])),
                  maps={str(key): dest for key, dest in ownership.items()},
@@ -474,7 +608,8 @@ def migrate_existing(game: Path, commit: bool) -> dict:
         READY_MARKER.as_posix(): markers[READY_MARKER.as_posix()],
         START_MARKER.as_posix(): markers[START_MARKER.as_posix()],
     }
-    result, backup = commit_migration(game, previous, changes, oldale_houses=houses_id)
+    result, backup = commit_migration(game, previous, changes, oldale_houses=houses_id,
+                                      rustboro_layout=needs_rustboro)
     return {**result, "catalog_migration_pending": False, "catalog_changed": True, "backup": str(backup)}
 
 
@@ -525,6 +660,8 @@ def prepare_overlay(game: Path, source: Source) -> tuple[dict[str, bytes], dict]
         files.update(oldale_overlay(files.__getitem__, mapping, source))
     if set(mapping) != approved:
         raise ValueError("O instalador não montou todos os MapKeys aprovados.")
+    if CATALOG_REVISION >= 2:
+        files.update(rustboro_overlay(game, files.__getitem__, mapping))
     expected_map_files = {map_path(mid) for mid in mapping.values()}
     generated = {rel for rel in files if re.fullmatch(r"Data/Map\d{3}\.rxdata", rel)}
     if generated != expected_map_files:
@@ -548,6 +685,8 @@ def prepare_overlay(game: Path, source: Source) -> tuple[dict[str, bytes], dict]
         "pilot_debug_tools_installed": False,
         "base_before_sha256": original,
     }
+    if CATALOG_REVISION >= 2:
+        proof[RUSTBORO_LAYOUT_FIELD] = RUSTBORO_LAYOUT
     files[COMPACT] = marker_bytes(proof)[COMPACT]
     proof["installed_sha256"][COMPACT] = sha(files[COMPACT])
     return files, proof
