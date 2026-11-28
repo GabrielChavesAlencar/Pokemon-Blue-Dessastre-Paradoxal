@@ -67,13 +67,13 @@ class HoennDummyBag
   end
 end
 
-class Game_Player
-  def passable?(_x, _y, _direction, _strict = false)
+class PokemonMapFactory
+  def isPassableFromEdge?(_x, _y)
     true
   end
 end
 
-class HoennDummyAvatar < Game_Player
+class HoennDummyAvatar
   attr_accessor :transparent
   def refresh_charset; end
   attr_reader :x, :y
@@ -320,6 +320,7 @@ Dir.mktmpdir("blue-hoenn-runtime-") do |dir|
     check($bag.items[:POKEBALL] == 5, "Migrated legacy reward duplicated")
     check($player.has_pokedex, "Legacy Pokédex lost")
 
+    factory = PokemonMapFactory.new
     BlueHoennPilot::STARTERS.product([0, 1]).each do |species, profile|
       $profile_choices = 0
       $selected_profile = profile
@@ -339,15 +340,15 @@ Dir.mktmpdir("blue-hoenn-runtime-") do |dir|
       check(BlueHoennPilot.home_exit_allowed?, "Clock and mother did not open the exit")
       $game_map.map_id = 703
       check(BlueHoennPilot.route_birch, "Birch event missing for #{species}/#{profile}")
-      check(!$game_player.passable?(10, 0, 8), "Rescue allowed walking north into Oldale")
-      check($game_player.passable?(10, 0, 2), "Rescue blocked walking back toward Littleroot")
+      check(!factory.isPassableFromEdge?(10, -1), "Rescue allowed walking north into Oldale")
+      check(factory.isPassableFromEdge?(10, 20), "Rescue blocked walking back toward Littleroot")
       WildBattle.result = false
       check(!BlueHoennPilot.choose_birch_ball(species), "Loss completed the rescue")
-      check(!$game_player.passable?(10, 0, 8), "Defeat lifted the north exit gate")
+      check(!factory.isPassableFromEdge?(10, -1), "Defeat lifted the north exit gate")
       $PokemonGlobal.blue_regions, $player = Marshal.load(Marshal.dump([$PokemonGlobal.blue_regions, $player]))
       WildBattle.result = true
       check(BlueHoennPilot.route_birch, "Rescue did not reopen after loading #{species}/#{profile}")
-      check($game_player.passable?(10, 0, 8), "Victory kept Oldale blocked")
+      check(factory.isPassableFromEdge?(10, -1), "Victory kept Oldale blocked")
       check($player.party.map(&:species) == [species], "Reload changed the starter species or count")
       check(!BlueHoennPilot.choose_birch_ball(species), "Reload allowed a second starter")
     end
@@ -356,7 +357,7 @@ Dir.mktmpdir("blue-hoenn-runtime-") do |dir|
     $game_map = Game_Map.new(700)
     $profile_choices = 0
     BlueHoennPilot.choose_profile
-    check($profile_choices == 0 && $game_player.passable?(10, 0, 8),
+    check($profile_choices == 0 && factory.isPassableFromEdge?(10, -1),
           "Interregional arrival started the new-game profile or blocked normal movement")
 
     $PokemonGlobal.blue_regions["current"] = "JOHTO"
