@@ -102,30 +102,26 @@ def stage():
     print("KANTO_K06_CELADON_ANDROID_SOURCE_STAGED_OK",flush=True)
 
 
-def verify():
-    require_ci()
-    old = verify_predecessor(GAME)
-    report = json_file(RECEIPT)
-    candidate = json_file(checked_file(CANDIDATE,INSTALL))
-    previous = json_file(checked_file(GAME,INSTALL))["maps"]
+def verify_clone(game, staged, report, old):
+    candidate = json_file(checked_file(staged,INSTALL))
+    previous = json_file(checked_file(game,INSTALL))["maps"]
     expected = {**previous, **{str(sid):mid for sid,mid in CANDIDATES.items()}}
     if (candidate.get("content_stage") != STAGE_LOCAL or candidate["maps"] != expected
-            or (CANDIDATE/SAVE).exists() or not save_namespace_valid(CANDIDATE,PROFILE)):
+            or not save_namespace_valid(staged,PROFILE)):
         raise ValueError("Scoped Android candidate has wrong registry or save profile")
-    if (source.digest(checked_file(GAME,MARKER)) != report["before_update_sha256"] or
-            source.digest(checked_file(GAME,SAVE)) != report["sentinel_sha256"]):
+    if source.digest(checked_file(game,MARKER)) != report["before_update_sha256"]:
         raise ValueError("Real predecessor was modified during the Android candidate")
-    ready = checked_file(CANDIDATE,"Data/blue-android-compiled.txt").read_text("ascii")
-    if ready != fingerprint(CANDIDATE):
+    ready = checked_file(staged,"Data/blue-android-compiled.txt").read_text("ascii")
+    if ready != fingerprint(staged):
         raise ValueError("Android native compiler did not attest the new plugin files")
     for rel in (KANTO_PLUGIN, HOENN_PLUGIN, REGION_START_PLUGIN):
-        compiled_region(checked_file(CANDIDATE,"Data/PluginScripts.rxdata").read_bytes(),
-                        Path(rel).name, checked_file(CANDIDATE,rel).read_bytes())
+        compiled_region(checked_file(staged,"Data/PluginScripts.rxdata").read_bytes(),
+                        Path(rel).name, checked_file(staged,rel).read_bytes())
     for rel in ("Data/items.dat","Data/map_metadata.dat"):
-        if source.checked_row(CANDIDATE/rel) in (None, old["files"].get(rel)):
+        if source.checked_row(staged/rel) in (None, old["files"].get(rel)):
             raise ValueError(f"Android compiler failed to commit updated data: {rel}")
-    before_infos,before_maps = inventory(GAME)
-    after_infos,after_maps = inventory(CANDIDATE)
+    before_infos,before_maps = inventory(game)
+    after_infos,after_maps = inventory(staged)
     allowed = set(CANDIDATES.values())
     if ((set(after_infos)-set(before_infos)) != allowed or (set(after_maps)-set(before_maps)) != allowed
             or any(info != after_infos.get(mid) for mid,info in before_infos.items())):
@@ -135,13 +131,22 @@ def verify():
     for mid,path in before_maps.items():
         if mid in changed:
             continue
-        name = path.relative_to(GAME).as_posix()
+        name = path.relative_to(game).as_posix()
         row = old["files"].get(name)
         if row is None or source.checked_row(after_maps[mid]) != row or source.checked_row(path) != row:
             raise ValueError(f"Android unrelated map changed: {mid}")
         unchanged += 1
-    if source.checked_row(CANDIDATE/"Data/map_connections.dat") != old["files"].get("Data/map_connections.dat"):
+    if source.checked_row(staged/"Data/map_connections.dat") != old["files"].get("Data/map_connections.dat"):
         raise ValueError("Celadon store introduced a new outdoor route")
+    return unchanged
+
+
+def verify():
+    require_ci()
+    report = json_file(RECEIPT)
+    unchanged = verify_clone(GAME,CANDIDATE,report,verify_predecessor(GAME))
+    if (CANDIDATE/SAVE).exists() or source.digest(checked_file(GAME,SAVE)) != report["sentinel_sha256"]:
+        raise ValueError("Disposable save witness changed")
     print("KANTO_K06_CELADON_ANDROID_COMPILED_CANDIDATE_OK:"+json.dumps(
         {"new_maps": CANDIDATES,"unchanged_old_kanto_ids":178,"unchanged_other_maps":unchanged,
          "unchanged_hoenn":199,"source_baseline":PRODUCT,"source_recipe":RECIPE,

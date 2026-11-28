@@ -4,6 +4,9 @@ on:
     branches: [main]
     paths:
       - 'scripts/android/k06_services_candidate.py'
+      - 'scripts/android/k06_services_update.py'
+      - 'scripts/android/source_update.py'
+      - 'scripts/android/update_client.py'
       - '.github/workflows/android-k06-services-candidate.yml'
   workflow_dispatch:
 permissions:
@@ -157,9 +160,34 @@ jobs:
           if((Get-FileHash -LiteralPath $save).Hash -ne $env:K06_SAVE){throw 'Published recipe changed synthetic save'}
           Write-Host 'KANTO_K06_CELADON_EXACT_ANDROID_PREDECESSOR_OK'
 
-          python scripts/android/k06_services_candidate.py stage
-          if($LASTEXITCODE -ne 0){throw 'Celadon failed to stage over exact Android predecessor'}
-          Compile-Clone (Join-Path $scope 'celadon-services') 'k06-celadon-services' 'Kanto K06 Celadon Android CI'
-          python scripts/android/k06_services_candidate.py verify
-          if($LASTEXITCODE -ne 0){throw 'Native Celadon Android candidate verification failed'}
+          $work=Join-Path $scope 'celadon-transaction'
+          $checkoutUpdater='scripts/android/update_client.py'
+          $opts=@('--game-dir',$env:K06_GAME,'--source','--source-stage','k06-services',
+            '--source-ci','--source-work-dir',$work,'--update')
+          $prior=(Get-FileHash -LiteralPath $marker).Hash
+          python $checkoutUpdater @opts
+          if($LASTEXITCODE -ne 0 -or (Get-FileHash -LiteralPath $marker).Hash -ne $prior){
+            throw 'Celadon transaction did not prepare a separate source build'
+          }
+          python $checkoutUpdater @opts
+          if($LASTEXITCODE -ne 0 -or (Get-FileHash -LiteralPath $marker).Hash -ne $prior){
+            throw 'Celadon updater did not wait for separate compilation'
+          }
+          Compile-Clone (Join-Path $work "$env:K06_VERSION/game") 'k06-celadon-services' 'Kanto K06 Celadon Android CI'
+          python scripts/android/k06_services_update.py --game-dir $env:K06_GAME --source-workflow --ci --update --work-dir $work --interrupt-test
+          if($LASTEXITCODE -ne 77 -or !(Test-Path -LiteralPath (Join-Path $env:K06_GAME '.blue-k05-recovery.json')) -or
+             (Get-FileHash -LiteralPath $marker).Hash -ne $prior){
+            throw 'Celadon updater did not leave an honest durable rollback record'
+          }
+          python $checkoutUpdater @opts
+          if($LASTEXITCODE -ne 0 -or (Test-Path -LiteralPath (Join-Path $env:K06_GAME '.blue-k05-recovery.json'))){
+            throw 'Celadon updater could not restore and commit after process interruption'
+          }
+          $committed=(Get-FileHash -LiteralPath $marker).Hash
+          if($committed -eq $prior){throw 'Celadon revision was not committed'}
+          python $checkoutUpdater @opts
+          if($LASTEXITCODE -ne 0 -or (Get-FileHash -LiteralPath $marker).Hash -ne $committed){
+            throw 'Applying the same Celadon source update must be idempotent'
+          }
           if((Get-FileHash -LiteralPath $save).Hash -ne $env:K06_SAVE){throw 'Celadon changed synthetic save'}
+          Write-Host 'KANTO_K06_CELADON_ANDROID_TRANSACTION_RECOVER_REOPEN_OK'
