@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e11c05c000c37908db74d9dcbaae5ec94e896b5a",
+      "date": "2026-11-28T07:05:54-03:00",
+      "title": "Android K06: qualificar a receita pela fonte original",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "8e35c46091f17a5c93e11d7d9b8d6cc8698c179d",
+      "date": "2026-11-28T06:57:35-03:00",
+      "title": "Pin the production Android K06 source recipe to the Celadon product commit",
+      "category": "Melhorias"
+    },
+    {
       "sha": "791f8c8af9ecfba4e97a14c5535ca5957a9702e6",
       "date": "2026-11-28T06:57:08-03:00",
       "title": "Kanto K06: passagem física de Lavender a Celadon",
