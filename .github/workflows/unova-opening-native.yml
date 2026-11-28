@@ -7,7 +7,7 @@ on:
       - '.github/workflows/unova-opening-native.yml'
       - 'scripts/regions/unova_original_opening.py'
       - 'scripts/regions/unova_opening_*.py'
-      - 'scripts/regions/UnovaOpeningNativeCheck.rb'
+      - 'scripts/regions/UnovaOpening*.rb'
       - 'tests/test_unova_opening_*.py'
   workflow_dispatch:
 
@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   native-windows:
-    name: Portas nativas e save no Windows descartável
+    name: Portas, missão e save no Windows descartável
     runs-on: windows-2022
     timeout-minutes: 25
     env:
@@ -56,7 +56,7 @@ jobs:
           Get-ChildItem -LiteralPath $mesaFolder -Recurse -File -Filter '*.dll' |
             Where-Object { $_.FullName -match '[\\/]x64[\\/]' } |
             ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $work 'game') }
-      - name: Andar, atravessar portas e recarregar save no Game.exe
+      - name: Percorrer portas, concluir a missão e recarregar save no Game.exe
         run: python scripts/regions/unova_opening_native_ci.py --android-manifest .blue-work/unova/ci/android-update.json
       - name: Preservar recibo de QA do motor
         uses: actions/upload-artifact@v4

@@ -54,12 +54,29 @@ class OpeningStageTests(unittest.TestCase):
             world = loads(files[map_file])
             event = world.attrs["@events"][door["event"]]
             page, = event.attrs["@pages"]
-            transfer, terminator = page.attrs["@list"]
+            commands = page.attrs["@list"]
+            transfer, = [op for op in commands if op.attrs["@code"] == 201]
             self.assertEqual([event.attrs["@x"], event.attrs["@y"]], list(door["threshold"]))
             self.assertEqual(page.attrs["@trigger"], 1)
-            self.assertEqual(transfer.attrs["@code"], 201)
             self.assertEqual(transfer.attrs["@parameters"][1:4], [door["destination"], *door["arrival"]])
-            self.assertEqual(terminator.attrs["@code"], 0)
+            self.assertEqual(commands[-1].attrs["@code"], 0)
+            guarded = door["source"] == report["map_ids"]["UNOVA_NUVEMA_TOWN"] and (
+                door["destination"] == report["map_ids"]["UNOVA_ROUTE_01"])
+            if guarded:
+                self.assertEqual([op.attrs["@code"] for op in commands], [111, 201, 411, 355, 412, 0])
+                self.assertEqual(commands[0].attrs["@parameters"], [12, b"BlueUnovaOpeningStory.checked_in?"])
+                self.assertEqual(transfer.attrs["@indent"], 1)
+            else:
+                self.assertEqual(len(commands), 2)
+        for action, actor in report["fieldwork"].items():
+            world = loads(files[f"Data/Map{actor['map']:03d}.rxdata"])
+            event = world.attrs["@events"][actor["event"]]
+            page, = event.attrs["@pages"]
+            self.assertEqual(page.attrs["@trigger"], 0)
+            self.assertEqual(page.attrs["@list"][0].attrs["@parameters"],
+                             [f"BlueUnovaOpeningStory.{action}".encode("ascii")])
+        self.assertEqual(files[opening.ENCOUNTERS_PBS],
+                         b"[280]\nLand,21\n60,PATRAT,2,3\n40,LILLIPUP,2,3\n")
         self.assertEqual({path.name: path.read_bytes() for path in self.data.iterdir()}, original)
 
     def test_android_and_orphan_windows_collisions_block(self):
