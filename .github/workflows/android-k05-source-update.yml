@@ -21,8 +21,12 @@ jobs:
       GALLIUM_DRIVER: llvmpipe
       ALSOFT_DRIVERS: 'null'
       PYTHONUTF8: '1'
+      K05_PRODUCT_REVISION: 0eaf9401b2d9e828e8549f7c7fea28c5de748157
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -61,7 +65,7 @@ jobs:
           "ANDROID_SOURCE_STAGE=$stage" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
           $marker=Join-Path $env:ANDROID_247_GAME 'Data/blue-update.json'
           $before=(Get-FileHash -LiteralPath $marker -Algorithm SHA256).Hash
-          $rev=(git rev-parse HEAD).Trim()
+          $rev=$env:K05_PRODUCT_REVISION
           $errorFile=Join-Path (Resolve-Path '.blue-work/android-source-ci').Path 'before-compile-error.txt'
           $negative=Start-Process -FilePath (Get-Command python).Source -ArgumentList @(
             'scripts/android/source_update.py','--game-dir',('"' + $env:ANDROID_247_GAME + '"'),'--finish',$rev,'--apply-local'
@@ -93,17 +97,22 @@ jobs:
             if(Test-Path $proof){break}
           }
           if(!(Test-Path $proof -PathType Leaf)){
-            Get-Content '.blue-work/android-source-ci/native-out.txt','.blue-work/android-source-ci/native-err.txt',"$env:ANDROID_SOURCE_STAGE/Data/blue-android-error.txt" -ErrorAction SilentlyContinue | Select-Object -Last 130
+            Get-Content '.blue-work/android-source-ci/native-out.txt','.blue-work/android-source-ci/native-err.txt',"$env:ANDROID_SOURCE_STAGE/Data/blue-android-error.txt","$env:ANDROID_SOURCE_STAGE/Data/blue-android-stage.txt","$env:ANDROID_SOURCE_STAGE/errorlog.txt" -ErrorAction SilentlyContinue | Select-Object -Last 130
             throw 'The disposable update never compiled'
           }
       - name: Instalar somente localmente e conferir 199 mapas e save sentinela
         shell: powershell
         run: |
-          $rev=(git rev-parse HEAD).Trim()
+          $rev=$env:K05_PRODUCT_REVISION
           python scripts/android/source_update.py --game-dir $env:ANDROID_247_GAME --finish $rev --apply-local
           if($LASTEXITCODE -ne 0){throw 'Compiled local update could not be applied'}
           $save=Join-Path $env:ANDROID_247_GAME 'K05-SAVE-SYNTHETIC.rxsave'
           if((Get-FileHash $save -Algorithm SHA256).Hash -ne $env:ANDROID_247_SAVE){throw 'Source update touched the disposable save'}
           $installed=Get-Content (Join-Path $env:ANDROID_247_GAME 'Data/blue-update.json') -Raw | ConvertFrom-Json
-          if($installed.revision -ne $rev){throw 'Android source update did not commit the exact verified revision'}
+          $recipe=(git rev-parse HEAD).Trim()
+          if($installed.revision -ne $rev -or $installed.source_update.product_revision -ne $rev -or
+              $installed.source_update.recipe_revision -ne $recipe -or
+              $installed.source_update.inventory_sha256 -notmatch '^[0-9a-f]{64}$'){
+            throw 'Android source update confused product identity and the recipe revision'
+          }
           Write-Host 'KANTO_K05_ANDROID_LOCAL_SOURCE_UPDATE_OK'

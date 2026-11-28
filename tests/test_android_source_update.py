@@ -4,7 +4,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
 
-from scripts.android.source_update import preflight, clone_verified_install, commit_local, atomic_file, manifest_row
+from scripts.android.source_update import preflight, clone_verified_install, commit_local, atomic_file, manifest_row, installed_provenance, PRODUCT_REVISION, write_compiler_ini
 from unittest.mock import patch
 from scripts.android.update_client import MARKER, read_installed
 
@@ -103,3 +103,28 @@ class AndroidPinnedSourceUpdateTests(unittest.TestCase):
             self.assertEqual((root/names[0]).read_bytes(),b"old tile")
             self.assertFalse((root/names[1]).exists())
             self.assertEqual(save.read_bytes(),b"not a real save; do not inspect")
+
+    def test_product_identity_is_not_the_recipe_sha(self):
+        baseline={"Data/Map609.rxdata":{"sha256":"a"*64,"size":100}}
+        recipe="b"*40
+        result=installed_provenance(baseline,recipe)
+        self.assertEqual(result["product_revision"], PRODUCT_REVISION)
+        self.assertEqual(result["recipe_revision"], recipe)
+        self.assertNotEqual(result["product_revision"], result["recipe_revision"])
+        changed={"Data/Map609.rxdata":{"sha256":"c"*64,"size":100}}
+        self.assertNotEqual(result["inventory_sha256"],installed_provenance(changed,recipe)["inventory_sha256"])
+
+    def test_normalizes_only_the_disposable_native_ini(self):
+        with TemporaryDirectory() as root:
+            parent=Path(root)
+            game=parent/"input"
+            stage=parent/"stage"
+            game.mkdir()
+            stage.mkdir()
+            supplied=b"other original native bytes"
+            (game/"Game.ini").write_bytes(supplied)
+            write_compiler_ini(stage)
+            ini=(stage/"Game.ini").read_bytes()
+            self.assertIn(b"Scripts=Data\\Scripts.rxdata",ini)
+            self.assertEqual(ini.decode("ascii").encode("ascii"),ini)
+            self.assertEqual((game/"Game.ini").read_bytes(),supplied)

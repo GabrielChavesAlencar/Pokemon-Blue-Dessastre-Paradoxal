@@ -25,6 +25,36 @@ from scripts.android.update_client import MARKER, read_installed, safe_path
 from scripts.regions.k05_contract import published_destinations
 from ensure_source import prepare, SOURCE_URL
 
+PRODUCT_REVISION="0eaf9401b2d9e828e8549f7c7fea28c5de748157"
+RECIPE_PATHS=frozenset({
+    ".github/workflows/android-k05-source-update.yml",
+    "scripts/android/source_update.py",
+    "scripts/regions/ensure_source.py",
+    "tests/test_android_source_update.py",
+    "docs/ANDROID_KANTO_ATUALIZACAO_PELA_FONTE.md",
+})
+
+
+def recipe_revision():
+    """Keep user-facing Kanto product identity separate from tooling lineage."""
+    def git(*argv):
+        return subprocess.check_output(["git",*argv],cwd=ROOT,text=True).strip()
+    head=git("rev-parse","HEAD")
+    if not re.fullmatch("[0-9a-f]{40}",head) or git("status","--porcelain","--untracked-files=no"):
+        raise ValueError("Use uma cópia da receita fixada, sem alterações locais nos arquivos do projeto.")
+    subprocess.run(["git","merge-base","--is-ancestor",PRODUCT_REVISION,head],cwd=ROOT,check=True)
+    changed=set(git("diff","--name-only",PRODUCT_REVISION,head).splitlines())
+    if changed-RECIPE_PATHS:
+        raise ValueError("A receita não corresponde aos arquivos funcionais da edição K05.")
+    return head
+
+
+def installed_provenance(files,recipe):
+    inventory=json.dumps(files,sort_keys=True,separators=(",",":")).encode("utf8")
+    return {"mode":"pinned-source-local","product_revision":PRODUCT_REVISION,
+            "recipe_revision":recipe,"inventory_sha256":hashlib.sha256(inventory).hexdigest()}
+
+
 
 def digest(path):
     h=hashlib.sha256()
@@ -119,6 +149,15 @@ def clone_verified_install(root,stage,installed):
         raise
 
 
+def write_compiler_ini(game):
+    """ASCII native bootstrap is only for the disposable compile copy."""
+    path=game/"Game.ini"
+    path.write_bytes(
+        b"[Game]\r\nLibrary=RGSS104E.dll\r\nScripts=Data\\Scripts.rxdata\r\n"
+        b"Title=Kanto Android Source Build\r\n"
+    )
+
+
 def stage_local(root):
     """Prepare sandboxed assets, leave public revision markers untouched."""
     from install_kanto import migrate_existing, verify_installed
@@ -129,9 +168,7 @@ def stage_local(root):
     if proof["kanto_maps"]==178:
         raise ValueError("Lavender já consta nesta instalação.")
     installed=read_installed(root)
-    target=subprocess.check_output(["git","rev-parse","HEAD"],cwd=ROOT,text=True).strip()
-    if not re.fullmatch("[0-9a-f]{40}",target):
-        raise ValueError("A receita local não está vinculada a uma revisão Git.")
+    recipe=recipe_revision()
     revision=installed["revision"]
     if len(revision)!=40 or any(c not in "0123456789abcdef" for c in revision):
         raise ValueError("Revisão Android local inválida.")
@@ -160,9 +197,10 @@ def stage_local(root):
         pristine.write_bytes(original_conf)
         if not save_namespace_valid(game,app):
             raise ValueError("Não foi possível isolar o perfil da compilação.")
+        write_compiler_ini(game)
         request_compile(game)
         proof.update(status="SOURCE_UPDATE_STAGED_AWAITING_COMPILER",staged_game=str(game),
-                     pinned_source_prepared_locally=True,protected_hoenn_maps=len(old_hoenn),target_revision=target)
+                     pinned_source_prepared_locally=True,protected_hoenn_maps=len(old_hoenn),target_revision=PRODUCT_REVISION,recipe_revision=recipe)
         (holder/"proof.json").write_text(json.dumps(proof,ensure_ascii=False),encoding="utf8")
     except Exception:
         shutil.rmtree(holder)
@@ -267,15 +305,17 @@ def finish_local(root,revision,apply=False):
     original=old["revision"]
     if len(original)!=40 or not re.fullmatch("[0-9a-f]{40}",original) or not re.fullmatch("[0-9a-f]{40}",revision):
         raise ValueError("Identidades de revisão inválidas.")
-    if revision==original:
-        raise ValueError("A revisão de origem e destino não podem ser iguais.")
+    if revision==original or revision!=PRODUCT_REVISION:
+        raise ValueError("A atualização é apenas para a revisão funcional K05, não para o SHA da receita.")
+    recipe=recipe_revision()
     holder=(ROOT/".blue-work/android-source-update"/original).resolve()
     staged=holder/"game"
     if not staged.is_dir() or not holder.is_relative_to(ROOT.resolve()) or holder.is_relative_to(root):
         raise ValueError("Nenhuma cópia local isolada encontrada.")
     header=json.loads((holder/"proof.json").read_text("utf8"))
     if (header.get("status")!="SOURCE_UPDATE_STAGED_AWAITING_COMPILER" or
-            header.get("current_revision")!=original or header.get("target_revision")!=revision or read_installed(staged)!=old):
+            header.get("current_revision")!=original or header.get("target_revision")!=revision or
+            header.get("recipe_revision")!=recipe or read_installed(staged)!=old):
         raise ValueError("A instalação original não corresponde à cópia preparada.")
     marker=staged/"Data/blue-android-compiled.txt"
     if not marker.is_file() or marker.read_text()!=fingerprint(staged):
@@ -297,12 +337,15 @@ def finish_local(root,revision,apply=False):
     changed=local_delta(root,staged,old,kanto)
     if not {f"Data/Map{i:03d}.rxdata" for i in published_destinations().values()}<=changed.keys():
         raise ValueError("A atualização está incompleta; faltam mapas de Lavender.")
-    new={**old,"revision":revision,"files":{**old["files"],**changed}}
+    files={**old["files"],**changed}
+    provenance=installed_provenance(files,recipe)
+    new={**old,"revision":revision,"files":files,"source_update":provenance}
     if apply:
         commit_local(root,staged,changed,json.dumps(new,sort_keys=True).encode("utf8"),holder/"backup")
     return {"status":"SOURCE_UPDATE_APPLIED" if apply else "SOURCE_UPDATE_READY",
             "from_revision":original,"to_revision":revision,"compile_verified":True,
-            "files_changed":len(changed),"hoenn_maps_preserved":len(old_hoenn),"updated":apply}
+            "files_changed":len(changed),"hoenn_maps_preserved":len(old_hoenn),"updated":apply,
+            **provenance}
 
 def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
