@@ -522,9 +522,8 @@ def verify_copy(copy: Path) -> dict:
     q=report.get("qa3")
     if not isinstance(q,dict) or not q.get("method_imports"):
         raise ValueError("Cópia anterior à Fase 3: reconstrua em pasta NOVA, preserve saves antigos")
-    mapping=report.get("maps",{})
-    if len(mapping)!=199 or len(set(mapping.values()))!=199:
-        raise ValueError("Remapeamento de 199 mapas não corresponde ao piloto")
+    from pilot_hoenn import validate_pilot_mapping
+    mapping = {str(mid): dest for mid, dest in validate_pilot_mapping(report).items()}
     entries=parse_compiled_encounters(
         (copy/"PBS/encounters_hoenn_pilot.txt").read_text("utf-8-sig"),
         set(mapping.values()))

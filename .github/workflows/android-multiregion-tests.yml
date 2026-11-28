@@ -10,6 +10,8 @@ on:
       - 'scripts/launch_game.py'
       - 'scripts/battle_polish/RegionStart.rb'
       - 'scripts/battle_polish/RegionTravel.rb'
+      - 'scripts/regions/hoenn_catalog.py'
+      - 'data/regions/hoenn-map-catalog.json'
       - 'tests/test_android_multiregion.py'
       - 'tests/test_android_updates.py'
       - 'tests/test_multiregion_release_pagination.py'
@@ -22,6 +24,8 @@ on:
     paths:
       - 'scripts/battle_polish/RegionStart.rb'
       - 'tests/region_start_android_no_json_runtime.rb'
+      - 'scripts/regions/hoenn_catalog.py'
+      - 'data/regions/hoenn-map-catalog.json'
       - 'tests/test_android_multiregion.py'
       - 'tests/test_android_updates.py'
       - 'site/tests/android-release.test.mjs'
@@ -45,7 +49,7 @@ jobs:
         with:
           node-version: '22'
       - name: Verificar sintaxe de empacotamento e atualização
-        run: python -m py_compile scripts/android/package.py scripts/android/update_client.py scripts/android/publish_updates.py
+        run: python -m py_compile scripts/regions/hoenn_catalog.py scripts/android/package.py scripts/android/update_client.py scripts/android/publish_updates.py
       - name: Testar ZIP compartilhado, mapas e canais isolados
         run: python -m unittest discover -s tests -p test_android_multiregion.py -v
       - name: Testar instalação compartilhada e preservação dos mapas de Sinnoh

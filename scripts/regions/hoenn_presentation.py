@@ -119,24 +119,29 @@ def apply_presentation(maps, source, overlay):
 
 
 def upgrade_presentation(copy, source):
-    """Update the pinned 199-map QA copy while retaining map and event IDs."""
+    """Update an approved QA copy while retaining map and event IDs."""
     import json
 
     from hoenn_qa_phase11 import audit_generated
     from hoenn_qa_teleport_upgrade import replace_private_files
     from hoenn_stage10 import SOURCE_MAPS_STAGE10
-    from pilot_hoenn import EVENT_CLASSES, SOURCE_MAPS, regular, serialize
+    from pilot_hoenn import EVENT_CLASSES, SOURCE_MAPS, regular, serialize, validate_pilot_mapping
 
     manifest_path = copy / "Hoenn pilot.json"
     report = json.loads(regular(manifest_path).read_text("utf8"))
+    mapping = validate_pilot_mapping(report)
     if report.get("hoenn_presentation", {}).get("version") == 1:
         return report["hoenn_presentation"]
-    paths = {int(key): f"Data/Map{value:03}.rxdata" for key, value in report["maps"].items()}
+    paths = {mid: f"Data/Map{dest:03}.rxdata" for mid, dest in mapping.items()}
     worlds = {mid: loads(regular(copy / rel).read_bytes()) for mid, rel in paths.items()}
     add_littleroot_trees(worlds[7])
     updates = {}
     report["hoenn_presentation"] = apply_presentation(worlds, source, updates)
-    report["qa11"] = audit_generated(worlds, SOURCE_MAPS, MAP_BGM, set(SOURCE_MAPS_STAGE10))
+    report["qa11"] = audit_generated(
+        worlds, {mid: SOURCE_MAPS[mid] for mid in mapping},
+        {mid: MAP_BGM[mid] for mid in mapping}, set(SOURCE_MAPS_STAGE10),
+        catalog_revision=report.get("catalog_revision", 1),
+    )
     for mid, relative in paths.items():
         updates[relative] = serialize(worlds[mid], EVENT_CLASSES)
     updates[manifest_path.name] = (json.dumps(report, ensure_ascii=False, indent=2) + "\n").encode("utf8")

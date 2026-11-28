@@ -9,6 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts/regions"))
+from hoenn_catalog import LEGACY_SOURCE_IDS
 from build_johto_events import ruby
 from hoenn_qa_phase11 import (
     AUDIO_LABELS, NATIVE_FALSE, localized_map_name, audit_generated, verify_copy,
@@ -17,7 +18,7 @@ from hoenn_qa_phase11 import (
 
 class HoennQA11Tests(unittest.TestCase):
     def setUp(self):
-        self.names = {mid: f"Example{mid} Town" for mid in range(1, 199)}
+        self.names = {mid: f"Example{mid} Town" for mid in LEGACY_SOURCE_IDS}
         self.names[250] = "Victory Road B1F"
         self.bgm = {mid: "Center" for mid in self.names}
         self.maps = {

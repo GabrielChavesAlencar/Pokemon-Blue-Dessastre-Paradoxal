@@ -46,7 +46,7 @@ class HoennQA01Tests(unittest.TestCase):
         data = self.output / "Data"
         data.mkdir()
         (data / "blue-hoenn-pilot.txt").write_text(
-            "BLUE_HOENN_PILOT_V1\n708,25,6\n" +
+            f"BLUE_HOENN_PILOT_V1\n{maps['8']},25,6\n" +
             "".join(f"{mid},{new}\n" for mid, new in maps.items()),
             encoding="ascii")
         for new in maps.values():

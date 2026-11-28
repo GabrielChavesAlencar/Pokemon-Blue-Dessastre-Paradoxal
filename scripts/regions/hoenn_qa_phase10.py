@@ -99,9 +99,10 @@ def verify_copy(copy: Path) -> dict:
     if (report.get("region") != "HOENN"
         or report.get("kind") != "ISOLATED_HOENN_TEST"
         or report.get("save_profile") not in ("Hoenn QA Fase10", "Hoenn QA Fase11", "Hoenn QA Fase12")
-        or not isinstance(ids, dict) or len(ids) != 199
         or not isinstance(qa10, dict) or not isinstance(report.get("qa9"), dict)):
-        raise ValueError("QA10 exige cópia privada, 199 mapas, QA09 e perfil Fase10")
+        raise ValueError("QA10 exige cópia privada, QA09 e perfil Fase10")
+    from pilot_hoenn import validate_pilot_mapping
+    validate_pilot_mapping(report)
     if qa10.get("donor_event_scripts_copied") is not False:
         raise ValueError("QA10 proibiu importar scripts do doador")
     if any(qa10.get(key) is not False for key in NATIVE_UNVERIFIED):

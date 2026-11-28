@@ -2,6 +2,7 @@
 
 No source maps, proprietary game binary, network or user saves are needed.
 """
+import hashlib
 import json
 import tempfile
 import sys
@@ -16,6 +17,11 @@ sys.path.insert(0,str(mobile.ROOT/'scripts/regions'))
 from scripts.android.build_manifest import installed_manifest
 from scripts.android.publish_updates import from_archive
 from scripts.android.update_client import CHANNELS, release_for
+from hoenn_catalog import (
+    CATALOG, CATALOG_REVISION, INSTALL_STATUS, LEGACY_SOURCE_IDS, UPSTREAM,
+    approved_source_ids, marker_bytes,
+)
+from server.ruby_marshal import integer
 
 
 class MultiRegionPackagingTests(unittest.TestCase):
@@ -53,6 +59,99 @@ class MultiRegionPackagingTests(unittest.TestCase):
         target = self.game / rel
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(data)
+
+    def _verified_hoenn_zip(self, schema, *, transform=None, catalog_revision=1):
+        legacy = {str(src): dst for dst, src in enumerate(sorted(LEGACY_SOURCE_IDS), 700)}
+        mapping = dict(legacy)
+        if schema == 2:
+            extras = approved_source_ids(catalog_revision) - LEGACY_SOURCE_IDS
+            mapping.update((str(src), dst) for dst, src in enumerate(
+                sorted(extras), max(legacy.values()) + 1,
+            ))
+        proof = {
+            "schema": schema, "region": "HOENN", "source_commit": UPSTREAM,
+            "status": INSTALL_STATUS, "maps": mapping,
+            "start": [mapping["8"], 25, 6, 2], "town": [mapping["7"], 10, 10, 2],
+            "installed_sha256": {},
+        }
+        if schema == 2:
+            proof.update(catalog_revision=catalog_revision, legacy_maps=legacy)
+        files = {rel: b"fixture" for rel in mobile.REGIONAL_FILES}
+        files.update(marker_bytes(proof))
+        compact = "Data/blue-hoenn-pilot.txt"
+        proof["installed_sha256"][compact] = hashlib.sha256(files[compact]).hexdigest()
+        files["Data/blue-hoenn-install.json"] = json.dumps(proof).encode("utf-8")
+        files["Data/blue-kanto-install.json"] = json.dumps(
+            {"maps": {str(mid): mid for mid in range(400, 501)}}).encode("utf-8")
+        files["Data/MapInfos.rxdata"] = (
+            b"\x04\x08{" + integer(len(mapping)) +
+            b"".join(b"i" + integer(dest) + b"i" + integer(1) for dest in mapping.values())
+        )
+        for dest in mapping.values():
+            files[f"Data/Map{dest:03}.rxdata"] = b"fixture map"
+        for rel in (mobile.MOBILE, mobile.KANTO_PLUGIN, mobile.HOENN_PLUGIN,
+                    mobile.REGION_START_PLUGIN, "Data/Scripts.rxdata", "Data/PluginScripts.rxdata"):
+            files[rel] = b"fixture"
+        files["Data/blue-mobile-build.txt"] = (
+            f"Revision: {self.revision}\nMobile-SHA256: {'b' * 64}\n".encode("ascii")
+        )
+        files["LEIA-ME-ANDROID.txt"] = f"Revision: {self.revision}\n".encode("ascii")
+        if transform:
+            transform(files, mapping)
+        files["Data/blue-update.json"] = installed_manifest("multiregion", self.revision, files)
+        with zipfile.ZipFile(self.output, "w") as archive:
+            for name, blob in files.items():
+                archive.writestr("Pokemon-Blue-Android/" + name, blob)
+
+    def _verify_hoenn_zip(self):
+        with patch.object(mobile, "compiled_mobile", return_value="b" * 64), \
+             patch.object(mobile, "verify_early_input"), patch.object(mobile, "compiled_region"):
+            return mobile.verify_archive(self.output, self.revision, channel="multiregion")
+
+    def test_zip_reads_legacy_and_versioned_hoenn_manifests(self):
+        for schema in (1, 2):
+            with self.subTest(schema=schema):
+                self._verified_hoenn_zip(schema)
+                self.assertEqual(self._verify_hoenn_zip()["revision"], self.revision)
+
+    def test_zip_accepts_expansion_only_with_an_approved_catalog(self):
+        revision = CATALOG_REVISION + 1
+        with patch.dict(CATALOG["revisions"], {str(revision): [*sorted(LEGACY_SOURCE_IDS), 10000]}):
+            self._verified_hoenn_zip(2, catalog_revision=revision)
+            self.assertEqual(self._verify_hoenn_zip()["revision"], self.revision)
+        with self.assertRaisesRegex(ValueError, "Revisão desconhecida"):
+            self._verify_hoenn_zip()
+
+    def test_zip_rejects_missing_physical_map_and_conflicting_id(self):
+        def remove_map(files, mapping):
+            files.pop(f"Data/Map{mapping['8']:03}.rxdata")
+        self._verified_hoenn_zip(2, transform=remove_map)
+        with self.assertRaisesRegex(ValueError, "missing a Hoenn map file"):
+            self._verify_hoenn_zip()
+
+        def steal_map(files, mapping):
+            rel = "Data/blue-kanto-install.json"
+            kanto = json.loads(files[rel])
+            kanto["maps"]["400"] = mapping["8"]
+            files[rel] = json.dumps(kanto).encode("utf-8")
+        self._verified_hoenn_zip(2, transform=steal_map)
+        with self.assertRaisesRegex(ValueError, "claim the same map ID"):
+            self._verify_hoenn_zip()
+
+    def test_zip_rejects_forged_hoenn_marker_and_compact_checksum(self):
+        def wrong_generation(files, mapping):
+            rel = "Data/blue-hoenn-ready.txt"
+            files[rel] = files[rel].replace(b"V2", b"V1")
+        self._verified_hoenn_zip(2, transform=wrong_generation)
+        with self.assertRaisesRegex(ValueError, "blue-hoenn-ready"):
+            self._verify_hoenn_zip()
+
+        def change_compact_encoding(files, mapping):
+            rel = "Data/blue-hoenn-pilot.txt"
+            files[rel] = files[rel].replace(b"\n", b"\r\n")
+        self._verified_hoenn_zip(2, transform=change_compact_encoding)
+        with self.assertRaisesRegex(ValueError, "blue-hoenn-pilot"):
+            self._verify_hoenn_zip()
 
     def test_two_regions_are_required_before_packaging(self):
         (self.game/"Data/blue-hoenn-ready.txt").unlink()

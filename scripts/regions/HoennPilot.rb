@@ -9,7 +9,14 @@ module BlueHoennPilot
   def self.metadata
     return @metadata if @metadata
     lines = File.readlines(MARKER, chomp: true)
-    raise "Marcador do piloto de Hoenn inválido." unless lines.shift == "BLUE_HOENN_PILOT_V1"
+    version = lines.shift
+    if version == "BLUE_HOENN_PILOT_V2"
+      proof = BlueRegionStart.hoenn_ready_manifest unless File.file?("Hoenn pilot.json")
+      raise "Manifesto compartilhado de Hoenn incompleto." unless proof && proof["schema"] == 2
+      maps = proof["maps"].each_with_object({}) { |(source,dest), parsed| parsed[Integer(source,10)] = dest }
+      return @metadata = [proof["start"][0,3], maps]
+    end
+    raise "Marcador do piloto de Hoenn inválido." unless version == "BLUE_HOENN_PILOT_V1"
     values = lines.flat_map { |line| line.split(",") }.map { |part| Integer(part, 10) }
     start = values.shift(3)
     maps = values.each_slice(2).to_h

@@ -8,69 +8,106 @@ module BlueRegionStart
   HOENN_INSTALL = "Data/blue-hoenn-install.json".freeze
   HOENN_START = "Data/blue-hoenn-start.txt".freeze
   HOENN_READY = "Data/blue-hoenn-ready.txt".freeze
+  HOENN_JOURNAL = "Data/.blue-hoenn-install-journal.json".freeze
   HOENN_PILOT_METADATA = "Data/blue-hoenn-pilot.txt".freeze
   HOENN_REVISION = "c59233bdbaac4fbfeca6aa01c7f05be628da2a92".freeze
 
-  # A start marker is never permission to enter Hoenn. The main Decades
-  # game needs the complete, installed 199-map manifest and authored plugin.
-  # mkxp variants can lack Ruby's optional JSON gem. The installer
-  # commits a compact marker LAST, plus a separate 199-map registry used
-  # already by BlueHoennPilot. Validate both instead of silently hiding
-  # Hoenn from a correctly installed Windows/Android build.
-  def self.hoenn_compact_manifest
-    return nil unless File.file?(HOENN_READY) && File.file?(HOENN_PILOT_METADATA)
-    body = File.read(HOENN_INSTALL)
-    return nil unless body.match?(/"source_commit"\s*:\s*"#{HOENN_REVISION}"/) &&
-      body.match?(/"status"\s*:\s*"INTEGRATED_FILES_READY_FOR_NATIVE_QA"/)
-    entries = File.readlines(HOENN_PILOT_METADATA, chomp: true)
-    return nil unless entries.shift == "BLUE_HOENN_PILOT_V1"
-    home = entries.shift.to_s.split(",").map { |n| Integer(n, 10) rescue nil }
-    return nil unless home.length == 3 && home.all? { |n| n.is_a?(Integer) }
-    maps = {}
-    entries.each do |line|
-      a,b = line.split(",").map { |n| Integer(n, 10) rescue nil }
-      return nil unless a.is_a?(Integer) && b.is_a?(Integer) &&
-        (700..999).include?(b) && !maps.key?(a.to_s)
-      maps[a.to_s] = b
-    end
-    return nil unless maps.length == 199 && maps.values.uniq.length == 199 &&
-      home == [maps["8"],25,6]
-    gate = File.read(HOENN_READY).strip.split(",")
-    return nil unless gate.length == 7 &&
-      gate.first(4) == ["BLUE_HOENN_READY_V1","199",home[0].to_s,maps["7"].to_s]
-    xy_dir = gate[4,3].map { |n| Integer(n,10) rescue nil }
-    return nil unless xy_dir.all? { |n| n.is_a?(Integer) }
-    {"schema"=>1,"region"=>"HOENN","source_commit"=>HOENN_REVISION,
-     "status"=>"INTEGRATED_FILES_READY_FOR_NATIVE_QA","maps"=>maps,
-     "start"=>home+[2],"town"=>[maps["7"],*xy_dir]}
-  rescue IOError, SystemCallError
+  # Catalog revisions name complete approved sets. Keep the V1 keys frozen
+  # because older saves refer to their installed destination IDs.
+  HOENN_LEGACY_SOURCES = [
+    7,8,*(11..14),*(16..106),108,*(111..115),117,118,*(120..126),
+    128,*(130..139),141,144,*(146..157),159,160,161,162,177,178,179,180,
+    *(182..189),191,192,*(206..213),215,216,217,*(227..236),*(238..248),
+    250,251,252,255,*(258..263),266,322
+  ].map(&:to_s).sort.freeze
+  HOENN_CATALOGS = { 1 => HOENN_LEGACY_SOURCES }.freeze
+
+  def self.read_hoenn_manifest
+    return nil unless File.file?(HOENN_INSTALL) && !File.symlink?(HOENN_INSTALL)
+    raw = File.binread(HOENN_INSTALL, 2 * 1024 * 1024 + 1)
+    return nil if raw.bytesize > 2 * 1024 * 1024
+    # The title plugin ships a bounded, strict JSON reader for mkxp builds
+    # without usable JSON gems. It rejects duplicate fields and trailing data.
+    return BlueSinnohQA.parse_json(raw) if defined?(BlueSinnohQA) && BlueSinnohQA.respond_to?(:parse_json)
+    require "json" unless defined?(::JSON) && ::JSON.respond_to?(:parse)
+    ::JSON.parse(raw) if defined?(::JSON) && ::JSON.respond_to?(:parse)
+  rescue LoadError, StandardError
     nil
   end
 
   def self.hoenn_manifest
-    return nil unless File.file?(HOENN_INSTALL) && !File.symlink?(HOENN_INSTALL)
-    # Some JoiPlay/mkxp Ruby builds do not ship JSON at all. An exception
-    # handler mentioning JSON::ParserError would itself raise NameError
-    # while the player presses New Game. Use the verified ASCII marker
-    # instead; never create a fake Hoenn destination from missing files.
-    begin
-      require "json" unless defined?(::JSON) && ::JSON.respond_to?(:parse)
-    rescue LoadError, NameError
-      return hoenn_compact_manifest
-    end
-    return hoenn_compact_manifest unless defined?(::JSON) && ::JSON.respond_to?(:parse)
-    data = ::JSON.parse(File.read(HOENN_INSTALL))
-    return nil unless data.is_a?(Hash) && data["schema"] == 1 &&
+    data = read_hoenn_manifest
+    return nil unless data.is_a?(Hash) && data["schema"].is_a?(Integer) &&
       data["region"] == "HOENN" && data["source_commit"] == HOENN_REVISION &&
-      data["status"] == "INTEGRATED_FILES_READY_FOR_NATIVE_QA" &&
-      data["maps"].is_a?(Hash) && data["maps"].size == 199
-    ids = data["maps"].values
-    return nil unless ids.all? { |id| id.is_a?(Integer) && (700..999).include?(id) } &&
-      ids.uniq.size == 199 && data["maps"].key?("7") && data["maps"].key?("8")
+      data["status"] == "INTEGRATED_FILES_READY_FOR_NATIVE_QA"
+    case data["schema"]
+    when 1 then approved = HOENN_LEGACY_SOURCES
+    when 2 then approved = HOENN_CATALOGS[data["catalog_revision"]]
+    end
+    maps = data["maps"]
+    return nil unless approved && maps.is_a?(Hash) && maps.keys.sort == approved &&
+      maps.values.uniq.size == approved.size &&
+      maps.values.all? { |id| id.is_a?(Integer) && (700..999).cover?(id) }
+    if data["schema"] == 2
+      legacy = data["legacy_maps"]
+      return nil unless legacy.is_a?(Hash) && legacy.keys.sort == HOENN_LEGACY_SOURCES &&
+        legacy.all? { |source, dest| maps[source].eql?(dest) }
+    end
+    home = data["start"]
+    town = data["town"]
+    return nil unless [home,town].all? { |p| p.is_a?(Array) && p.length == 4 &&
+      p.all? { |v| v.is_a?(Integer) } && p[1] >= 0 && p[2] >= 0 &&
+      [2,4,6,8].include?(p[3]) }
+    return nil unless home == [maps["8"],25,6,2] && town[0] == maps["7"]
     data
   rescue StandardError
-    # Includes JSON::ParserError without referencing the JSON constant.
-    # An invalid real manifest is rejected (no fallback to corrupt JSON).
+    nil
+  end
+
+  def self.hoenn_compact_sha256?(expected)
+    return false unless expected.is_a?(String) && expected.match?(/\A[a-f0-9]{64}\z/)
+    if defined?(BlueSinnohQA) && BlueSinnohQA.respond_to?(:sha256_file)
+      return BlueSinnohQA.sha256_file(HOENN_PILOT_METADATA) == expected
+    end
+    require "digest" unless defined?(::Digest::SHA256)
+    ::Digest::SHA256.file(HOENN_PILOT_METADATA).hexdigest == expected
+  rescue LoadError, StandardError
+    false
+  end
+
+  def self.hoenn_compact_manifest
+    proof = hoenn_manifest
+    return nil unless proof && [HOENN_START,HOENN_READY,HOENN_PILOT_METADATA].all? { |name|
+      File.file?(name) && !File.symlink?(name)
+    }
+    version = proof["schema"]
+    maps = proof["maps"]
+    home = proof["start"]
+    town = proof["town"]
+    # All records fit within the current three-digit ID domain. V2 also
+    # checks the compact file hash recorded by the installer.
+    raw = File.binread(HOENN_PILOT_METADATA, 4097)
+    return nil if raw.bytesize > 4096
+    if version == 2
+      hashes = proof["installed_sha256"]
+      return nil unless hashes.is_a?(Hash) && hoenn_compact_sha256?(hashes[HOENN_PILOT_METADATA])
+    end
+    rows = raw.lines(chomp: true)
+    return nil unless rows.shift == "BLUE_HOENN_PILOT_V#{version}" &&
+      rows.shift == home[0,3].join(",") && rows.length == maps.size
+    compact = {}
+    rows.each do |row|
+      pair = /\A([1-9][0-9]*),([0-9]{3})\z/.match(row)
+      return nil unless pair && !compact.key?(pair[1])
+      compact[pair[1]] = pair[2].to_i
+    end
+    start_marker = File.binread(HOENN_START, 129)
+    ready_marker = File.binread(HOENN_READY, 129)
+    return nil unless compact == maps && start_marker.bytesize <= 128 && ready_marker.bytesize <= 128 &&
+      start_marker.strip == "BLUE_HOENN_START_V#{version},HOENN,#{home[0,3].join(',')}" &&
+      ready_marker.strip == "BLUE_HOENN_READY_V#{version},#{maps.size},#{home[0]},#{town.join(',')}"
+    proof
+  rescue StandardError
     nil
   end
 
@@ -90,40 +127,36 @@ module BlueRegionStart
 
   def self.hoenn_spawn
     return hoenn_pilot_spawn if File.file?("Hoenn pilot.json")
-    return nil unless hoenn_integrated?
-    [*hoenn_manifest["start"][0,3]]
+    proof = hoenn_ready_manifest
+    proof && proof["start"][0,3]
   end
 
-  def self.hoenn_integrated?
-    return false if %w[Kanto Johto Hoenn Sinnoh].any? { |label| File.file?("#{label} pilot.json") }
-    proof = hoenn_manifest
-    return false unless proof && File.file?(HOENN_START) &&
-      File.file?(HOENN_READY) && File.file?(HOENN_PILOT_METADATA)
-    home = proof["start"]; town = proof["town"]
-    return false unless [home,town].all? { |p| p.is_a?(Array) && p.length == 4 &&
-      p.all? { |v| v.is_a?(Integer) } && p[1] >= 0 && p[2] >= 0 &&
-      [2,4,6,8].include?(p[3]) && pbRgssExists?(sprintf("Data/Map%03d.rxdata",p[0])) }
-    return false unless home == [proof["maps"]["8"],25,6,2] &&
-      town[0] == proof["maps"]["7"]
-    return false unless File.read(HOENN_START).strip ==
-      "BLUE_HOENN_START_V1,HOENN,#{home[0]},25,6"
-    return false unless File.read(HOENN_READY).strip ==
-      "BLUE_HOENN_READY_V1,199,#{home[0]},#{town.join(',')}"
+  def self.hoenn_ready_manifest
+    return nil if File.exist?(HOENN_JOURNAL) || File.symlink?(HOENN_JOURNAL) ||
+      %w[Kanto Johto Hoenn Sinnoh].any? { |label| File.file?("#{label} pilot.json") }
+    proof = hoenn_compact_manifest
+    return nil unless proof
     required = %w[Data/MapInfos.rxdata Data/Tilesets.rxdata
       PBS/trainers_hoenn_pilot.txt PBS/trainer_types_hoenn_pilot.txt
       PBS/encounters_hoenn_pilot.txt PBS/map_metadata_hoenn_pilot.txt
       Plugins/ZZZZZ\ Blue\ Hoenn\ Pilot/HoennPilot.rb]
-    required.all? { |name| File.file?(name) } &&
+    return nil unless required.all? { |name| File.file?(name) && !File.symlink?(name) } &&
       proof["maps"].values.all? { |id|
-        pbRgssExists?(sprintf("Data/Map%03d.rxdata", id))
+        name = sprintf("Data/Map%03d.rxdata", id)
+        !File.symlink?(name) && pbRgssExists?(name)
       }
+    proof
   rescue IOError, SystemCallError, ArgumentError
-    false
+    nil
+  end
+
+  def self.hoenn_integrated?
+    !hoenn_ready_manifest.nil?
   end
 
   def self.hoenn_town_point
-    proof = hoenn_manifest
-    hoenn_integrated? ? proof["town"] : nil
+    proof = hoenn_ready_manifest
+    proof && proof["town"]
   end
 
   def self.kanto_spawn
@@ -339,7 +372,6 @@ module BlueRegionStart
     lavender = ((93..98).to_a + (100..106).to_a).each_with_index.to_h { |sid, index| [sid.to_s,609+index] }
     if expected_count >= 178
       return nil unless lavender.all? { |source,id| maps[source]==id }
-
     end
     if expected_count == 182
       celadon = {"125"=>276, "126"=>277, "127"=>278, "128"=>279}

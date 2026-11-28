@@ -10,6 +10,7 @@ from unittest.mock import patch
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/"scripts/regions"))
+from hoenn_catalog import LEGACY_SOURCE_IDS
 
 from build_johto_events import ruby,command,event_page
 from hoenn_qa_phase4 import (
@@ -179,7 +180,7 @@ class FieldMoveQA4Tests(unittest.TestCase):
             folder.mkdir(parents=True)
             (folder/"Hoenn pilot.json").write_text(json.dumps({
                 "kind":"ISOLATED_HOENN_TEST",
-                "maps":{str(i):700+i for i in range(199)},
+                "maps":{str(mid):700+i for i,mid in enumerate(LEGACY_SOURCE_IDS)},
                 "qa4":{
                     "source_obstacles_by_type":{"strength":1},
                     "source_obstacle_candidates":[{"source_map_id":250}],

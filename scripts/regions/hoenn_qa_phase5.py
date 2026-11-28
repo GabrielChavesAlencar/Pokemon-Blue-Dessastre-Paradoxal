@@ -165,9 +165,10 @@ def verify_copy(copy:Path) -> dict:
     maps=report.get("maps",{})
     if (report.get("region")!="HOENN" or
             report.get("kind")!="ISOLATED_HOENN_TEST" or
-            report.get("save_profile") not in ("Hoenn QA Fase05","Hoenn QA Fase06","Hoenn QA Fase07","Hoenn QA Fase08","Hoenn QA Fase09","Hoenn QA Fase10","Hoenn QA Fase11","Hoenn QA Fase12") or
-            not isinstance(maps,dict) or len(maps)!=199):
-        raise ValueError("Não é a cópia isolada de Hoenn QA05 com 199 mapas e save próprio")
+            report.get("save_profile") not in ("Hoenn QA Fase05","Hoenn QA Fase06","Hoenn QA Fase07","Hoenn QA Fase08","Hoenn QA Fase09","Hoenn QA Fase10","Hoenn QA Fase11","Hoenn QA Fase12")):
+        raise ValueError("Não é a cópia isolada de Hoenn QA05 com save próprio")
+    from pilot_hoenn import validate_pilot_mapping
+    validate_pilot_mapping(report)
     if (not isinstance(qa5,dict) or
             qa5.get("story_prerequisites")!=list(STORY_KEYS) or
             qa5.get("game_exe_tested") is not False or

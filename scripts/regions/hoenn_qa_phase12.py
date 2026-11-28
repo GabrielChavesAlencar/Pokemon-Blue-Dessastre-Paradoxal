@@ -13,6 +13,8 @@ import hashlib
 import json
 from pathlib import Path
 
+from hoenn_catalog import CATALOG_REVISION, approved_source_ids
+
 # Each QA01..QA11 report is generated immediately before QA12 by TESTAR_HOENN.bat.
 # Order matters; a missing or BLOCKED report stops the acceptance gate.
 AUDITS = (
@@ -59,8 +61,9 @@ def report_filename(key: str) -> str:
     return f"hoenn-qa-fase12-{key}-report.json"
 
 
-def accepted_reports(evidence: dict[str, dict]) -> list[dict]:
+def accepted_reports(evidence: dict[str, dict], *, catalog_revision=CATALOG_REVISION) -> list[dict]:
     """Validate cross-stage outputs; NEVER accept booleans asserting native QA."""
+    expected_maps = len(approved_source_ids(catalog_revision))
     validated = []
     if set(evidence) != {phase for phase, _, _ in AUDITS}:
         raise ValueError("QA12: os 11 relatórios técnicos de Fase01–11 são obrigatórios")
@@ -75,12 +78,12 @@ def accepted_reports(evidence: dict[str, dict]) -> list[dict]:
         if any(row.get(key) is True for key in APPROVAL_KEYS):
             raise ValueError(f"QA12: Fase{phase} reivindica aprovação nativa indevida")
         if phase == "01":
-            if row.get("copy", {}).get("maps_present") != 199:
-                raise ValueError("QA12: a cópia QA01 não contém 199 mapas")
+            if row.get("copy", {}).get("maps_present") != expected_maps:
+                raise ValueError(f"QA12: a cópia QA01 não contém {expected_maps} mapas")
             if row.get("copy", {}).get("distinct_save_profile") != "Hoenn QA Fase12":
                 raise ValueError("QA12: QA01 não verificou perfil isolado QA12")
-        elif phase == "02" and row.get("maps_read") != 199:
-            raise ValueError("QA12: QA02 não varreu os 199 mapas físicos")
+        elif phase == "02" and row.get("maps_read") != expected_maps:
+            raise ValueError(f"QA12: QA02 não varreu os {expected_maps} mapas físicos")
         elif phase == "07" and len(row.get("gym_source_map_ids", [])) != 8:
             raise ValueError("QA12: QA07 não conferiu oito ginásios")
         elif phase == "09" and row.get("pbs_reference_party_sizes") != [5,5,5,5,6]:
@@ -88,8 +91,8 @@ def accepted_reports(evidence: dict[str, dict]) -> list[dict]:
         elif phase == "10" and row.get("expected_neighbor_unlocks") != ["JOHTO","SINNOH"]:
             raise ValueError("QA12: QA10 não confirma desbloqueio Johto/Sinnoh")
         elif phase == "11":
-            if row.get("maps_with_ptbr_display_label") != 199 or row.get("map_bgms_assigned") != 199:
-                raise ValueError("QA12: QA11 não auditou 199 rótulos e BGMs")
+            if row.get("maps_with_ptbr_display_label") != expected_maps or row.get("map_bgms_assigned") != expected_maps:
+                raise ValueError(f"QA12: QA11 não auditou {expected_maps} rótulos e BGMs")
         validated.append({"phase": phase + "/12", "status": expected_status})
     return validated
 
@@ -119,38 +122,33 @@ def backlog(manifest: dict) -> dict:
 
 def audit_generated(manifest: dict) -> dict:
     """Stable QA12 contract; executed during private copy creation."""
-    from pilot_hoenn import SOURCE_MAPS, UPSTREAM
-    maps = manifest.get("maps", {})
-    if not isinstance(maps, dict) or any(type(key) not in (str, int) for key in maps):
-        raise ValueError("QA12: manifesto de MapIDs inválido")
-    # Builder uses integer source IDs; serialized Hoenn pilot.json uses string
-    # keys. Both MUST produce the identical QA12 manifest.
-    normalized = {str(key): val for key, val in maps.items()}
-    if (manifest.get("source_commit") != UPSTREAM or
-        manifest.get("region") != "HOENN" or
-        set(normalized) != {str(i) for i in SOURCE_MAPS} or
-        len(set(normalized.values())) != 199 or
-        any(type(x) is not int or not 700 <= x <= 999 for x in normalized.values())):
-        raise ValueError("QA12: mapa/fonte 199 não é a revisão fixada")
+    from pilot_hoenn import UPSTREAM, validate_pilot_mapping
+    expected = approved_source_ids(manifest.get("catalog_revision", 1))
+    try:
+        validate_pilot_mapping(manifest)
+    except ValueError as error:
+        raise ValueError(f"QA12: conjunto aprovado de {len(expected)} mapas inválido") from error
+    if manifest.get("source_commit") != UPSTREAM or manifest.get("region") != "HOENN":
+        raise ValueError(f"QA12: a origem dos {len(expected)} mapas não é a revisão fixada")
     for index in range(3,12):
         if not isinstance(manifest.get(f"qa{index}"), dict):
             raise ValueError(f"QA12: falta manifesto QA{index:02}")
     teleports = manifest.get("qa_test_stops")
-    if (not isinstance(teleports, dict) or teleports.get("count") != 199
+    if (not isinstance(teleports, dict) or teleports.get("count") != len(expected)
         or teleports.get("file") != "Data/blue-hoenn-test-stops.txt"
         or teleports.get("real_terrain_walkable") is not True
         or teleports.get("debug_only_no_story_flag_mutation") is not True
         or teleports.get("game_exe_tested") is not False
         or not isinstance(teleports.get("source_ids"), list)
-        or teleports["source_ids"] != sorted(SOURCE_MAPS)
+        or teleports["source_ids"] != sorted(expected)
         or not isinstance(teleports.get("sha256"), str)
         or len(teleports["sha256"]) != 64
         or any(c not in "0123456789abcdef" for c in teleports["sha256"])):
-        raise ValueError("QA12: catálogo de teleporte dos 199 mapas não foi preparado")
+        raise ValueError(f"QA12: catálogo de teleporte dos {len(expected)} mapas não foi preparado")
     return {
         "source_commit": UPSTREAM,
-        "maps_expected": 199,
-        "test_teleport_map_count": 199,
+        "maps_expected": len(expected),
+        "test_teleport_map_count": len(expected),
         "debug_teleport_catalog_sha256": teleports["sha256"],
         "debug_teleport_scope": "isolated_hoenn_pilot_only",
         "debug_teleport_native_playtested": False,
@@ -195,7 +193,7 @@ def verify_test_stops_copy(copy: Path, manifest: dict) -> dict:
     prove trainer/surf/warp/puzzle event behavior in-game.
     """
     from server.ruby_marshal import loads
-    from pilot_hoenn import SOURCE_MAPS, open_tile
+    from pilot_hoenn import SOURCE_MAPS, open_tile, validate_pilot_mapping
     from hoenn_qa_phase11 import localized_map_name
 
     path = copy / "Data/blue-hoenn-test-stops.txt"
@@ -206,9 +204,9 @@ def verify_test_stops_copy(copy: Path, manifest: dict) -> dict:
     if hashlib.sha256(raw).hexdigest() != expected:
         raise ValueError("QA12: hash do catálogo de teleporte não confere")
     lines = raw.decode("utf-8").splitlines()
-    if not lines or lines.pop(0) != "BLUE_HOENN_TEST_STOPS_V1" or len(lines) != 199:
+    ids = validate_pilot_mapping(manifest)
+    if not lines or lines.pop(0) != "BLUE_HOENN_TEST_STOPS_V1" or len(lines) != len(ids):
         raise ValueError("QA12: catálogo de teleporte incompleto")
-    ids = {int(key): value for key, value in manifest["maps"].items()}
     tilesets = loads((copy / "Data/Tilesets.rxdata").read_bytes())
     matched = set()
     for line in lines:
@@ -219,7 +217,7 @@ def verify_test_stops_copy(copy: Path, manifest: dict) -> dict:
             src, dest, x, y, direction = map(int, parts[:5])
         except ValueError:
             raise ValueError("QA12: MapID ou posição de teleporte inválida") from None
-        if (src not in SOURCE_MAPS or src in matched or ids.get(src) != dest
+        if (src not in ids or src in matched or ids[src] != dest
             or direction not in (2,4,6,8) or x < 0 or y < 0
             or parts[5] != localized_map_name(SOURCE_MAPS[src])):
             raise ValueError(f"QA12: teleporte de mapa original inválido: {src}")
@@ -241,7 +239,7 @@ def verify_test_stops_copy(copy: Path, manifest: dict) -> dict:
                    for dx,dy in ((0,1),(0,-1),(1,0),(-1,0))):
             raise ValueError(f"QA12: teleporte sem saída caminhável: {src}")
         matched.add(src)
-    if matched != set(SOURCE_MAPS):
+    if matched != ids.keys():
         raise ValueError("QA12: mapa sem posição de teleporte")
     ruby = (copy / "Plugins/ZZZZZ Blue Hoenn Pilot/HoennPilot.rb").read_text("utf-8")
     required = (
@@ -253,7 +251,7 @@ def verify_test_stops_copy(copy: Path, manifest: dict) -> dict:
     missing = [part for part in required if part not in ruby]
     if missing:
         raise ValueError(f"QA12: menu nativo do teleporte não instalado: {missing}")
-    return {"teleport_points_physically_checked": 199,
+    return {"teleport_points_physically_checked": len(matched),
             "teleport_guarded_in_hoenn_test_only": True,
             "native_tested": False}
 
@@ -276,15 +274,16 @@ def verify_copy(copy: Path, report_dir: Path | None = None) -> dict:
     # Recheck original Blue Game.exe and all 199 physical maps without
     # touching the installed game, save slots or any source archive.
     base = check_base(copy, ROOT / "game")
-    if base["maps_present"] != 199 or base["distinct_save_profile"] != "Hoenn QA Fase12":
-        raise ValueError("QA12: Game.exe / save / 199 mapas não correspondem ao original")
+    if (base["maps_present"] != expected["maps_expected"] or
+            base["distinct_save_profile"] != "Hoenn QA Fase12"):
+        raise ValueError("QA12: Game.exe, save ou conjunto de mapas não correspondem ao original")
     reports = {}
     for phase, label, _ in AUDITS:
         file = require_private_path(directory / report_filename(label))
         if not file.is_file() or file.is_symlink():
             raise ValueError(f"QA12: relatório da fase {phase} ausente: {file.name}")
         reports[phase] = json.loads(file.read_text("utf-8"))
-    checked = accepted_reports(reports)
+    checked = accepted_reports(reports, catalog_revision=manifest.get("catalog_revision", 1))
     teleport = verify_test_stops_copy(copy, manifest)
 
     # Reproducibility checksums: hashes of our staged private copy, NOT
@@ -311,7 +310,7 @@ def verify_copy(copy: Path, report_dir: Path | None = None) -> dict:
         "game_exe_played_here": False, "android_joiplay_played_here": False,
         "native_game_exe_approved": False,
         "all_12_phases_playable_approved": False,
-        "qa01_to_qa11": checked, "physical_map_count": 199,
+        "qa01_to_qa11": checked, "physical_map_count": base["maps_present"],
         "test_teleport": teleport,
         "source_commit": UPSTREAM, "save_profile": "Hoenn QA Fase12",
         "pending_native_cases": len(NATIVE_SCENARIOS) * len(PLATFORMS),

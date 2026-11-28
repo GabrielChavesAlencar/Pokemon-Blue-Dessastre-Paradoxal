@@ -2,6 +2,48 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f4c4b6f5b147eba7b1d7bbd13180440ce7720624",
+      "date": "2026-11-28T10:51:05-03:00",
+      "title": "Merge pull request #399 from GabrielChavesAlencar/codex/hoenn-h00-inventory",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "a97b790606d3de745425039fe5242a56957c7c66",
+      "date": "2026-11-28T10:49:20-03:00",
+      "title": "Classificar os 373 mapas de Hoenn e verificar a propriedade regional",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "1222d318cd6887f34936891298ca0f9cef4ac697",
+      "date": "2026-11-28T10:44:44-03:00",
+      "title": "Merge pull request #383 from GabrielChavesAlencar/codex/hoenn-h01-versioned-catalog",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "a897233ab69c82fe228a7bcee93649779e4acd61",
+      "date": "2026-11-28T10:41:44-03:00",
+      "title": "Registrar migração V2 e recompilação nativa de Hoenn no Windows",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "f1498ca4d61a26ee7f9c6b22bda0382445620a9f",
+      "date": "2026-11-28T10:40:19-03:00",
+      "title": "Merge pull request #382 from GabrielChavesAlencar/codex/hoenn-h00-water-seams",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "10b79a3eda323659c5260db2dbc75eb9310c9bb6",
+      "date": "2026-11-28T10:39:15-03:00",
+      "title": "Integrar H01 ao H00 atual e preservar os contratos de outras regiões",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "a4e8334072c69eee1b39b2d6c23e216d7204f763",
+      "date": "2026-11-28T10:34:36-03:00",
+      "title": "Integrar H00 à main e sincronizar o instalador portátil",
+      "category": "Melhorias"
+    },
+    {
       "sha": "9acab12c7980dff7a53ac23c310803ec40062266",
       "date": "2026-11-28T10:21:17-03:00",
       "title": "Recuperar cache do instalador Android após falha no Windows (#397)",
@@ -248,6 +290,12 @@
       "category": "Melhorias"
     },
     {
+      "sha": "3a52ff196e876a362300bd0531f6c8586320c273",
+      "date": "2026-11-28T02:45:27-03:00",
+      "title": "Hoenn H01: migrate shared installs to a versioned map catalog",
+      "category": "Melhorias"
+    },
+    {
       "sha": "3e463f3c32d8825bfb997eb41e79c27e8e62d3ed",
       "date": "2026-11-28T02:33:11-03:00",
       "title": "Check skipped Lavender upgrades against pinned 156 and 160 map installers",
@@ -270,6 +318,12 @@
       "date": "2026-11-28T01:58:55-03:00",
       "title": "Stage native Lavender services and first-visit Tower encounters and trainers",
       "category": "Melhorias"
+    },
+    {
+      "sha": "8802852a0c2261e5683964f94a431781e60c032c",
+      "date": "2026-11-28T01:50:36-03:00",
+      "title": "fix(hoenn): restore traversable ocean borders",
+      "category": "Correções"
     },
     {
       "sha": "91b91194ec4affeb2e8f7b188576f53074f6d851",
