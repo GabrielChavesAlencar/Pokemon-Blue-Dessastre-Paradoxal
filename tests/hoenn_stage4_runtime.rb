@@ -59,12 +59,13 @@ module GameData
   module Item
     ItemRec = Struct.new(:move)
     @registered = {
-      HM01: nil, TM100: :ROCKTOMB, TM39: :SHADOWBALL, QUICKCLAW: nil,
+      HM01: :CUT, TM100: :ROCKTOMB, TM39: :SHADOWBALL, QUICKCLAW: nil,
       DEVONGOODS: nil, LETTER: nil,
     }
     def self.exists?(item); @registered.key?(item); end
     def self.get(item); ItemRec.new(@registered.fetch(item)); end
     def self.delete(item); @registered.delete(item); end
+    def self.register(item, move); @registered[item] = move; end
   end
 end
 module BlueRegions
@@ -136,6 +137,10 @@ flags = BlueHoennPilot.state
 assert(!BlueHoennPilot.roxanne, "Roxanne opened before required story")
 assert(!BlueHoennPilot.rustboro_theft, "Theft triggered before Roxanne")
 assert(!BlueHoennPilot.cut_tree(11), "Cut allowed before Stone")
+GameData::Item.register(:HM01, :FLY)
+assert(!BlueHoennPilot.cutter, "Specialist handed out an HM for the wrong move")
+assert(!flags["hm_cut_given"] && $bag.items[:HM01] == 0, "Invalid item produced a local receipt")
+GameData::Item.register(:HM01, :CUT)
 assert(BlueHoennPilot.cutter, "Cutter did not deliver HM")
 assert($bag.items[:HM01] == 1, "HM Cut missing")
 assert(!BlueHoennPilot.cutter, "HM Cut duplicated")
@@ -168,6 +173,14 @@ assert(TrainerBattle.history.count([:BLUE_HOENN_ROXANNE, "Roxanne", 427]) == 2,
 # The player must actually teach Cut, after acquiring both HM and STONE.
 assert(!BlueHoennPilot.cut_tree(11), "Cut allowed with no Pokémon knowing it")
 $player.party.first.known_moves << :CUT
+flags.delete("hm_cut_given")
+assert(!BlueHoennPilot.cut_tree(11), "An HM in the bag bypassed local acquisition")
+assert(!$game_self_switches[[783, 11, "A"]], "Unregistered Cut cleared a tree")
+assert(BlueHoennPilot.cutter, "Existing Cut HM could not be registered by the specialist")
+assert(flags["hm_cut_given"] && $bag.items[:HM01] == 1, "Registering Cut duplicated the item")
+GameData::Item.register(:HM01, :FLY)
+assert(!BlueHoennPilot.cut_tree(11), "An HM for a different move passed Cut validation")
+GameData::Item.register(:HM01, :CUT)
 $confirm = false
 assert(!BlueHoennPilot.cut_tree(11), "Declining Cut removed tree")
 assert(!$game_self_switches[[783, 11, "A"]], "Decline set self switch")

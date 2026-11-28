@@ -896,18 +896,18 @@ module BlueHoennPilot
       pbMessage(_INTL("Especialista: Ensine Cut a um Pokémon. A Insígnia da Pedra libera seu uso em Hoenn."))
       return false
     end
-    item = [:HM01, :HMCUT].find { |candidate| GameData::Item.exists?(candidate) }
-    unless item
-      pbMessage(_INTL("Especialista: O HM Cut ainda não existe nos itens desta instalação."))
-      return false
+    candidates = HOENN_FIELD_ITEMS.fetch(:CUT)
+    # Legacy saves may already carry a correctly registered HM. Talking to
+    # this specialist records local authorization without adding a duplicate.
+    if $bag && candidates.any? { |id|
+      GameData::Item.exists?(id) && GameData::Item.get(id).move == :CUT && $bag.has?(id)
+    }
+      flags["hm_cut_given"] = true
+      pbMessage(_INTL("Especialista: Registrei seu HM Cut em Hoenn. A Insígnia da Pedra permite usar o movimento."))
+      return true
     end
-    unless $bag && $bag.add(item, 1)
-      pbMessage(_INTL("Especialista: Abra espaço na Bolsa para receber Cut."))
-      return false
-    end
-    flags["hm_cut_given"] = true
-    pbMessage(_INTL("Você recebeu HM Cut! Precisa da Insígnia da Pedra para usá-lo em Hoenn."))
-    true
+    field_hm_reward(:CUT, candidates, "hm_cut_given",
+                    "Você recebeu HM Cut! Precisa da Insígnia da Pedra para usá-lo em Hoenn.")
   end
 
   def self.cut_tree(event_id)
@@ -920,20 +920,11 @@ module BlueHoennPilot
       $game_map.events[event_id].refresh
       return true
     end
-    unless stone_badge?
-      pbMessage(_INTL("Uma árvore pequena bloqueia a passagem. A Insígnia da Pedra de Hoenn é necessária."))
+    unless flags["hm_cut_given"]
+      pbMessage(_INTL("Fale com o especialista de Rustboro para registrar Cut em Hoenn."))
       return false
     end
-    unless $bag && [:HM01, :HMCUT].any? { |item|
-           GameData::Item.exists?(item) && $bag.has?(item) }
-      pbMessage(_INTL("Você precisa obter o HM Cut em Rustboro."))
-      return false
-    end
-    unless $player.party.any? { |pokemon| pokemon.respond_to?(:hasMove?) &&
-                                     pokemon.hasMove?(:CUT) }
-      pbMessage(_INTL("Nenhum Pokémon da sua equipe conhece Cut."))
-      return false
-    end
+    return false unless field_move_ready?(:CUT, true)
     return false unless pbConfirmMessage(_INTL("Usar Cut para retirar a árvore?"))
     flags[identifier] = true
     $game_self_switches[[$game_map.map_id, event_id, "A"]] = true
