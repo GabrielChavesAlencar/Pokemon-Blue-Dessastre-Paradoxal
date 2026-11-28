@@ -747,10 +747,20 @@ jobs:
             if(Test-Path -LiteralPath $historicalFlag){throw 'Stale historical K06 flag hold'}
             Move-Item -LiteralPath $k06Flag -Destination $historicalFlag
           }
+          $servicesFlag='data/regions/k06-services-release.json'
+          $heldServices=Join-Path $env:RUNNER_TEMP 'celadon-services-held-for-kanto-pilot.json'
+          $hasServices=Test-Path -LiteralPath $servicesFlag -PathType Leaf
           try {
+            if($hasServices){
+              if(Test-Path -LiteralPath $heldServices){throw 'Stale pilot Celadon flag hold'}
+              Move-Item -LiteralPath $servicesFlag -Destination $heldServices
+            }
             python scripts/regions/auto_integrate_kanto.py
             if($LASTEXITCODE -ne 0){throw 'Blue-Story automatic Kanto integration failed'}
           } finally {
+            if($hasServices -and !(Test-Path -LiteralPath $servicesFlag)){
+              Move-Item -LiteralPath $heldServices -Destination $servicesFlag
+            }
             if($holdK06){Move-Item -LiteralPath $historicalFlag -Destination $k06Flag}
           }
           $status=Get-Content '.blue-work/kanto-install-status.json' -Raw | ConvertFrom-Json

@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "390b15d16d34045a963cf7eee26635d6a34b2f76",
+      "date": "2026-11-28T09:55:46-03:00",
+      "title": "Android multirregional com instalação e atualização pelas fontes originais (#396)",
+      "category": "Melhorias"
+    },
+    {
       "sha": "fa171ddf2cddf0751beab6cedffa25868a63fe32",
       "date": "2026-11-28T07:07:22-03:00",
       "title": "Publicar receita K06 sem republicar o jogo",
