@@ -43,7 +43,7 @@ jobs:
   windows-private-layout:
     needs: source-evidence
     runs-on: windows-2022
-    timeout-minutes: 27
+    timeout-minutes: 32
     env:
       GALLIUM_DRIVER: llvmpipe
       ALSOFT_DRIVERS: 'null'
@@ -145,6 +145,40 @@ jobs:
             throw 'Canonical updater touched the synthetic save or runtime configuration'
           }
           Write-Host 'KANTO_K06_WINDOWS_CELADON_EXISTING_AND_REPEAT_OK'
+          Move-Item -LiteralPath 'game' -Destination '.blue-work/k06-celadon-native-product'
+          $root=(Resolve-Path -LiteralPath '.blue-work/k06-celadon-native-product').Path
+          $scripts="$root/Data/Scripts.rxdata"
+          $original=Join-Path $env:RUNNER_TEMP 'k06-celadon-normal-scripts.rxdata'
+          Copy-Item -LiteralPath $scripts -Destination $original
+          $dir=Join-Path $env:RUNNER_TEMP 'k06-mesa'
+          Get-ChildItem -LiteralPath $dir -Recurse -File -Filter '*.dll' |
+            Where-Object { $_.Directory.Name -eq 'x64' } |
+            ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $root }
+          python scripts/regions/native_check.py $root --k06-services
+          if($LASTEXITCODE -ne 0){throw 'Canonical native test staging failed'}
+          $proof="$root/Data/blue-kanto-k06-celadon-native-proof.txt"
+          $bad="$root/Data/blue-kanto-error.txt"
+          try {
+            for($attempt=1;$attempt -le 2;$attempt++){
+              $stdout=Join-Path $env:RUNNER_TEMP "celadon-canonical-out-$attempt.txt"
+              $stderr=Join-Path $env:RUNNER_TEMP "celadon-canonical-err-$attempt.txt"
+              $proc=Start-Process -FilePath "$root/Game.exe" -WorkingDirectory $root -WindowStyle Hidden -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+              $handle=$proc.Handle
+              if(-not $proc.WaitForExit(240000)){Stop-Process -Id $proc.Id; break}
+              if((Test-Path $proof) -or (Test-Path $bad)){break}
+              if($attempt -ne 1 -or -not ((Get-Content $stdout,$stderr -Raw -ErrorAction SilentlyContinue) -match '(?i)compil')){break}
+            }
+            if(!(Test-Path $proof) -or (Test-Path $bad)){
+              Get-Content $stdout,$stderr,$bad,"$root/Data/blue-kanto-k06-celadon-trace.txt" -ErrorAction SilentlyContinue | Select-Object -Last 100
+              throw 'Canonical Windows native proof missing'
+            }
+          } finally {
+            Copy-Item -LiteralPath $original -Destination $scripts -Force
+            Move-Item -LiteralPath $root -Destination 'game'
+          }
+          Assert-Celadon $false
+          if((Get-FileHash -LiteralPath $save).Hash -ne $hash){throw 'Canonical native boot touched the synthetic save'}
+          Write-Host 'KANTO_K06_WINDOWS_CELADON_CANONICAL_NATIVE_REOPEN_OK'
           Move-Item -LiteralPath 'game' -Destination '.blue-work/k06-celadon-updated'
           Move-Item -LiteralPath '.blue-work/k06-clean-decades' -Destination 'game'
           Move-Item -LiteralPath '.blue-work/kanto-k06-baseline' -Destination '.blue-work/kanto-pilot'

@@ -8,6 +8,32 @@ module KantoK06CeladonNativeCheck
     value
   end
 
+  def self.mansion_path(map,start,target,trigger)
+    # Search only genuine, same-map stairs that can be reached from each
+    # arrival tile using the game's own passability. Do not seed at Eevee.
+    pending = [[start,[]]]
+    seen = {}
+    steps = {2=>[0,1],4=>[-1,0],6=>[1,0],8=>[0,-1]}
+    until pending.empty?
+      anchor,path = pending.shift
+      next if seen[anchor]
+      seen[anchor] = true
+      cells = C.opening_component(map,anchor)
+      events = $game_map.events
+      event = events.fetch(target)
+      reachable = ->(e) { steps.values.any? { |x,y| cells.key?([e.x-x,e.y-y]) } }
+      return [path,anchor] if (trigger==0 ? C.opening_action_witness(cells,event) : reachable.call(event))
+      events.each_value do |stair|
+        next unless stair.trigger==1 && reachable.call(stair)
+        warp = stair.list.find { |op| op.code==201 && op.parameters[0]==0 && op.parameters[1]==map }
+        next unless warp
+        landing = warp.parameters[2,2]
+        pending << [landing,path+[[128,stair.id,128,anchor,landing]]] unless seen[landing]
+      end
+    end
+    nil
+  end
+
   def self.run
     SaveData.initialize_bootup_values
     spawn = BlueRegionStart.kanto_spawn
@@ -116,9 +142,14 @@ module KantoK06CeladonNativeCheck
     N.service!(ids[128],[12,18],1)
     N.service!(ids[128],[12,18],1)
     truth($bag.quantity(:TEA)==1,"Tea was not unique")
-    $map_factory.setup(ids[128])
-    gift = $game_map.events.fetch(23)
-    gift_anchor = [gift.x,gift.y+1]
+    mansion = [[34,[30,10],[2,2],5], [24,[30,17],[12,18],3]].find do |_in,_city,anchor,_out|
+      mansion_path(ids.fetch(128),anchor,23,0)
+    end
+    entry,city,anchor,exit_event = truth(mansion,"Eevee cannot be reached from either mansion entrance")
+    steps,gift_anchor = mansion_path(ids.fetch(128),anchor,23,0)
+    truth(!steps.empty?, "Eevee proof did not traverse native mansion stairs")
+    door.call(114,entry,128,city,anchor)
+    steps.each { |leg| door.call(*leg) }
     confirmed = false
     N.service!(ids[128],gift_anchor,23)
     truth($player.party.length == 1,"declined Eevee entered party")
@@ -126,6 +157,11 @@ module KantoK06CeladonNativeCheck
     2.times { N.service!(ids[128],gift_anchor,23) }
     received = $player.party.select { |mon| mon.species == :EEVEE }
     truth(received.length == 1 && received.first.level == 25,"Eevee reward missing, duplicated or wrong level")
+    return_steps,exit_anchor = truth(mansion_path(ids.fetch(128),gift_anchor,exit_event,1),
+                                     "No native return from Eevee to the source city entrance")
+    return_steps.each { |leg| door.call(*leg) }
+    door.call(128,exit_event,114,exit_anchor,city)
+
 
     [108,112].each do |sid|
       $map_factory.setup(BlueKantoPilot.kanto_map_id(sid))
@@ -134,7 +170,7 @@ module KantoK06CeladonNativeCheck
     truth(picks.empty?, "test choice was not consumed")
     File.write("Data/blue-kanto-k06-celadon-native-proof.txt",
       {"doors"=>doors,"stock"=>captured_stock,"vending_total"=>850,
-       "unique_roof_tms"=>3,"unique_coin_case_tea_eevee"=>true,
+       "mansion_stairs_to_eevee"=>steps.size,"mansion_stairs_back"=>return_steps.size,"unique_roof_tms"=>3,"unique_coin_case_tea_eevee"=>true,
        "saffron_closed"=>true,"next_sublot_active"=>false,"manual_playthrough"=>false}.inspect)
     puts "KANTO_K06_CELADON_NATIVE_SERVICES_OK"
   end

@@ -19,14 +19,16 @@ def prepare(game, integrated=False, k03e=False, k04=False, k05_city=False, k05_t
     if k06_services:
         from audit import json_file
         from build_k06_celadon_services import CANDIDATES, OUTPUT, PROFILE, STAGE_LOCAL
-        from k06_approach_migration import INSTALL
+        from k06_approach_migration import CI_PROFILE, INSTALL
         from qa_k04_migration import save_namespace_valid
-        if os.getenv("GITHUB_ACTIONS") != "true" or game != (ROOT / OUTPUT).resolve():
+        product = (ROOT / ".blue-work/k06-celadon-native-product").resolve()
+        if os.getenv("GITHUB_ACTIONS") != "true" or game not in {(ROOT / OUTPUT).resolve(), product}:
             raise ValueError("Celadon native proof must remain in the disposable CI installation")
         marker = json_file(game / INSTALL)
-        if (marker.get("content_stage") != STAGE_LOCAL or len(marker["maps"]) != 182
+        stage, profile = ("K06_CELADON_SERVICES", CI_PROFILE) if game==product else (STAGE_LOCAL, PROFILE)
+        if (marker.get("content_stage") != stage or len(marker["maps"]) != 182
                 or any(marker["maps"].get(str(sid)) != mid for sid,mid in CANDIDATES.items())
-                or not save_namespace_valid(game, PROFILE) or (game / PILOT_META).exists()):
+                or not save_namespace_valid(game, profile) or (game / PILOT_META).exists()):
             raise ValueError("Celadon native proof lost exact registry or save isolation")
     if k06_approach:
         from audit import json_file
