@@ -19,6 +19,76 @@ KEYS=re.compile(r"(?i)\b(?:LIFT_?KEY|SILPH_?SCOPE|GIOVANNI|RAINBOW|CUT|TM28|POST
 CALL=re.compile(r'(?:TrainerBattle\.start|pbTrainerBattle)\(\s*:(\w+)\s*,\s*"([^"\r\n]+)"(?:\s*,\s*(\d+)(?=\s*[,)]))?')
 ROCKET=re.compile(r"(?:POSTER|LIFT_?KEY|SILPH_?SCOPE|GIOVANNI|TEAMROCKET|ELEVATOR)",re.I)
 
+# This is a read-only source witness. Foreign numeric switches, Ruby, dialogue,
+# and event pages are never embedded in the playable import.
+DEPENDENCY_MAPS={*range(117,125),129,131,132,133,134,135}
+POSITIONS={(124,1),(129,52),(129,54),(131,9),(132,5),(134,1),(134,2),(134,3),
+           (134,4),(134,6),(134,12),(134,21),(135,1),(135,2)}
+CONDITION_FIELDS={
+    "@switch1_valid": ("@switch1_id",),
+    "@switch2_valid": ("@switch2_id",),
+    "@variable_valid": ("@variable_id","@variable_value"),
+    "@self_switch_valid": ("@self_switch_ch",),
+}
+BAG_SYMBOLS=re.compile(r"(?<!\w):(LIFT_?KEY|SILPH_?SCOPE|TEA|TM\d{2,3}|HM\d{2}|CUT)\b",re.I)
+STOCK=re.compile(r'(?i)\bpbPokemonMart\s*\(\s*\[\s*((?::[A-Z][A-Z0-9_]*\s*,?\s*)+)\]')
+KNOWN_CALLS=re.compile(r"(?<!\w)(TrainerBattle\.start|pbTrainerBattle|pbItemBall|pbReceiveItem|pbPokemonMart|"
+                       r"pbCanUseCut|pbCut|pbBadge\w*|pbSetSelfSwitch|pbMoveRoute|pbSetEventTime|"
+                       r"pbBattleAnimation|pbSet|pbGet|pbPushThisEvent)\s*\(")
+FLAG_READS=re.compile(r"\$game_(switches|variables)\s*\[\s*(\d+)\s*\]")
+
+
+def audit_conditions(condition):
+    return {field:condition[field] for valid,fields in CONDITION_FIELDS.items() if condition.get(valid)
+             for field in fields if field in condition}
+
+
+def selectors(command):
+    code, params = command["code"], command["parameters"]
+    lengths={121:3,122:5,123:2,201:6}
+    if code in lengths and len(params)>=lengths[code]:
+        n=lengths[code]
+        if all(type(val) is int for val in params[:n]):
+            return {"numeric_control":params[:n]}
+        if code==123 and params[0] in ("A","B","C","D") and type(params[1]) is int:
+            return {"self_switch":params[:2]}
+    if code==111 and params:
+        kind=params[0]
+        if kind in (0,1) and len(params)>=3 and all(type(v) is int for v in params[:5]):
+            return {"native_condition":params[:5]}
+        if kind==2 and len(params)==3 and params[1] in ("A","B","C","D") and type(params[2]) is int:
+            return {"native_self_switch":params[:3]}
+    if code==102 and params and isinstance(params[0],list):
+        return {"option_count":len(params[0])}
+    if code==402 and params and type(params[0]) is int:
+        return {"option_index":params[0]}
+    return {}
+
+
+def progression_witness(report):
+    # Include the Game Corner's full control graph, whose poster can be named
+    # generically. Discard dialogue and strings, even from conditional pages.
+    out=[]
+    for sid in sorted(DEPENDENCY_MAPS):
+        for event in report[str(sid)]["events"]:
+            for page in event["pages"]:
+                scripts=list(page_scripts(page))
+                calls={m for _,_,line in scripts for m in KNOWN_CALLS.findall(line)}
+                conditions=audit_conditions(page["condition"])
+                effects=[dict(op=c["code"],indent=c["indent"],**r) for c in page["commands"] if (r:=selectors(c))]
+                symbols=sorted({key.upper() for _,_,line in scripts for key in BAG_SYMBOLS.findall(line)})
+                flags=sorted({(kind,int(idx)) for _,_,line in scripts for kind,idx in FLAG_READS.findall(line)})
+                stocks=[re.findall(r":([A-Z][A-Z0-9_]*)",row,re.I) for _,_,line in scripts for row in STOCK.findall(line)]
+                if (sid,event["id"]) not in POSITIONS and not (effects or conditions or calls or symbols or flags):
+                    continue
+                out.append({"source":sid,"event":event["id"],"at":event["xy"],"page":page["page"],
+                            "trigger":page["trigger"],"through":page["through"],"conditions":conditions,
+                            "effects":effects,"calls":sorted(calls),"item_symbols":symbols,
+                            "foreign_flag_reads":flags,"mart_stock":stocks})
+    if not POSITIONS<={(row["source"],row["event"]) for row in out}:
+        raise ValueError("Expected Celadon progression anchors missing from source")
+    return out
+
 
 def source_connections(path,scope):
     out=[]
@@ -75,7 +145,7 @@ def summarize(source,catalog):
                    "profiles":profiles,"opcodes":sorted({o["code"] for o in page["commands"]}),
                    "active_conditions":{k:v for k,v in page["condition"].items() if k.endswith("_valid") and v}})
     return {"status":"K06_SOURCE_ONLY","published":False,"native_gameplay":False,
-            "maps":maps,"warps":warps,"actors":actors,
+            "maps":maps,"warps":warps,"actors":actors,"progression":progression_witness(report),
             "connections":source_connections(source/"PBS/map_connections.txt",scope|NEAR),
             "deferred": ["Marowak, Fuji and Poké Flute (K07)","Route 12 (K07)"]}
 

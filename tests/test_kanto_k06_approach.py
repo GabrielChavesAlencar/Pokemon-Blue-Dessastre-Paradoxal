@@ -4,6 +4,7 @@ import sys
 import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"scripts/regions"))
+from audit_k06_rocket import audit_conditions, selectors
 from build_k06_approach import APPROACH, EXACT_SEAMS, TEMP_GATES, TRANSFERS, planned_connections, verify_source
 
 
@@ -27,3 +28,11 @@ class K06ApproachTests(unittest.TestCase):
         report["warps"][0]["direction"]=6
         with self.assertRaisesRegex(ValueError,"Original Route 8"):
             verify_source(report)
+
+    def test_source_progression_records_do_not_copy_messages_or_ruby(self):
+        self.assertEqual(selectors({"code":111,"parameters":[12,"donor Ruby"]}),{})
+        self.assertEqual(selectors({"code":102,"parameters":[["dialogue","another string"],0]}),{"option_count":2})
+        self.assertEqual(selectors({"code":121,"parameters":[58,58,0]}),{"numeric_control":[58,58,0]})
+        self.assertEqual(selectors({"code":123,"parameters":["A",0]}),{"self_switch":["A",0]})
+        self.assertEqual(audit_conditions({"@switch1_valid":True,"@switch1_id":58,
+                                           "@switch2_valid":False,"@switch2_id":99}),{"@switch1_id":58})
