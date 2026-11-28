@@ -2051,10 +2051,138 @@ module BlueHoennPilot
     true
   end
 
-  def self.daycare_info
-    return false unless state
-    pbMessage(_INTL("Day Care de Hoenn: o serviço de criação e ovos ainda está em integração neste piloto."))
+  DAYCARE_SOURCE_MAP = 133
+  DAYCARE_COMPATIBILITY = [
+    ["They are not compatible.", "Os dois Pokémon não são compatíveis."],
+    ["They do not get along well.", "Os dois Pokémon não se dão muito bem."],
+    ["They get along.", "Os dois Pokémon se dão bem."],
+    ["They get along very well.", "Os dois Pokémon se dão muito bem."]
+  ].freeze
+
+  def self.daycare_active?
+    return false unless defined?(BlueHoennDayCareMetadata) &&
+                        $PokemonGlobal.is_a?(BlueHoennDayCareMetadata) && $player && $game_map
+    region = $PokemonGlobal.blue_regions
+    return false unless region.is_a?(Hash) && region["current"] == "HOENN"
+    destination = metadata[1][DAYCARE_SOURCE_MAP]
+    destination && $game_map.map_id == destination
+  end
+
+  def self.daycare_deposit(index)
+    return false unless daycare_active? && index.is_a?(Integer)
+    party = $player.party
+    return false unless index >= 0 && index < party.length
+    care = $PokemonGlobal.day_care
+    return false if care.count >= care.slots.length
+    pokemon = party[index]
+    return false if pokemon.egg? || pokemon.cannot_store
+    return false unless party.each_with_index.any? { |p, i| i != index && !p.egg? && !p.fainted? }
+    DayCare.deposit(index)
     true
+  end
+
+  def self.daycare_withdraw(index)
+    return false unless daycare_active? && index.is_a?(Integer) && index >= 0
+    care = $PokemonGlobal.day_care
+    slot = care.slots[index]
+    return false unless slot && slot.filled? && !$player.party_full? && !care.egg_generated
+    cost = slot.cost
+    return false unless cost.is_a?(Integer) && cost >= 0 && $player.money >= cost
+    DayCare.withdraw(index)
+    $player.money -= cost
+    true
+  end
+
+  def self.daycare_collect_egg
+    return false unless daycare_active? && !$player.party_full?
+    care = $PokemonGlobal.day_care
+    return false unless care.count == 2 && care.egg_generated
+    DayCare.collect_egg
+    true
+  end
+
+  def self.daycare_deposit_menu(care)
+    if care.count >= care.slots.length
+      pbMessage(localized("Both spots are occupied.", "As duas vagas da creche estão ocupadas."))
+      return false
+    end
+    labels = $player.party.map { |p| localized("{1} Lv.{2}", "{1} Nv.{2}", p.name, p.level) }
+    choice = pbMessage(localized("Which Pokémon should stay here?", "Qual Pokémon vai ficar aqui?"),
+                       labels + [localized("Cancel", "Cancelar")], labels.length + 1)
+    return false unless choice.is_a?(Integer) && choice >= 0 && choice < labels.length
+    if daycare_deposit(choice)
+      pbMessage(localized("I'll take care of your Pokémon.", "Vou cuidar bem do seu Pokémon."))
+      return true
+    end
+    pbMessage(localized("Leave at least one Pokémon able to battle. Eggs cannot stay here.",
+                        "Mantenha um Pokémon capaz de batalhar na equipe. A creche não recebe ovos."))
+    false
+  end
+
+  def self.daycare_withdraw_menu(care)
+    if care.egg_generated
+      pbMessage(localized("Please collect your egg first.", "Receba seu ovo antes de retirar um Pokémon."))
+      return false
+    end
+    slots = care.slots.each_index.select { |index| care.slots[index].filled? }
+    if slots.empty?
+      pbMessage(localized("No Pokémon are here yet.", "Você ainda não deixou Pokémon na creche."))
+      return false
+    end
+    labels = slots.map { |index| care.slots[index].pokemon.name }
+    choice = pbMessage(localized("Which Pokémon should go with you?", "Qual Pokémon você quer retirar?"),
+                       labels + [localized("Cancel", "Cancelar")], labels.length + 1)
+    return false unless choice.is_a?(Integer) && choice >= 0 && choice < slots.length
+    index = slots[choice]
+    slot = care.slots[index]
+    return false unless pbConfirmMessage(localized(
+      "{1} gained {2} level(s). Pick it up for $ {3}?",
+      "{1} ganhou {2} nível(is). Quer retirá-lo por $ {3}?",
+      slot.pokemon.name, slot.level_gain, slot.cost))
+    if daycare_withdraw(index)
+      pbMessage(localized("Take good care of your Pokémon.", "Cuide bem do seu Pokémon."))
+      return true
+    end
+    pbMessage(localized("You need room in your party and enough money.",
+                        "Você precisa de espaço na equipe e dinheiro suficiente."))
+    false
+  end
+
+  def self.daycare_info
+    return false unless daycare_active?
+    care = $PokemonGlobal.day_care
+    commands = [
+      localized("Leave a Pokémon", "Depositar Pokémon"),
+      localized("Pick up a Pokémon", "Retirar Pokémon"),
+      localized("Check compatibility", "Ver compatibilidade"),
+      localized("Collect the egg", "Receber ovo"),
+      localized("Leave", "Voltar")
+    ]
+    case pbMessage(localized("How can I help?", "Como posso ajudar?"), commands, commands.length)
+    when 0
+      daycare_deposit_menu(care)
+    when 1
+      daycare_withdraw_menu(care)
+    when 2
+      messages = care.count == 2 ? DAYCARE_COMPATIBILITY.fetch(care.get_compatibility) :
+        ["Leave two Pokémon to check compatibility.", "Deixe dois Pokémon para conferir a compatibilidade."]
+      pbMessage(localized(*messages))
+      true
+    when 3
+      if daycare_collect_egg
+        pbMessage(localized("You received the egg.", "Você recebeu o ovo."))
+        return true
+      end
+      if care.egg_generated
+        pbMessage(localized("Make room in your party to collect the egg.",
+                            "Abra espaço na equipe para receber o ovo."))
+      else
+        pbMessage(localized("There is no egg waiting for you.", "Ainda não há um ovo para receber."))
+      end
+      false
+    else
+      false
+    end
   end
 
   def self.weather_aqua(version)
@@ -3735,6 +3863,24 @@ module BlueHoennPilot
   EventHandlers.add(:on_enter_map, :blue_hoenn_music, proc do |_old_map|
     Object.prepend(Music) unless Object.ancestors.include?(Music)
   end)
+end
+
+# Essentials walks and breeds the currently selected Day Care. Keep the
+# ordinary and other regions' instances untouched in the same save.
+if defined?(PokemonGlobalMetadata) && defined?(DayCare)
+  module BlueHoennDayCareMetadata
+    def day_care
+      region = respond_to?(:blue_regions) ? blue_regions : nil
+      return super unless region.is_a?(Hash) && region["current"] == "HOENN"
+      @blue_hoenn_day_care ||= begin
+        care = DayCare.new
+        care.gain_exp = true
+        care.share_egg_moves = false
+        care
+      end
+    end
+  end
+  PokemonGlobalMetadata.prepend(BlueHoennDayCareMetadata)
 end
 
 Game_Map.prepend(BlueHoennPilot::ConnectedMapDisplay) if defined?(Game_Map)
