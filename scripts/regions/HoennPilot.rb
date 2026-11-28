@@ -444,9 +444,13 @@ module BlueHoennPilot
     true
   end
 
+  def self.on_birch_route?
+    $game_map && $game_map.map_id == metadata[1][101]
+  end
+
   def self.route_birch
     flags = state
-    return false unless flags
+    return false unless flags && on_birch_route?
     return false if flags["birch_rescued"] || flags["met_birch"]
     flags["birch_rescue_active"] = true
     return rescue_birch_battle if starter
@@ -470,7 +474,7 @@ module BlueHoennPilot
 
   def self.choose_birch_ball(species)
     flags = state
-    return false unless flags && STARTERS.include?(species)
+    return false unless flags && STARTERS.include?(species) && on_birch_route?
     return rescue_birch_battle if starter && !flags["birch_rescued"] &&
                                   !flags["met_birch"] && flags["birch_rescue_active"]
     if starter
@@ -481,16 +485,43 @@ module BlueHoennPilot
       pbMessage(_INTL("Há três Poké Bolas na maleta do Professor Birch."))
       return false
     end
-    name = GameData::Species.get(species).name
-    return false unless pbConfirmMessage(_INTL("Escolher {1} para ajudar Birch?", name))
-    return false unless pbAddPokemonSilent(species, 5)
-    flags["starter"] = species.to_s
+    return false unless grant_birch_starter(flags, species)
     hide_starter_balls($game_map)
-    # Older saves from the first Hoenn pilot already received five balls with
-    # the starter. This explicit new flag avoids re-awarding them on migration.
-    flags["balls_at_lab_pending"] = true
     rescue_birch_battle
   end
+
+  def self.grant_birch_starter(flags, species)
+    player = $player
+    return false unless player && !flags.key?("starter") && !flags.frozen?
+    return false if @birch_starter_in_progress
+    if player.party_full?
+      pbMessage(_INTL("Birch: Abra uma vaga na equipe para o Pokémon da maleta."))
+      return false
+    end
+
+    @birch_starter_in_progress = true
+    begin
+      name = GameData::Species.get(species).name
+      return false unless pbConfirmMessage(_INTL("Escolher {1} para ajudar Birch?", name))
+      return false unless $player.equal?(player) && !player.party_full? && on_birch_route? &&
+        state.equal?(flags) && flags["birch_rescue_active"] && !flags.key?("starter") && !flags.frozen?
+      pokemon = Pokemon.new(species, 5)
+      party = player.party
+      before = party.length
+      return false unless pbAddToPartySilent(pokemon) &&
+        party.length == before + 1 && party.last.equal?(pokemon)
+      flags["starter"] = species.to_s
+      # Legacy saves already held lab balls. Only this new grant sets the flag.
+      flags["balls_at_lab_pending"] = true
+      committed = true
+    ensure
+      if !committed && pokemon && party && party.length == before + 1 && party.last.equal?(pokemon)
+        party.pop
+      end
+      @birch_starter_in_progress = false
+    end
+  end
+  private_class_method :grant_birch_starter
 
   def self.hide_starter_balls(map)
     return unless map && starter && !map.equal?(@hidden_starter_ball_map)
@@ -503,16 +534,32 @@ module BlueHoennPilot
 
   def self.rescue_birch_battle
     flags = state
-    return false unless flags && starter && flags["birch_rescue_active"]
-    return false if flags["birch_rescued"] || flags["met_birch"]
-    setBattleRule("canLose")
-    WildBattle.start(:ZIGZAGOON, 2)
-    flags["birch_rescued"] = true
-    flags["met_birch"] = true
-    flags.delete("birch_rescue_active")
-    $player.heal_party if $player && $player.respond_to?(:heal_party)
-    pbMessage(_INTL("Birch: Obrigado! Visite meu laboratório quando puder."))
-    true
+    return false unless flags && starter && flags["birch_rescue_active"] && on_birch_route?
+    return false if @birch_battle_in_progress || flags["birch_rescued"] || flags["met_birch"]
+    player = $player
+    unless player && player.able_pokemon_count > 0
+      pbMessage(_INTL("Birch: Traga um Pokémon em condições de batalhar para tentar o resgate."))
+      return false
+    end
+    @birch_battle_in_progress = true
+    begin
+      setBattleRule("canLose", "cannotRun", "disablePokeballs")
+      victory = WildBattle.start(:ZIGZAGOON, 2)
+      return false unless $player.equal?(player) && state.equal?(flags)
+
+      player.heal_party
+      unless victory == true
+        pbMessage(_INTL("Birch: Obrigado por tentar! Volte à entrada da rota quando estiver pronto para tentar de novo."))
+        return false
+      end
+      flags["birch_rescued"] = true
+      flags["met_birch"] = true
+      flags.delete("birch_rescue_active")
+      pbMessage(_INTL("Birch: Obrigado! Visite meu laboratório quando puder."))
+      true
+    ensure
+      @birch_battle_in_progress = false
+    end
   end
 
   def self.rival_name
