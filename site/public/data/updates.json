@@ -2,10 +2,100 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "02732eadaedf49f3728755edb2bd2654ceae3897",
+      "date": "2026-11-28T00:24:28-03:00",
+      "title": "K04: publish Rock Tunnel for Windows and Android (#374)",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "d070b1bbfbdba9bdb3778a99740d36f75f04d437",
+      "date": "2026-11-28T00:01:12-03:00",
+      "title": "Isolate the migrated K04 native smoke with an active JSONC save profile",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "fab3f65593d1bdcd759f990a2e4984d4a06a34dd",
+      "date": "2026-11-27T23:45:56-03:00",
+      "title": "Validate the K04 publication catalog while retaining historical test baselines",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "b41a1582ada8aeb126e7e9654c6cdd22b27c35fd",
+      "date": "2026-11-27T23:35:14-03:00",
+      "title": "Sync K04 with main and retain the complete Unova standalone bundle",
+      "category": "Novidades"
+    },
+    {
+      "sha": "8dc1d42ff2ff1fecc3846d4ec06549f004380d64",
+      "date": "2026-11-27T23:33:48-03:00",
+      "title": "Integrate Rock Tunnel in the Kanto 165-map release pipeline",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "e9ede6314aa0815244b508ac669400dbb985eca3",
+      "date": "2026-11-27T23:16:14-03:00",
+      "title": "Prepare source-validated K04 build and preserve its published map slots",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "f652c9c74783cb5fbd70b957713bb984645803ab",
+      "date": "2026-11-27T23:00:45-03:00",
+      "title": "Recognize the Rock Tunnel Center by original identity for regional blackout checkpoints",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "b3c9f5b579afe9d491b1fb908fc9a431e30abb26",
+      "date": "2026-11-27T22:45:26-03:00",
+      "title": "Verify Rock Tunnel defeat, real Center respawn, battle retry and south boundary",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "8bbbc219555834d33193b77cc34deda12bb45e80",
+      "date": "2026-11-27T22:25:10-03:00",
+      "title": "Separate cave movement from route ledge planning and verify native K04 save reload",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "86579e8b4f03bc39bee2f16e8222e0106144f789",
+      "date": "2026-11-27T22:03:33-03:00",
+      "title": "Restore Route 2 Flash aide reward and isolate Center touch proof from ledge traversal",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "b1da9edadcbcdeffc9a4851a4650d7e59ef69f7f",
+      "date": "2026-11-27T21:49:41-03:00",
+      "title": "Isolate Rock Tunnel player-touch tests from random encounters and settle ledge physics",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "13a4da0dad1b6abcd69a9a51d161b6f6faa96687",
+      "date": "2026-11-27T21:35:47-03:00",
+      "title": "Retry transient GitHub release page errors without accepting partial Android history",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "6351b06431a273ac050b53180657acb90615ae82",
+      "date": "2026-11-27T21:28:46-03:00",
+      "title": "Restore original Cut trees and verify directed ledges and all Rock Tunnel stair components",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "73b5d74d9f06e2fdd8f07ad3c95f83fe1887d0c7",
+      "date": "2026-11-27T21:16:08-03:00",
+      "title": "Diagnose Rock Tunnel seams, test nurse and retain the Android QA update baseline",
+      "category": "Melhorias"
+    },
+    {
       "sha": "f7b3ee5baa37b58007d5955e2a6258af1d2a63e9",
       "date": "2026-11-27T21:03:30-03:00",
       "title": "Merge pull request #378 from GabrielChavesAlencar/codex/unova-opening-native-doors",
       "category": "Novidades"
+    },
+    {
+      "sha": "47dcf630c2ea28624cb86a0968c44e3f5b939e99",
+      "date": "2026-11-27T20:59:20-03:00",
+      "title": "Exercise native Rock Tunnel passage and Flash in disposable Windows smoke test",
+      "category": "Melhorias"
     },
     {
       "sha": "ae2b355769e49dd0c680b34062d0bf32bc61f782",
@@ -26,6 +116,12 @@
       "category": "Melhorias"
     },
     {
+      "sha": "42f2ee64c033b2646840aaccd242afa743512af3",
+      "date": "2026-11-27T20:42:50-03:00",
+      "title": "Stage native Rock Tunnel battles, encounters, healing and darkness in CI",
+      "category": "Melhorias"
+    },
+    {
       "sha": "93efe7b36feaf158bd60243f34bb84ef2458d30d",
       "date": "2026-11-27T20:40:48-03:00",
       "title": "Allow long Decades source paths on the Windows QA runner",
@@ -41,6 +137,12 @@
       "sha": "fe7565bd54aa208aacd3598b5b7d4132e52c676c",
       "date": "2026-11-27T20:25:00-03:00",
       "title": "Merge pull request #377 from GabrielChavesAlencar/codex/unova-original-opening",
+      "category": "Novidades"
+    },
+    {
+      "sha": "87334438da08509900d01bc6d841c278cf0464e6",
+      "date": "2026-11-27T20:20:22-03:00",
+      "title": "feat(kanto): stage Rock Tunnel terrain and fourteen native transfer commands in CI",
       "category": "Novidades"
     },
     {
@@ -66,6 +168,12 @@
       "date": "2026-11-27T20:06:15-03:00",
       "title": "Unova F01: exclude cross-platform MapID conflicts",
       "category": "Novidades"
+    },
+    {
+      "sha": "80877e66987c71dacd6204ffc515045014712367",
+      "date": "2026-11-27T20:05:46-03:00",
+      "title": "ci(kanto): audit Rock Tunnel source and preserve all 160 published map IDs",
+      "category": "Melhorias"
     },
     {
       "sha": "4c21940ae4936adb1919c0052007e3f2812b077d",
