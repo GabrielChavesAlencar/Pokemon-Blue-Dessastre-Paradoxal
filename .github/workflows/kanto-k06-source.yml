@@ -5,6 +5,8 @@ on:
     paths:
       - 'scripts/regions/audit_k06_rocket.py'
       - 'scripts/regions/build_k06_approach.py'
+      - 'scripts/regions/KantoK06ApproachNativeCheck.rb'
+      - 'scripts/regions/native_check.py'
       - 'tests/test_kanto_k06_approach.py'
       - '.github/workflows/kanto-k06-source.yml'
   workflow_dispatch:
@@ -13,7 +15,10 @@ permissions:
 jobs:
   intake:
     runs-on: windows-2022
-    timeout-minutes: 20
+    timeout-minutes: 25
+    env:
+      GALLIUM_DRIVER: llvmpipe
+      ALSOFT_DRIVERS: 'null'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -37,9 +42,45 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Cannot prepare exact released K05 baseline'}
           python scripts/regions/build_k06_approach.py
           if($LASTEXITCODE -ne 0){throw 'K06 approach fixture failed'}
+      - name: Percorrer Lavender e Celadon pela passagem subterrânea no Game.exe
+        shell: powershell
+        run: |
+          $root=(Resolve-Path .blue-work/kanto-k06-approach).Path
+          python scripts/regions/native_check.py $root --k06-approach
+          if($LASTEXITCODE -ne 0){throw 'K06 native fixture injection failed'}
+          $ProgressPreference='SilentlyContinue'
+          $mesa=Join-Path $env:RUNNER_TEMP 'k06-mesa.7z'
+          Invoke-WebRequest -UseBasicParsing 'https://github.com/pal1000/mesa-dist-win/releases/download/26.2.6/mesa3d-26.2.6-release-mingw.7z' -OutFile $mesa
+          if((Get-FileHash -LiteralPath $mesa -Algorithm SHA256).Hash.ToLower() -ne 'da0f71d9181b672c1918f3c342f11118c687f6059a46b16502845160733cc388'){throw 'Mesa checksum failed'}
+          $dir=Join-Path $env:RUNNER_TEMP 'k06-mesa'
+          & "$env:ProgramFiles/7-Zip/7z.exe" x $mesa "-o$dir" -y | Out-Null
+          if($LASTEXITCODE -ne 0){throw 'Mesa extraction failed'}
+          Get-ChildItem -LiteralPath $dir -Recurse -File -Filter '*.dll' |
+            Where-Object { $_.Directory.Name -eq 'x64' } |
+            ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $root }
+          $proof="$root/Data/blue-kanto-k06-approach-proof.txt"
+          $bad="$root/Data/blue-kanto-error.txt"
+          for($attempt=1;$attempt -le 2;$attempt++){
+            $stdout="k06-source-receipts/k06-native-out-$attempt.txt"
+            $stderr="k06-source-receipts/k06-native-err-$attempt.txt"
+            $proc=Start-Process -FilePath "$root/Game.exe" -WorkingDirectory $root -WindowStyle Hidden -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+            $handle=$proc.Handle
+            if(-not $proc.WaitForExit(180000)){ Stop-Process -Id $proc.Id; break }
+            if((Test-Path $proof) -or (Test-Path $bad)){break}
+            if($attempt -ne 1 -or -not ((Get-Content $stdout,$stderr -Raw -ErrorAction SilentlyContinue) -match '(?i)compil')){break}
+          }
+          foreach($file in @($proof,$bad,"$root/Data/blue-kanto-k06-native-stages.txt")){
+            if(Test-Path -LiteralPath $file -PathType Leaf){Copy-Item -LiteralPath $file -Destination 'k06-source-receipts/'}
+          }
+          if(!(Test-Path $proof -PathType Leaf) -or (Test-Path $bad -PathType Leaf)){
+            Get-Content $stdout,$stderr,$bad,"$root/Data/blue-kanto-k06-native-stages.txt" -ErrorAction SilentlyContinue | Select-Object -Last 130
+            throw 'K06 bidirectional route proof missing'
+          }
+          Write-Host 'KANTO_K06_NATIVE_APPROACH_OK'
       - name: Preservar somente recibo de IDs e dependências
+        if: always() && hashFiles('k06-source-receipts/kanto-k06-source.json') != ''
         uses: actions/upload-artifact@v4
         with:
           name: kanto-k06-source-inventory
-          path: k06-source-receipts/*.json
+          path: k06-source-receipts/
           if-no-files-found: error

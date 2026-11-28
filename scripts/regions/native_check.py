@@ -12,10 +12,22 @@ sys.path.insert(0, str(ROOT / "scripts/official_rules"))
 from prepare_restore import Marshal, RubyString, dump
 
 
-def prepare(game, integrated=False, k03e=False, k04=False, k05_city=False, k05_tower=False):
+def prepare(game, integrated=False, k03e=False, k04=False, k05_city=False, k05_tower=False, k06_approach=False):
     game = game.resolve()
-    if sum((integrated, k03e, k04, k05_city, k05_tower)) > 1:
+    if sum((integrated, k03e, k04, k05_city, k05_tower, k06_approach)) > 1:
         raise ValueError("Choose one native proof")
+    if k06_approach:
+        from audit import json_file
+        from build_k06_approach import MAP_DIR, PROOF, SAVE_APP, APPROACH
+        from qa_k04_migration import save_namespace_valid
+        if os.getenv("GITHUB_ACTIONS")!="true" or game!=(ROOT/".blue-work"/MAP_DIR).resolve():
+            raise ValueError("K06 approach native check requires its disposable fixture")
+        marker=json_file(game/PILOT_META)
+        if (marker.get(PROOF) is not True or marker.get("save_app")!=SAVE_APP or
+                not save_namespace_valid(game,SAVE_APP) or len(marker["maps"])!=178 or
+                not all(str(i) in marker["maps"] for i in APPROACH) or
+                marker["maps"].get("93")!=609):
+            raise ValueError("K06 approach save isolation or map identities invalid")
     if k05_city or k05_tower:
         from audit import json_file
         from build_k05_city import CITY_SLOTS, SAVE_APP
@@ -82,9 +94,9 @@ def prepare(game, integrated=False, k03e=False, k04=False, k05_city=False, k05_t
             raise ValueError("Integrated Main injection is allowed only on a CI copy of game/")
         if not (game / "Data/blue-kanto-start.txt").is_file():
             raise ValueError("The CI game has no installed Kanto marker")
-    elif not (k03e or k04 or k05_city or k05_tower) and (not game.is_relative_to((ROOT / ".blue-work").resolve()) or not (game / PILOT_META).is_file()):
+    elif not (k03e or k04 or k05_city or k05_tower or k06_approach) and (not game.is_relative_to((ROOT / ".blue-work").resolve()) or not (game / PILOT_META).is_file()):
         raise ValueError("Native proof requires a dedicated Kanto build under .blue-work.")
-    if not (integrated or k03e or k04 or k05_city or k05_tower):
+    if not (integrated or k03e or k04 or k05_city or k05_tower or k06_approach):
         # Stage-16 preflight runs on the exact compiled, disposable Kanto pilot
         # in CI, not against an ordinary player's save or Game.exe.
         from release_gate import inspect as release_inspect
@@ -119,11 +131,14 @@ def prepare(game, integrated=False, k03e=False, k04=False, k05_city=False, k05_t
         if k05_tower:
             proof_file = "Data/blue-kanto-k05-tower-check.rb"
             klass = "KantoK05TowerNativeCheck"
+        if k06_approach:
+            proof_file = "Data/blue-kanto-k06-approach-check.rb"
+            klass = "KantoK06ApproachNativeCheck"
         failure = "Data/blue-kanto-integrated-error.txt" if integrated else "Data/blue-kanto-error.txt"
-        prerequisite = 'load "Data/blue-kanto-proof.rb"' if k03e or k04 or k05_city or k05_tower else ""
-        if k04 or k05_city or k05_tower:
+        prerequisite = 'load "Data/blue-kanto-proof.rb"' if k03e or k04 or k05_city or k05_tower or k06_approach else ""
+        if k04 or k05_city or k05_tower or k06_approach:
             prerequisite += '\n      load "Data/blue-kanto-k03e-check.rb"'
-        if k05_tower:
+        if k05_tower or k06_approach:
             prerequisite += '\n      load "Data/blue-kanto-k05-city-check.rb"'
         proof = f"""    begin
       {prerequisite}
@@ -158,13 +173,15 @@ def prepare(game, integrated=False, k03e=False, k04=False, k05_city=False, k05_t
                          ("blue-kanto-k03e-check.rb", "KantoK03ENativeCheck.rb"),
                          ("blue-kanto-k04-check.rb", "KantoK04NativeCheck.rb")):
             (game / "Data" / dst).write_bytes((ROOT / "scripts/regions" / src).read_bytes())
-    if k05_city or k05_tower:
+    if k05_city or k05_tower or k06_approach:
         for dst, src in (("blue-kanto-proof.rb", "KantoNativeCheck.rb"),
                          ("blue-kanto-k03e-check.rb", "KantoK03ENativeCheck.rb"),
                          ("blue-kanto-k05-city-check.rb", "KantoK05CityNativeCheck.rb")):
             (game / "Data" / dst).write_bytes((ROOT / "scripts/regions" / src).read_bytes())
     if k05_tower:
         (game / proof_file).write_bytes((ROOT / "scripts/regions/KantoK05TowerNativeCheck.rb").read_bytes())
+    if k06_approach:
+        (game / proof_file).write_bytes((ROOT / "scripts/regions/KantoK06ApproachNativeCheck.rb").read_bytes())
     if not integrated:
         # One-shot native test only; not distributed as a gameplay plugin.
         (game / "Data/blue-kanto-walk-check.rb").write_bytes(
@@ -180,5 +197,6 @@ if __name__ == "__main__":
     parser.add_argument("--k04", action="store_true", help="CI only: isolated Rock Tunnel")
     parser.add_argument("--k05-city", action="store_true", help="CI only: isolated Lavender city")
     parser.add_argument("--k05-tower", action="store_true", help="CI only: isolated Pokémon Tower")
+    parser.add_argument("--k06-approach", action="store_true", help="CI only: disposable Celadon approach")
     args = parser.parse_args()
-    prepare(args.game, args.integrated, args.k03e, args.k04, args.k05_city, args.k05_tower)
+    prepare(args.game, args.integrated, args.k03e, args.k04, args.k05_city, args.k05_tower, args.k06_approach)
