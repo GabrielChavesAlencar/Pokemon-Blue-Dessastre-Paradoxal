@@ -58,4 +58,14 @@ jobs:
                       continue
                   assert (path.parent / link.partition("#")[0]).resolve().is_file(), (name, link)
           print("KALOS_KD00_BASELINE_DOCUMENTAL_OK")
+          source_name = "docs/KALOS_KD01_FONTES_E_DIREITOS.md"
+          assert source_name in paths
+          source = Path(source_name).read_text(encoding="utf8")
+          for marker in ("CANON_XY", "CANON_MEGA", "FIRE_ASH", "VIRTUALIZATION", "WORLD", "POKEX"):
+              assert len(re.findall(rf"^\| {marker} \|.+https://[^ ]+", source, re.M)) == 1, marker
+          for phrase in ("BLOQUEADO_IMPORTACAO", "REFERENCIA_APENAS", "FORA_DA_BASE_TECNICA",
+                         "NAO_VERIFICADO", "caminho autoral 2D", "SHA-256", "Nenhum site de terceiro"):
+              assert phrase in source, phrase
+          assert "46150162315" in plan
+          print("KALOS_KD01_FONTES_E_DIREITOS_DOCUMENTAL_OK")
           PY

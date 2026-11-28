@@ -11,8 +11,8 @@ O único YAML novo valida a documentação no GitHub Actions.
 
 | Fase | Evidência de saída | Estado neste documento |
 |---|---|---|
-| KD00 | Baseline estática, fronteiras e critério de validação | Submetida à validação |
-| KD01 | Matriz de fontes, direitos, cobertura e plano de contingência | Próxima |
+| KD00 | Baseline estática, fronteiras e critério de validação | [Validada no Actions](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/46150162315) |
+| KD01 | [Matriz de fontes, direitos e contingência](KALOS_KD01_FONTES_E_DIREITOS.md) | Submetida à validação |
 | KD02 | Inventário e grafo de progressão, com riscos e lacunas | A fazer |
 | KD03 | Desenho 2D, dados, save, riscos de ID e preparação do primeiro corte | A fazer |
 | KD04 | Roteiro Windows/Android pela fonte, testes e handoff implementável | A fazer |
