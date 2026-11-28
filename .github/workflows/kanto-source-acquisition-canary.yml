@@ -1,0 +1,52 @@
+name: Kanto - sondar fonte original sem compilar
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/kanto-source-acquisition-canary.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kanto-source-original-canary
+  cancel-in-progress: false
+
+jobs:
+  source-readonly:
+    runs-on: windows-2025
+    timeout-minutes: 6
+    env:
+      PYTHONUTF8: '1'
+      K06_REVISION: feaa0765aa7a539f83417a42a8bb2445c6b59576
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: feaa0765aa7a539f83417a42a8bb2445c6b59576
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verificar o arquivo original, sem extrair ou publicar
+        shell: pwsh
+        run: |
+          @'
+          import os, subprocess, sys, tempfile
+          from pathlib import Path
+          sys.path.insert(0, str(Path("scripts/regions").resolve()))
+          from ensure_source import SOURCE_URL, SOURCE_FALLBACK, download_pinned, json_file, KANTO
+          expected = "48883c8217bcd9e7fa1b9446bddaa9db5f9715a7ba73ac02785b6660769e2683"
+          assert subprocess.check_output(["git","rev-parse","HEAD"], text=True).strip() == os.environ["K06_REVISION"]
+          assert json_file(KANTO)["sha256"] == expected
+          with tempfile.TemporaryDirectory(prefix="blue-frlg-canary-") as tmp:
+              path = Path(tmp) / "FRLG.rar"
+              for url in (SOURCE_URL, SOURCE_FALLBACK):
+                  try:
+                      download_pinned(url, path, expected)
+                      break
+                  except (OSError, ValueError, RuntimeError) as error:
+                      print("Fonte original rejeitada:", error)
+              else:
+                  raise SystemExit("A fonte oficial ainda não entregou o arquivo com a assinatura esperada.")
+          print("KANTO_ORIGINAL_SOURCE_SHA256_CANARY_OK")
+          '@ | python -
+          if($LASTEXITCODE -ne 0){exit $LASTEXITCODE}
