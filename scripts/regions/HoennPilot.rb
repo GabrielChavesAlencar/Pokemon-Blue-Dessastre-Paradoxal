@@ -1218,10 +1218,28 @@ module BlueHoennPilot
                            "Escavador: receba Strength! A Insígnia do Calor permite mover pedras em Hoenn.")
   end
 
+  def self.rusturf_shortcut_open?
+    flags = state
+    !!(flags && flags["rusturf_shortcut_open"])
+  end
+
   def self.rusturf_east_gate
-    return false unless state
-    pbMessage(_INTL("A saída leste de Rusturf Tunnel será liberada quando Verdanturf for integrada."))
+    return false unless state && !rusturf_shortcut_open?
+    pbMessage(_INTL("As rochas ainda fecham o atalho. Use Rock Smash dentro do túnel depois de obter a Insígnia do Dínamo."))
     false
+  end
+
+  def self.rusturf_rock(event_id)
+    flags = state
+    return false unless flags && $game_map && $game_map.map_id == metadata[1][157]
+    event = $game_map.events[event_id]
+    return false unless event && %w[HN4_RusturfRock_1 HN4_RusturfRock_2].include?(event.name)
+    unless flags["rock_smash_given"]
+      pbMessage(_INTL("Procure o morador de Mauville que ensina Rock Smash."))
+      return false
+    end
+    return false unless rock_smash_obstacle(event_id)
+    flags["rusturf_shortcut_open"] = true
   end
 
 
@@ -1641,18 +1659,8 @@ module BlueHoennPilot
     flags = state
     return false unless flags
     return false if flags["rock_smash_given"]
-    item = [:HM06, :TM94].find do |candidate|
-      GameData::Item.exists?(candidate) &&
-        GameData::Item.get(candidate).respond_to?(:move) &&
-        GameData::Item.get(candidate).move == :ROCKSMASH
-    end
-    unless item && $bag && $bag.add(item, 1)
-      pbMessage(_INTL("Morador: a técnica Rock Smash precisa estar disponível e caber na Bolsa."))
-      return false
-    end
-    flags["rock_smash_given"] = true
-    pbMessage(_INTL("Você recebeu Rock Smash! A Insígnia do Dínamo autoriza seu uso em Hoenn."))
-    true
+    field_hm_reward(:ROCKSMASH, HOENN_FIELD_ITEMS.fetch(:ROCKSMASH), "rock_smash_given",
+                    "Você recebeu Rock Smash! A Insígnia do Dínamo autoriza seu uso em Hoenn.")
   end
 
   def self.rydel_bikes
@@ -2876,7 +2884,7 @@ module BlueHoennPilot
   }.freeze
   HOENN_FIELD_ITEMS = {
     CUT:[:HM01,:HMCUT], FLASH:[:HM05,:HMFLASH],
-    ROCKSMASH:[:HM06,:TM94], STRENGTH:[:HM04,:HMSTRENGTH],
+    ROCKSMASH:[:HM06,:HMROCKSMASH,:TM94,:TM98], STRENGTH:[:HM04,:HMSTRENGTH],
     SURF:[:HM03,:HMSURF], DIVE:[:HM08,:HMDIVE],
     WATERFALL:[:HM07,:HMWATERFALL]
   }.freeze
@@ -2891,13 +2899,13 @@ module BlueHoennPilot
       return false
     end
     return false unless $bag && defined?(GameData::Item)
-    item=HOENN_FIELD_ITEMS.fetch(move).find{|id|
-      GameData::Item.exists?(id) &&
-      GameData::Item.get(id).respond_to?(:move) &&
-      GameData::Item.get(id).move==move &&
-      $bag.has?(id)
+    candidates = HOENN_FIELD_ITEMS.fetch(move).select { |id|
+      GameData::Item.exists?(id) && GameData::Item.get(id).respond_to?(:move) &&
+        GameData::Item.get(id).move == move
     }
-    unless item
+    # Some native Blue recipes teach Rock Smash using a consumable TM.
+    receipt = move == :ROCKSMASH && flags["rock_smash_given"] && !candidates.empty?
+    unless receipt || candidates.any? { |id| $bag.has?(id) }
       pbMessage(_INTL("Obtenha o HM do movimento {1} antes de usá-lo em Hoenn.",move)) if show_message
       return false
     end

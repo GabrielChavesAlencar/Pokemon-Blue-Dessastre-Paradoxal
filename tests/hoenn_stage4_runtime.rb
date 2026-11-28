@@ -249,6 +249,15 @@ assert(BlueHoennPilot.pokenav, "Older save could not open its earned navigation"
 assert(BlueHoennPilot.mr_stone, "Mr Stone repeat dialogue missing")
 assert($bag.items[:LETTER] == 1, "Letter duplicated")
 assert(!BlueHoennPilot.rusturf_east_gate, "Verdanturf premature exit")
+GameData::Item.register(:TM98, :ROCKSMASH)
+$PokemonGlobal.blue_regions["achievements"]["HOENN"] << "DYNAMO"
+$player.party.first.known_moves << :ROCKSMASH
+assert(!BlueHoennPilot.field_move_ready?(:ROCKSMASH), "No regional receipt or TM still allowed Rock Smash")
+assert(BlueHoennPilot.rock_smash_teacher && $bag.items[:TM98] == 1, "Teacher rejected the native TM98")
+assert($bag.remove(:TM98, 1), "Could not consume the teaching TM")
+assert(BlueHoennPilot.field_move_ready?(:ROCKSMASH), "Consumed TM invalidated the regional receipt")
+assert(!BlueHoennPilot.rock_smash_teacher, "Teacher duplicated the Rock Smash reward")
+$PokemonGlobal.blue_regions["achievements"]["HOENN"].delete("DYNAMO")
 assert(BlueHoennPilot.sign_stage4(:RUSTBORO_GYM), "Gym sign missing")
 assert(!BlueHoennPilot.sign_stage4(:MISSING), "Unknown sign accepted")
 
