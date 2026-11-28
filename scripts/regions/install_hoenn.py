@@ -12,6 +12,7 @@ import hashlib
 import json
 import os
 import re
+import struct
 import tempfile
 from collections import Counter
 from contextlib import contextmanager
@@ -33,7 +34,7 @@ from pilot_hoenn import (
 from prepare_hoenn_source import inspect_zip
 from hoenn_stage10 import LEGACY_VOID_SURF_BORDERS, RESTORED_SURF_BORDERS
 from install_kanto import verify_installed as verify_kanto
-from server.ruby_marshal import RubyObject, loads
+from server.ruby_marshal import RubyData, RubyObject, loads
 
 MAIN = (ROOT / "game").resolve()
 MANIFEST = Path("Data/blue-hoenn-install.json")
@@ -80,6 +81,8 @@ GRANITE_ITEMS = (
     (161, "B2F_EVERSTONE_CENTER", (22, 16), "EVERSTONE", False),
 )
 DEWFORD_EVENT_SOURCES = (28, 30, 160, 161)
+GRANITE_PASSAGE_FIELD = "granite_passage"
+GRANITE_PASSAGE_SOURCE = 159
 COAST_SOURCES = frozenset(COAST_ROUTES)
 PLUGIN = "Plugins/ZZZZZ Blue Hoenn Pilot/HoennPilot.rb"
 REQUIRED = (
@@ -179,6 +182,10 @@ def verify_installed(game: Path, *, allow_pending: bool = False) -> dict:
         if type(data[DEWFORD_LAYOUT_FIELD]) is not int or data[DEWFORD_LAYOUT_FIELD] != DEWFORD_LAYOUT:
             raise ValueError("Revisão desconhecida do conteúdo de Dewford.")
         verify_dewford_layout(lambda rel: safe_file(game, rel).read_bytes(), maps)
+    if GRANITE_PASSAGE_FIELD in data:
+        if type(data[GRANITE_PASSAGE_FIELD]) is not int or data[GRANITE_PASSAGE_FIELD] != 1:
+            raise ValueError("Revisão desconhecida da passagem de Granite Cave.")
+        granite_passage(safe_file(game, map_path(maps[GRANITE_PASSAGE_SOURCE])).read_bytes())
     if COAST_SOURCES <= maps.keys():
         verify_coast(lambda rel: safe_file(game, rel).read_bytes(), maps)
     return {"status": "integrated_files_ready_for_native_QA", "maps": len(maps),
@@ -517,6 +524,31 @@ def verify_dewford_layout(read, mapping: dict[int, int]) -> None:
     dewford_metadata(read(MAP_METADATA), mapping)
 
 
+def granite_passage(raw: bytes, *, apply: bool = False) -> bytes:
+    """Open one cell between the upper exit from B1F and Steven's corridor."""
+    world = loads(raw)
+    if not isinstance(world, RubyObject) or world.name != "RPG::Map":
+        raise ValueError("Granite Cave 1F inválida.")
+    table = world.attrs.get("@data")
+    if (not isinstance(table, RubyData) or table.name != "Table" or
+            (world.attrs.get("@width"), world.attrs.get("@height")) != (52, 22) or
+            len(table.data) != 20 + 2 * 52 * 22 * 3 or
+            struct.unpack_from("<5I", table.data) != (3, 52, 22, 3, 52 * 22 * 3)):
+        raise ValueError("Dimensões não auditadas em Granite Cave 1F.")
+    # (14,14) is a top wall between the upper path (14,13) and the
+    # west corridor (13,14). Keep the original floor under that wall.
+    offsets = [20 + 2 * (14 + 52 * (14 + 22 * layer)) for layer in range(3)]
+    cells = tuple(struct.unpack_from("<H", table.data, offset)[0] for offset in offsets)
+    if cells == (441, 0, 0):
+        return raw
+    if not apply or cells != (441, 434, 0):
+        raise ValueError("Passagem de Steven ausente ou fora da geometria auditada.")
+    data = bytearray(table.data)
+    struct.pack_into("<H", data, offsets[1], 0)
+    world.attrs["@data"] = RubyData("Table", bytes(data))
+    return serialize(world, EVENT_CLASSES)
+
+
 def granite_pickup(identifier: str, item: str, event_id: int) -> bytes:
     return f'BlueHoennPilot.pickup(:{item}, "GRANITE_{identifier}", {event_id})'.encode("ascii")
 
@@ -575,7 +607,7 @@ def migration_file_set(transaction: dict, backup: Path) -> frozenset[str]:
     version = transaction.get("schema")
     if version == 1:
         return MIGRATION_FILES
-    if version not in (2, 3, 4, 5):
+    if version not in (2, 3, 4, 5, 6):
         raise ValueError("Versão desconhecida de recuperação de Hoenn.")
     previous_raw = safe_file(backup, MANIFEST.as_posix()).read_bytes()
     recorded = transaction["files"].get(MANIFEST.as_posix())
@@ -598,12 +630,16 @@ def migration_file_set(transaction: dict, backup: Path) -> frozenset[str]:
         if RUSTBORO_LAYOUT_FIELD in previous_manifest:
             raise ValueError("O backup de Rustboro contém uma revisão já migrada.")
         extras.update(map_path(previous[key]) for key in RUSTBORO_LAYOUT_SOURCES)
-    if version == 4 or (version == 5 and transaction.get("dewford_layout") is True):
+    if version == 4 or (version >= 5 and transaction.get("dewford_layout") is True):
         if DEWFORD_LAYOUT_FIELD in previous_manifest:
             raise ValueError("O backup de Dewford contém uma revisão já migrada.")
         extras.add(MAP_METADATA)
         extras.update(map_path(previous[key]) for key in DEWFORD_EVENT_SOURCES)
-    if version == 5:
+    if version == 6:
+        if GRANITE_PASSAGE_FIELD in previous_manifest:
+            raise ValueError("O backup de Granite Cave contém a passagem já migrada.")
+        extras.add(map_path(previous[GRANITE_PASSAGE_SOURCE]))
+    if version == 5 or (version == 6 and "coast_maps" in transaction):
         coastal = transaction.get("coast_maps")
         if (not isinstance(coastal, dict) or set(coastal) != {str(key) for key in COAST_SOURCES} or
                 COAST_SOURCES & previous.keys() or
@@ -657,7 +693,7 @@ def recover_migration(game: Path) -> bool:
 def commit_migration(
     game: Path, previous: dict, changes: dict, *, oldale_houses: int | None = None,
     rustboro_layout: bool = False, dewford_layout: bool = False,
-    coast_maps: dict[int, int] | None = None,
+    coast_maps: dict[int, int] | None = None, granite_1f: bool = False,
 ) -> tuple[dict, Path]:
     paths = {rel: safe_file(game, rel) for rel in changes}
     backup = migration_backup(datetime.now(timezone.utc).strftime("hoenn-v2-%Y%m%dT%H%M%S%fZ"))
@@ -679,6 +715,8 @@ def commit_migration(
     if coast_maps:
         transaction.update(schema=5, rustboro_layout=rustboro_layout, dewford_layout=dewford_layout,
                            coast_maps={str(key): dest for key, dest in coast_maps.items()})
+    if granite_1f:
+        transaction.update(schema=6, rustboro_layout=rustboro_layout, dewford_layout=dewford_layout)
     if set(changes) != migration_file_set(transaction, backup):
         raise ValueError("Arquivos inesperados na migração de Hoenn.")
     atomic(journal, json.dumps(transaction).encode("utf-8"))
@@ -726,8 +764,10 @@ def migrate_existing(game: Path, commit: bool) -> dict:
     plugin = Path(__file__).with_name("HoennPilot.rb").read_bytes()
     needs_rustboro = CATALOG_REVISION >= 2 and RUSTBORO_LAYOUT_FIELD not in proof
     needs_dewford = CATALOG_REVISION >= 2 and DEWFORD_LAYOUT_FIELD not in proof
+    needs_granite = CATALOG_REVISION >= 2 and GRANITE_PASSAGE_FIELD not in proof
     if (proof["schema"] == 2 and proof["catalog_revision"] == CATALOG_REVISION and
-            layout == SURF_LAYOUT and previous[PLUGIN] == plugin and not (needs_rustboro or needs_dewford)):
+            layout == SURF_LAYOUT and previous[PLUGIN] == plugin and
+            not (needs_rustboro or needs_dewford or needs_granite)):
         return {**result, "catalog_migration_pending": False, "catalog_changed": False}
     maps = {source: loads(safe_file(game, f"Data/Map{dest:03}.rxdata").read_bytes())
             for source, dest in mapping.items()}
@@ -776,6 +816,12 @@ def migrate_existing(game: Path, commit: bool) -> dict:
         changed_maps.update(dewford_overlay(game, read_dewford, ownership))
         proof[DEWFORD_LAYOUT_FIELD] = DEWFORD_LAYOUT
 
+    if needs_granite:
+        rel = map_path(ownership[GRANITE_PASSAGE_SOURCE])
+        previous[rel] = safe_file(game, rel).read_bytes()
+        changed_maps[rel] = granite_passage(previous[rel], apply=True)
+        proof[GRANITE_PASSAGE_FIELD] = 1
+
     if coast_additions:
         for rel in coast_paths(ownership):
             if rel not in previous:
@@ -816,7 +862,8 @@ def migrate_existing(game: Path, commit: bool) -> dict:
     }
     result, backup = commit_migration(game, previous, changes, oldale_houses=houses_id,
                                       rustboro_layout=needs_rustboro, dewford_layout=needs_dewford,
-                                      coast_maps={key: ownership[key] for key in coast_additions})
+                                      coast_maps={key: ownership[key] for key in coast_additions},
+                                      granite_1f=needs_granite)
     return {**result, "catalog_migration_pending": False, "catalog_changed": True, "backup": str(backup)}
 
 
@@ -872,6 +919,8 @@ def prepare_overlay(game: Path, source: Source) -> tuple[dict[str, bytes], dict]
     if CATALOG_REVISION >= 2:
         files.update(rustboro_overlay(game, files.__getitem__, mapping))
         files.update(dewford_overlay(game, files.__getitem__, mapping))
+        granite_file = map_path(mapping[GRANITE_PASSAGE_SOURCE])
+        files[granite_file] = granite_passage(files[granite_file], apply=True)
     if COAST_SOURCES <= pending:
         files.update(coast_overlay(files.__getitem__, mapping, coast_reader(source)))
     expected_map_files = {map_path(mid) for mid in mapping.values()}
@@ -900,6 +949,7 @@ def prepare_overlay(game: Path, source: Source) -> tuple[dict[str, bytes], dict]
     if CATALOG_REVISION >= 2:
         proof[RUSTBORO_LAYOUT_FIELD] = RUSTBORO_LAYOUT
         proof[DEWFORD_LAYOUT_FIELD] = DEWFORD_LAYOUT
+        proof[GRANITE_PASSAGE_FIELD] = 1
     files[COMPACT] = marker_bytes(proof)[COMPACT]
     proof["installed_sha256"][COMPACT] = sha(files[COMPACT])
     return files, proof
