@@ -200,6 +200,8 @@ Para cada subfase use inventário H00, fonte autorizada e geometria nativa. Reut
 - Floresta: recruta Aqua, empregado, item e bloqueio, treinadores, itens visíveis/ocultos, saídas norte/sul e floricultura/Wailmer Pail. Rustboro: todas as casas, escola, Devon e ginásio; Roxanne e puzzle, STONE/TM/uma esmeralda, aquisição de Cut na casa correta. Não confundir desbloqueio por badge com aquisição do HM.
 - R116/Rusturf Tunnel: roubo de Devon Goods, resgate de Peeko, retorno ao funcionário e Mr. Stone, Letter/PokéNav, entrega única e acesso ao barco Briney. Conectar passagens com coordenadas auditadas; leste do túnel continua bloqueado até Rock Smash quando exigido.
 - Gate HOENN_H04_ROXANNE_CUT_DEVON_OK.
+- O desafio de Roxanne registra a solução em Hoenn e permite revanche sem repetir as perguntas. Cut exige o recibo do especialista, uma insígnia local e um Pokémon que conheça o golpe. Mr. Stone libera o PokéNav de destinos após a entrega da Devon e o recebimento da carta, incluindo saves anteriores elegíveis.
+- Cut, PokéNav e o desafio de Roxanne passaram em um ensaio no Game.exe Windows com save e reload. As escadas das casas e a restrição da passagem leste de Rusturf seguem em revisão.
 
 ### H05 — Dewford e Granite Cave
 - Casa de Briney, embarque real, destino Dewford e retorno, sem bypass de missão. Old Rod, NPCs/interiores, Brawly e ginásio escuro, KNUCKLE/TM. Flash obtido na entrada da caverna conforme referência; visibilidade e passagem corretas, entregar Letter a Steven, Steel Wing se válido no PBS.

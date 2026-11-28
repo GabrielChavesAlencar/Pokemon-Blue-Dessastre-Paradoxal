@@ -933,6 +933,27 @@ module BlueHoennPilot
     true
   end
 
+  def self.roxanne_puzzle(flags)
+    return true if flags["roxanne_puzzle_solved"]
+    type_choice = pbMessage(
+      _INTL("Roxanne: Minha primeira pergunta é sobre uma rocha pura. Qual tipo tem vantagem contra Pedra?"),
+      [_INTL("Elétrico"), _INTL("Água"), _INTL("Normal")], -1
+    )
+    unless type_choice == 1
+      pbMessage(_INTL("Roxanne: Pense no que a água de um rio faz às rochas ao longo dos anos."))
+      return false
+    end
+    tactic = pbMessage(
+      _INTL("Roxanne: Rock Tomb reduziu sua Velocidade. Qual ação desfaz essa redução durante a batalha?"),
+      [_INTL("Usar uma Poção"), _INTL("Esperar um turno"), _INTL("Trocar de Pokémon")], -1
+    )
+    unless tactic == 2
+      pbMessage(_INTL("Roxanne: Uma Poção recupera PS. Ao recolher um Pokémon, mudanças de Velocidade são zeradas."))
+      return false
+    end
+    flags["roxanne_puzzle_solved"] = true
+  end
+
   def self.roxanne
     flags = state
     return false unless flags && $player && !$player.party.empty?
@@ -944,7 +965,8 @@ module BlueHoennPilot
       pbMessage(_INTL("Roxanne: Explore Petalburg Woods e ajude o funcionário Devon antes do desafio."))
       return false
     end
-    pbMessage(_INTL("Roxanne: Sou especialista em Pokémon de Pedra. Aceita meu desafio?"))
+    return false unless roxanne_puzzle(flags)
+    pbMessage(_INTL("Roxanne: Agora mostre como usa essas ideias em batalha!"))
     setBattleRule("canLose")
     unless TrainerBattle.start(:BLUE_HOENN_ROXANNE, "Roxanne", 427)
       $player.heal_party if $player.respond_to?(:heal_party)
@@ -1138,21 +1160,49 @@ module BlueHoennPilot
       pbMessage(_INTL("Mr. Stone: Nossa equipe está procurando um pacote que desapareceu."))
       return false
     end
-    if flags["stone_letter_received"]
-      pbMessage(_INTL("Mr. Stone: Entregue a carta a Steven em Dewford quando a travessia estiver aberta."))
-      return true
-    end
-    if GameData::Item.exists?(:LETTER)
-      unless $bag && $bag.add(:LETTER, 1)
-        pbMessage(_INTL("Mr. Stone: Libere espaço na Bolsa para receber minha carta."))
-        return false
+    unless flags["stone_letter_received"]
+      if GameData::Item.exists?(:LETTER)
+        unless $bag && $bag.add(:LETTER, 1)
+          pbMessage(_INTL("Mr. Stone: Libere espaço na Bolsa para receber minha carta."))
+          return false
+        end
+      else
+        flags["stone_letter_virtual"] = true
+        pbMessage(_INTL("Mr. Stone: A carta para Steven está registrada no diário da viagem."))
       end
-    else
-      flags["stone_letter_virtual"] = true
-      pbMessage(_INTL("Esta instalação não tem o item Carta; registrei a entrega futura no diário regional."))
+      flags["stone_letter_received"] = true
     end
-    flags["stone_letter_received"] = true
-    pbMessage(_INTL("Mr. Stone: Leve esta carta a Steven em Dewford. Briney poderá ajudar na próxima etapa."))
+    unless flags["devon_pokenav_received"]
+      flags["devon_pokenav_received"] = true
+      pbMessage(_INTL("Mr. Stone: Ativei seu PokéNav. Abra o menu para consultar os próximos destinos de Hoenn."))
+    end
+    if flags["steven_letter_delivered"]
+      pbMessage(_INTL("Mr. Stone: Obrigado por levar minha carta a Steven. Consulte o PokéNav se precisar de ajuda."))
+    else
+      pbMessage(_INTL("Mr. Stone: Leve minha carta a Steven em Dewford. Procure Briney na Rota 104."))
+    end
+    true
+  end
+
+  def self.pokenav_available?
+    flags = state
+    # Old saves already earned the navigation service by taking Stone's letter.
+    !!(flags && flags["devon_goods_delivered"] && flags["stone_letter_received"])
+  end
+
+  def self.pokenav
+    return false unless pokenav_available?
+    flags = state
+    destination = if flags["stern_package_delivered"]
+                    _INTL("A entrega a Stern está concluída. A Rota 110 liga Slateport a Mauville.")
+                  elsif flags["steven_letter_delivered"] && knuckle_badge?
+                    _INTL("A carta foi entregue. Converse com Briney em Dewford para seguir a Slateport.")
+                  elsif flags["steven_letter_delivered"]
+                    _INTL("A carta foi entregue. Desafie Brawly em Dewford antes de embarcar para Slateport.")
+                  else
+                    _INTL("Leve a carta a Steven em Granite Cave. Briney embarca para Dewford na Rota 104.")
+                  end
+    pbMessage(_INTL("PokéNav · Destinos de Hoenn\n{1}", destination))
     true
   end
 
@@ -3813,9 +3863,20 @@ if defined?(Spriteset_Global)
   Spriteset_Global.prepend(BlueHoennPilot::CrisisSprites)
 end
 
-# Only the isolated test copy installs this pause-menu tool; never register
-# a global Debug menu in the main Blue/Decades, Kanto, Johto or Sinnoh.
 if defined?(MenuHandlers)
+  MenuHandlers.add(:pause_menu, :blue_hoenn_pokenav, {
+    "name" => _INTL("PokéNav"),
+    "order" => 54,
+    "condition" => proc { |_menu| BlueHoennPilot.pokenav_available? },
+    "effect" => proc do |menu|
+      menu.pbHideMenu
+      BlueHoennPilot.pokenav
+      menu.pbShowMenu
+      false
+    end
+  })
+
+  # The teleport debug tool remains exclusive to the isolated test copy.
   MenuHandlers.add(:pause_menu, :blue_hoenn_test_teleport, {
     "name" => _INTL("Testar Hoenn · Teleporte"),
     "order" => 72,
