@@ -208,6 +208,20 @@ Para cada subfase use inventário H00, fonte autorizada e geometria nativa. Reut
 - Casa de Briney, embarque real, destino Dewford e retorno, sem bypass de missão. Old Rod, NPCs/interiores, Brawly e ginásio escuro, KNUCKLE/TM. Flash obtido na entrada da caverna conforme referência; visibilidade e passagem corretas, entregar Letter a Steven, Steel Wing se válido no PBS.
 - Validar Granite Cave todos os andares, pesca, itens, entradas e saída; preparar conexão R105–109 (ver H14, adicionar trechos necessários antecipadamente sem liberar Surf antes de hora).
 - Gate HOENN_H05_BRINEY_BRAWLY_STEVEN_OK.
+- A migração preserva os 200 MapIDs e instala o pescador da Vara Velha, moradores nas três casas de Dewford e cinco itens nos andares inferiores. O ginásio começa com a luz reduzida e ganha iluminação conforme as vitórias. Flash em Granite Cave exige a Insígnia do Punho, o recibo regional do montanhista e um Pokémon apto que saiba o golpe. A TM70 consumida ao ensinar Flash fica registrada pelo recibo; o movimento não é usado no ginásio. Briney exige resgate e carta, só embarca nos respectivos portos e reserva a ida a Slateport para depois da insígnia e da entrega a Steven.
+
+#### Preparação das rotas marítimas
+
+O catálogo compartilhado revisão 3 acrescenta os MapKeys 107, 109 e 110, totalizando 203 mapas. O instalador baixa as três geometrias da fonte fixada e compila os encontros de água e pesca no jogo. As quatro bordas têm células de água em comum e nenhuma dupla de células caminháveis em terra. A faixa R106–R107 usa o deslocamento 7 para criar uma faixa de água onde o deslocamento 20 da fonte deixava as bordas separadas. A Insígnia do Equilíbrio continua sendo exigida pelo motor para Surf. As entradas opcionais da costa ficam para os lotes que implementam seus interiores.
+
+| Rotas | Conexão entre os MapKeys | Uma dupla de células de água |
+|---|---|---|
+| R105–R106 | 107 Sul 0 → 108 Norte 0 | (1, 79) → (1, 0) |
+| R106–R107 | 108 Leste 0 → 109 Oeste 7 | (189, 1) → (0, 8) |
+| R107–R108 | 109 Leste 0 → 110 Oeste 0 | (59, 3) → (0, 3) |
+| R108–R109 | 110 Leste 0 → 111 Oeste 40 | (59, 3) → (0, 43) |
+
+O `Game.exe` no Windows compilou e abriu o catálogo de 203 mapas. Em cenários isolados, foram percorridas as 28 transferências de portas e escadas de Dewford e Granite Cave e as oito travessias costeiras em ambos os sentidos. O ensaio confirmou o embarque e o retorno de Briney, a pesca, a iluminação do ginásio, Flash após consumir a TM70, a entrega a Steven e o carregamento de saves na caverna e na costa. Foram simulados os resultados das batalhas. Ainda faltam o percurso contínuo de H05 em Windows e a validação física no Android.
 
 ### H06 — Slateport e Capitão Stern
 - Embarque a Slateport, R109 e casa de praia, mercado, Fan Club, centro/mart, estaleiro, porto, Battle Tent (sistema opcional H19). Museu Oceanic: entrada/taxa conforme referência, grunts Aqua em ordem, entrega Devon Goods, flags e retorno.

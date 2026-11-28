@@ -210,6 +210,7 @@ class PinnedDownloader:
         files = [
             "Data/MapInfos.rxdata", "Data/Tilesets.rxdata", "Data/Map015.rxdata",
             "PBS/map_connections.txt", "PBS/encounters.txt",
+            "Data/Map107.rxdata", "Data/Map109.rxdata", "Data/Map110.rxdata",
             *(f"Data/Map{mid:03}.rxdata" for mid in SOURCE_MAPS),
         ]
         for index, rel in enumerate(files, 1):
