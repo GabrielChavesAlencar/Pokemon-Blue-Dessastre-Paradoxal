@@ -13,6 +13,7 @@ on:
       - 'scripts/regions/native_check.py'
       - 'scripts/battle_polish/RegionStart.rb'
       - 'tests/test_kanto_k06_celadon_services.py'
+      - 'tests/k06_compile_diff.py'
       - '.github/workflows/kanto-k06-celadon-services.yml'
   workflow_dispatch:
 permissions:
@@ -147,6 +148,12 @@ jobs:
           Write-Host 'KANTO_K06_WINDOWS_CELADON_EXISTING_AND_REPEAT_OK'
           Move-Item -LiteralPath 'game' -Destination '.blue-work/k06-celadon-native-product'
           $root=(Resolve-Path -LiteralPath '.blue-work/k06-celadon-native-product').Path
+          $snapshot=Join-Path $env:RUNNER_TEMP 'celadon-precompile-map-diff'
+          New-Item -ItemType Directory -Path $snapshot | Out-Null
+          $mapScope=Get-Content -LiteralPath "$root/Data/blue-kanto-k06-services.json" -Raw | ConvertFrom-Json
+          foreach($entry in $mapScope.map_fields.PSObject.Properties){
+            Copy-Item -LiteralPath (Join-Path $root $entry.Name) -Destination $snapshot
+          }
           $scripts="$root/Data/Scripts.rxdata"
           $original=Join-Path $env:RUNNER_TEMP 'k06-celadon-normal-scripts.rxdata'
           Copy-Item -LiteralPath $scripts -Destination $original
@@ -176,6 +183,8 @@ jobs:
             Copy-Item -LiteralPath $original -Destination $scripts -Force
             Move-Item -LiteralPath $root -Destination 'game'
           }
+          python tests/k06_compile_diff.py $snapshot game
+          if($LASTEXITCODE -ne 0){throw 'Could not compare native compiler map fields'}
           Assert-Celadon $false
           if((Get-FileHash -LiteralPath $save).Hash -ne $hash){throw 'Canonical native boot touched the synthetic save'}
           Write-Host 'KANTO_K06_WINDOWS_CELADON_CANONICAL_NATIVE_REOPEN_OK'
