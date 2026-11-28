@@ -6,7 +6,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts/regions"))
-from audit_k05_lavender import K05, CITY, TOWER, propose_slots, scoped_links, page_scripts, role
+from audit_k05_lavender import K05, CITY, TOWER, propose_slots, scoped_links, page_scripts, role, logic_witness, encounter_rows
 
 
 class K05SourceTests(unittest.TestCase):
@@ -44,3 +44,22 @@ class K05SourceTests(unittest.TestCase):
         self.assertEqual(role("pbSetPokemonCenter"),"center")
         self.assertEqual(role("pbReceiveItem"),"item_write")
         self.assertIsNone(role("pbMessage"))
+
+
+    def test_receipt_never_includes_raw_trainer_script(self):
+        lines = [(111,1,"$game_variables[7] == 1 && :CHARMANDER"),
+                 (355,2,'TrainerBattle.start(:RIVAL2,"Blue",52); private_text = "do not copy"'),
+                 (355,2,'TrainerBattle.start(:RIVAL2,"Blue",team_version)')]
+        result = logic_witness(101,3,lines)
+        self.assertEqual(result["selector_variables"],[(7,"==",1)])
+        self.assertEqual(result["starter_symbols"],["CHARMANDER"])
+        self.assertEqual([r["literal_first_extra_argument"] for r in result["battle_calls"]],[52,None])
+        self.assertNotIn("do not copy",json.dumps(result))
+        self.assertEqual(logic_witness(97,1,[(355,0,"pbChangePokemonName(0)")]),
+                         {"native_nickname_calls":["pbChangePokemonName"]})
+
+    def test_encounter_receipt_has_typed_slots(self):
+        pbs = {"102,0":["CaveDay,8\n90,GASTLY,12,14 # verified\n10,HAUNTER,20,20\nCaveNight,10\n100,GASTLY,13,14"]}
+        receipt = encounter_rows(pbs,102)["102,0"]
+        self.assertEqual(receipt["CaveDay"],{"step_chance":8,"slots":[[90,"GASTLY",12,14],[10,"HAUNTER",20,20]]})
+        self.assertEqual(receipt["CaveNight"],{"step_chance":10,"slots":[[100,"GASTLY",13,14]]})

@@ -8,6 +8,7 @@ on:
       - 'scripts/regions/build_k05_tower.py'
       - 'tests/test_kanto_k05_tower.py'
       - 'scripts/regions/KantoK05CityNativeCheck.rb'
+      - 'scripts/regions/KantoK05TowerNativeCheck.rb'
       - 'scripts/regions/native_check.py'
       - 'tests/test_kanto_k05_city.py'
       - 'tests/test_kanto_k05_source.py'
@@ -93,6 +94,37 @@ jobs:
           }
           Write-Host ("KANTO_K05_CITY_NATIVE_REPORT:"+(Get-Content $proof -Raw).Trim())
           Write-Host 'KANTO_K05_CITY_NATIVE_OK'
+      - name: Subir e descer a Torre na engine sem abrir o topo
+        shell: powershell
+        run: |
+          $root=(Resolve-Path .blue-work/kanto-k05-tower).Path
+          python scripts/regions/native_check.py $root --k05-tower
+          if($LASTEXITCODE -ne 0){throw 'K05 Tower native fixture injection failed'}
+          $mesaFolder=Join-Path $env:RUNNER_TEMP 'k05-mesa'
+          Get-ChildItem -LiteralPath $mesaFolder -Recurse -File -Filter '*.dll' |
+            Where-Object { $_.Directory.Name -eq 'x64' } |
+            ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $root }
+          $proof="$root/Data/blue-kanto-k05-tower-native-proof.txt"
+          $errorFile="$root/Data/blue-kanto-error.txt"
+          for($attempt=1;$attempt -le 2;$attempt++){
+            $stdout=".blue-work/kanto-k05-tower-out-$attempt.txt"
+            $stderr=".blue-work/kanto-k05-tower-err-$attempt.txt"
+            $proc=Start-Process -FilePath "$root/Game.exe" -WorkingDirectory $root -WindowStyle Hidden -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+            $handle=$proc.Handle
+            if(-not $proc.WaitForExit(180000)){
+              Stop-Process -Id $proc.Id -ErrorAction SilentlyContinue
+              break
+            }
+            if((Test-Path $proof) -or (Test-Path $errorFile)){break}
+            if($attempt -ne 1 -or -not ((Get-Content $stdout,$stderr -Raw -ErrorAction SilentlyContinue) -match '(?i)compil')){break}
+            Write-Host 'KANTO_K05_TOWER_FIRST_COMPILE_BOOT_RESTART'
+          }
+          if(!(Test-Path $proof -PathType Leaf) -or (Test-Path $errorFile -PathType Leaf)){
+            Get-Content $stdout,$stderr,"$root/Data/blue-kanto-k05-tower-native-stage.txt",$errorFile,"$root/errorlog.txt" -ErrorAction SilentlyContinue | Select-Object -Last 140
+            throw 'K05 native Tower proof missing'
+          }
+          Write-Host ("KANTO_K05_TOWER_NATIVE_REPORT:"+(Get-Content $proof -Raw).Trim())
+          Write-Host 'KANTO_K05_TOWER_NATIVE_STAIRS_OK'
       - name: Reunir apenas recibos e diagnósticos em diretório visível
         if: always() && hashFiles('.blue-work/kanto-k05-source.json') != ''
         shell: powershell
@@ -108,9 +140,19 @@ jobs:
             '.blue-work/kanto-k05-city-out-1.txt',
             '.blue-work/kanto-k05-city-err-1.txt',
             '.blue-work/kanto-k05-city-out-2.txt',
-            '.blue-work/kanto-k05-city-err-2.txt'
+            '.blue-work/kanto-k05-city-err-2.txt',
+            '.blue-work/kanto-k05-tower/Data/blue-kanto-k05-tower-native-proof.txt',
+            '.blue-work/kanto-k05-tower/Data/blue-kanto-k05-tower-native-stage.txt',
+            '.blue-work/kanto-k05-tower-out-1.txt',
+            '.blue-work/kanto-k05-tower-err-1.txt',
+            '.blue-work/kanto-k05-tower-out-2.txt',
+            '.blue-work/kanto-k05-tower-err-2.txt'
           ) | ForEach-Object {
             if(Test-Path -LiteralPath $_ -PathType Leaf){ Copy-Item -LiteralPath $_ -Destination $dest.FullName }
+          }
+          $towerError='.blue-work/kanto-k05-tower/Data/blue-kanto-error.txt'
+          if(Test-Path -LiteralPath $towerError -PathType Leaf){
+            Copy-Item -LiteralPath $towerError -Destination (Join-Path $dest.FullName 'k05-tower-native-error.txt')
           }
       - name: Guardar recibo sem jogo, scripts de origem ou saves
         if: always() && hashFiles('k05-receipts/kanto-k05-source.json') != ''

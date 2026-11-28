@@ -66,13 +66,64 @@ def page_scripts(page):
                     yield op["code"], op["indent"], value
 
 
+
+# Typed literals only. Never put arbitrary event source, scripts or narration
+# in the receipt, even when a call's dynamically generated argument is unknown.
+TR_TYPED = re.compile(
+    r'(?:TrainerBattle\.start|pbTrainerBattle)\(\s*:(\w+)\s*,\s*"([^"\r\n]+)"\s*(?:,\s*(\d+)(?=\s*[,)]))?'
+)
+NICKNAME_CALLS = {"pbChoosePokemon", "pbChangePokemonName", "pbEnterPokemonName",
+                  "pbGetPokemon", "pbGet", "pbSet", "pbIsOwner?", "foreign?"}
+RIVAL_VARIABLE = re.compile(r'\$game_variables\s*\[\s*(\d+)\s*\](?:\s*(==|!=|<=|>=|<|>)\s*(\d+))?')
+STARTER_GUARD = re.compile(r':(BULBASAUR|CHARMANDER|SQUIRTLE)\b')
+
+
+def logic_witness(sid, eid, scripts):
+    if (sid,eid)==(97,1):
+        return {"native_nickname_calls": sorted({fn for _,_,line in scripts for fn in NICKNAME_CALLS
+                                                   if re.search(r"(?<!\w)"+re.escape(fn)+r"(?!\w)",line)})}
+    if sid not in TOWER:
+        return {}
+    calls = [{"type":kind,"name":name,"literal_first_extra_argument":int(arg) if arg else None,
+              "opcode":op,"indent":indent}
+             for op,indent,line in scripts for kind,name,arg in TR_TYPED.findall(line)]
+    return {
+        "battle_calls":calls,
+        "selector_variables": sorted({(int(key),operator,int(value) if value else None)
+                                      for _,_,line in scripts for key,operator,value in RIVAL_VARIABLE.findall(line)}),
+        "starter_symbols":sorted({starter for _,_,line in scripts for starter in STARTER_GUARD.findall(line)}),
+        "numeric_control_arguments":sorted({(indent,int(n)) for op,indent,line in scripts
+             if op==111 for n in re.findall(r"(?<!\w)\d{1,4}(?!\w)",line)}),
+    }
+
+
+def encounter_rows(blocks, sid):
+    out = {}
+    for row in block_meta(blocks,sid):
+        for raw in blocks[row["section"]]:
+            methods = []
+            for line in raw.splitlines():
+                line = line.partition("#")[0].strip()
+                if not line:
+                    continue
+                m = re.fullmatch(r'(CaveDay|CaveNight),(\d+)', line)
+                slot = re.fullmatch(r'(\d+),\s*([A-Z][A-Z0-9_]*)\s*,\s*(\d+)\s*,\s*(\d+)',line)
+                if m:
+                    method,rate = m.groups()
+                    out.setdefault(row["section"],{})[method] = {"step_chance":int(rate), "slots":[]}
+                    methods.append(method)
+                elif slot and methods:
+                    weight,species,lo,hi = slot.groups()
+                    out[row["section"]][methods[-1]]["slots"].append([int(weight),species,int(lo),int(hi)])
+    return out
+
 def role(name):
     lower = name.lower()
     if re.search(r'(?:pbhealall|pbpokecenter|pbsetpokemoncenter|heal_party)', lower):
         return "center"
     if re.search(r'(?:pbpokemonmart)', lower):
         return "mart"
-    if re.search(r'(?:name.?rater|rename|enterpokemonname)', lower):
+    if re.search(r'(?:name.?rater|rename|enterpokemonname|changepokemonname|choosepokemon)', lower):
         return "nickname"
     if re.search(r'(?:trainerbattle\.start|pbtrainerbattle|pbnotic[e]?player)', lower):
         return "trainer"
@@ -111,7 +162,8 @@ def assemble(source, inspected, catalog, slots):
         rows.append({"id":sid, "name":area["name"],"dimensions":area["dimensions"],
                      "sha256":area["source_sha256"],"slot_unreserved":slots[sid],
                      "event_count":len(area["events"]),"metadata":block_meta(metadata,sid),
-                     "encounter_methods":encounter_methods(encounters,sid)})
+                     "encounter_methods":encounter_methods(encounters,sid),
+                     "encounter_slots":encounter_rows(encounters,sid)})
         for event in area["events"]:
             for warp in transfers(event):
                 edges.append({"source":sid,"event":event["id"],"at":event["xy"],**warp,
@@ -137,7 +189,8 @@ def assemble(source, inspected, catalog, slots):
                                    "requires":{k:v for k,v in page["condition"].items()
                                                if (isinstance(v,bool) and v) or
                                                   (isinstance(v,int) and not isinstance(v,bool) and v)},
-                                   "roles":roles,"references":flags,"trainer_profiles":profiles})
+                                   "roles":roles,"references":flags,"trainer_profiles":profiles,
+                                   **logic_witness(sid,event["id"],scripts)})
     definite = {(a["source"],a["destination"]) for a in edges}
     expected_links = [(93,interior) for interior in (*CITY[1:],TOWER[0])]
     expected_links.extend((floor,floor+1) for floor in TOWER[:-1])
