@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "fa171ddf2cddf0751beab6cedffa25868a63fe32",
+      "date": "2026-11-28T07:07:22-03:00",
+      "title": "Publicar receita K06 sem republicar o jogo",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "d5281a53bf50f6f62fd51b6ecd9d8cb6cfabb915",
+      "date": "2026-11-28T07:06:55-03:00",
+      "title": "Publish the qualified Celadon recipe and distinguish Windows and Android download channels",
+      "category": "Melhorias"
+    },
+    {
       "sha": "e11c05c000c37908db74d9dcbaae5ec94e896b5a",
       "date": "2026-11-28T07:05:54-03:00",
       "title": "Android K06: qualificar a receita pela fonte original",
