@@ -135,3 +135,46 @@ class CeladonSourceReceiptsTest(unittest.TestCase):
             write_map(path,RubyObject("RPG::Map",fields),EVENT_CLASSES)
             with self.assertRaisesRegex(ValueError,"event:1"):
                 verify_celadon_map(root,path.name,old,semantic)
+
+    def test_compiler_door_wrapper_is_equivalent_only_at_exact_opcode_contract(self):
+        import copy
+        import struct
+        from hashlib import sha256
+        from k06_windows_services import semantic_map_fields, verify_celadon_map
+        from pilot import EVENT_CLASSES, RubyObject, command, write_map
+        from server.ruby_marshal import RubyData
+
+        with TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            path = root/"Map276.rxdata"
+            destination = [0,341,37,35,0]
+            page = RubyObject("RPG::Event::Page",{
+                "@trigger":1,"@list":[command(201,*destination,0),command(0)]})
+            event = RubyObject("RPG::Event",{"@x":3,"@y":4,"@pages":[page]})
+            native = RubyObject("RPG::Map",{"@events":{1:event},"@width":12,"@height":8})
+            write_map(path,native,EVENT_CLASSES)
+            raw = sha256(path.read_bytes()).hexdigest()
+            fields = semantic_map_fields(path)
+            wrapped = [
+                command(250,RubyObject("RPG::AudioFile",
+                        {"@name":b"Exit Door","@volume":80,"@pitch":100})),
+                command(223,RubyData("Tone",struct.pack("<4d",-255,-255,-255,0)),6),
+                command(106,8),command(201,*destination,1),
+                command(223,RubyData("Tone",struct.pack("<4d",0,0,0,0)),6),command(0),
+            ]
+            page.attrs["@list"] = wrapped
+            write_map(path,native,EVENT_CLASSES)
+            verify_celadon_map(root,path.name,raw,fields)
+            for op, operand, bad in ((3,1,340),(3,2,38),(3,4,2),(3,5,0),(2,0,9),
+                                     (4,1,66),(1,0,RubyData("Tone",b"\0"*32)),
+                                     (0,0,RubyObject("RPG::AudioFile",{"@name":b"Other"}))):
+                with self.subTest(op=op,operand=operand):
+                    page.attrs["@list"] = copy.deepcopy(wrapped)
+                    page.attrs["@list"][op].attrs["@parameters"][operand] = bad
+                    write_map(path,native,EVENT_CLASSES)
+                    with self.assertRaisesRegex(ValueError,"event:1"):
+                        verify_celadon_map(root,path.name,raw,fields)
+            page.attrs["@list"] = wrapped[:4]+[command(355,b"changed_script")]+wrapped[4:]
+            write_map(path,native,EVENT_CLASSES)
+            with self.assertRaisesRegex(ValueError,"event:1"):
+                verify_celadon_map(root,path.name,raw,fields)

@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import json
 import os
+import struct
 import tempfile
 from pathlib import Path
 
@@ -14,9 +15,9 @@ from build_k06_celadon_services import CANDIDATES, STORE, stage_services
 from ensure_source import prepare
 from install_kanto import recorded_hashes, verify_installed
 from k06_approach_migration import INSTALL, checked_file, require_hashes, verify_native_graph
-from pilot import EVENT_CLASSES
+from pilot import EVENT_CLASSES, command
 from stage import serialize
-from server.ruby_marshal import RubyObject
+from server.ruby_marshal import RubyData, RubyObject
 from scripts.android import source_update as journal
 from scripts.android.update_client import safe_path
 
@@ -68,11 +69,42 @@ def asset_paths(game, staged):
     return paths
 
 
+def canonical_door_commands(commands):
+    """Equate only the exact Essentials simple-transfer compiler expansion.
+
+    Essentials 21.1 Compiler::MapsAndEvents adds sound, fade, wait and restore
+    around a lone transfer and turns off its built-in fade. Retain every other
+    command and transfer operand; a look-alike wrapper is not equivalent.
+    """
+    if not isinstance(commands,list) or len(commands)!=6:
+        return commands
+    transfer = commands[3]
+    if not isinstance(transfer,RubyObject):
+        return commands
+    args = transfer.attrs.get("@parameters")
+    if (not isinstance(args,list) or len(args)!=6 or any(type(v) is not int for v in args)
+            or args[0]!=0 or args[-1]!=1):
+        return commands
+    audio = RubyObject("RPG::AudioFile",{"@name":b"Exit Door","@volume":80,"@pitch":100})
+    black = RubyData("Tone",struct.pack("<4d",-255,-255,-255,0))
+    clear = RubyData("Tone",struct.pack("<4d",0,0,0,0))
+    if commands!=[command(250,audio),command(223,black,6),command(106,8),
+                  command(201,*args),command(223,clear,6),command(0)]:
+        return commands
+    return [command(201,*args[:-1],0),command(0)]
+
+
 def semantic_map_fields(path):
-    """Canonicalize Marshal ordering without ignoring terrain, doors or scripts."""
+    """Canonicalize Marshal ordering and the exact native door expansion."""
     def canonical(value):
         if isinstance(value,RubyObject):
-            return RubyObject(value.name,{k:canonical(v) for k,v in sorted(value.attrs.items())})
+            fields = {k:canonical(v) for k,v in sorted(value.attrs.items())}
+            if value.name=="RPG::Event::Page" and "@list" in fields:
+                original = fields["@list"]
+                collapsed = canonical_door_commands(original)
+                if collapsed is not original:
+                    fields["@list"] = canonical(collapsed)
+            return RubyObject(value.name,fields)
         if isinstance(value,dict):
             return {k:canonical(v) for k,v in sorted(value.items())}
         if isinstance(value,list):
