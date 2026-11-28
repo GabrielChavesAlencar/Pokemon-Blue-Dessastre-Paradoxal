@@ -2,6 +2,30 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "00ab8379ea766d48670a29ea888c392991abc05d",
+      "date": "2026-11-28T12:27:11-03:00",
+      "title": "Merge pull request #403 from GabrielChavesAlencar/codex/hoenn-h03-oldale",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "919c2597d4c27057dd79106be4e22b1a8c238ecb",
+      "date": "2026-11-28T12:23:45-03:00",
+      "title": "Hoenn H03: conecta Oldale e integra captura de Wally",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "c68d8350262dd1e4c11d61a62120f202523d9095",
+      "date": "2026-11-28T12:15:11-03:00",
+      "title": "Kalos KD05: atlas visual de X/Y e tiles de Kanto [skip ci]",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "03b9cc0c65b9168b40b43676572a698d8c77f63a",
+      "date": "2026-11-28T11:23:37-03:00",
+      "title": "Kalos: pesquisa e planejamento X/Y (KD00–KD04) [skip ci]",
+      "category": "Melhorias"
+    },
+    {
       "sha": "45f9e0b79fd879db4820fba3bdc034f7bd64a865",
       "date": "2026-11-28T11:13:49-03:00",
       "title": "Merge pull request #385 from GabrielChavesAlencar/codex/hoenn-h03-rival-retry",

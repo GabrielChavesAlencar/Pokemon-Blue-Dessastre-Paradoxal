@@ -1,0 +1,124 @@
+name: Alola - pesquisa e planejamento
+
+on:
+  pull_request:
+    paths:
+      - 'docs/ALOLA_*.md'
+      - '.github/workflows/alola-documentation.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: alola-documentation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  documentation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validar AD00 a AD05, sem fontes externas ou jogo
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check "$BASE_SHA...HEAD"
+          python3 - <<'PY'
+          import json
+          import os
+          import re
+          import subprocess
+          from pathlib import Path
+
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True)
+
+          def read(name):
+              return Path("docs", name).read_text(encoding="utf-8")
+
+          def keys(text, prefix):
+              return re.findall(rf"^\| ({prefix}\d{{2}}) \|", text, re.M)
+
+          def ordered(prefix, count):
+              return [f"{prefix}{i:02}" for i in range(1, count + 1)]
+
+          base = os.environ["BASE_SHA"]
+          assert re.fullmatch(r"[a-f0-9]{40}", base)
+          paths = git("diff", "--name-only", f"{base}...HEAD").splitlines()
+          assert paths and all(
+              re.fullmatch(r"docs/ALOLA_[A-Z0-9_]+\.md", path)
+              or path == ".github/workflows/alola-documentation.yml"
+              for path in paths
+          ), paths
+          plan_name = "ALOLA_PESQUISA_E_PLANEJAMENTO.md"
+          files = {
+              "AD01": "ALOLA_AD01_FONTES_E_DIREITOS.md",
+              "AD02": "ALOLA_AD02_INVENTARIO_E_PROGRESSAO.md",
+              "AD03": "ALOLA_AD03_DESENHO_E_PRIMEIRO_RECORTE.md",
+              "AD04": "ALOLA_AD04_VALIDACAO_E_HANDOFF.md",
+              "AD05": "ALOLA_AD05_ATLAS_VISUAL_E_TILES_KANTO.md",
+          }
+          roadmap_name = "ALOLA_ROADMAP_CODEX_100_JOGAVEL_WINDOWS_ANDROID.md"
+          plan = read(plan_name)
+          roadmap = read(roadmap_name)
+          assert all(f"| {stage} |" in plan and name in plan for stage, name in files.items())
+          assert keys(roadmap, "AL") == ["AL00", *ordered("AL", 9)]
+          for name in (plan_name, roadmap_name, *files.values()):
+              doc = Path("docs", name)
+              for link in re.findall(r"\]\(([^ )]+)\)", read(name)):
+                  target = link.partition("#")[0]
+                  if not target or target.startswith(("https://", "http://")):
+                      continue
+                  assert (doc.parent / target).is_file(), (name, link)
+
+          rev = "c68d8350262dd1e4c11d61a62120f202523d9095"
+          assert git("rev-parse", f"{rev}^{{tree}}").strip() == "f7dc77544040b8549bfe9da2c0258aecb6d24319"
+          assert len(git("ls-tree", "-r", "--name-only", rev).splitlines()) == 2291
+          alola = json.loads(Path("site/public/data/regions.json").read_text())["regions"]["ALOLA"]
+          assert alola["status"] == "planned" and alola["base"] == "Ultra Sun / Ultra Moon"
+          assert alola["versions"] == ["Ultra Sun", "Ultra Moon", "Sun", "Moon"]
+          assert alola["milestones"] == ["ILIMA", "LANA", "KIAWE", "MALLOW", "SOPHOCLES", "ACEROLA", "VAST_PONI", "MINA"]
+          assert list(alola["field"]) == ["TAUROS_CHARGE", "STOUTLAND_SEARCH", "LAPRAS_PADDLE", "CHARIZARD_GLIDE", "MUDSDALE_GALLOP", "SHARPEDO_JET", "MACHAMP_SHOVE"]
+          print("ALOLA_AD00_BASELINE_DOCUMENTAL_OK")
+
+          sources = read(files["AD01"])
+          for word in ("RPG Maker XP", "Fire Ash", "Golden Crown", "SHA-256"):
+              assert word.casefold() in sources.casefold(), word
+          print("ALOLA_AD01_FONTES_DOCUMENTAL_OK")
+
+          inv = read(files["AD02"])
+          assert keys(inv, "C") == ordered("C", 10)
+          assert keys(inv, "R") == ordered("R", 17)
+          for key in alola["milestones"]:
+              assert re.search(rf"\b{key}\b", inv), key
+          print("ALOLA_AD02_INVENTARIO_PROGRESSAO_DOCUMENTAL_OK")
+
+          design = read(files["AD03"])
+          assert keys(design, "D") == ordered("D", 3)
+          for word in ("Verdant Cavern", "Hala", "Tauros", "NOT_RUN"):
+              assert word in design, word
+          print("ALOLA_AD03_DESENHO_DOCUMENTAL_OK")
+
+          handoff = read(files["AD04"])
+          assert keys(handoff, "T") == ordered("T", 8)
+          for word in ("Blue-Story.exe", "SHA-256", "BLOCKED_RELEASE", "BLOCKED_ENV", "NOT_RUN"):
+              assert word in handoff, word
+          print("ALOLA_AD04_HANDOFF_DOCUMENTAL_OK")
+
+          atlas = read(files["AD05"])
+          for prefix in ("C", "R"):
+              assert keys(atlas, prefix) == keys(inv, prefix), prefix
+              for key in keys(inv, prefix):
+                  row = re.search(rf"^\| {key} \|.+$", atlas, re.M).group()
+                  assert row.count("https://") >= 2, key
+          assert "Kanto" in atlas and not re.search(r"!\[[^]]*\]\(", atlas)
+          assert files["AD05"] in roadmap and files["AD05"] in design
+          print("ALOLA_AD05_ATLAS_VISUAL_TILES_KANTO_DOCUMENTAL_OK")
+          PY
