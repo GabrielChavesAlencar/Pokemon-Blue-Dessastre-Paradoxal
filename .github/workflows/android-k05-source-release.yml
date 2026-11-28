@@ -34,7 +34,9 @@ jobs:
           [[ "$run" == "$(printf '%s\tsuccess\t%s\tpull_request' "$RECIPE" '.github/workflows/android-k05-source-update.yml')" ]]
           job=$(gh api "repos/$GH_REPO/actions/runs/$VERIFIED_RUN/jobs" --jq '.jobs[] | select(.name=="disposable-source-update" and .conclusion=="success") | .id')
           [[ "$job" =~ ^[0-9]+$ ]]
-          gh api "repos/$GH_REPO/actions/jobs/$job/logs" > "$RUNNER_TEMP/k05-source-proof.log"
+          # Logs contain runner ANSI controls. Capture only to a file; do
+          # not display or evaluate untrusted log text in this publish job.
+          gh api --allow-escape-sequences "repos/$GH_REPO/actions/jobs/$job/logs" > "$RUNNER_TEMP/k05-source-proof.log"
           grep -Eq 'Z KANTO_K05_ANDROID_CRASH_RECOVERY_OK[[:space:]]*$' "$RUNNER_TEMP/k05-source-proof.log"
           grep -Eq 'Z KANTO_K05_ANDROID_LOCAL_SOURCE_UPDATE_OK[[:space:]]*$' "$RUNNER_TEMP/k05-source-proof.log"
 
