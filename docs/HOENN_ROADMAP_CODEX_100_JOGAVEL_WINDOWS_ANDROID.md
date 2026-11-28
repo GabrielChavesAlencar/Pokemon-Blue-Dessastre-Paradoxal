@@ -121,6 +121,22 @@ Os registros originais dessas cinco bordas já contêm os mesmos deslocamentos. 
 
 O auditor `scripts/regions/audit_hoenn_h00.py` salva o inventário por mapa, o grafo observado, os marcadores compactos, os IDs ocupados e os erros em `.blue-work/hoenn-h00/h00-report.json`. Ele retorna código 2 enquanto a geometria ou o mapeamento tiver falhas. O relatório bruto e os dados de origem ficam no workspace descartável. O `TESTAR_HOENN.bat` também passou a usar o diretório do repositório em `PYTHONPATH` para carregar os módulos das auditorias. [CI da integração da revisão de referência](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/46102703628).
 
+### Correção das travessias marítimas em 28/11/2026
+
+As cinco bordas da tabela histórica foram removidas. Três conexões resgatadas do PBS da revisão fixada c59233bd recompõem os trajetos por bordas de água compartilhadas.
+
+| Nova conexão | MapIDs no Blue | Pares de tiles navegáveis observados no motor |
+|---|---|---:|
+| Rota 127 ↔ Rota 126 | 858 ↔ 857 | 42 |
+| Rota 128 ↔ Rota 129 | 859 ↔ 860 | 67 |
+| Rota 131 ↔ Rota 130 | 862 ↔ 861 | 68 |
+
+Mossdeep fica acessível pela Rota 127, a Rota 124 pela Rota 126 e Ever Grande Sul pela Rota 128. A Rota 131 volta ao corredor pelas rotas 130, 129, 128 e 127. O Game.exe compartilhado, em perfil Windows descartável, compilou o PBS revisado e confirmou nove cruzamentos individuais nos dois sentidos com o estado de Surf ativo. A obtenção de Surf e a campanha completa ainda aguardam teste.
+
+A atualização de Hoenn já instalado reconhece o conjunto de bordas anterior, cria backup local e solicita a recompilação no próximo lançamento. A migração exercitada preservou os 199 pares de MapIDs, o ponto inicial, os RXDATA de mapa e um arquivo de save de teste. A segunda execução reconheceu a instalação atualizada. A auditoria privada do conteúdo do Android 247 com o PBS revisado confirmou os mesmos 199 MapIDs e 44 bordas de Hoenn com sobreposição. QA02 passou. A consolidação QA01–QA12 passou na verificação estática e mantém a aceitação nativa integral pendente.
+
+O bloqueio geométrico de H00 foi corrigido. O teste físico de abertura, travessia e atualização no JoiPlay segue pendente, assim como a autorização de redistribuição e a publicação pareada. As rotas 105, 107, 108, 115 e 123 continuam no backlog. H01 depende também da confirmação de propriedade dos IDs em conflito com Johto.
+
 ## 4. H01: migração aditiva 199 → N, antes de qualquer expansão
 
 P0: retirar dependência de igualdade rígida com 199 **sem reduzir garantia de conteúdo**. N é derivado do conjunto completo de MapKeys aprovado para aquela revisão, não um mínimo permissivo.
@@ -422,4 +438,4 @@ Guardar SHA da fonte e build, MapID/posição, flag antes/depois, caso, saída d
 - [ ] H23: viagens/saves/regressões.
 - [ ] H24: homologação, releases pareadas e documentação final.
 
-**Estado atual:** H00 executado com cinco bloqueios de geometria, registrados na seção 3. A passagem para H01 permanece pendente. O teste nativo Windows cobriu início e save/reload em Littleroot em cópia descartável. As verificações físicas no JoiPlay e o aceite da campanha integral continuam pendentes.
+**Estado atual** — H00 teve as cinco bordas inválidas corrigidas e verificadas no Game.exe Windows. O início e o save/reload em Littleroot foram confirmados em cópia descartável no baseline. H01, a publicação pareada, a verificação física no JoiPlay e o aceite da campanha integral continuam pendentes.

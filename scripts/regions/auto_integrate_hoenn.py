@@ -86,8 +86,11 @@ def integrate(project: Path = ROOT, game: Path | None = None) -> dict:
         return record("no_game_skipped", reason="Decades base is not installed")
     if (game / PROOF).exists() or (game / MARKER).exists():
         try:
-            invoke(game, "--verify-installed")
-            return record("already_integrated")
+            proof = game / PROOF
+            before = proof.read_bytes() if proof.is_file() and not proof.is_symlink() else None
+            invoke(game, "--apply")
+            after = proof.read_bytes()
+            return record("already_integrated", changed=(before != after))
         except (RuntimeError, OSError) as error:
             return record("existing_install_needs_review", reason=str(error))
 

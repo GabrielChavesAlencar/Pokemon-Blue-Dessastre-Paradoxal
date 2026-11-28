@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - 'scripts/regions/install_hoenn.py'
+      - 'scripts/regions/pilot_hoenn.py'
+      - 'scripts/regions/hoenn_stage10.py'
       - 'scripts/regions/auto_integrate_hoenn.py'
       - 'scripts/regions/ensure_hoenn_source.py'
       - 'scripts/regions/HoennPilot.rb'
@@ -12,6 +14,7 @@ on:
       - 'scripts/battle_polish/TitleKanto.rb'
       - 'scripts/install_game.py'
       - 'tests/test_hoenn_main_integration.py'
+      - 'tests/test_hoenn_stage10.py'
       - 'tests/hoenn_main_gate_runtime.rb'
       - 'tests/hoenn_main_travel_runtime.rb'
       - '.github/workflows/hoenn-main-integration.yml'
@@ -21,6 +24,12 @@ on:
   pull_request:
     branches: [main]
     paths:
+      - 'scripts/regions/install_hoenn.py'
+      - 'scripts/regions/auto_integrate_hoenn.py'
+      - 'scripts/regions/pilot_hoenn.py'
+      - 'scripts/regions/hoenn_stage10.py'
+      - 'tests/test_hoenn_main_integration.py'
+      - 'tests/test_hoenn_stage10.py'
       - 'scripts/regions/audit_hoenn_h00.py'
       - 'tests/test_hoenn_h00.py'
       - 'TESTAR_HOENN.bat'
@@ -47,7 +56,9 @@ jobs:
           ruby -c scripts/battle_polish/TitleKanto.rb
           python -m py_compile scripts/regions/install_hoenn.py scripts/regions/auto_integrate_hoenn.py scripts/regions/ensure_hoenn_source.py scripts/install_game.py
       - name: Hoenn integrated installer safety tests
-        run: python -m unittest discover -s tests -p 'test_hoenn_main_integration.py' -v
+        run: |
+          python -m unittest discover -s tests -p 'test_hoenn_main_integration.py' -v
+          python -m unittest discover -s tests -p 'test_hoenn_stage10.py' -v
       - name: Hoenn H00 inventory contracts
         run: python -m unittest discover -s tests -p 'test_hoenn_h00.py' -v
       - name: Hoenn New Game release gate
