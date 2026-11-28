@@ -14,8 +14,8 @@ O único YAML novo valida a documentação no GitHub Actions.
 | KD00 | Baseline estática, fronteiras e critério de validação | [Validada no Actions](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/46150162315) |
 | KD01 | [Matriz de fontes, direitos e contingência](KALOS_KD01_FONTES_E_DIREITOS.md) | [Validada no Actions](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/46150810468) |
 | KD02 | [Inventário e progressão](KALOS_KD02_INVENTARIO_E_PROGRESSAO.md) | [Validada no Actions](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/46152122459) |
-| KD03 | [Desenho 2D e primeiro recorte](KALOS_KD03_DESENHO_E_PRIMEIRO_RECORTE.md) | Submetida à validação |
-| KD04 | Roteiro Windows/Android pela fonte, testes e handoff implementável | A fazer |
+| KD03 | [Desenho 2D e primeiro recorte](KALOS_KD03_DESENHO_E_PRIMEIRO_RECORTE.md) | [Validada no Actions](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/46152913501) |
+| KD04 | [Validação, publicação futura e handoff](KALOS_KD04_VALIDACAO_E_HANDOFF.md) | [Resultado final no PR documental](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/pull/398/checks) |
 
 Um lote por vez nesta frente documental: conferir o commit, o resultado do
 workflow e sua evidência. Se falhar, corrigir e validar a mesma fase antes
@@ -39,6 +39,5 @@ instalação pessoal. A auditoria foi por árvore e leitura de contratos.
 | [Windows](INSTALACAO.md) e [Android pela fonte](ANDROID_INSTALACAO_PELAS_FONTES.md) | Há fluxos multirregionais existentes. | Planejar paridade numa revisão e receita de origem, sem novo ZIP do jogo; instalação existente não troca de canal por conveniência. |
 
 Sem fontes de Kalos baixadas, permissões verificadas, builds, QA física ou
-assets de gameplay publicados. A próxima fase verifica páginas de autores,
-distingue pesquisa de licença e escolhe apenas referências ou material
-expressamente habilitado para reutilização.
+assets de gameplay publicados. O KD01 registra as referências e distingue material utilizável em
+pesquisa de material que exigiria autorização expressa para reutilizar.
