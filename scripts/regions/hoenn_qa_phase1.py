@@ -18,7 +18,10 @@ from pathlib import Path
 from urllib.request import Request, urlopen
 
 from prepare_hoenn_source import inspect_zip
-from pilot_hoenn import BGM, PNG, PROFILE, ROOT, SOURCE_MAPS, Source, UPSTREAM, stage
+from pilot_hoenn import (
+    BGM, PNG, PROFILE, ROOT, SOURCE_MAPS, Source, UPSTREAM, catalog_source_ids,
+    hoenn_maps_in_use, stage, validate_pilot_mapping,
+)
 from hoenn_audio import RECOVERY, bgm_source
 from server.ruby_marshal import RubyObject, loads, text
 
@@ -28,7 +31,7 @@ TREE_URL = ("https://api.github.com/repos/SocomSeal/The-PMon-World-Project/"
             "git/trees/" + PINNED_TREE + "?recursive=1")
 INSTALL_TREE = ROOT / "data/regions/hoenn-install-tree.json"
 WORK = ROOT / ".blue-work"
-EXPECTED_MAPS = 199
+EXPECTED_MAPS = len(catalog_source_ids())
 PINNED_MAPINFOS_SHA256 = "7a69152de41a8b70df3199182e09d04e2f1be2db73a2ab509137571e4d8ade15"
 PINNED_TILESETS_SHA256 = "6812832c71da1b6b27585f45212135afcd74bd578e5127caa4d5296ee1126a9b"
 
@@ -60,15 +63,14 @@ def check_tree(tree: dict) -> dict:
         if path in blobs:
             raise ValueError("Inventário contém arquivo repetido")
         blobs[path] = sha
-    needed = {f"Data/Map{mid:03}.rxdata" for mid in SOURCE_MAPS}
+    source_ids = catalog_source_ids()
+    needed = {f"Data/Map{mid:03}.rxdata" for mid in source_ids}
     needed.update(("Data/MapInfos.rxdata", "Data/Tilesets.rxdata", "PBS/map_connections.txt"))
     needed.update(bgm_source(track) for track in BGM.values())
     needed.add(RECOVERY)
     missing = sorted(needed - set(blobs))
     if missing:
         raise ValueError(f"Revisão Hoenn sem {len(missing)} recursos exigidos: {missing[:7]}")
-    if len(SOURCE_MAPS) != EXPECTED_MAPS:
-        raise ValueError(f"Gerador não contém {EXPECTED_MAPS} mapas ({len(SOURCE_MAPS)})")
     return {"revision": UPSTREAM, "tree_sha": PINNED_TREE,
             "source_maps": EXPECTED_MAPS, "required_pinned_files": len(needed),
             "git_blob_files": len(blobs)}
@@ -135,20 +137,9 @@ def check_game(game: Path) -> dict:
         raise ValueError("MapInfos.rxdata base inválido")
     from pilot_hoenn import preflight_route102_trainers
     preflight_route102_trainers(game)
-    used = {int(match[1]) for f in (game / "Data").iterdir()
-            if (match := re.fullmatch(r"Map(\d+)\.rxdata", f.name, re.I))}
-    used.update(info)
-    for path in (game / "PBS").glob("*.txt"):
-        body = path.read_text("utf-8-sig")
-        if path.stem.startswith(("encounters", "map_metadata")):
-            used.update(int(m[1]) for m in re.finditer(r"(?m)^\s*\[(\d+)", body))
-        elif path.stem.startswith("map_connections"):
-            for row in body.splitlines():
-                fields = row.split("#", 1)[0].split(",")
-                if len(fields) == 6:
-                    used.update(int(fields[i]) for i in (0, 3)
-                                if fields[i].strip().isdecimal())
-    free = [n for n in range(700, 1000) if n not in used and n not in range(600, 682)]
+    from hoenn_catalog import MAP_RANGE
+    _, occupied, foreign = hoenn_maps_in_use(game, info)
+    free = set(MAP_RANGE) - occupied - foreign
     if len(free) < EXPECTED_MAPS:
         raise ValueError(f"Somente {len(free)} MapIDs livres (necessários: {EXPECTED_MAPS})")
     return {"native_mapinfo_entries": len(info), "free_pilot_mapids": len(free),
@@ -168,7 +159,8 @@ def check_source(source: Source) -> dict:
     if not isinstance(map_infos, dict) or not isinstance(tiles, list):
         raise ValueError("RXDATA de origem possui estrutura inválida")
     used_tiles, images = set(), set()
-    for mid in SOURCE_MAPS:
+    source_ids = catalog_source_ids()
+    for mid in source_ids:
         if mid not in map_infos:
             raise ValueError(f"MapInfos de Hoenn não contém Map{mid:03}")
         obj = loads(source.read(f"Data/Map{mid:03}.rxdata"))
@@ -201,7 +193,7 @@ def check_source(source: Source) -> dict:
             raise ValueError(f"BGM de Hoenn inválida: {label}")
     if not source.read(RECOVERY).startswith(b"OggS"):
         raise ValueError("Vinheta de cura de Hoenn inválida")
-    return {"real_map_rxdata_hashes_verified": EXPECTED_MAPS,
+    return {"real_map_rxdata_hashes_verified": len(source_ids),
             "source_tilesets_used": len(used_tiles),
             "source_graphics_hashes_verified": len(images),
             "source_bgm_hashes_verified": len(BGM),
@@ -214,7 +206,6 @@ def verify_copy(output: Path, game: Path) -> dict:
         raise ValueError(f"Cópia de Hoenn não encontrada: {output}")
     path = output / "Hoenn pilot.json"
     report = json.loads(path.read_text("utf-8"))
-    maps = report.get("maps", {})
     expected_profiles = {
         "hoenn-qa-fase04": "Hoenn QA Fase04",
         "hoenn-qa-fase05": "Hoenn QA Fase05",
@@ -230,19 +221,17 @@ def verify_copy(output: Path, game: Path) -> dict:
     expected_profile = expected_profiles.get(output.name, PROFILE)
     if (report.get("kind") != "ISOLATED_HOENN_TEST" or
             report.get("source_commit") != UPSTREAM or
-            report.get("save_profile") != expected_profile or
-            len(maps) != EXPECTED_MAPS or
-            set(maps) != {str(mid) for mid in SOURCE_MAPS}):
-        raise ValueError("Relatório da cópia não corresponde ao piloto de 199 mapas")
+            report.get("save_profile") != expected_profile):
+        raise ValueError("Relatório da cópia não corresponde ao piloto no perfil esperado")
+    maps = validate_pilot_mapping(report)
     ids = list(maps.values())
-    if len(set(ids)) != EXPECTED_MAPS or not all(isinstance(n, int) and 700 <= n <= 999 for n in ids):
-        raise ValueError("MapIDs remapeados inválidos ou duplicados")
     missing = [n for n in ids if not (output / f"Data/Map{n:03}.rxdata").is_file()]
     if missing:
         raise ValueError(f"Cópia sem {len(missing)} mapas remapeados, exemplos: {missing[:8]}")
     marker = (output / "Data/blue-hoenn-pilot.txt").read_text("ascii").splitlines()
-    expected = {f"{old},{maps[str(old)]}" for old in SOURCE_MAPS}
-    if marker[0] != "BLUE_HOENN_PILOT_V1" or set(marker[2:]) != expected:
+    expected = {f"{old},{new}" for old, new in maps.items()}
+    if (len(marker) != len(maps) + 2 or marker[0] != "BLUE_HOENN_PILOT_V1" or
+            marker[1] != f"{maps[8]},25,6" or set(marker[2:]) != expected):
         raise ValueError("Marcador dos MapIDs de Hoenn inválido")
     required = (
         "Data/System.rxdata", "Data/Scripts.rxdata", "Data/MapInfos.rxdata",
@@ -269,7 +258,7 @@ def verify_copy(output: Path, game: Path) -> dict:
     if (output / "Game.exe").read_bytes() != (game / "Game.exe").read_bytes():
         raise ValueError("Game.exe da cópia é diferente da base local Blue")
     return {
-        "isolated_copy_prepared": True, "maps_present": EXPECTED_MAPS,
+        "isolated_copy_prepared": True, "maps_present": len(maps),
         "trainer_boss_pbs_entries": 8, "distinct_save_profile": expected_profile,
         "compile_request_pending": (output / "Data/blue-hoenn-compile-request.txt").exists(),
         "compiled_marker_present": (output / "Data/blue-hoenn-compiled.txt").is_file(),

@@ -16,7 +16,8 @@ import time
 from pathlib import Path
 
 from server.ruby_marshal import loads
-from pilot_hoenn import ROOT, SOURCE_MAPS, UPSTREAM, build_test_stops, serialize_test_stops
+from pilot_hoenn import (ROOT, UPSTREAM, build_test_stops,
+                        serialize_test_stops, validate_pilot_mapping)
 from hoenn_qa_phase12 import audit_generated
 from hoenn_qa_phase1 import require_private_path, verify_copy as base_verify_copy
 
@@ -51,10 +52,10 @@ def prepare_updates(copy: Path, game: Path) -> dict[str, bytes]:
     manifest = json.loads((copy / MANIFEST).read_text("utf-8"))
     if (manifest.get("source_commit") != UPSTREAM or
         manifest.get("region") != "HOENN" or
-        manifest.get("save_profile") != "Hoenn QA Fase12" or
-        set(manifest.get("maps", {})) != {str(mid) for mid in SOURCE_MAPS}):
+        manifest.get("save_profile") != "Hoenn QA Fase12"):
         raise ValueError("QA12 é de outra versão; não atualizar dados desconhecidos")
-    ids = {int(k): v for k,v in manifest["maps"].items()}
+    ids = validate_pilot_mapping(manifest)
+    revision = manifest.get("catalog_revision", 1)
     all_tiles = loads((copy / "Data/Tilesets.rxdata").read_bytes())
     maps, tiles = {}, {}
     for old, native in ids.items():
@@ -64,8 +65,8 @@ def prepare_updates(copy: Path, game: Path) -> dict[str, bytes]:
         world = loads(source.read_bytes())
         maps[old] = world
         tiles[old] = all_tiles[world.attrs["@tileset_id"]]
-    stops = build_test_stops(maps, tiles, ids)
-    raw = serialize_test_stops(stops)
+    stops = build_test_stops(maps, tiles, ids, catalog_revision=revision)
+    raw = serialize_test_stops(stops, catalog_revision=revision)
     manifest["qa_test_stops"] = {
         "schema": 1, "count": len(stops),
         "sha256": hashlib.sha256(raw).hexdigest(),
@@ -102,22 +103,24 @@ def ensure_test_tools(copy: Path, game: Path = ROOT / "game") -> dict:
                     (manifest_path, stops_path, plugin_path, current_plugin))):
         try:
             saved = json.loads(manifest_path.read_text("utf-8"))
+            map_count = len(validate_pilot_mapping(saved))
             catalog = saved.get("qa_test_stops", {})
             native = saved.get("qa12", {})
             digest = hashlib.sha256(stops_path.read_bytes()).hexdigest()
             if (saved.get("region") == "HOENN" and
                 saved.get("save_profile") == "Hoenn QA Fase12" and
                 saved.get("source_commit") == UPSTREAM and
-                catalog.get("count") == 199 and
+                catalog.get("count") == map_count and
                 catalog.get("sha256") == digest and
                 native.get("debug_teleport_catalog_sha256") == digest and
                 plugin_path.read_bytes() == current_plugin.read_bytes()):
                 return {"status": "ALREADY_CURRENT", "files_updated": 0,
-                        "stops": 199, "saves_touched": False,
+                        "stops": map_count, "saves_touched": False,
                         "native_tested": False}
         except (OSError, ValueError, TypeError, KeyError):
             pass
     desired = prepare_updates(copy, game)
+    map_count = json.loads(desired[MANIFEST])["qa_test_stops"]["count"]
     # Release mode reads PluginScripts.rxdata. Updating the Ruby source alone
     # would leave the old plugin active in an already compiled copy.
     if not plugin_path.is_file() or plugin_path.read_bytes() != desired[PLUGIN]:
@@ -125,10 +128,10 @@ def ensure_test_tools(copy: Path, game: Path = ROOT / "game") -> dict:
     count, backup = replace_private_files(copy, desired)
     if not count:
         return {"status": "ALREADY_CURRENT", "files_updated": 0,
-                "stops": 199, "saves_touched": False, "native_tested": False}
+                "stops": map_count, "saves_touched": False, "native_tested": False}
     return {
         "status": "UPDATED_PRIVATE_DEBUG_TOOLS",
-        "files_updated": count, "stops": 199,
+        "files_updated": count, "stops": map_count,
         "backup": str(backup.relative_to(ROOT)),
         "saves_touched": False, "native_tested": False,
     }

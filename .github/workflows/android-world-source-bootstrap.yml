@@ -105,10 +105,11 @@ jobs:
           from pathlib import Path
           from scripts.android.package import verify_regions
           from scripts.android.world_source_update import current_install
+          from scripts.regions.hoenn_catalog import CATALOG_REVISION, approved_source_ids
 
           root = Path(os.environ["BLUE_QA_ROOT"]).resolve(strict=True)
           assert current_install(root)["revision"] == os.environ["GITHUB_SHA"]
-          assert verify_regions(root)[1]["maps"] == 199
+          assert verify_regions(root)[1]["maps"] == len(approved_source_ids(CATALOG_REVISION))
           assert (root/"ATUALIZAR-ANDROID.py").is_file()
           '@ | python -
           if ($LASTEXITCODE -ne 0) { throw 'Mapas ou inventário da instalação não conferem.' }

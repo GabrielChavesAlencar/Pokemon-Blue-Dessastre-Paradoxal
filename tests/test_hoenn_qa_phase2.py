@@ -12,6 +12,7 @@ sys.path.insert(0,str(ROOT/"scripts/regions"))
 
 from build_johto_events import ruby,command
 import hoenn_qa_phase2 as qa
+from pilot_hoenn import SOURCE_MAPS
 
 
 class HoennQAMapConnectionsTests(unittest.TestCase):
@@ -19,9 +20,9 @@ class HoennQAMapConnectionsTests(unittest.TestCase):
         self.tmp=tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         self.path=Path(self.tmp.name)
-        self.mapping={old:700+i for i,old in enumerate(qa.SOURCE_MAPS)}
+        self.mapping={old:700+i for i,old in enumerate(SOURCE_MAPS)}
         self.maps={old:ruby("RPG::Map",width=1000,height=1000,events={})
-                   for old in qa.SOURCE_MAPS}
+                   for old in SOURCE_MAPS}
 
     @staticmethod
     def event(event_id,name,x,y,*commands):
@@ -36,7 +37,7 @@ class HoennQAMapConnectionsTests(unittest.TestCase):
         )+"\n"
 
     def test_199_maps_and_all_pbs_borders_accepted(self):
-        self.assertEqual(len(qa.SOURCE_MAPS),199)
+        self.assertEqual(len(SOURCE_MAPS),199)
         result=qa.inspect_connections(self.all_pbs(),self.mapping,self.maps)
         self.assertEqual(result["verified_border_records"],len(qa.ALL_BORDERS))
         self.assertFalse(result["field_moves_tested_in_engine"])
@@ -164,7 +165,7 @@ class HoennQAMapConnectionsTests(unittest.TestCase):
             "region":"HOENN","kind":"ISOLATED_HOENN_TEST",
             "source_commit":qa.UPSTREAM,"maps":records}),encoding="utf-8")
         (copy/"Data/blue-hoenn-pilot.txt").write_text(
-            "BLUE_HOENN_PILOT_V1\n708,25,6\n"
+            f"BLUE_HOENN_PILOT_V1\n{self.mapping[8]},25,6\n"
             + "".join(f"{a},{b}\n" for a,b in self.mapping.items()),encoding="ascii")
         parsed,_=qa.read_marker(copy)
         self.assertEqual(parsed,self.mapping)

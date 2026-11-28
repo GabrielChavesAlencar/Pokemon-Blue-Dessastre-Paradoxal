@@ -152,6 +152,16 @@ P0: retirar dependência de igualdade rígida com 199 **sem reduzir garantia de 
 6. Só publicar expansão quando migração comprovada. Gatilhos de CI devem incluir mapas, música, scripts, catálogos, instaladores e plugins que afetam gameplay. Preservar hashes/regressões das demais regiões.
 7. Gates propostos: HOENN_H01_LEGACY_199_PRESERVED_OK, HOENN_H01_REAL_199_TO_N_MIGRATION_OK, HOENN_H01_INSTALL_ROLLBACK_OK, HOENN_H01_JOIPLAY_NO_JSON_OK. Em H01 sem mapas novos, N=199; repetir migração real em todo lote de expansão. Não imprimir marcadores manualmente.
 
+### Catálogo de instalação e migração
+
+O manifesto compartilhado V2 usa o catálogo versionado em `data/regions/hoenn-map-catalog.json`. A revisão 1 aprova os mesmos 199 MapKeys legados. A instalação registra os pares antigos separadamente e bloqueia remapeamentos, MapKeys ausentes e revisões desconhecidas. Um catálogo de expansão precisa listar explicitamente os MapKeys aprovados e vir acompanhado dos mapas e conexões auditados.
+
+Uma instalação compartilhada V1 conserva seus mapas e saves. O instalador valida as reservas globais e os registros de Hoenn, guarda os arquivos afetados, atualiza o manifesto e os marcadores compactos e solicita recompilação. Se a gravação for interrompida, a próxima preparação restaura o estado anterior com base nos hashes registrados antes de tentar outra vez. A leitura V1 continua disponível para instalações anteriores e para a cópia isolada de QA.
+
+Em 28/11/2026, uma cópia descartável da instalação compartilhada anterior foi migrada de V1 para V2 no Windows. O ensaio conservou os 199 pares de MapIDs, reparou as conexões marítimas do H00 e preservou o save de teste byte a byte. O Game.exe recompilou os plugins e o PBS. A segunda execução conservou o manifesto já migrado. Os testes de alocação cobrem conjuntos maiores em ambiente isolado. A revisão 1 continua instalando os mesmos 199 mapas.
+
+O atualizador Android pela fonte usa a contagem do catálogo ativo. A validação em aparelho com JoiPlay permanece adiada a pedido do proprietário.
+
 ## 5. Fases H02–H17: campanha jogável ponta a ponta
 
 Para cada subfase use inventário H00, fonte autorizada e geometria nativa. Reutilize handlers existentes; teste caso positivo e todos os pré-requisitos negativos, derrota/retry, recompensa única, save/reload, retorno físico, blackout, escala e regressão. Cada marcador abaixo é proposto, não emitido nesta análise; gerado somente por assertions reais. Lote sem feature comprovada não promove status. A partir do primeiro lote, validar em versão principal e não só cópia piloto.

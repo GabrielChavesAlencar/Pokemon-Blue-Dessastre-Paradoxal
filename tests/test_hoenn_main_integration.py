@@ -17,6 +17,7 @@ sys.path.insert(0, str(ROOT / "scripts/regions"))
 import install_hoenn as hoenn
 import auto_integrate_hoenn as auto
 import ensure_hoenn_source as downloader
+from hoenn_catalog import LEGACY_SOURCE_IDS, marker_bytes, validate_manifest
 from hoenn_qa_phase2 import ALL_BORDERS
 from hoenn_stage10 import LEGACY_VOID_SURF_BORDERS, RESTORED_SURF_BORDERS
 
@@ -85,11 +86,10 @@ class HoennMainIntegrationTests(unittest.TestCase):
             "maps":self.maps,"start":self.start,"town":self.town,
             "installed_sha256":hashes
         }
+        for path, raw in marker_bytes(proof).items():
+            (self.game / path).write_bytes(raw)
+        hashes[hoenn.COMPACT] = hoenn.sha((self.game / hoenn.COMPACT).read_bytes())
         (self.game / hoenn.MANIFEST).write_text(json.dumps(proof))
-        (self.game / hoenn.READY_MARKER).write_text(
-            f"BLUE_HOENN_READY_V1,199,{self.start[0]},{self.town[0]},{self.town[1]},{self.town[2]},{self.town[3]}\n")
-        (self.game / hoenn.START_MARKER).write_text(
-            f"BLUE_HOENN_START_V1,HOENN,{self.start[0]},25,6\n")
         return proof
 
     def test_forged_release_or_modified_pbs_is_rejected(self):
@@ -119,43 +119,13 @@ class HoennMainIntegrationTests(unittest.TestCase):
         (self.game / hoenn.CONNECTIONS).write_bytes(legacy)
         return mapping, legacy, current
 
-    def test_surf_repair_changes_only_known_rows_and_leaves_mapids_and_save(self):
-        mapping, legacy, current = self.legacy_surf_fixture()
-        proof_path = self.game / hoenn.MANIFEST
-        old_proof = proof_path.read_bytes()
-        connections = self.game / hoenn.CONNECTIONS
-        save = self.game / "Data/File A.rxdata"
-        save.write_bytes(b"campaign save")
-        dry = hoenn.repair_installed_surf_connections(self.game, False)
-        self.assertTrue(dry["surf_connection_repair_pending"])
-        self.assertEqual(connections.read_bytes(), legacy)
-        self.assertEqual(proof_path.read_bytes(), old_proof)
-        self.assertFalse((self.game / hoenn.COMPILE_REQUEST).exists())
-        with patch.object(hoenn, "ROOT", self.root), \
-             patch.object(hoenn, "loads", return_value=object()), \
-             patch("hoenn_qa_phase2.inspect_connections") as geometry:
-            result = hoenn.repair_installed_surf_connections(self.game, True)
-            again = hoenn.repair_installed_surf_connections(self.game, True)
-        geometry.assert_called_once()
-        self.assertEqual(geometry.call_args.args[:2], (current.decode("utf-8-sig"), mapping))
-        self.assertTrue(result["surf_connections_changed"])
-        self.assertFalse(again["surf_connections_changed"])
-        self.assertEqual(connections.read_bytes(), current)
-        self.assertEqual(save.read_bytes(), b"campaign save")
-        self.assertEqual((self.game / hoenn.COMPILE_REQUEST).read_bytes(), b"compile")
-        proof = json.loads(proof_path.read_bytes())
-        self.assertEqual(proof["maps"], self.maps)
-        self.assertEqual(proof["start"], self.start)
-        self.assertEqual(proof["installed_sha256"][hoenn.CONNECTIONS], hoenn.sha(current))
-        self.assertEqual((Path(result["backup"]) / hoenn.CONNECTIONS).read_bytes(), legacy)
-
     def test_surf_repair_rejects_an_unknown_partial_layout(self):
-        _, legacy, current = self.legacy_surf_fixture()
+        mapping, legacy, current = self.legacy_surf_fixture()
         connections = self.game / hoenn.CONNECTIONS
         changed = legacy + current.splitlines(keepends=True)[-1]
         connections.write_bytes(changed)
         with self.assertRaisesRegex(ValueError, "migração parcial"):
-            hoenn.repair_installed_surf_connections(self.game, True)
+            hoenn.reconcile_surf_connections(changed, mapping)
         self.assertEqual(connections.read_bytes(), changed)
         self.assertFalse((self.game / hoenn.COMPILE_REQUEST).exists())
 
@@ -165,26 +135,88 @@ class HoennMainIntegrationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "duplicata"):
             hoenn.reconcile_surf_connections(current + duplicate, mapping)
 
-    def test_surf_repair_recovers_if_the_manifest_write_fails(self):
-        _, legacy, _ = self.legacy_surf_fixture()
-        proof = self.game / hoenn.MANIFEST
-        old_proof = proof.read_bytes()
-        request = self.game / hoenn.COMPILE_REQUEST
-        request.write_bytes(b"previous compile request")
-        atomic = hoenn.atomic
-        def fail_manifest(path, contents):
-            if path == proof:
-                raise OSError("fixture cannot replace manifest")
-            atomic(path, contents)
+    def test_v2_upgrade_preserves_maps_and_save_and_is_idempotent(self):
+        mapping, legacy, current = self.legacy_surf_fixture()
+        self.assertEqual(set(mapping), LEGACY_SOURCE_IDS)
+        self.assertEqual(LEGACY_SOURCE_IDS, set(hoenn.SOURCE_MAPS))
+        manifest = self.game / hoenn.MANIFEST
+        save = self.game / "Data/File A.rxdata"
+        save.write_bytes(b"save on a legacy destination")
+        known_maps = list((self.game / "Data").glob("Map*.rxdata"))
+        old_files = {path: path.read_bytes() for path in known_maps}
+        old_proof = manifest.read_bytes()
+        cache = self.game / hoenn.PLUGIN_CACHE
+        cache.write_bytes(b"plugin scripts from V1")
+
+        index = b"mapinfos migration fixture"
+        (self.game / "Data/MapInfos.rxdata").write_bytes(index)
+        old_files[self.game / "Data/MapInfos.rxdata"] = index
+
+        def native_fixture(blob):
+            return dict.fromkeys(mapping.values()) if blob == index else object()
+
         with patch.object(hoenn, "ROOT", self.root), \
-             patch.object(hoenn, "loads", return_value=object()), \
-             patch("hoenn_qa_phase2.inspect_connections"), \
-             patch.object(hoenn, "atomic", side_effect=fail_manifest):
-            with self.assertRaisesRegex(OSError, "cannot replace manifest"):
-                hoenn.repair_installed_surf_connections(self.game, True)
-        self.assertEqual((self.game / hoenn.CONNECTIONS).read_bytes(), legacy)
-        self.assertEqual(request.read_bytes(), b"previous compile request")
-        self.assertEqual(proof.read_bytes(), old_proof)
+             patch.object(hoenn, "loads", side_effect=native_fixture), \
+             patch("pilot_hoenn.allocate_hoenn_map_ids", return_value=mapping), \
+             patch("hoenn_qa_phase2.inspect_connections"):
+            dry = hoenn.migrate_existing(self.game, False)
+            self.assertTrue(dry["catalog_migration_pending"])
+            self.assertEqual(manifest.read_bytes(), old_proof)
+            self.assertEqual((self.game / hoenn.CONNECTIONS).read_bytes(), legacy)
+            result = hoenn.migrate_existing(self.game, True)
+            repeated = hoenn.migrate_existing(self.game, True)
+        proof = json.loads(manifest.read_bytes())
+        self.assertEqual(validate_manifest(proof), mapping)
+        self.assertEqual(proof["legacy_maps"], self.maps)
+        self.assertEqual(proof["schema"], 2)
+        self.assertTrue(result["catalog_changed"])
+        self.assertFalse(repeated["catalog_changed"])
+        self.assertEqual((self.game / hoenn.CONNECTIONS).read_bytes(), current)
+        self.assertEqual((self.game / hoenn.COMPILE_REQUEST).read_bytes(), b"compile")
+        self.assertFalse(cache.exists())
+        self.assertFalse((self.game / hoenn.JOURNAL).exists())
+        self.assertEqual(save.read_bytes(), b"save on a legacy destination")
+        self.assertEqual({path: path.read_bytes() for path in known_maps}, old_files)
+        self.assertEqual((Path(result["backup"]) / hoenn.MANIFEST).read_bytes(), old_proof)
+
+    def test_v2_installation_resume_recovers_incomplete_known_writes(self):
+        self.install_proof_fixture()
+        old = {rel: hoenn.optional_bytes(self.game / rel) for rel in hoenn.MIGRATION_FILES}
+        changes = dict(old)
+        changes[hoenn.PLUGIN] = b"changed plugin"
+        changes[hoenn.COMPACT] = b"changed compact"
+        fail = self.game / hoenn.COMPACT
+        atomic = hoenn.atomic
+
+        def interrupt(path, blob):
+            if path == fail:
+                raise OSError("simulated interruption")
+            atomic(path, blob)
+
+        with patch.object(hoenn, "ROOT", self.root):
+            with patch.object(hoenn, "recover_migration", return_value=False), \
+                 patch.object(hoenn, "atomic", side_effect=interrupt):
+                changes = dict(sorted(changes.items(), key=lambda entry: entry[0] != hoenn.PLUGIN))
+                with self.assertRaisesRegex(OSError, "interruption"):
+                    hoenn.commit_migration(self.game, old, changes)
+            self.assertTrue((self.game / hoenn.JOURNAL).exists())
+            self.assertEqual((self.game / hoenn.PLUGIN).read_bytes(), b"changed plugin")
+            with self.assertRaisesRegex(ValueError, "retomada"):
+                hoenn.verify_installed(self.game)
+            self.assertTrue(hoenn.recover_migration(self.game))
+            self.assertFalse(hoenn.recover_migration(self.game))
+        self.assertEqual({rel: hoenn.optional_bytes(self.game / rel) for rel in old}, old)
+
+    def test_catalog_rejects_a_swapped_legacy_destination_and_unknown_revision(self):
+        proof = self.install_proof_fixture()
+        proof.update(schema=2, catalog_revision=1, legacy_maps=dict(self.maps))
+        self.assertEqual(len(validate_manifest(proof)), len(LEGACY_SOURCE_IDS))
+        proof["maps"]["11"], proof["maps"]["12"] = proof["maps"]["12"], proof["maps"]["11"]
+        with self.assertRaisesRegex(ValueError, "remapeou"):
+            validate_manifest(proof)
+        proof["catalog_revision"] = 1000
+        with self.assertRaisesRegex(ValueError, "desconhecida"):
+            validate_manifest(proof)
 
     def test_reuses_original_pinned_stage_without_private_zip(self):
         directory = self.root / ".blue-work/hoenn-source/0123456789abcdef"

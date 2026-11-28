@@ -144,9 +144,10 @@ def verify_copy(copy: Path) -> dict:
     if (report.get("region") != "HOENN"
         or report.get("kind") != "ISOLATED_HOENN_TEST"
         or report.get("save_profile") not in ("Hoenn QA Fase09", "Hoenn QA Fase10", "Hoenn QA Fase11", "Hoenn QA Fase12")
-        or not isinstance(ids, dict) or len(ids) != 199
         or not isinstance(qa, dict)):
-        raise ValueError("QA09: exige 199 mapas e save privado Hoenn QA Fase09")
+        raise ValueError("QA09 exige save privado Hoenn QA Fase09")
+    from pilot_hoenn import validate_pilot_mapping
+    validate_pilot_mapping(report)
     if any(qa.get(key) is not False for key in NATIVE_UNVERIFIED):
         raise ValueError("QA09: relatório não pode alegar aprovação nativa")
     if qa.get("source_event_scripts_reused") is not False:

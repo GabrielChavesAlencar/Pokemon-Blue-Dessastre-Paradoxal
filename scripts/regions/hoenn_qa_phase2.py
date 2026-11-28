@@ -11,9 +11,9 @@ import json
 import re
 from pathlib import Path
 
-from hoenn_qa_phase1 import EXPECTED_MAPS, ROOT, WORK, require_private_path
+from hoenn_qa_phase1 import ROOT, WORK, require_private_path
 from pilot_hoenn import (
-    BORDERS, OFFSET_BORDERS, SOURCE_MAPS, WARP_PAIRS, UPSTREAM,
+    BORDERS, OFFSET_BORDERS, WARP_PAIRS, UPSTREAM, validate_pilot_mapping,
 )
 from hoenn_stage4 import OFFSET_BORDERS_STAGE4
 from hoenn_stage5 import OFFSET_BORDERS_STAGE5
@@ -46,16 +46,12 @@ def read_marker(copy: Path) -> tuple[dict[int, int], dict]:
     info = json.loads(metadata_path.read_text("utf-8"))
     if (info.get("region") != "HOENN" or
             info.get("kind") != "ISOLATED_HOENN_TEST" or
-            info.get("source_commit") != UPSTREAM or
-            len(info.get("maps", {})) != EXPECTED_MAPS):
-        raise ValueError("Relatório da cópia não corresponde aos 199 mapas Hoenn fixados")
-    mapping = {int(old): new for old, new in info["maps"].items()}
-    if (set(mapping) != set(SOURCE_MAPS) or
-            any(type(v) is not int or not (700 <= v < 1000) for v in mapping.values()) or
-            len(set(mapping.values())) != EXPECTED_MAPS):
-        raise ValueError("Remapeamento Hoenn inválido, fora de faixa ou repetido")
+            info.get("source_commit") != UPSTREAM):
+        raise ValueError("Relatório da cópia não corresponde à origem fixada de Hoenn")
+    mapping = validate_pilot_mapping(info)
     marker = (copy / "Data/blue-hoenn-pilot.txt").read_text("ascii").splitlines()
-    if (len(marker) != EXPECTED_MAPS + 2 or not marker[0].startswith("BLUE_HOENN_PILOT_") or
+    if (len(marker) != len(mapping) + 2 or
+            marker[:2] != ["BLUE_HOENN_PILOT_V1", f"{mapping[8]},25,6"] or
             set(marker[2:]) != {f"{src},{dst}" for src, dst in mapping.items()}):
         raise ValueError("Marcador RXDATA difere da tabela remapeada")
     return mapping, info

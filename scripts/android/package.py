@@ -12,6 +12,9 @@ from scripts.android.k05_package_contract import verify_registry as verify_k05_r
 from scripts.android.early_input import install as install_early_input, verify as verify_early_input
 sys.path.insert(0,str(ROOT/'scripts/regions'))
 import sinnoh_shared
+from hoenn_catalog import (
+    validate_manifest as validate_hoenn_manifest, verify_markers as verify_hoenn_markers,
+)
 
 MOBILE='Plugins/ZZZZ Blue Battle Lab/Mobile.rb'
 
@@ -56,8 +59,8 @@ def verify_regions(game):
     from install_kanto import verify_installed as kanto
     from install_hoenn import verify_installed as hoenn
     kp, hp = kanto(game), hoenn(game)
-    if not kp.get("maps", 0) > 100 or hp.get("maps") != 199:
-        raise ValueError('Shared Kanto/Hoenn regional map counts not verified.')
+    if not kp.get("maps", 0) > 100:
+        raise ValueError('Shared Kanto regional map count not verified.')
     for name in REGIONAL_FILES:
         p = game / name
         if not p.is_file() or p.is_symlink() or p.stat().st_size == 0:
@@ -117,14 +120,29 @@ def verify_archive(output,revision,source_sha=None,channel='decades',*,sinnoh_qa
         verify_manifest(archive,base,channel,revision)
         verify_early_input(archive.read(base+'Data/Scripts.rxdata'))
         if channel == 'multiregion':
-            kanto=json.loads(archive.read(base+'Data/blue-kanto-install.json'))
-            hoenn=json.loads(archive.read(base+'Data/blue-hoenn-install.json'))
-            verify_k05_registry(lambda rel: archive.read(base+rel))
-            if len(kanto.get('maps',{}))<=100 or len(hoenn.get('maps',{}))!=199:
-                raise ValueError('Android ZIP does not contain both verified regional mappings.')
             for name in REGIONAL_FILES:
                 if not archive.getinfo(base+name).file_size:
                     raise ValueError('Empty Android region runtime: '+name)
+            def read_region(name):
+                return archive.read(base + name)
+            verify_k05_registry(read_region)
+            kanto = json.loads(read_region("Data/blue-kanto-install.json"))
+            kanto_maps = kanto.get("maps", {})
+            if len(kanto_maps) <= 100:
+                raise ValueError("Android ZIP does not contain a verified Kanto mapping.")
+            hoenn = json.loads(read_region("Data/blue-hoenn-install.json"))
+            destinations = set(validate_hoenn_manifest(hoenn).values())
+            verify_hoenn_markers(read_region, hoenn)
+            infos = loads(read_region("Data/MapInfos.rxdata"))
+            if not isinstance(infos, dict) or not destinations <= infos.keys():
+                raise ValueError("Android ZIP is missing Hoenn entries in MapInfos.")
+            if destinations.intersection(kanto_maps.values()):
+                raise ValueError("Kanto and Hoenn claim the same map ID in the Android ZIP.")
+            members = {info.filename for info in archive.infolist() if info.file_size}
+            missing = [f"Data/Map{dest:03}.rxdata" for dest in sorted(destinations)
+                       if f"{base}Data/Map{dest:03}.rxdata" not in members]
+            if missing:
+                raise ValueError(f"Android ZIP is missing a Hoenn map file: {missing[0]}")
             cache=archive.read(base+'Data/PluginScripts.rxdata')
             for name in (KANTO_PLUGIN,HOENN_PLUGIN,REGION_START_PLUGIN):
                 compiled_region(cache,Path(name).name,archive.read(base+name))

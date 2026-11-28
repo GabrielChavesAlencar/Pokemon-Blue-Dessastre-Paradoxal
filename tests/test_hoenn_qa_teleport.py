@@ -80,7 +80,9 @@ class TeleportSourceTests(unittest.TestCase):
             installed = copy / PLUGIN
             installed.parent.mkdir(parents=True)
             installed.write_bytes(b"old plugin")
-            observed = {PLUGIN: b"hoenn map display fix"}
+            manifest = b'{"qa_test_stops":{"count":199}}'
+            (copy / "Hoenn pilot.json").write_bytes(manifest)
+            observed = {PLUGIN: b"hoenn map display fix", "Hoenn pilot.json": manifest}
             with patch("hoenn_qa_teleport_upgrade.ROOT", root), \
                  patch("hoenn_qa_teleport_upgrade.require_private_path", side_effect=lambda path: path), \
                  patch("hoenn_qa_teleport_upgrade.prepare_updates", side_effect=lambda *_: observed.copy()):

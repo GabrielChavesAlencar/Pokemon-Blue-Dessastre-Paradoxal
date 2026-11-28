@@ -221,8 +221,10 @@ def verify_copy(copy: Path) -> dict:
     from hoenn_qa_phase1 import require_private_path
     copy=require_private_path(copy)
     report=json.loads((copy/"Hoenn pilot.json").read_text("utf-8"))
-    if report.get("kind")!="ISOLATED_HOENN_TEST" or len(report.get("maps",{}))!=199:
-        raise ValueError("Piloto privado não possui 199 mapas Hoenn")
+    if report.get("kind")!="ISOLATED_HOENN_TEST":
+        raise ValueError("Relatório não veio de um piloto privado de Hoenn")
+    from pilot_hoenn import validate_pilot_mapping
+    mapping = validate_pilot_mapping(report)
     qa4=report.get("qa4")
     if not isinstance(qa4,dict) or not isinstance(qa4.get("source_obstacles_by_type"),dict):
         raise ValueError("Piloto anterior à Fase4; recrie cópia NOVA para preservar os saves anteriores")
@@ -235,7 +237,7 @@ def verify_copy(copy: Path) -> dict:
     return {
         "schema":1,"region":"HOENN","phase":"04/12",
         "status":"FIELD_OBSTACLE_CONTRACT_PREPARED",
-        "mapped_maps":199,
+        "mapped_maps":len(mapping),
         "source_obstacle_candidates":len(qa4["source_obstacle_candidates"]),
         "new_scripted_obstacles":len(qa4["new_safe_obstacles"]),
         "remaining_field_obstacle_candidates":len(qa4["source_obstacles_needing_review"]),

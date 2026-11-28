@@ -158,9 +158,10 @@ def verify_copy(copy: Path) -> dict:
     if (report.get("region") != "HOENN"
             or report.get("kind") != "ISOLATED_HOENN_TEST"
             or report.get("save_profile") not in ("Hoenn QA Fase08", "Hoenn QA Fase09", "Hoenn QA Fase10", "Hoenn QA Fase11", "Hoenn QA Fase12")
-            or not isinstance(ids, dict) or len(ids) != 199
             or not isinstance(qa8, dict)):
-        raise ValueError("QA08: exige cópia privada isolada com 199 mapas e save Fase08")
+        raise ValueError("QA08 exige cópia privada isolada e save Fase08")
+    from pilot_hoenn import validate_pilot_mapping
+    validate_pilot_mapping(report)
     if any(qa8.get(key) is not False for key in NATIVE_FALSE):
         raise ValueError("QA08: manifesto não pode declarar teste nativo aprovado")
     if qa8.get("source_event_scripts_reused") is not False:
