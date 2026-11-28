@@ -15,9 +15,9 @@ module KantoK04NativeCheck
     File.open("Data/blue-kanto-k04-stage.txt","a") { |f| f.puts("#{label}:#{value.inspect}") }
   end
 
-  def self.door(ids, source, eid, dest, anchor)
+  def self.door(ids, source, eid, dest, anchor, native_ledges: true)
     from,to = ids.values_at(source,dest)
-    component = C.opening_component(from,anchor,[],false,true)
+    component = C.opening_component(from,anchor,[],false,native_ledges)
     event = require!($game_map.events[eid], "missing warp #{source}/#{eid}")
     return nil unless event.trigger == 1 && C.north_event_reachable?(component,event)
     {"kind"=>"touch_transfer","event_id"=>eid,"from_map"=>from,"to_map"=>to,
@@ -179,6 +179,66 @@ module KantoK04NativeCheck
     nil
   end
 
+  def self.aide_action(witness,eid)
+    $game_player.moveto(*witness.fetch("standing"))
+    $game_player.direction = witness.fetch("direction")
+    $game_map.events.each_value { |ev| ev.clear_starting }
+    $game_player.check_event_trigger_there([0])
+    interpreter = pbMapInterpreter
+    interpreter.setup_starting_event
+    require!(interpreter.running? && interpreter.instance_variable_get(:@event_id) == eid,
+      "native Action did not select Route 2 aide")
+    deadline = System.uptime + 5
+    while interpreter.running? && System.uptime < deadline
+      interpreter.update
+      Graphics.update
+    end
+    require!(!interpreter.running?, "Route 2 aide interpreter did not complete")
+  end
+
+  def self.acquire_flash!(hm)
+    gate = require!(BlueKantoPilot.kanto_map_id(21), "Route 2 aide gatehouse absent")
+    route = require!(BlueKantoPilot.kanto_map_id(18), "Route 2 absent")
+    $map_factory.setup(route)
+    incoming = $game_map.events.values.filter_map do |ev|
+      op = ev.list.find { |cmd| cmd.code == 201 && cmd.parameters[0] == 0 && cmd.parameters[1] == gate }
+      [ev.id,op.parameters[2,2]] if op && ev.trigger == 1
+    end
+    require!(!incoming.empty?, "no original Route 2 door into Flash gatehouse")
+    witness = nil
+    incoming.each do |eid, landing|
+      comp = C.opening_component(gate,landing)
+      aide = $game_map.events[2]
+      C.north_callback!(aide,"BlueKantoPilot.route2_flash")
+      if (candidate = C.opening_action_witness(comp,aide))
+        witness = candidate.merge("from_route_door"=>eid,"gatehouse_landing"=>landing)
+        break
+      end
+    end
+    require!(witness,"Flash aide is not reachable from a Route 2 door")
+    dex = $player.pokedex
+    seed = [:BULBASAUR,:IVYSAUR,:VENUSAUR,:CHARMANDER,:CHARMELEON,:CHARIZARD,
+            :SQUIRTLE,:WARTORTLE,:BLASTOISE,:CATERPIE,:METAPOD]
+    seed.each do |species|
+      break if dex.owned_count(0) >= 9
+      dex.set_owned(species)
+    end
+    require!(dex.owned_count(0)==9, "could not establish threshold-minus-one on native Kanto Pokédex")
+    aide_action(witness,2)
+    require!($bag.quantity(hm)==0, "aide granted Flash with fewer than 10 species")
+    seed.each do |species|
+      break if dex.owned_count(0)>=10
+      dex.set_owned(species)
+    end
+    require!(dex.owned_count(0)==10, "could not establish threshold on native Kanto Pokédex")
+    2.times do
+      aide_action(witness,2)
+      require!($bag.quantity(hm)==1, "aide did not award exactly one real Flash HM")
+    end
+    trace("FLASH_AIDE_NATIVE",witness.merge("threshold"=>10,"quantity"=>$bag.quantity(hm)))
+    witness
+  end
+
   def self.flash!(ids)
     $map_factory.setup(ids[90])
     $game_player.moveto(24,7)
@@ -196,7 +256,9 @@ module KantoK04NativeCheck
     require!(BlueRegionalPolicy.field_result(:FLASH) == :badge, "Flash allowed without regional Boulder")
     require!(BlueRegions.award(BlueKantoPilot.progress,"KANTO","BOULDER"), "could not award fixture Boulder")
     require!(BlueRegionalPolicy.field_result(:FLASH) == :hm, "Flash allowed without owned HM")
-    require!($bag.add(hm), "could not add Flash HM to synthetic bag")
+    acquired = acquire_flash!(hm)
+    $map_factory.setup(ids[90])
+    $game_player.moveto(24,7)
     $player.party.replace([incompatible])
     require!(BlueRegionalPolicy.field_result(:FLASH) == :pokemon, "incompatible Pokémon accepted")
     $player.party.replace([compatible])
@@ -218,7 +280,7 @@ module KantoK04NativeCheck
       require!($PokemonGlobal.flashUsed && dark.radius > radius && dark.radius == dark.radiusMax,
         "Flash failed to illuminate native darkness")
       require!(!HiddenMoveHandlers.triggerCanUseMove(:FLASH,compatible,false), "repeat Flash wasn't rejected")
-      {"hm"=>hm.to_s,"initial_radius"=>radius,"illuminated_radius"=>dark.radius,"native_effect"=>true}
+      {"hm"=>hm.to_s,"initial_radius"=>radius,"illuminated_radius"=>dark.radius,"native_effect"=>true,"aide"=>acquired}
     ensure
       scene.send(:disposeSpritesets) if scene.respond_to?(:disposeSpritesets,true)
       $scene = previous
@@ -258,6 +320,11 @@ module KantoK04NativeCheck
     errors = {}
     trace("ACTIVE_CUT_OBSTACLES",cut_inventory(ids))
     center = check_area(errors,"NATIVE_NURSE") { center!(ids) }
+    entrances = check_area(errors,"CENTER_NATIVE_DOORS") do
+      into = require!(door(ids,87,22,88,[13,31],native_ledges: false), "Center entrance unreachable from its reciprocal landing")
+      out = require!(door(ids,88,1,87,[7,8],native_ledges: false), "Center exit unreachable")
+      [D.door!(into,[13,31]),D.door!(out,[7,8])]
+    end
     center_path = [39,86,87,88].map { |sid| ids[sid] }
     roads = check_area(errors,"CERULEAN_ROUTE9_ROUTE10") do
       # Test fixture represents a player who finished S.S. Anne. Same native
@@ -273,11 +340,6 @@ module KantoK04NativeCheck
       require!(from_city && to_city && [from_city,to_city].all? { |legs| legs.length == 3 },
         "Cerulean / routes / medical center corridor is not reciprocal")
       [from_city,to_city]
-    end
-    entrances = check_area(errors,"CENTER_NATIVE_DOORS") do
-      into = require!(door(ids,87,22,88,[13,31]), "Center entrance unreachable from its reciprocal landing")
-      out = require!(door(ids,88,1,87,[7,8]), "Center exit unreachable")
-      [D.door!(into,[13,31],settle_motion: true),D.door!(out,[7,8],settle_motion: true)]
     end
     north = check_area(errors,"TUNNEL_NORTH_TO_SOUTH") { passage(ids,12,17,[13,31]) }
     south = check_area(errors,"TUNNEL_SOUTH_TO_NORTH") { passage(ids,13,1,[8,68]) }

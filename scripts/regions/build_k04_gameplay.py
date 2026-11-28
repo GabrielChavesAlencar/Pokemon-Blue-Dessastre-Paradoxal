@@ -11,6 +11,7 @@ from pathlib import Path
 
 from audit import ROOT, inventory, json_file, load, text
 from build_k04_geometry import digest
+from k04_flash import SOURCE_ID as FLASH_MAP, EVENT_ID as FLASH_EVENT, install_flash_aide
 from k04_corridor import DARK, MAPS, NAMES, connections, verify_source
 from pbs import catalogue, normalize_encounters, read_blocks, trainer_draft
 from pilot import EVENT_CLASSES, TYPES, command, if_scene, new_event, write_map
@@ -215,6 +216,17 @@ def run():
                 ev = source_events[nurse_id]
                 events[nurse_id] = new_event(ev, [command(355, b"BlueKantoPilot.heal")], 0, sprite(source, target, ev))
             write_map(data / path.name, native, EVENT_CLASSES)
+        old_gate = baseline_maps[active[FLASH_MAP]]
+        gate_baseline = load(old_gate)
+        source_aide = load(source_maps[FLASH_MAP]).attrs["@events"][FLASH_EVENT]
+        gate = install_flash_aide(gate_baseline, source_aide, sprite(source,target,source_aide))
+        gate_path = data / old_gate.name
+        write_map(gate_path, gate, EVENT_CLASSES)
+        if load(gate_path) != gate:
+            raise ValueError("K04 Flash aide did not survive native Map Marshal round trip")
+        plugin = target / "Plugins/ZZZZZ Blue Kanto Pilot/KantoPilot.rb"
+        append(plugin, (ROOT / "scripts/regions/KantoK04Field.rb").read_text("utf-8"))
+
         write_map(data / "MapInfos.rxdata", info)
         write_map(data / "Tilesets.rxdata", tiles)
 
@@ -243,13 +255,15 @@ def run():
             append(pbs / "map_metadata_kanto.txt", value)
         (data / "blue-compile-request.txt").write_text("compile", encoding="ascii")
         (data / "PluginScripts.rxdata").unlink(missing_ok=True)
-        if any(digest(target / rel) != sha or digest(baseline / rel) != sha for rel, sha in checks.items()):
+        allowed_change = gate_path.relative_to(target)
+        if any((rel != allowed_change and digest(target / rel) != sha) or digest(baseline / rel) != sha
+               for rel, sha in checks.items()):
             raise ValueError("K04 gameplay changed preexisting map bytes")
         target.rename(output)
     summary = {"status": "STAGED_FOR_NATIVE_BOOT_NOT_PUBLISHED", "maps": delta, "prior_map_files": len(checks),
                "trained_events": actor_report, "distinct_profiles": len(specs), "encounter_tables": tables,
                "center": {"destination": delta[88], "nurse_event": nurse_id}, "darkness": [delta[s] for s in sorted(DARK)],
-               "cut_obstacles": cut_report, "native_boot": False, "manual_gameplay": False}
+               "cut_obstacles": cut_report, "prior_flash_aide_map_only": active[FLASH_MAP], "native_boot": False, "manual_gameplay": False}
     (work / "kanto-k04-gameplay-proof.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print("KANTO_K04_GAMEPLAY_FIXTURE_STAGED_OK:", len(actor_report), len(specs), tables, flush=True)
 
