@@ -25,6 +25,10 @@ KANTO_SOURCE_BOOTSTRAP = "scripts/regions/ensure_source.py"
 K06_APPROACH = "scripts/regions/k06_windows_approach.py"
 K06_RELEASE = Path("data/regions/k06-approach-release.json")
 K06_READY = Path("Data/blue-kanto-k06-approach.json")
+K06_SERVICES = "scripts/regions/k06_windows_services.py"
+K06_SERVICES_RELEASE = Path("data/regions/k06-services-release.json")
+K06_SERVICES_RECEIPT = Path("Data/blue-kanto-k06-services.json")
+K06_SERVICES_RECOVERY = Path(".blue-k05-recovery.json")
 KANTO_MARKER = Path("Data/blue-kanto-start.txt")
 KANTO_MANIFEST = Path("Data/blue-kanto-install.json")
 STATUS_FILE = Path(".blue-work/kanto-install-status.json")
@@ -167,6 +171,18 @@ def integrate(project: Path = ROOT, game: Path | None = None,
     def invoke(script: str, *args: str) -> None:
         run([sys.executable, script, *args], project, env)
 
+    def services(info: dict) -> dict:
+        prior=(game/K06_SERVICES_RECEIPT).is_file() and not (game/K06_SERVICES_RECOVERY).exists()
+        try:
+            invoke(K06_SERVICES,"--game",str(game))
+        except (OSError,ValueError,RuntimeError,subprocess.CalledProcessError) as err:
+            reason=_failure("Loja e interiores de Celadon K06",err)
+            print("[KANTO AUTO]",reason,flush=True)
+            return _persist(project,{**info,"status":"manual_k06_services_required",
+                                     "k06_services":False,"reason":reason})
+        return _persist(project,{**info,"k06_approach":True,"k06_services":True,
+                                  "changed":bool(info["changed"] or not prior)})
+
     def done(info: dict) -> dict:
         # The seven-map stage is additive. Never route its install errors into
         # a fresh Kanto import or describe a failed overlay as complete.
@@ -180,7 +196,15 @@ def integrate(project: Path = ROOT, game: Path | None = None,
                 return _persist(project,{**info,"status":"manual_k06_migration_required",
                                          "k06_approach":False,"reason":reason})
             info={**info,"k06_approach":True,"changed":bool(info["changed"] or not prior)}
+        if (project/K06_SERVICES_RELEASE).is_file():
+            return services(info)
         return _persist(project,info)
+
+    # A committed 182-map install must never be passed to the older approach
+    # overlay or runtime synchronizer. Recover a partial transaction first.
+    if (project/K06_SERVICES_RELEASE).is_file() and (
+            (game/K06_SERVICES_RECEIPT).is_file() or (game/K06_SERVICES_RECOVERY).exists()):
+        return services({"status":"already_integrated","changed":False})
 
     state = detect_existing(game)
     if state == "unverified":

@@ -196,22 +196,24 @@ def reward_anchors(report, items, species):
     return rows
 
 
-def copy_celadon_fixture(baseline, target):
+def copy_celadon_fixture(baseline, target, *, synthetic=True):
     # Bulk copy never imports any saves. Carry only the byte-exact sentinel
     # from stage_ci so the verifier can detect an accidental write to it.
     sentinel = baseline / SAVE
     expected = b"test save marker; not actual game data"
-    if sentinel.is_symlink() or sentinel.read_bytes() != expected:
+    if synthetic and (sentinel.is_symlink() or sentinel.read_bytes() != expected):
         raise ValueError("K06 fixture is missing the exact synthetic save sentinel")
-    def ignore_saved_data(_folder, names):
+    def ignore_saved_data(folder, names):
         patterns = ("game_*.rxdata", "game.rxdata", "*.sav", "*.rxsave", "save*", "backups")
-        return [name for name in names if any(fnmatchcase(name.casefold(), p) for p in patterns)]
+        return [name for name in names if any(fnmatchcase(name.casefold(), p) for p in patterns)
+                or (Path(folder)/name).is_symlink()]
 
     shutil.copytree(baseline, target, ignore=ignore_saved_data)
-    copy = target / SAVE
-    copy.parent.mkdir(exist_ok=True)
-    with copy.open("xb") as stream:
-        stream.write(expected)
+    if synthetic:
+        copy = target / SAVE
+        copy.parent.mkdir(exist_ok=True)
+        with copy.open("xb") as stream:
+            stream.write(expected)
 
 
 def check_approach_stamp(stamp, *, android_base=None):
@@ -229,7 +231,9 @@ def check_approach_stamp(stamp, *, android_base=None):
         raise ValueError("Celadon services require the delivered approach stage")
 
 
-def stage_services(source, baseline, target, report, *, android_base=None):
+def stage_services(source, baseline, target, report, *, android_base=None, windows_product=False):
+    if windows_product and android_base is not None:
+        raise ValueError("Choose the installed Windows or verified Android build")
     verify_native_graph(baseline)
     stamp = json_file(baseline / INSTALL)
     check_approach_stamp(stamp, android_base=android_base)
@@ -246,7 +250,7 @@ def stage_services(source, baseline, target, report, *, android_base=None):
             raise ValueError(f"Celadon pinned source map changed: {sid}")
         donors[sid] = load(source_files[sid])
     if android_base is None:
-        copy_celadon_fixture(baseline, target)
+        copy_celadon_fixture(baseline, target, synthetic=not windows_product)
     else:
         from scripts.android.source_update import clone_verified_install
         clone_verified_install(baseline, target, android_base)
@@ -319,7 +323,7 @@ def stage_services(source, baseline, target, report, *, android_base=None):
     if any(digest(path) != digest(after_paths[mid]) for mid, path in files.items() if mid not in changed):
         raise ValueError("Unrelated map bytes changed")
     inert = ("Game.ini", "mkxp.json", "PBS/map_connections_kanto.txt")
-    for rel in (*inert, SAVE) if android_base is None else inert:
+    for rel in (*inert, SAVE) if android_base is None and not windows_product else inert:
         before, after = baseline / rel, target / rel
         if before.is_symlink() or after.is_symlink() or not after.is_file() or digest(before) != digest(after):
             raise ValueError(f"Unrelated protected file changed: {rel}")
@@ -334,7 +338,7 @@ def stage_services(source, baseline, target, report, *, android_base=None):
     with meta.open("a",encoding="utf8") as pbs:
         for sid, label in zip(INTERIORS, ("Celadon Diner","Celadon Hotel","Celadon House","Celadon Mansion"), strict=True):
             pbs.write(f"\n[{mapping[sid]:03}]\nName = {label}\n")
-    if android_base is None:
+    if android_base is None and not windows_product:
         from k06_approach_migration import CI_PROFILE
         from qa_k04_migration import jsonc, save_namespace_valid
         cfg = target / "mkxp.json"

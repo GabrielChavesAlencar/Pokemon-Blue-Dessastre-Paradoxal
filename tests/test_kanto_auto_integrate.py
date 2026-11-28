@@ -378,5 +378,20 @@ class KantoAutoIntegrationTests(unittest.TestCase):
         self.assertFalse(result["ready"] or result["k06_approach"])
         self.assertEqual(self.calls[-1][1],auto.K06_APPROACH)
 
+
+    def test_celadon_services_runs_after_approach_and_skips_older_paths_on_reopen(self):
+        flag=self.project/auto.K06_SERVICES_RELEASE
+        flag.parent.mkdir(parents=True)
+        flag.touch()
+        (self.project/auto.K06_RELEASE).touch()
+        first=auto.integrate(self.project,self.game,run=self.invoke)
+        self.assertTrue(first["ready"] and first["changed"] and first["k06_services"])
+        self.assertEqual([x[1] for x in self.calls[-2:]], [auto.K06_APPROACH,auto.K06_SERVICES])
+        (self.game/auto.K06_SERVICES_RECEIPT).touch()
+        self.calls.clear()
+        second=auto.integrate(self.project,self.game,run=self.invoke)
+        self.assertTrue(second["ready"] and second["k06_services"])
+        self.assertFalse(second["changed"])
+        self.assertEqual([x[1] for x in self.calls], [auto.K06_SERVICES])
 if __name__ == "__main__":
     unittest.main()

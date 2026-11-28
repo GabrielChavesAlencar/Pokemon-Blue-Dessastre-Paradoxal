@@ -85,11 +85,12 @@ def plan(game, source, receipt, trusted_files=None):
     return changes,result
 
 
-def verify_native_graph(game, compiled=False):
+def verify_native_graph(game, compiled=False, *, mapping=None):
     """Verify compiled K06 contents, no paths to Saffron or later sublots."""
     game=game.resolve()
-    stamp=json_file(checked_file(game,INSTALL))
-    mapping={int(k):v for k,v in stamp["maps"].items()}
+    if mapping is None:
+        stamp=json_file(checked_file(game,INSTALL))
+        mapping={int(k):v for k,v in stamp["maps"].items()}
     if len(mapping)!=178 or mapping.get(93)!=609 or len(set(mapping.values()))!=178:
         raise ValueError("K06 compiled registry no longer preserves the 178 K05 IDs")
     controlled={mapping[i] for i in APPROACH}
