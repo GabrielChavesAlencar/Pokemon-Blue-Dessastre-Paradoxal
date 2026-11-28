@@ -2,6 +2,42 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f7b3ee5baa37b58007d5955e2a6258af1d2a63e9",
+      "date": "2026-11-27T21:03:30-03:00",
+      "title": "Merge pull request #378 from GabrielChavesAlencar/codex/unova-opening-native-doors",
+      "category": "Novidades"
+    },
+    {
+      "sha": "ae2b355769e49dd0c680b34062d0bf32bc61f782",
+      "date": "2026-11-27T20:51:31-03:00",
+      "title": "Use engine-native Marshal for the QA protocol",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "1f206539a23a6828c4a7d6857b115a9128316b0f",
+      "date": "2026-11-27T20:47:50-03:00",
+      "title": "Use the engine compilation receipt before staging Unova",
+      "category": "Novidades"
+    },
+    {
+      "sha": "06eaed50f7b57292f00c44040619985185c22562",
+      "date": "2026-11-27T20:43:46-03:00",
+      "title": "Record the native compiler result on disk",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "93efe7b36feaf158bd60243f34bb84ef2458d30d",
+      "date": "2026-11-27T20:40:48-03:00",
+      "title": "Allow long Decades source paths on the Windows QA runner",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "f1add1145b0f11074cb2eabad50fb42cf7a883b6",
+      "date": "2026-11-27T20:37:59-03:00",
+      "title": "Stage and verify Unova opening doors in native Windows QA",
+      "category": "Novidades"
+    },
+    {
       "sha": "fe7565bd54aa208aacd3598b5b7d4132e52c676c",
       "date": "2026-11-27T20:25:00-03:00",
       "title": "Merge pull request #377 from GabrielChavesAlencar/codex/unova-original-opening",
