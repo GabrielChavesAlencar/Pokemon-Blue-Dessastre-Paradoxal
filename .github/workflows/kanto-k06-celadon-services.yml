@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - 'scripts/regions/audit_k06_celadon_services.py'
+      - 'scripts/regions/build_k06_celadon_services.py'
+      - 'scripts/regions/KantoK06CeladonServices.rb'
       - 'tests/test_kanto_k06_celadon_services.py'
       - '.github/workflows/kanto-k06-celadon-services.yml'
   workflow_dispatch:
@@ -31,4 +33,36 @@ jobs:
         with:
           name: k06-celadon-services-source-receipt
           path: k06-services-receipts/celadon-services.json
+          if-no-files-found: error
+  windows-private-layout:
+    needs: source-evidence
+    runs-on: windows-2022
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Preparar baseline K06 integrado descartável
+        shell: powershell
+        run: |
+          python scripts/regions/ensure_source.py
+          if($LASTEXITCODE -ne 0){throw 'Pinned Celadon source unavailable'}
+          python scripts/regions/audit_k06_rocket.py
+          if($LASTEXITCODE -ne 0){throw 'Approach source witness unavailable'}
+          python scripts/install_game.py --apply --skip-kanto
+          if($LASTEXITCODE -ne 0){throw 'Could not prepare private Decades baseline'}
+          python scripts/regions/pilot.py --output .blue-work/kanto-k06-baseline
+          if($LASTEXITCODE -ne 0){throw 'K05 baseline assembly failed'}
+          python scripts/regions/k06_approach_migration.py
+          if($LASTEXITCODE -ne 0){throw 'Could not build delivered K06 approach'}
+      - name: Verificar colisões, geometria, portas e balcões
+        shell: powershell
+        run: |
+          python scripts/regions/build_k06_celadon_services.py
+          if($LASTEXITCODE -ne 0){throw 'Private Celadon layout validation failed'}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: k06-celadon-services-fixture-receipt
+          path: k06-services-receipts/celadon-services-fixture.json
           if-no-files-found: error

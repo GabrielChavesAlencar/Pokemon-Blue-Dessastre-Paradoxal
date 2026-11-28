@@ -20,6 +20,7 @@ MART_PREFIX=re.compile(r"(?<!\w)pbPokemonMart\s*\(")
 MART_LIST=re.compile(r"\s*\[([^\]]*)\]")
 SYMBOL=re.compile(r":([A-Z][A-Z0-9_]*)")
 RECEIVE=re.compile(r"(?<!\w)(pbReceiveItem|pbItemBall|pbReceivePokemon|pbAddPokemon)\s*\(?\s*(:[A-Z][A-Z0-9_]*)")
+TYPED_ARGS=re.compile(r"(?<!\w)(pbAddPokemon|pbReceiveItem|has\?|remove|add)\s*\(\s*:([A-Z][A-Z0-9_]*)(?:\s*,\s*([0-9]{1,3})(?![0-9]))?")
 HOUSE_CALL=re.compile(r"(?<!\w)(pbSetSelfSwitch|pbChoosePokemon|pbChooseItem|pbMessageChooseNumber|pbNicknameAndStore|has\?|remove|add)\s*\(")
 
 
@@ -58,6 +59,8 @@ def typed_services(code):
             stocks.append({"literal":False,"items":[]})
     return {"shops":stocks,
             "rewards":[{"operation":call,"item_or_species":item[1:]} for call,item in RECEIVE.findall(code)],
+            "item_arguments":[{"operation":op,"item_or_species":item,"quantity":int(qty) if qty else None}
+                              for op,item,qty in TYPED_ARGS.findall(code)],
             "interaction_calls":sorted(set(HOUSE_CALL.findall(code)))}
 
 
@@ -90,7 +93,8 @@ def summarize(source,catalog):
                 if shops or rewards or (sid in {122,123,*INTERIORS} and (effects or calls)):
                     services.append({"source":sid,"event":eid,"at":event["xy"],"page":page["page"],
                                      "trigger":page["trigger"],"conditions":audit_conditions(page["condition"]),
-                                     "effects":effects,"shops":shops,"rewards":rewards,"calls":calls})
+                                     "effects":effects,"shops":shops,"rewards":rewards,"calls":calls,
+                                     "item_arguments":[arg for part in parts for arg in part["item_arguments"]] })
     if {x["event"]:x["destination"] for x in warps if x["source"]==114}!=CITY_DOORS:
         raise ValueError("Native Celadon entrances changed")
     if {x["destination"] for x in warps if x["source"]==123 and x["event"]==1}!=set(range(117,122)):
