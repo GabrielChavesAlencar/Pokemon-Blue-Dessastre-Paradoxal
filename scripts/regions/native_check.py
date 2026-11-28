@@ -18,12 +18,16 @@ def prepare(game, integrated=False, k03e=False, k04=False):
         raise ValueError("Choose one native proof")
     if k04:
         from audit import json_file
-        if (os.getenv("GITHUB_ACTIONS") != "true" or
-                game != (ROOT / ".blue-work/kanto-k04-gameplay").resolve()):
-            raise ValueError("K04 requires the disposable CI gameplay copy")
-        marker = json_file(game / PILOT_META)
-        if (marker.get("k04_fixture_only") is not True or len(marker["maps"]) != 165
-                or marker["save_app"] != "Kanto K04 Gameplay CI"):
+        standalone = game == (ROOT / ".blue-work/kanto-k04-gameplay").resolve()
+        migrated = game == (ROOT / ".blue-work/kanto-k04-migration-ci/game").resolve()
+        if os.getenv("GITHUB_ACTIONS") != "true" or not (standalone or migrated):
+            raise ValueError("K04 requires a disposable CI product game")
+        from k04_corridor import published_destinations
+        marker = json_file(game / (PILOT_META if standalone else "Data/blue-kanto-install.json"))
+        if (len(marker["maps"]) != 165 or any(marker["maps"].get(k) != mid for k, mid in published_destinations().items())
+                or (standalone and (marker.get("k04_fixture_only") is not True or
+                                    marker["save_app"] != "Kanto K04 Gameplay CI"))
+                or (migrated and not (game / "Data/blue-k04-ci-isolated.txt").is_file())):
             raise ValueError("K04 fixture identity or save isolation is missing")
     if k03e:
         from k03e_contract import migration_game
@@ -34,7 +38,8 @@ def prepare(game, integrated=False, k03e=False, k04=False):
             raise ValueError("K03-E requires a disposable CI candidate")
         from audit import json_file
         marker = game/"Data/blue-kanto-install.json" if migrated else game/PILOT_META
-        if len(json_file(marker)["maps"]) != 160:
+        valid_counts = {160, 165} if game.name == "kanto-release-pilot" else {160}
+        if len(json_file(marker)["maps"]) not in valid_counts:
             raise ValueError("K03-E candidate must contain 160 maps")
     if integrated:
         # Integrated proof modifies Main only on a disposable GitHub runner.

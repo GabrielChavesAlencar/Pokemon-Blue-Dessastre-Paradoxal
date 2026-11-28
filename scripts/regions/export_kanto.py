@@ -7,6 +7,7 @@ from audit import KANTO, ROOT, json_file
 from pilot_catalog import prepared_plan
 from pbs import read_blocks, ENCOUNTER_REVIEW_SOURCE_IDS
 from k03e_contract import MAPS, NAMES, TRAINERS, candidate_manifest
+from k04_corridor import MAPS as K04_MAPS, NAMES as K04_NAMES, TRAINERS as K04_TRAINERS, publication_catalog
 
 LOCATION_NAMES = {
     "PALLET_TOWN": "Pallet Town",
@@ -343,14 +344,9 @@ def slug(key):
 
 
 def location_names(manifest):
-    maps = manifest["maps"]
-    corridor = {str(i): name for i, name in MAPS.items()}
-    active = maps.keys() & corridor.keys()
-    if not active:
-        return LOCATION_NAMES
-    if len(maps) != 160 or any(maps.get(i) != name for i, name in corridor.items()):
-        raise ValueError("K03-E portal requires the exact four corridor identities")
-    return {**LOCATION_NAMES, **NAMES}
+    size = publication_catalog(manifest["maps"])
+    names = {**LOCATION_NAMES, **NAMES} if size >= 160 else LOCATION_NAMES
+    return {**names, **dict(zip(K04_MAPS.values(), K04_NAMES))} if size == 165 else names
 
 
 def export(preview: Path, *, k03e=False):
@@ -362,7 +358,15 @@ def export(preview: Path, *, k03e=False):
     if "ROUTE_11" in names:
         roles = {"YOUNGSTER": "Jovem treinador", "GAMBLER": "Jogador", "ENGINEER": "Engenheiro"}
         route11_roles = {(kind, name): roles[kind] for kind, name in TRAINERS.values()}
-    if not k03e and (preview / "plan.json").is_file():
+    rock_roles = {}
+    if "ROCK_TUNNEL_1F" in names:
+        roles = {"PICNICKER": "Piqueniqueira", "HIKER": "Montanhista", "CAMPER": "Campista",
+                 "BUGCATCHER": "Caça-Insetos", "POKEMANIAC": "Pokémaníaco"}
+        for source, events in K04_TRAINERS.items():
+            for profile in events.values():
+                kind, name = profile.split(",")
+                rock_roles[kind, name] = (K04_MAPS[source], roles[kind])
+    if not k03e and not rock_roles and (preview / "plan.json").is_file():
         plan = json_file(preview / "plan.json")
         encounter_file = preview / "drafts/encounters.txt"
         trainer_file = preview / "drafts/trainers.txt"
@@ -440,6 +444,9 @@ def export(preview: Path, *, k03e=False):
         elif (kind, name) in route11_roles and version == "0":
             key, role = "ROUTE_11", route11_roles[kind, name]
             trainer_id, shown_name = slug(f"route-11-{name}"), name
+        elif (kind, name) in rock_roles and version == "0":
+            key, role = rock_roles[kind, name]
+            trainer_id, shown_name = slug(f"{key}-{name}"), name
         elif kind == "ROCKET" and int(version) in SILPH_GRUNT_FLOORS:
             key, role = SILPH_GRUNT_FLOORS[int(version)], "Equipe Rocket"
             trainer_id, shown_name = slug(f"grunt-silph-{version}"), f"Grunt {version}"

@@ -6,6 +6,19 @@ MAPS = {86: "ROUTE_9", 87: "ROUTE_10", 88: "ROCK_TUNNEL_CENTER",
 NAMES = ("Route 9", "Route 10", "Rock Tunnel Pokémon Center",
          "Rock Tunnel - 1F", "Rock Tunnel - B1F")
 DARK = frozenset({90, 91})
+TRAINERS = {
+    86: {2: "PICNICKER,Alicia", 3: "HIKER,Jeremy", 4: "CAMPER,Chris",
+         5: "BUGCATCHER,Brent", 6: "CAMPER,Drew", 7: "BUGCATCHER,Conner",
+         8: "HIKER,Brice", 9: "PICNICKER,Caitlin", 10: "HIKER,Alan"},
+    87: {5: "PICNICKER,Heidi", 10: "POKEMANIAC,Mark", 16: "PICNICKER,Carol",
+         17: "HIKER,Clark", 18: "HIKER,Trent", 21: "POKEMANIAC,Herman"},
+    90: {2: "HIKER,Lenny", 3: "HIKER,Oliver", 6: "POKEMANIAC,Ashton",
+         8: "HIKER,Lucas", 9: "PICNICKER,Leah", 10: "PICNICKER,Ariana", 12: "PICNICKER,Dana"},
+    91: {1: "HIKER,Allen", 2: "HIKER,Eric", 3: "POKEMANIAC,Steve",
+         19: "POKEMANIAC,Winston", 21: "PICNICKER,Martha", 22: "PICNICKER,Sofia",
+         25: "HIKER,Allen", 26: "POKEMANIAC,Cooper"},
+}
+
 # Original directed transfers. The out-of-scope 87/7 and 87/9 lead to
 # Power Plant (92) and are NOT allowed. Lavender (93) is not installed.
 WARPS = {

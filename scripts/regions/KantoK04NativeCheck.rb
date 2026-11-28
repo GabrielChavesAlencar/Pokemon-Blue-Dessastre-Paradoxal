@@ -406,7 +406,19 @@ module KantoK04NativeCheck
 
   def self.run
     SaveData.initialize_bootup_values
+    integrated = !File.file?("Kanto pilot.json")
+    if integrated
+      spawn = BlueRegionStart.kanto_spawn
+      registry = BlueRegionStart.kanto_compact_maps(spawn)
+      require!(BlueRegionStart.kanto_integrated? && registry && registry.size == 165,
+        "integrated ready gate rejected 165 maps")
+      require!(BlueRegionStart.request_initial("KANTO"), "integrated Kanto unavailable")
+    end
     Game.start_new
+    if integrated
+      require!($game_map.map_id == spawn[0] && BlueKantoPilot.kanto_current?,
+        "integrated main did not start in Kanto")
+    end
     Object.send(:define_method,:pbMessage) { |*args| args[1].is_a?(Array) ? 0 : nil }
     Object.send(:define_method,:pbConfirmMessage) { |*args| true }
     ids = [39,86,87,88,90,91].to_h { |sid| [sid,BlueKantoPilot.kanto_map_id(sid)] }
@@ -471,7 +483,7 @@ module KantoK04NativeCheck
       [from_city,to_city]
     end
     require!(errors.empty?, "native gate failures: #{errors.inspect}")
-    report = {"map_ids"=>ids,"encounters"=>encounters,"center_service"=>center,
+    report = {"integrated_main"=>integrated,"map_ids"=>ids,"encounters"=>encounters,"center_service"=>center,
       "center_doors"=>entrances,"north_to_south"=>north,"south_to_north"=>south,
       "seams"=>[roads[0].take(2),roads[1].drop(1)],"flash"=>flash,"native_save"=>saved,
       "south_boundary"=>boundary,"battles"=>battles,

@@ -38,24 +38,31 @@ jobs:
           }
           python scripts/regions/ensure_source.py
           if($LASTEXITCODE -ne 0){throw 'Pinned FRLG source preparation failed'}
-          python scripts/regions/audit_k04_rock_tunnel.py
-          if($LASTEXITCODE -ne 0){throw 'K04 Rock Tunnel source inventory failed'}
-          # Prove the default release build first, using all inputs from this SHA.
+          # Compile the actual publishing catalog, then compare its guide output.
           python scripts/regions/pilot.py --output .blue-work/kanto-release-pilot
           if($LASTEXITCODE -ne 0){throw 'Active Kanto pilot build failed'}
-          python scripts/regions/build_k04_geometry.py
-          if($LASTEXITCODE -ne 0){throw 'K04 isolated geometry and transfer validation failed'}
-          python -m unittest discover -s tests -p 'test_kanto_k04*.py'
-          if($LASTEXITCODE -ne 0){throw 'K04 adapter unit tests failed'}
-          python scripts/regions/build_k04_gameplay.py
-          if($LASTEXITCODE -ne 0){throw 'K04 isolated native gameplay staging failed'}
           python scripts/regions/release_gate.py --pilot .blue-work/kanto-release-pilot
           if($LASTEXITCODE -ne 0){throw 'Active Kanto release gate failed'}
           python scripts/regions/export_kanto.py --preview .blue-work/kanto-release-pilot --output .blue-work/kanto-release-site.json
           if($LASTEXITCODE -ne 0){throw 'Active Kanto portal export failed'}
-          python -c "import json; from pathlib import Path; a,b=(json.loads(Path(p).read_text(encoding='utf-8')) for p in ('site/public/data/kanto.json','.blue-work/kanto-release-site.json')); assert a['source']==b['source'] and all(sorted(a[k],key=lambda r:r['id'])==sorted(b[k],key=lambda r:r['id']) for k in ('locations','trainers')); print('KANTO_K03E_ACTIVE_PORTAL_MATCH_OK')"
+          python -c "import json; from pathlib import Path; a,b=(json.loads(Path(p).read_text(encoding='utf-8')) for p in ('site/public/data/kanto.json','.blue-work/kanto-release-site.json')); assert a['source']==b['source'] and all(sorted(a[k],key=lambda r:r['id'])==sorted(b[k],key=lambda r:r['id']) for k in ('locations','trainers')); print('KANTO_K04_ACTIVE_PORTAL_MATCH_OK')"
           if($LASTEXITCODE -ne 0){throw 'Committed game guide differs from active compiled sources'}
           Copy-Item .blue-work/kanto-release-pilot/Data/Scripts.rxdata .blue-work/kanto-release-clean-main.rxdata
+          # Construct a save-isolated copy of the exact product pilot for native K04.
+          python scripts/regions/qa_k04_migration.py --isolate-pilot
+          if($LASTEXITCODE -ne 0){throw 'K04 product proof isolation failed'}
+          # Prepare the historical install using its own audited release catalog.
+          $k03e='4c21940ae4936adb1919c0052007e3f2812b077d'
+          git fetch --no-tags --depth=1 origin $k03e
+          if($LASTEXITCODE -ne 0){throw 'Cannot fetch the published 160-map catalog'}
+          git restore --source=$k03e -- data/regions/kanto-source.json data/kanto-music-rules.json site/public/data/kanto.json
+          if($LASTEXITCODE -ne 0){throw 'Cannot restore the exact K03-E catalog'}
+          python scripts/regions/qa_k04_migration.py --seed-baseline
+          if($LASTEXITCODE -ne 0){throw 'Cannot seed the published 160-map install'}
+          python scripts/regions/audit_k04_rock_tunnel.py
+          if($LASTEXITCODE -ne 0){throw 'K04 Rock Tunnel source inventory failed'}
+          python -m unittest discover -s tests -p 'test_kanto_k04*.py'
+          if($LASTEXITCODE -ne 0){throw 'K04 adapter unit tests failed'}
           # Keep native regression coverage against the exact historical 156-map
           # inputs. Restore the current revision before entering any package path.
           $baseline='e7c8f8d5d42ebe225cf88a4f900b0e0f8102b1bb'
@@ -956,12 +963,19 @@ jobs:
           Remove-Item "$release/Data/blue-kanto-proof.rb","$release/Data/blue-kanto-walk-check.rb","$release/Data/blue-kanto-k03e-check.rb","$release/Data/blue-kanto-music-native-probe.rb" -ErrorAction Stop
           # PluginScripts.rxdata is generated only by Game.exe. Validate package
           # inputs after the native boot and restoration of clean Main.
-          python -c "from pathlib import Path; from scripts.android.package_kanto import _metadata; d=_metadata(Path('.blue-work/kanto-release-pilot')); assert len(d['maps']) == 160; print('KANTO_K03E_ACTIVE_RELEASE_METADATA_OK')"
+          python -c "from pathlib import Path; from scripts.android.package_kanto import _metadata; d=_metadata(Path('.blue-work/kanto-release-pilot')); assert len(d['maps']) == 165; print('KANTO_K04_ACTIVE_RELEASE_METADATA_OK')"
           if($LASTEXITCODE -ne 0){throw 'Active compiled Kanto package inputs or preserved save namespace are invalid'}
-      - name: Testar corredor e Flash do Rock Tunnel no Game.exe isolado
+      - name: Migrar instalação real de 160 para 165 mapas e verificar rollback
         shell: powershell
         run: |
-          $candidate=(Resolve-Path .blue-work/kanto-k04-gameplay).Path
+          python scripts/regions/qa_k04_migration.py --migrate
+          if($LASTEXITCODE -ne 0){throw 'K04 migration failed or changed owned/foreign state'}
+      - name: Testar corredor e Flash do Rock Tunnel no produto e no Main migrado
+        shell: powershell
+        run: |
+          foreach($label in @('kanto-k04-gameplay','kanto-k04-migration-ci/game')){
+          $candidate=(Resolve-Path ".blue-work/$label").Path
+          $sample=Split-Path ($label -replace '/game$','') -Leaf
           python scripts/regions/native_check.py $candidate --k04
           if($LASTEXITCODE -ne 0){throw 'K04 native injection failed'}
           $mesaFolder=Join-Path $env:RUNNER_TEMP 'blue-mesa'
@@ -971,8 +985,8 @@ jobs:
           $proof="$candidate/Data/blue-kanto-k04-proof.txt"
           $errorFile="$candidate/Data/blue-kanto-error.txt"
           for($attempt=1;$attempt -le 2;$attempt++){
-            $stdout=".blue-work/kanto-k04-native-out-$attempt.txt"
-            $stderr=".blue-work/kanto-k04-native-err-$attempt.txt"
+            $stdout=".blue-work/$sample-out-$attempt.txt"
+            $stderr=".blue-work/$sample-err-$attempt.txt"
             $proc=Start-Process -FilePath "$candidate/Game.exe" -WorkingDirectory $candidate -WindowStyle Hidden -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
             $handle=$proc.Handle
             if(-not $proc.WaitForExit(180000)){
@@ -989,13 +1003,24 @@ jobs:
             throw 'K04 native corridor and Flash proof missing'
           }
           Write-Host ("KANTO_K04_NATIVE_CORRIDOR_REPORT:" + (Get-Content $proof -Raw).Trim())
-          Write-Host 'KANTO_K04_NATIVE_CORRIDOR_FLASH_OK'
+          if($label -eq 'kanto-k04-migration-ci/game'){
+            if((Get-Content $proof -Raw) -notmatch '"integrated_main"=>true'){throw 'Missing integrated native proof'}
+            Write-Host 'KANTO_K04_MIGRATED_MAIN_NATIVE_OK'
+          }else{
+            Write-Host 'KANTO_K04_NATIVE_CORRIDOR_FLASH_OK'
+          }
+          }
       - name: Guardar prova nativa K04 sem jogo ou save
-        if: always() && hashFiles('.blue-work/kanto-k04-gameplay-proof.json') != ''
+        if: always() && hashFiles('.blue-work/kanto-release-site.json') != ''
         uses: actions/upload-artifact@v4
         with:
           name: kanto-k04-native-gameplay-receipts
           path: |
+            .blue-work/kanto-release-site.json
+            .blue-work/kanto-k04-migration-proof.json
+            .blue-work/kanto-k04-migration-ci/game/Data/blue-kanto-k04-proof.txt
+            .blue-work/kanto-k04-migration-ci/game/Data/blue-kanto-k04-stage.txt
+            .blue-work/kanto-k04-migration-ci/game/Data/blue-kanto-error.txt
             .blue-work/kanto-k04-gameplay/Data/blue-kanto-k04-proof.txt
             .blue-work/kanto-k04-gameplay/Data/blue-kanto-k04-stage.txt
             .blue-work/kanto-k04-gameplay/Data/blue-kanto-k03a-trace.txt

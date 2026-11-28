@@ -8,23 +8,12 @@ import copy
 import re
 
 from audit import ROOT, load, text
+from k04_corridor import TRAINERS
 from k04_flash import SOURCE_ID as FLASH_MAP, EVENT_ID as FLASH_EVENT, install_flash_aide
 from kanto_overworld import adapt_source_field_event, source_obstacle
 from pbs import catalogue, normalize_encounters, read_blocks, trainer_draft
 from pilot import EVENT_CLASSES, TYPES, command, if_scene, new_event, write_map
 
-TRAINERS = {
-    86: {2: "PICNICKER,Alicia", 3: "HIKER,Jeremy", 4: "CAMPER,Chris",
-         5: "BUGCATCHER,Brent", 6: "CAMPER,Drew", 7: "BUGCATCHER,Conner",
-         8: "HIKER,Brice", 9: "PICNICKER,Caitlin", 10: "HIKER,Alan"},
-    87: {5: "PICNICKER,Heidi", 10: "POKEMANIAC,Mark", 16: "PICNICKER,Carol",
-         17: "HIKER,Clark", 18: "HIKER,Trent", 21: "POKEMANIAC,Herman"},
-    90: {2: "HIKER,Lenny", 3: "HIKER,Oliver", 6: "POKEMANIAC,Ashton",
-         8: "HIKER,Lucas", 9: "PICNICKER,Leah", 10: "PICNICKER,Ariana", 12: "PICNICKER,Dana"},
-    91: {1: "HIKER,Allen", 2: "HIKER,Eric", 3: "POKEMANIAC,Steve",
-         19: "POKEMANIAC,Winston", 21: "PICNICKER,Martha", 22: "PICNICKER,Sofia",
-         25: "HIKER,Allen", 26: "POKEMANIAC,Cooper"},
-}
 NURSE = re.compile(r"\b(?:pbPokeCenter|pbPokemonCenter|pbHealAll|pbSetPokemonCenter)\b|\$player\.heal_party")
 
 
@@ -168,11 +157,28 @@ def install_aide_and_runtime(source, target, source_maps, mapping):
     if load(gate_path) != gate:
         raise ValueError("K04 Flash aide did not survive native Map Marshal round trip")
     plugin = target / "Plugins/ZZZZZ Blue Kanto Pilot/KantoPilot.rb"
-    append(plugin, (ROOT / "scripts/regions/KantoK04Field.rb").read_text("utf-8"))
+    plugin.write_bytes(runtime_payload(plugin.read_bytes()))
     return gate_path
 
 
-def install_pbs_payload(source, target, tmp, specs, delta):
+def read_blocks_from_text(value, ids):
+    selected = {}
+    for section in re.split(r"(?m)(?=^\[)", value):
+        header = re.match(r"\[(\d+)(?:,(\d+))?\]", section)
+        if not header or f"{int(header[1]):03d}" not in ids:
+            continue
+        key = (int(header[1]), int(header[2] or 0))
+        if key in selected:
+            raise ValueError(f"K04 encounter table duplicated: {key}")
+        selected[key] = [line.strip() for line in section.splitlines()[1:] if line.strip() and not line.lstrip().startswith("#")]
+    return selected
+
+def runtime_payload(base):
+    field = (ROOT / "scripts/regions/KantoK04Field.rb").read_bytes()
+    return base + b"\n" + field.strip() + b"\n"
+
+
+def install_pbs_payload(source, target, tmp, specs, delta, *, encounters_staged=False):
     """Append only the audited new profiles and four original encounter tables."""
     species, moves, items = (catalogue(target, k) for k in ("pokemon", "moves", "items"))
     pbs = target / "PBS"
@@ -187,5 +193,13 @@ def install_pbs_payload(source, target, tmp, specs, delta):
     if tables != 4 or {int(n) for n in re.findall(r"(?m)^\[(\d+)(?:,\d+)?\]", wild)} != {
             delta[i] for i in (86, 87, 90, 91)}:
         raise ValueError("K04 must retain exactly the four original encounter tables")
-    append(pbs / "encounters_kanto.txt", wild)
+    encounter_path = pbs / "encounters_kanto.txt"
+    if encounters_staged:
+        headers = {f"{delta[i]:03d}" for i in (86, 87, 90, 91)}
+        expected = read_blocks_from_text(wild, headers)
+        observed = read_blocks_from_text(encounter_path.read_text(encoding="utf-8-sig"), headers)
+        if len(expected) != 4 or observed != expected:
+            raise ValueError("K04 staged encounter tables differ from the source")
+    else:
+        append(encounter_path, wild)
     return tables

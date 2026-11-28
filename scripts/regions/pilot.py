@@ -40,6 +40,11 @@ PILOT_INPUTS = (
     "scripts/regions/kanto_npc_locale.py",
     "scripts/regions/kanto_locale_audit.py",
     "scripts/regions/stage.py",
+    "scripts/regions/k04_corridor.py",
+    "scripts/regions/k04_gameplay.py",
+    "scripts/regions/k04_promotion.py",
+    "scripts/regions/k04_flash.py",
+    "scripts/regions/KantoK04Field.rb",
     "scripts/regions/pbs.py",
     "scripts/regions/kanto_full_power.py",
     "data/kanto-full-power.json",
@@ -1906,6 +1911,9 @@ def install_pbs(preview, target, mapping, manifest=None):
         # use a verified existing Gentleman battle portrait provisionally.
         types = {**TYPES, "GAMBLER": "GENTLEMAN"}
         names = {**LOCATION_NAMES, **NAMES}
+    if 86 in mapping:
+        from k04_corridor import MAPS, NAMES
+        names = {**names, **dict(zip(MAPS.values(), NAMES))}
     pbs = target / "PBS"
     draft = preview / "drafts"
     for name in ("encounters", "trainers"):
@@ -1925,8 +1933,10 @@ def install_pbs(preview, target, mapping, manifest=None):
     source_keys = manifest["maps"]
     for source_id, map_id in mapping.items():
         metadata.extend([f"[{map_id:03}]", f"Name = {names[source_keys[str(source_id)]]}"])
-        if source_id in (5, 9, 10, 18, 24, 25, 32, 33, 39, 53, 54, 56, 61, 64, 72, 79, 111, 114, 141, 143, 144, 155, 157, 159, 161, 164, 107, 168, 190, 191, 198, 199, 16, 209, 214):
+        if source_id in (86, 87, 5, 9, 10, 18, 24, 25, 32, 33, 39, 53, 54, 56, 61, 64, 72, 79, 111, 114, 141, 143, 144, 155, 157, 159, 161, 164, 107, 168, 190, 191, 198, 199, 16, 209, 214):
             metadata.extend(["Outdoor = true", "ShowArea = true"])
+        if source_id in (90, 91):
+            metadata.extend(["DarkMap = true", "ShowArea = true"])
         if source_id in {*range(155, 164), 153}:
             metadata.append("SafariMap = true")
         metadata.append("")
@@ -1943,6 +1953,9 @@ def install_runtime(target, mapping, game, manifest=None):
         names = {**LOCATION_NAMES, **NAMES}
         if isolated_manifest is not None:
             save_app = "Kanto K03E CI"
+    if 86 in mapping:
+        from k04_corridor import MAPS, NAMES
+        names = {**names, **dict(zip(MAPS.values(), NAMES))}
     presentation = target / "Plugins/ZZZZ Blue Story and Presentation"
     for name in ("RegionStart.rb", "Regions.rb", "RegionalPolicy.rb", "RegionalRespawn.rb", "Title.rb", "Story.rb", "PartyExperience.rb", "Balance.rb", "RegionalCards.rb",
                  "Economy.rb", "Locale.rb", "KantoDex.rb", "DexControls.rb"):
@@ -2112,7 +2125,9 @@ def build(source, game, output, existing=None, *, manifest=None):
             shutil.copytree(preview / folder, target / folder, dirs_exist_ok=True)
         audit_cerulean_reward_item(target)
         install_cerulean_items(source, target)
-        install_events(source, target, mapping)
+        from k04_corridor import MAPS as k04_sources
+        k04 = bool(mapping.keys() & k04_sources.keys())
+        install_events(source, target, {sid: dst for sid,dst in mapping.items() if sid not in k04_sources})
         install_pewter_route3_gate(source, target, mapping)
         install_pbs(preview, target, mapping, manifest)
         install_npc_locale(ROOT, source, target, use_optional_translator=False)
@@ -2122,6 +2137,9 @@ def build(source, game, output, existing=None, *, manifest=None):
         from scripts.music.install_kanto_music import install as install_kanto_audio
         install_kanto_audio(target, apply=True, numbers=approved_audio_track_numbers(ROOT))
         install_runtime(target, mapping, game, manifest)
+        if k04:
+            from k04_promotion import install
+            install(source, target, Path(tmp), mapping, plan)
         install_cerulean_wall_map(source, target)
         write_audit(target, ROOT, manifest=manifest)
         if output.exists():

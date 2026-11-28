@@ -6369,6 +6369,472 @@
         }
       ],
       "trainers": []
+    },
+    {
+      "id": "kanto-route-9",
+      "name": "Route 9",
+      "status": "experimental",
+      "methods": [
+        {
+          "id": "LandDay",
+          "slots": [
+            {
+              "species": "RATTATA",
+              "chance": 40.0,
+              "min": 14,
+              "max": 17,
+              "weight": 40
+            },
+            {
+              "species": "SPEAROW",
+              "chance": 30.0,
+              "min": 13,
+              "max": 17,
+              "weight": 30
+            },
+            {
+              "species": "SANDSHREW",
+              "chance": 15.0,
+              "min": 11,
+              "max": 17,
+              "weight": 15
+            },
+            {
+              "species": "EKANS",
+              "chance": 15.0,
+              "min": 11,
+              "max": 17,
+              "weight": 15
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "LandNight",
+          "slots": [
+            {
+              "species": "RATTATA",
+              "chance": 40.0,
+              "min": 14,
+              "max": 17,
+              "weight": 40
+            },
+            {
+              "species": "SPEAROW",
+              "chance": 30.0,
+              "min": 13,
+              "max": 17,
+              "weight": 30
+            },
+            {
+              "species": "SANDSHREW",
+              "chance": 15.0,
+              "min": 11,
+              "max": 17,
+              "weight": 15
+            },
+            {
+              "species": "EKANS",
+              "chance": 15.0,
+              "min": 11,
+              "max": 17,
+              "weight": 15
+            }
+          ],
+          "weightTotal": 100
+        }
+      ],
+      "trainers": [
+        "kanto-route-9-alicia",
+        "kanto-route-9-jeremy",
+        "kanto-route-9-chris",
+        "kanto-route-9-brent",
+        "kanto-route-9-drew",
+        "kanto-route-9-conner",
+        "kanto-route-9-brice",
+        "kanto-route-9-caitlin",
+        "kanto-route-9-alan"
+      ]
+    },
+    {
+      "id": "kanto-route-10",
+      "name": "Route 10",
+      "status": "experimental",
+      "methods": [
+        {
+          "id": "LandDay",
+          "slots": [
+            {
+              "species": "VOLTORB",
+              "chance": 40.0,
+              "min": 14,
+              "max": 17,
+              "weight": 40
+            },
+            {
+              "species": "SPEAROW",
+              "chance": 30.0,
+              "min": 13,
+              "max": 17,
+              "weight": 30
+            },
+            {
+              "species": "SANDSHREW",
+              "chance": 15.0,
+              "min": 11,
+              "max": 17,
+              "weight": 15
+            },
+            {
+              "species": "EKANS",
+              "chance": 15.0,
+              "min": 11,
+              "max": 17,
+              "weight": 15
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "LandNight",
+          "slots": [
+            {
+              "species": "VOLTORB",
+              "chance": 40.0,
+              "min": 14,
+              "max": 17,
+              "weight": 40
+            },
+            {
+              "species": "SPEAROW",
+              "chance": 30.0,
+              "min": 13,
+              "max": 17,
+              "weight": 30
+            },
+            {
+              "species": "SANDSHREW",
+              "chance": 15.0,
+              "min": 11,
+              "max": 17,
+              "weight": 15
+            },
+            {
+              "species": "EKANS",
+              "chance": 15.0,
+              "min": 11,
+              "max": 17,
+              "weight": 15
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "Water",
+          "slots": [
+            {
+              "species": "TENTACOOL",
+              "chance": 100.0,
+              "min": 5,
+              "max": 40,
+              "weight": 100
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "OldRod",
+          "slots": [
+            {
+              "species": "MAGIKARP",
+              "chance": 100.0,
+              "min": 5,
+              "max": 5,
+              "weight": 100
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "GoodRod",
+          "slots": [
+            {
+              "species": "HORSEA",
+              "chance": 40.0,
+              "min": 5,
+              "max": 15,
+              "weight": 40
+            },
+            {
+              "species": "KRABBY",
+              "chance": 40.0,
+              "min": 5,
+              "max": 15,
+              "weight": 40
+            },
+            {
+              "species": "MAGIKARP",
+              "chance": 20.0,
+              "min": 5,
+              "max": 15,
+              "weight": 20
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "SuperRod",
+          "slots": [
+            {
+              "species": "HORSEA",
+              "chance": 44.0,
+              "min": 15,
+              "max": 35,
+              "weight": 44
+            },
+            {
+              "species": "KRABBY",
+              "chance": 44.0,
+              "min": 15,
+              "max": 35,
+              "weight": 44
+            },
+            {
+              "species": "GYARADOS",
+              "chance": 10.0,
+              "min": 15,
+              "max": 25,
+              "weight": 10
+            },
+            {
+              "species": "PSYDUCK",
+              "chance": 1.0,
+              "min": 25,
+              "max": 35,
+              "weight": 1
+            },
+            {
+              "species": "SLOWPOKE",
+              "chance": 1.0,
+              "min": 25,
+              "max": 35,
+              "weight": 1
+            }
+          ],
+          "weightTotal": 100
+        }
+      ],
+      "trainers": [
+        "kanto-route-10-heidi",
+        "kanto-route-10-mark",
+        "kanto-route-10-carol",
+        "kanto-route-10-clark",
+        "kanto-route-10-trent",
+        "kanto-route-10-herman"
+      ]
+    },
+    {
+      "id": "kanto-rock-tunnel-center",
+      "name": "Rock Tunnel Pokémon Center",
+      "status": "experimental",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-rock-tunnel-1f",
+      "name": "Rock Tunnel - 1F",
+      "status": "experimental",
+      "methods": [
+        {
+          "id": "CaveDay",
+          "slots": [
+            {
+              "species": "GEODUDE",
+              "chance": 35.0,
+              "min": 15,
+              "max": 17,
+              "weight": 35
+            },
+            {
+              "species": "ZUBAT",
+              "chance": 30.0,
+              "min": 15,
+              "max": 16,
+              "weight": 30
+            },
+            {
+              "species": "MACHOP",
+              "chance": 15.0,
+              "min": 16,
+              "max": 17,
+              "weight": 15
+            },
+            {
+              "species": "MANKEY",
+              "chance": 15.0,
+              "min": 16,
+              "max": 17,
+              "weight": 15
+            },
+            {
+              "species": "ONIX",
+              "chance": 5.0,
+              "min": 13,
+              "max": 15,
+              "weight": 5
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "CaveNight",
+          "slots": [
+            {
+              "species": "GEODUDE",
+              "chance": 35.0,
+              "min": 15,
+              "max": 17,
+              "weight": 35
+            },
+            {
+              "species": "ZUBAT",
+              "chance": 30.0,
+              "min": 15,
+              "max": 16,
+              "weight": 30
+            },
+            {
+              "species": "MACHOP",
+              "chance": 15.0,
+              "min": 16,
+              "max": 17,
+              "weight": 15
+            },
+            {
+              "species": "MANKEY",
+              "chance": 15.0,
+              "min": 16,
+              "max": 17,
+              "weight": 15
+            },
+            {
+              "species": "ONIX",
+              "chance": 5.0,
+              "min": 13,
+              "max": 15,
+              "weight": 5
+            }
+          ],
+          "weightTotal": 100
+        }
+      ],
+      "trainers": [
+        "kanto-rock-tunnel-1f-lenny",
+        "kanto-rock-tunnel-1f-oliver",
+        "kanto-rock-tunnel-1f-ashton",
+        "kanto-rock-tunnel-1f-lucas",
+        "kanto-rock-tunnel-1f-leah",
+        "kanto-rock-tunnel-1f-ariana",
+        "kanto-rock-tunnel-1f-dana"
+      ]
+    },
+    {
+      "id": "kanto-rock-tunnel-b1f",
+      "name": "Rock Tunnel - B1F",
+      "status": "experimental",
+      "methods": [
+        {
+          "id": "CaveDay",
+          "slots": [
+            {
+              "species": "GEODUDE",
+              "chance": 35.0,
+              "min": 15,
+              "max": 17,
+              "weight": 35
+            },
+            {
+              "species": "ZUBAT",
+              "chance": 30.0,
+              "min": 15,
+              "max": 16,
+              "weight": 30
+            },
+            {
+              "species": "MANKEY",
+              "chance": 15.0,
+              "min": 16,
+              "max": 17,
+              "weight": 15
+            },
+            {
+              "species": "MACHOP",
+              "chance": 10.0,
+              "min": 17,
+              "max": 17,
+              "weight": 10
+            },
+            {
+              "species": "ONIX",
+              "chance": 10.0,
+              "min": 13,
+              "max": 17,
+              "weight": 10
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "CaveNight",
+          "slots": [
+            {
+              "species": "GEODUDE",
+              "chance": 35.0,
+              "min": 15,
+              "max": 17,
+              "weight": 35
+            },
+            {
+              "species": "ZUBAT",
+              "chance": 30.0,
+              "min": 15,
+              "max": 16,
+              "weight": 30
+            },
+            {
+              "species": "MANKEY",
+              "chance": 15.0,
+              "min": 16,
+              "max": 17,
+              "weight": 15
+            },
+            {
+              "species": "MACHOP",
+              "chance": 10.0,
+              "min": 17,
+              "max": 17,
+              "weight": 10
+            },
+            {
+              "species": "ONIX",
+              "chance": 10.0,
+              "min": 13,
+              "max": 17,
+              "weight": 10
+            }
+          ],
+          "weightTotal": 100
+        }
+      ],
+      "trainers": [
+        "kanto-rock-tunnel-b1f-allen",
+        "kanto-rock-tunnel-b1f-eric",
+        "kanto-rock-tunnel-b1f-steve",
+        "kanto-rock-tunnel-b1f-winston",
+        "kanto-rock-tunnel-b1f-martha",
+        "kanto-rock-tunnel-b1f-sofia",
+        "kanto-rock-tunnel-b1f-cooper"
+      ]
     }
   ],
   "trainers": [
@@ -11862,6 +12328,688 @@
             {
               "species": "MAGNEMITE",
               "level": 18
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-route-9-alicia",
+      "name": "Alicia",
+      "role": "Piqueniqueira",
+      "location": "kanto-route-9",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "ODDISH",
+              "level": 18
+            },
+            {
+              "species": "BELLSPROUT",
+              "level": 18
+            },
+            {
+              "species": "ODDISH",
+              "level": 18
+            },
+            {
+              "species": "BELLSPROUT",
+              "level": 18
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-route-9-jeremy",
+      "name": "Jeremy",
+      "role": "Montanhista",
+      "location": "kanto-route-9",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "MACHOP",
+              "level": 20
+            },
+            {
+              "species": "ONIX",
+              "level": 20
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-route-9-chris",
+      "name": "Chris",
+      "role": "Campista",
+      "location": "kanto-route-9",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GROWLITHE",
+              "level": 21
+            },
+            {
+              "species": "CHARMANDER",
+              "level": 21
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-route-9-brent",
+      "name": "Brent",
+      "role": "Caça-Insetos",
+      "location": "kanto-route-9",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "BEEDRILL",
+              "level": 19
+            },
+            {
+              "species": "BEEDRILL",
+              "level": 19
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-route-9-drew",
+      "name": "Drew",
+      "role": "Campista",
+      "location": "kanto-route-9",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "RATTATA",
+              "level": 19
+            },
+            {
+              "species": "SANDSHREW",
+              "level": 19
+            },
+            {
+              "species": "EKANS",
+              "level": 19
+            },
+            {
+              "species": "SANDSHREW",
+              "level": 19
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-route-9-conner",
+      "name": "Conner",
+      "role": "Caça-Insetos",
+      "location": "kanto-route-9",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "CATERPIE",
+              "level": 20
+            },
+            {
+              "species": "WEEDLE",
+              "level": 20
+            },
+            {
+              "species": "VENONAT",
+              "level": 20
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-route-9-brice",
+      "name": "Brice",
+      "role": "Montanhista",
+      "location": "kanto-route-9",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GEODUDE",
+              "level": 20
+            },
+            {
+              "species": "MACHOP",
+              "level": 20
+            },
+            {
+              "species": "GEODUDE",
+              "level": 20
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-route-9-caitlin",
+      "name": "Caitlin",
+      "role": "Piqueniqueira",
+      "location": "kanto-route-9",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "MEOWTH",
+              "level": 23
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-route-9-alan",
+      "name": "Alan",
+      "role": "Montanhista",
+      "location": "kanto-route-9",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GEODUDE",
+              "level": 21
+            },
+            {
+              "species": "ONIX",
+              "level": 21
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-route-10-heidi",
+      "name": "Heidi",
+      "role": "Piqueniqueira",
+      "location": "kanto-route-10",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "PIKACHU",
+              "level": 20
+            },
+            {
+              "species": "CLEFAIRY",
+              "level": 20
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-route-10-mark",
+      "name": "Mark",
+      "role": "Pokémaníaco",
+      "location": "kanto-route-10",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "RHYHORN",
+              "level": 29
+            },
+            {
+              "species": "LICKITUNG",
+              "level": 29
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-route-10-carol",
+      "name": "Carol",
+      "role": "Piqueniqueira",
+      "location": "kanto-route-10",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "PIDGEY",
+              "level": 21
+            },
+            {
+              "species": "PIDGEOTTO",
+              "level": 21
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-route-10-clark",
+      "name": "Clark",
+      "role": "Montanhista",
+      "location": "kanto-route-10",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GEODUDE",
+              "level": 21
+            },
+            {
+              "species": "ONIX",
+              "level": 21
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-route-10-trent",
+      "name": "Trent",
+      "role": "Montanhista",
+      "location": "kanto-route-10",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "ONIX",
+              "level": 19
+            },
+            {
+              "species": "GRAVELER",
+              "level": 19
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-route-10-herman",
+      "name": "Herman",
+      "role": "Pokémaníaco",
+      "location": "kanto-route-10",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "CUBONE",
+              "level": 20
+            },
+            {
+              "species": "SLOWPOKE",
+              "level": 20
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-rock-tunnel-1f-lenny",
+      "name": "Lenny",
+      "role": "Montanhista",
+      "location": "kanto-rock-tunnel-1f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GEODUDE",
+              "level": 19
+            },
+            {
+              "species": "MACHOP",
+              "level": 19
+            },
+            {
+              "species": "GEODUDE",
+              "level": 19
+            },
+            {
+              "species": "GEODUDE",
+              "level": 19
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-rock-tunnel-1f-oliver",
+      "name": "Oliver",
+      "role": "Montanhista",
+      "location": "kanto-rock-tunnel-1f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "ONIX",
+              "level": 20
+            },
+            {
+              "species": "ONIX",
+              "level": 20
+            },
+            {
+              "species": "GEODUDE",
+              "level": 20
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-rock-tunnel-1f-ashton",
+      "name": "Ashton",
+      "role": "Pokémaníaco",
+      "location": "kanto-rock-tunnel-1f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "CUBONE",
+              "level": 23
+            },
+            {
+              "species": "SLOWPOKE",
+              "level": 23
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-rock-tunnel-1f-lucas",
+      "name": "Lucas",
+      "role": "Montanhista",
+      "location": "kanto-rock-tunnel-1f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GEODUDE",
+              "level": 21
+            },
+            {
+              "species": "GRAVELER",
+              "level": 21
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-rock-tunnel-1f-leah",
+      "name": "Leah",
+      "role": "Piqueniqueira",
+      "location": "kanto-rock-tunnel-1f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "BELLSPROUT",
+              "level": 22
+            },
+            {
+              "species": "CLEFAIRY",
+              "level": 22
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-rock-tunnel-1f-ariana",
+      "name": "Ariana",
+      "role": "Piqueniqueira",
+      "location": "kanto-rock-tunnel-1f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "PIDGEY",
+              "level": 19
+            },
+            {
+              "species": "RATTATA",
+              "level": 19
+            },
+            {
+              "species": "RATTATA",
+              "level": 19
+            },
+            {
+              "species": "BELLSPROUT",
+              "level": 19
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-rock-tunnel-1f-dana",
+      "name": "Dana",
+      "role": "Piqueniqueira",
+      "location": "kanto-rock-tunnel-1f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "MEOWTH",
+              "level": 20
+            },
+            {
+              "species": "ODDISH",
+              "level": 20
+            },
+            {
+              "species": "PIDGEY",
+              "level": 20
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-rock-tunnel-b1f-allen",
+      "name": "Allen",
+      "role": "Montanhista",
+      "location": "kanto-rock-tunnel-b1f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GEODUDE",
+              "level": 25
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-rock-tunnel-b1f-eric",
+      "name": "Eric",
+      "role": "Montanhista",
+      "location": "kanto-rock-tunnel-b1f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "MACHOP",
+              "level": 20
+            },
+            {
+              "species": "ONIX",
+              "level": 20
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-rock-tunnel-b1f-steve",
+      "name": "Steve",
+      "role": "Pokémaníaco",
+      "location": "kanto-rock-tunnel-b1f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "CHARMANDER",
+              "level": 22
+            },
+            {
+              "species": "CUBONE",
+              "level": 22
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-rock-tunnel-b1f-winston",
+      "name": "Winston",
+      "role": "Pokémaníaco",
+      "location": "kanto-rock-tunnel-b1f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "SLOWPOKE",
+              "level": 25
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-rock-tunnel-b1f-martha",
+      "name": "Martha",
+      "role": "Piqueniqueira",
+      "location": "kanto-rock-tunnel-b1f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "ODDISH",
+              "level": 22
+            },
+            {
+              "species": "BULBASAUR",
+              "level": 22
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-rock-tunnel-b1f-sofia",
+      "name": "Sofia",
+      "role": "Piqueniqueira",
+      "location": "kanto-rock-tunnel-b1f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "JIGGLYPUFF",
+              "level": 21
+            },
+            {
+              "species": "MEOWTH",
+              "level": 21
+            },
+            {
+              "species": "PIDGEY",
+              "level": 21
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-rock-tunnel-b1f-cooper",
+      "name": "Cooper",
+      "role": "Pokémaníaco",
+      "location": "kanto-rock-tunnel-b1f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "SLOWPOKE",
+              "level": 20
+            },
+            {
+              "species": "SLOWPOKE",
+              "level": 20
+            },
+            {
+              "species": "SLOWPOKE",
+              "level": 20
             }
           ]
         }
