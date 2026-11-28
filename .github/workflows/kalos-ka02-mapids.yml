@@ -27,10 +27,13 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD^2)" = "$PR_HEAD"
-          git diff --check "$BASE" HEAD
+          MERGED_BASE="$(git rev-parse HEAD^1)"
+          git merge-base --is-ancestor "$BASE" "$MERGED_BASE"
+          export MERGED_BASE
+          git diff --check "$MERGED_BASE" HEAD
           python - <<'PY'
           import os, subprocess
-          files = set(subprocess.check_output(["git","diff","--name-only",os.environ["BASE"],"HEAD"],text=True).splitlines())
+          files = set(subprocess.check_output(["git","diff","--name-only",os.environ["MERGED_BASE"],"HEAD"],text=True).splitlines())
           assert files == {
               ".github/workflows/kalos-ka02-mapids.yml",
               "docs/kalos/KA02_AUDITORIA_MAPIDS.md",
