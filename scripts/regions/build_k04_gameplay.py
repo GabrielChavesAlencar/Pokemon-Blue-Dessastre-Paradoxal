@@ -13,7 +13,8 @@ from audit import ROOT, inventory, json_file, load, text
 from build_k04_geometry import digest
 from k04_corridor import DARK, MAPS, NAMES, connections, verify_source
 from pbs import catalogue, normalize_encounters, read_blocks, trainer_draft
-from pilot import EVENT_CLASSES, TYPES, command, new_event, write_map
+from pilot import EVENT_CLASSES, TYPES, command, if_scene, new_event, write_map
+from kanto_overworld import adapt_source_field_event, source_obstacle
 
 TRAINERS = {
     86: {2: "PICNICKER,Alicia", 3: "HIKER,Jeremy", 4: "CAMPER,Chris",
@@ -166,7 +167,7 @@ def run():
         new_info, new_tiles = (load(geom_data / name) for name in ("MapInfos.rxdata", "Tilesets.rxdata"))
         shutil.copytree(geometry / "Graphics", target / "Graphics", dirs_exist_ok=True)
         allocated_tiles = {}
-        actor_report = {}
+        actor_report, cut_report = {}, {}
         for source_id, dest in delta.items():
             path = geom_data / f"Map{dest:03d}.rxdata"
             native = load(path)
@@ -191,6 +192,22 @@ def run():
                 events[eid] = trainer_event(event, source_id, eid, spec, sprite(source, target, event))
                 actor_report[f"{source_id}/{eid}"] = {"profile": spec, "xy": xy,
                     "sight": events[eid].attrs["@pages"][0].attrs["@trigger"] == 2}
+            if source_id in (86,87):
+                source_cut = {eid: ev for eid, ev in source_events.items()
+                              if source_obstacle(ev) == "cut"}
+                expected_cut = {r["event"]: r["xy"] for r in report["cut_anchors"][str(source_id)]}
+                if {eid: [ev.attrs["@x"], ev.attrs["@y"]] for eid,ev in source_cut.items()} != expected_cut:
+                    raise ValueError("K04 Cut anchors no longer match audited source")
+                for eid,ev in source_cut.items():
+                    if eid in events:
+                        raise ValueError(f"K04 Cut anchor overlaps a native event {source_id}/{eid}")
+                    converted, evidence = adapt_source_field_event(
+                        ev,source_id,eid,set(),lambda actor: sprite(source,target,actor),
+                        new_event,command,if_scene)
+                    if evidence != {"kind":"cut"}:
+                        raise ValueError(f"K04 Cut conversion absent at {source_id}/{eid}")
+                    events[eid] = converted
+                cut_report[source_id] = expected_cut
             if source_id == 88:
                 nurse_id = center_anchor(donor)
                 if nurse_id in events:
@@ -232,7 +249,7 @@ def run():
     summary = {"status": "STAGED_FOR_NATIVE_BOOT_NOT_PUBLISHED", "maps": delta, "prior_map_files": len(checks),
                "trained_events": actor_report, "distinct_profiles": len(specs), "encounter_tables": tables,
                "center": {"destination": delta[88], "nurse_event": nurse_id}, "darkness": [delta[s] for s in sorted(DARK)],
-               "native_boot": False, "manual_gameplay": False}
+               "cut_obstacles": cut_report, "native_boot": False, "manual_gameplay": False}
     (work / "kanto-k04-gameplay-proof.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print("KANTO_K04_GAMEPLAY_FIXTURE_STAGED_OK:", len(actor_report), len(specs), tables, flush=True)
 

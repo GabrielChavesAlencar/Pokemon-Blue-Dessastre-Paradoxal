@@ -17,7 +17,7 @@ module KantoK04NativeCheck
 
   def self.door(ids, source, eid, dest, anchor)
     from,to = ids.values_at(source,dest)
-    component = C.opening_component(from,anchor)
+    component = C.opening_component(from,anchor,[],false,true)
     event = require!($game_map.events[eid], "missing warp #{source}/#{eid}")
     return nil unless event.trigger == 1 && C.north_event_reachable?(component,event)
     {"kind"=>"touch_transfer","event_id"=>eid,"from_map"=>from,"to_map"=>to,
@@ -29,27 +29,108 @@ module KantoK04NativeCheck
     # that happens to leave through the same mouth it entered is not a pass.
     north = first == 12
     entry = require!(door(ids,87,first,90,anchor), "tunnel entrance unreachable #{first}")
-    first_anchor = entry.fetch("to_xy")
-    first_ladders = (13..16).filter_map { |id| door(ids,90,id,91,first_anchor) }
-    first_ladders.each do |down|
-      lower_anchor = down.fetch("to_xy")
-      (27..30).each do |id|
-        up = door(ids,91,id,90,lower_anchor)
-        next unless up
-        exit_leg = door(ids,90,last,87,up.fetch("to_xy"))
-        next unless exit_leg
+    # There can be up to four staircase traversals, not just one down
+    # and one up. Search actual native collision components until the other
+    # mouth is reachable; do not treat a same-mouth loop as success.
+    queue = [[90,entry.fetch("to_xy"),[entry]]]
+    visited = {}
+    until queue.empty?
+      area,at,legs = queue.shift
+      key = [area,at]
+      next if visited[key]
+      visited[key] = true
+      component = C.opening_component(ids.fetch(area),at,[],false,true)
+      trace("FLOOR_COMPONENT",[area,at,component.length,legs.map { |leg| leg["event_id"] }])
+      if area == 90 && legs.length >= 3 && (exit_leg = door(ids,90,last,87,at))
         require!(exit_leg["to_xy"] == (north ? [8,68] : [8,30]), "wrong tunnel mouth return")
-        at = anchor
-        results = [entry,down,up,exit_leg].map do |leg|
-          trace("TOUCH", [leg,at])
-          receipt = D.door!(leg,at)
-          at = leg.fetch("to_xy")
+        current = anchor
+        return [*legs,exit_leg].map do |leg|
+          trace("TOUCH", [leg,current])
+          receipt = D.door!(leg,current,native_ledges: true)
+          current = leg.fetch("to_xy")
           receipt
         end
-        return results
+      end
+      dest,eids = area == 90 ? [91,13..16] : [90,27..30]
+      eids.each do |eid|
+        if (ladder = door(ids,area,eid,dest,at))
+          queue << [dest,ladder.fetch("to_xy"),[*legs,ladder]]
+        end
       end
     end
     raise "K04 no collision-verified path through B1F from exterior mouth #{first} to #{last}"
+  end
+
+  def self.route_component(map,anchor)
+    comp = C.opening_component(map,anchor,[],false,true)
+    return comp unless [39,86,87].map { |sid| BlueKantoPilot.kanto_map_id(sid) }.include?(map)
+    previous = $scene
+    scene = nil
+    begin
+      loop do
+        tree = $game_map.events.values.find { |ev|
+          BlueKantoPilot.cut_tree_obstacle?(ev) && !ev.instance_variable_get(:@erased) &&
+            C.opening_action_witness(comp,ev)
+        }
+        break unless tree
+        require!(BlueRegionalPolicy.field_result(:CUT) == :allowed, "Cut did not pass local requirements")
+        unless scene
+          scene = Scene_Map.new
+          $scene = scene
+          scene.send(:createSpritesets)
+        end
+        witness = C.opening_action_witness(comp,tree)
+        $game_player.moveto(*witness.fetch("standing"))
+        $game_player.direction = witness.fetch("direction")
+        $game_map.events.each_value { |ev| ev.clear_starting }
+        $game_player.check_event_trigger_there([0])
+        require!(tree.starting, "native action button did not select Cut tree #{map}/#{tree.id}")
+        interpreter = pbMapInterpreter
+        interpreter.setup_starting_event
+        require!(interpreter.running? && interpreter.instance_variable_get(:@event_id) == tree.id,
+          "native interpreter did not select Cut tree #{map}/#{tree.id}")
+        deadline = System.uptime + 8
+        while interpreter.running? && System.uptime < deadline
+          interpreter.update
+          Graphics.update
+          $game_player.update
+          $game_map.update
+        end
+        require!(!interpreter.running? && tree.instance_variable_get(:@erased),
+          "Cut did not clear original tree #{map}/#{tree.id}")
+        trace("NATIVE_CUT",[map,tree.id,witness])
+        comp = C.opening_component(map,anchor,[],false,true,reuse_loaded: true)
+      end
+    ensure
+      scene.send(:disposeSpritesets) if scene && scene.respond_to?(:disposeSpritesets,true)
+      $scene = previous
+    end
+    comp
+  end
+
+  def self.route_chain(sequence, anchor, goal, tried = {})
+    map = sequence.first
+    return nil if tried[[sequence,anchor]]
+    tried[[sequence,anchor]] = true
+    comp = route_component(map,anchor)
+    return comp.key?(goal) ? [] : nil if sequence.length == 1
+    target = sequence[1]
+    doors = $game_map.events.values.filter_map do |ev|
+      next unless ev.trigger == 1 && C.north_event_reachable?(comp,ev)
+      op = ev.list.find { |cmd| cmd.code == 201 && cmd.parameters[0] == 0 && cmd.parameters[1] == target }
+      next unless op
+      {"kind"=>"touch_transfer","event_id"=>ev.id,"from_map"=>map,"to_map"=>target,
+        "from_xy"=>[ev.x,ev.y],"to_xy"=>op.parameters[2,2]}
+    end
+    seams = doors.empty? ? C.opening_crossings(map,comp,target).map { |from,to|
+      {"kind"=>"native_seam","from_map"=>map,"to_map"=>target,"from_xy"=>from,"to_xy"=>to}
+    } : []
+    trace("ROUTE_COMPONENT",[map,anchor,comp.length,target,doors+seams])
+    (doors+seams).each do |leg|
+      suffix = route_chain(sequence.drop(1),leg.fetch("to_xy"),goal,tried)
+      return [leg,*suffix] if suffix
+    end
+    nil
   end
 
   def self.cut_inventory(ids)
@@ -174,8 +255,16 @@ module KantoK04NativeCheck
     center = check_area(errors,"NATIVE_NURSE") { center!(ids) }
     center_path = [39,86,87,88].map { |sid| ids[sid] }
     roads = check_area(errors,"CERULEAN_ROUTE9_ROUTE10") do
-      from_city = C.k03a_chain(center_path,[22,20],[7,8])
-      to_city = C.k03a_chain(center_path.reverse,[7,8],[22,20])
+      # Test fixture represents a player who finished S.S. Anne. Same native
+      # Cut item and field gates as the ordinary player, no through toggles.
+      require!(BlueRegions.award(BlueKantoPilot.progress,"KANTO","CASCADE"), "could not seed fixture Cascade")
+      BlueKantoPilot.progress.fetch("field_events")["KANTO"] ||= []
+      BlueKantoPilot.progress.fetch("field_events")["KANTO"] << "SS_ANNE_CAPTAIN"
+      cut = BlueRegionalPolicy::KANTO_HM_ITEMS[:CUT].find { |item| GameData::Item.exists?(item) }
+      require!(cut && $bag.add(cut), "could not register native Cut HM in fixture")
+      $player.party.replace([Pokemon.new(:RATTATA,20)])
+      from_city = route_chain(center_path,[22,20],[7,8])
+      to_city = route_chain(center_path.reverse,[7,8],[22,20])
       require!(from_city && to_city && [from_city,to_city].all? { |legs| legs.length == 3 },
         "Cerulean / routes / medical center corridor is not reciprocal")
       [from_city,to_city]

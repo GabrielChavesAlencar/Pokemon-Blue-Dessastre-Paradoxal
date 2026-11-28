@@ -8,9 +8,9 @@ module KantoK03ENativeCheck
     raise message unless value
   end
 
-  def self.door!(leg,anchor)
+  def self.door!(leg,anchor,native_ledges: false)
     map, dest, id = leg.values_at("from_map","to_map","event_id")
-    component = C.opening_component(map,anchor)
+    component = C.opening_component(map,anchor,[],false,native_ledges)
     event = $game_map.events.fetch(id)
     landing = C.north_transfer!(event,dest)
     require!(landing == leg["to_xy"],"K03-E source landing changed")
