@@ -38,25 +38,37 @@ SOURCE_MAPS_STAGE10 = {
     266: "Seafloor Cavern Submersa", 322: "Ever Grande City Norte",
 }
 
-# Literal PBS rows verified at pinned donor; water routes REQUIRE Blue Surf.
-# These are source world connections, not free script-based teleports.
+# These original records were shipped in V1, but the connected sides have
+# zero shared tiles at the authored offsets. They identify the legacy layout.
+LEGACY_VOID_SURF_BORDERS = (
+    (147,"North",80,76,"South",0),
+    (148,"West",0,144,"East",80),
+    (149,"West",0,144,"East",160),
+    (150,"North",120,91,"South",0),
+    (152,"East",0,147,"West",120),
+)
+
+# These additional rows are present verbatim in the pinned source. Together
+# with the retained borders they join the same coastal map components.
+RESTORED_SURF_BORDERS = (
+    (148,"West",0,147,"East",0),
+    (149,"South",0,150,"North",0),
+    (152,"East",0,151,"West",0),
+)
+
 SURF_BORDERS_STAGE10 = (
     (146,"South",0,76,"North",0),
-    (147,"North",80,76,"South",0),
     (148,"North",0,76,"South",0),
     (146,"West",0,144,"East",0),
     (147,"North",0,144,"South",0),
-    (148,"West",0,144,"East",80),
-    (149,"West",0,144,"East",160),
     (149,"East",0,91,"West",0),
-    (150,"North",120,91,"South",0),
     (152,"West",0,88,"East",0),
     (153,"East",0,88,"West",0),
-    (152,"East",0,147,"West",120),
     (154,"West",0,155,"East",0),
     (154,"East",0,153,"West",0),
     (148,"South",0,149,"North",0),
     (150,"West",0,151,"East",0),
+    *RESTORED_SURF_BORDERS,
 )
 
 # These undirected relationships are either direct donor transfers, PBS

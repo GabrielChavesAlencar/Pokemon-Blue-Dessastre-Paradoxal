@@ -40,7 +40,7 @@ class Stage10ContractTests(unittest.TestCase):
     def test_map_inventory_and_canonical_teams(self):
         self.assertEqual(len(SOURCE_MAPS_STAGE10),61)
         self.assertEqual(len(SOURCE_MAPS),199)
-        self.assertEqual(len(SURF_BORDERS_STAGE10),16)
+        self.assertEqual(len(SURF_BORDERS_STAGE10),14)
         self.assertEqual(JUAN_EVENT,(87,10,4))
         self.assertEqual(JUAN_PBS,("BLUE_HOENN_JUAN","Juan",1087))
         self.assertEqual(JUAN_TEAM[-1],("KINGDRA",46))

@@ -13,6 +13,7 @@ import json
 import os
 import re
 import tempfile
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -22,12 +23,17 @@ from pilot_hoenn import (
     Source, UPSTREAM, SOURCE_MAPS, START, build_overlay,
 )
 from prepare_hoenn_source import inspect_zip
+from hoenn_stage10 import LEGACY_VOID_SURF_BORDERS, RESTORED_SURF_BORDERS
 from install_kanto import verify_installed as verify_kanto
+from server.ruby_marshal import loads
 
 MAIN = (ROOT / "game").resolve()
 MANIFEST = Path("Data/blue-hoenn-install.json")
 START_MARKER = Path("Data/blue-hoenn-start.txt")
 READY_MARKER = Path("Data/blue-hoenn-ready.txt")
+CONNECTIONS = "PBS/map_connections.txt"
+COMPILE_REQUEST = "Data/blue-compile-request.txt"
+SURF_LAYOUT = 2
 PLUGIN = "Plugins/ZZZZZ Blue Hoenn Pilot/HoennPilot.rb"
 REQUIRED = (
     "Data/MapInfos.rxdata", "Data/Tilesets.rxdata", PLUGIN,
@@ -134,6 +140,103 @@ def verify_installed(game: Path) -> dict:
             "shared_save": True, "game_exe_tested_here": False}
 
 
+def reconcile_surf_connections(raw: bytes, mapping: dict[int, int]) -> bytes:
+    """Recognize either complete Hoenn layout, preserving every unrelated row."""
+    from hoenn_qa_phase2 import ALL_BORDERS
+
+    def row(border):
+        a, side_a, offset_a, b, side_b, offset_b = border
+        return ",".join(map(str, (mapping[a], side_a, offset_a,
+                                  mapping[b], side_b, offset_b)))
+
+    current = Counter(map(row, ALL_BORDERS))
+    restored = [row(border) for border in RESTORED_SURF_BORDERS]
+    obsolete = {row(border) for border in LEGACY_VOID_SURF_BORDERS}
+    legacy = current - Counter(restored) + Counter(obsolete)
+    owned = set(mapping.values())
+    lines = raw.splitlines(keepends=True)
+    observed = Counter()
+    kept = []
+    for index, line in enumerate(lines):
+        encoding = "utf-8-sig" if index == 0 else "utf-8"
+        cells = [cell.strip() for cell in line.decode(encoding).split("#", 1)[0].split(",")]
+        body = ",".join(cells)
+        if len(cells) == 6 and any(cell.isdecimal() and int(cell) in owned
+                                   for cell in (cells[0], cells[3])):
+            observed[body] += 1
+        if body not in obsolete:
+            kept.append(line)
+    if observed == current:
+        return raw
+    if observed != legacy:
+        raise ValueError("As conexões de Hoenn têm uma edição, duplicata ou migração parcial desconhecida.")
+    newline = b"\r\n" if b"\r\n" in raw else b"\n"
+    prefix = b"".join(kept)
+    if prefix and not prefix.endswith(b"\n"):
+        prefix += newline
+    return prefix + newline.join(line.encode("ascii") for line in restored) + newline
+
+
+def repair_installed_surf_connections(game: Path, commit: bool) -> dict:
+    """Migrate only the known V1 PBS rows of an already integrated Hoenn."""
+    from hoenn_qa_phase2 import inspect_connections
+
+    result = verify_installed(game)
+    proof_path = safe_file(game, MANIFEST.as_posix())
+    connections = safe_file(game, CONNECTIONS)
+    request = safe_file(game, COMPILE_REQUEST)
+    proof_bytes = proof_path.read_bytes()
+    proof = json.loads(proof_bytes)
+    layout = proof.get("surf_connection_layout")
+    if layout not in (None, SURF_LAYOUT):
+        raise ValueError("Versão das conexões de Hoenn desconhecida.")
+    original = connections.read_bytes()
+    mapping = {int(source): dest for source, dest in proof["maps"].items()}
+    patched = reconcile_surf_connections(original, mapping)
+    if layout == SURF_LAYOUT:
+        if patched != original:
+            raise ValueError("O manifesto de Hoenn declara conexões que não estão instaladas.")
+        return {**result, "surf_connections_changed": False}
+    if not commit:
+        return {**result, "surf_connections_changed": False, "surf_connection_repair_pending": True}
+
+    maps = {source: loads(safe_file(game, f"Data/Map{dest:03}.rxdata").read_bytes())
+            for source, dest in mapping.items()}
+    inspect_connections(patched.decode("utf-8-sig"), mapping, maps)
+    previous_request = request.read_bytes() if request.exists() else None
+    proof["surf_connection_layout"] = SURF_LAYOUT
+    proof["installed_sha256"][CONNECTIONS] = sha(patched)
+    updated_proof = (json.dumps(proof, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+    previous = {request: previous_request, connections: original, proof_path: proof_bytes}
+    backup = ROOT / ".blue-backups" / ("hoenn-surf-" + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ"))
+    backup.mkdir(parents=True, exist_ok=False)
+    for path, contents in previous.items():
+        if contents is not None:
+            atomic(backup / path.relative_to(game), contents)
+
+    # Recheck every affected file after staging. The compile request comes
+    # first so a restart between PBS and manifest writes can safely resume.
+    for path, contents in previous.items():
+        current = path.read_bytes() if path.exists() else None
+        if current != contents:
+            raise ValueError(f"O arquivo mudou durante a revisão de Hoenn: {path.name}")
+    written = []
+    try:
+        for path, contents in ((request, b"compile"), (connections, patched), (proof_path, updated_proof)):
+            atomic(path, contents)
+            written.append(path)
+        result = verify_installed(game)
+    except BaseException:
+        for path in reversed(written):
+            contents = previous[path]
+            if contents is None:
+                path.unlink(missing_ok=True)
+            else:
+                atomic(path, contents)
+        raise
+    return {**result, "surf_connections_changed": True, "backup": str(backup)}
+
+
 def vetted_town(report: dict, overlay: dict[str, bytes]) -> list[int]:
     """Use the builder's passability-verified stop for source Littleroot 7."""
     raw = overlay["Data/blue-hoenn-test-stops.txt"].decode("utf-8").splitlines()
@@ -185,6 +288,7 @@ def prepare_overlay(game: Path, source: Source) -> tuple[dict[str, bytes], dict]
         "status": "INTEGRATED_FILES_READY_FOR_NATIVE_QA",
         "source_commit": UPSTREAM,
         "maps": {str(k): v for k, v in report["maps"].items()},
+        "surf_connection_layout": SURF_LAYOUT,
         "start": start, "town": town,
         "installed_sha256": {rel: sha(blob) for rel, blob in files.items()},
         "native_qa_approved": False,
@@ -256,7 +360,7 @@ def apply(game: Path, archive: Path, inventory: Path, commit: bool = False) -> d
     verify_kanto(game)
     status = detect_existing(game)
     if status == "installed":
-        return verify_installed(game)
+        return repair_installed_surf_connections(game, commit)
     if status == "partial":
         raise ValueError("Hoenn parcial/antiga detectada. Revisão manual obrigatória; IDs não serão migrados.")
     source, origin = validated_local_source(archive, inventory)
