@@ -65,7 +65,7 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
         raise ValueError("K03-E must append the four corridor maps after the 156 published IDs")
     if expected_order[160:165] != (list(K04_MAPS) if count >= 165 else []):
         raise ValueError("K04 must append the five Rock Tunnel maps after the 160 published IDs")
-    from k05_contract import MAPS as K05_MAPS
+    from scripts.regions.k05_contract import MAPS as K05_MAPS
     if expected_order[165:]!=(list(K05_MAPS) if count==178 else []):
         raise ValueError("K05 must append the 13 exact Lavender maps")
     if set(manifest["maps"].values()) != set(audited_names):

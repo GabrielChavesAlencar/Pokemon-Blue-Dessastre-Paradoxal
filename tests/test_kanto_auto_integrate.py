@@ -4,12 +4,14 @@ These fixtures NEVER download FRLG, touch a user's game/ or run Game.exe.
 """
 import importlib.util
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 spec = importlib.util.spec_from_file_location(
     "kanto_auto_integration", ROOT / "scripts/regions/auto_integrate_kanto.py")
 auto = importlib.util.module_from_spec(spec)

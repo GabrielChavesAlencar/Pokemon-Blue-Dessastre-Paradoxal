@@ -349,7 +349,7 @@ def location_names(manifest):
     if size>=165:
         names={**names,**dict(zip(K04_MAPS.values(),K04_NAMES))}
     if size==178:
-        from k05_contract import NAMES as lavender
+        from scripts.regions.k05_contract import NAMES as lavender
         names={**names,**lavender}
     return names
 
