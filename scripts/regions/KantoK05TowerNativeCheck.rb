@@ -26,12 +26,17 @@ module KantoK05TowerNativeCheck
     end
   end
 
+  CONTACTS = {8=>[8,16],6=>[9,15],10=>[10,16]}.freeze
+
   def self.gate!(seen, has_scope)
     want($bag.has?(:SILPHSCOPE)==has_scope, "incorrect Silph Scope test state")
     comp = C.opening_component(620,[16,10])
-    event = want($game_map.events[8], "summit gate absent")
-    want([event.x,event.y]==[8,16] && event.list.none? { |op| op.code==201 },
-         "summit gate moved or contains a transfer")
+    contacts = CONTACTS.to_h do |id,xy|
+      e = want($game_map.events[id], "summit contact absent #{id}")
+      want([e.x,e.y]==xy && e.list.none? { |op| op.code==201 },
+        "summit contact moved or contains a transfer")
+      [id,e]
+    end
     previous = $scene
     scene = Scene_Map.new
     begin
@@ -39,33 +44,50 @@ module KantoK05TowerNativeCheck
       scene.send(:createSpritesets)
       ip = pbMapInterpreter
       dirs = {2=>[0,1],4=>[-1,0],6=>[1,0],8=>[0,-1]}
-      used = dirs.find do |dir,(dx,dy)|
-        start = [event.x-dx,event.y-dy]
-        next false unless comp.key?(start)
+      samples = contacts.values.flat_map do |e|
+        dirs.filter_map do |dir,(dx,dy)|
+          standing = [e.x-dx,e.y-dy]
+          next unless comp.key?(standing)
+          [e,dir,standing,comp.fetch(standing)]
+        end
+      end.sort_by(&:last)
+      tried = []
+      encountered = nil
+      samples.each do |event,dir,start,_dist|
         $game_player.moveto(*start)
-        next false unless $game_player.passable?(*start,dir)
         $game_map.events.each_value(&:clear_starting)
-        $game_player.move_generic(dir,true)
-        deadline = System.uptime + 3
-        until event.starting || System.uptime >= deadline
-          break unless $game_player.moving? || $game_player.jumping?
+        settle = System.uptime + 3
+        while ($game_player.moving? || $game_player.jumping?) && System.uptime < settle
           Graphics.update
           $game_player.update
         end
-        event.starting
+        $game_temp.encounter_triggered = false
+        can_move=$game_player.passable?(*start,dir)
+        # The engine can also start a contact by bumping against a wall.
+        $game_player.move_generic(dir,true)
+        deadline = System.uptime + 3
+        loop do
+          encountered = contacts.values.find(&:starting)
+          break if encountered || System.uptime >= deadline || !($game_player.moving? || $game_player.jumping?)
+          Graphics.update
+          $game_player.update
+        end
+        tried << [event.id,start,dir,can_move,[$game_player.x,$game_player.y],encountered&.id]
+        break if encountered
       end
-      want(used, "summit gate did not trigger from an accessible tile")
+      trace("SUMMIT_CONTACTS",{"reachable_tiles"=>comp.size,"attempts"=>tried})
+      want(encountered, "no original summit ghost contact triggered from a reachable tile")
       count = seen.size
       ip.setup_starting_event
-      want(ip.running? && ip.instance_variable_get(:@event_id)==8, "wrong interpreter event at summit")
+      want(ip.running? && ip.instance_variable_get(:@event_id)==encountered.id, "wrong interpreter event at summit")
       stop = System.uptime+5
       while ip.running? && System.uptime < stop
         ip.update
         Graphics.update
       end
       want(!ip.running? && $game_map.map_id==620 && !$game_temp.player_transferring &&
-           seen.size==count+1 && seen.last.match?(/fantasma/i), "summit failed to announce or block passage")
-      {"floor"=>620,"gate"=>[8,16],"silph_scope"=>has_scope,"native_touch"=>true,
+           seen.size==count+1 && seen.last.match?(/fantasma|ghost/i), "summit failed to announce or block passage")
+      {"floor"=>620,"gate"=>[8,16],"contact"=>[encountered.id,encountered.x,encountered.y],"silph_scope"=>has_scope,"native_touch"=>true,
        "stayed_on_floor"=>true,"hint"=>seen.last}
     ensure
       scene.send(:disposeSpritesets) if scene.respond_to?(:disposeSpritesets,true)

@@ -27,6 +27,14 @@ STAIRS = {
 }
 SUMMIT_GATE = (105,8)
 FUJI_RETURN = (106,1)
+# Two authored warning contacts flank the original summit staircase. In the
+# source they own the apparition logic; K05 retains only their refusal.
+GHOST_CONTACTS = {6: (9,15), 10:(10,16)}
+
+
+def ghost_warning():
+    return command(355, b'pbMessage(BlueKantoPilot.t("An unidentified ghost blocks the way.", "Um fantasma impede a passagem."))')
+
 
 
 def verify_evidence(report):
@@ -36,7 +44,9 @@ def verify_evidence(report):
         raise ValueError("K05 Tower original staircase or deferred Fuji return changed")
     refs = {(r["source"],r["event"]):set(r["references"]) for r in report["actors"]
             if r["source"]==105 and "SILPHSCOPE" in r["references"]}
-    if not {(105,6),(105,9),(105,10)} <= refs.keys() or not all(
+    anchored = {(r["event"],tuple(r["at"])) for r in report["actors"]
+                if r["source"]==105 and r["event"] in GHOST_CONTACTS and r["trigger"]==2}
+    if anchored!=set(GHOST_CONTACTS.items()) or not {(105,6),(105,9),(105,10)} <= refs.keys() or not all(
             "MAROWAK" in refs[(105,e)] for e in (6,10)):
         raise ValueError("K05 lacked original Scope/ghost evidence near the summit")
 
@@ -48,7 +58,7 @@ def compile_stair(row, mapping, blocked=False):
             raise ValueError("Only the original summit stair may be blocked here")
         # K05 intentionally never unlocks upper-floor progression. K06
         # introduces the item, and K07 separately owns Marowak/Rocket/Fuji.
-        return [command(101, b"Uma presenca impede a passagem. Volte quando puder identificar o fantasma.")]
+        return [ghost_warning()]
     return [command(201,0,mapping[dest],*xy,direction,0)]
 
 
@@ -99,6 +109,12 @@ def run():
                 if eid in events or tuple(event.attrs[k] for k in ("@x","@y"))!=row[0]:
                     raise ValueError("K05 Tower anchor or destination changed")
                 events[eid]=new_event(event,compile_stair(row,mapping,(src,eid)==SUMMIT_GATE),1,b"")
+            if sid==105:
+                for eid,xy in GHOST_CONTACTS.items():
+                    event=donor.attrs["@events"][eid]
+                    if eid in events or tuple(event.attrs[k] for k in ("@x","@y"))!=xy:
+                        raise ValueError("K05 warning moved from the original ghost anchor")
+                    events[eid]=new_event(event,[ghost_warning()],1,b"")
             if sid in TOWER:
                 map_info[n].attrs["@name"]=source_info[sid]["name"].encode("utf8")
             write_map(ours,native,EVENT_CLASSES)
@@ -114,7 +130,7 @@ def run():
         meta.pop("k05_city_fixture_only")
         isolate(target,meta,profile=SAVE_APP,fixture="k05_tower_fixture_only")
         target.rename(output)
-    result={"map_ids":SLOTS,"guard":list(SUMMIT_GATE),"summit_activated":False,
+    result={"map_ids":SLOTS,"guard":list(SUMMIT_GATE),"ghost_contacts":GHOST_CONTACTS,"summit_activated":False,
             "fuji_transfer_enabled":False,"encounters_and_actors_enabled":False,
             "native_gameplay":False,"published":False,"preserved_prior_maps":len(before)-1,
             "city_entrance_event_only":[mapping[93],8]}
