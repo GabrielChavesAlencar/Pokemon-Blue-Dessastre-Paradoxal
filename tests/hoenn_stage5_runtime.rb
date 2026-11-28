@@ -3,11 +3,17 @@
 class Hoenn5Global
   attr_accessor :blue_regions
 end
+class Hoenn5Pokemon
+  attr_accessor :ready, :moves
+  def initialize; @ready = true; @moves = []; end
+  def able?; @ready; end
+  def hasMove?(move); @moves.include?(move); end
+end
 class Hoenn5Player
   attr_accessor :party, :money
   attr_reader :heal_count
   def initialize
-    @party = [:TREECKO]
+    @party = [Hoenn5Pokemon.new]
     @money = 100
     @heal_count = 0
   end
@@ -36,8 +42,8 @@ module GameData
   module Item
     ItemRec = Struct.new(:move)
     @registry = {
-      HM05: nil, HM01: nil, TM08: :BULKUP, TM47: :STEELWING,
-      LETTER: nil, SOOTHEBELL: nil, SOFTSAND: nil,
+      HM05: :FLASH, TM70: :FLASH, HM01: nil, TM08: :BULKUP, TM47: :STEELWING,
+      OLDROD: nil, LETTER: nil, SOOTHEBELL: nil, SOFTSAND: nil,
     }
     def self.exists?(key); @registry.key?(key); end
     def self.get(key); ItemRec.new(@registry.fetch(key)); end
@@ -149,10 +155,18 @@ $PokemonGlobal.blue_regions={
 flags=BlueHoennPilot.state
 check(!BlueHoennPilot.knuckle_badge?,"KNUCKLE awarded prematurely")
 $bag.add(:LETTER,1)
-check(BlueHoennPilot.flash_hiker,"Flash Hiker did not grant HM05")
-check($bag.items[:HM05]==1,"Flash absent")
-check(!BlueHoennPilot.flash_hiker,"HM Flash duplicated")
-check($bag.items[:HM05]==1,"Flash awarded twice")
+$bag.can_add = false
+check(!BlueHoennPilot.old_rod_fisherman && !flags["old_rod_received"], "Full Bag claimed Old Rod")
+check(!BlueHoennPilot.flash_hiker && !flags["hm_flash_received"], "Full Bag claimed Flash")
+$bag.can_add = true
+check(BlueHoennPilot.old_rod_fisherman && $bag.items[:OLDROD] == 1, "Old Rod unavailable")
+check(!BlueHoennPilot.old_rod_fisherman && $bag.items[:OLDROD] == 1, "Old Rod duplicated")
+GameData::Item.delete(:HM05)
+check(BlueHoennPilot.flash_hiker,"Flash Hiker did not grant the native TM70")
+check($bag.items[:TM70]==1,"Flash absent")
+check(!BlueHoennPilot.flash_hiker,"Flash duplicated")
+check($bag.remove(:TM70) && $bag.items[:TM70]==0,"Teaching Flash did not consume the TM")
+check(BlueHoennPilot.flash_field_result == :badge,"Flash ignored the local Badge")
 
 TrainerBattle.result=false
 check(!BlueHoennPilot.brawly,"Brawly loss counted as victory")
@@ -161,6 +175,14 @@ TrainerBattle.result=true
 $bag.can_add=false
 check(BlueHoennPilot.brawly,"Brawly victory did not grant milestone")
 check(BlueHoennPilot.knuckle_badge?,"KNUCKLE not registered")
+check(BlueHoennPilot.flash_field_result == :pokemon,"Flash ignored missing move")
+caster = $player.party.first
+caster.moves << :FLASH
+check(BlueHoennPilot.flash_field_result(caster) == :allowed,"Consumed TM erased field permission")
+check(BlueHoennPilot.flash_field_result(Hoenn5Pokemon.new) == :pokemon,"Flash used a stranger")
+caster.ready = false
+check(BlueHoennPilot.flash_field_result == :pokemon,"Fainted Pokémon used Flash")
+caster.ready = true
 check(BlueRegions.local_achievements($PokemonGlobal.blue_regions,"HOENN")==["STONE","KNUCKLE"],
       "Wrong achievement set")
 check($bag.items[:TM08]==0 && !flags["brawly_tm_given"],"TM granted with full bag")
@@ -183,6 +205,12 @@ check(!BlueHoennPilot.steven_letter,"TM repeated")
 check($bag.items[:LETTER]==0 && $bag.items[:TM47]==1,"Letter or TM duplicated")
 
 # Briney only travels to verified source landing maps, never a new region.
+flags["stone_letter_received"] = false
+check(!BlueHoennPilot.boat_to(28),"Direct ferry call bypassed the letter")
+flags["stone_letter_received"] = true
+$game_map.map_id = 799
+check(!BlueHoennPilot.boat_to(28),"Direct ferry call departed from the wrong map")
+$game_map.map_id = 705
 check(BlueHoennPilot.briney,"Rescue/letter did not unlock ferry")
 check($game_map.map_id==728,"Briney did not travel to Dewford")
 check(BlueHoennPilot.dewford_boat,"Dewford did not connect to Slateport")

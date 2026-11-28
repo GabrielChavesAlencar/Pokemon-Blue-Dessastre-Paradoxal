@@ -23,6 +23,7 @@ from hoenn_catalog import (
     CATALOG_REVISION, LEGACY_SOURCE_IDS, MAP_RANGE, approved_source_ids,
     marker_bytes, validate_manifest, verify_markers,
 )
+from hoenn_h05_coast import COAST_BORDERS, ROUTES as COAST_ROUTES, coast_overlay, coast_paths, verify_coast
 from hoenn_qa_phase1 import check_source, check_tree
 from pilot_hoenn import (
     EVENT_CLASSES, START, UPSTREAM, SOURCE_MAPS, Source, allocate_hoenn_map_ids,
@@ -62,6 +63,24 @@ RUSTBORO_STAIRS = (((4, 19), (4, 3)), ((5, 58), (27, 58)), ((25, 58), (47, 58)))
 RUSTURF_ROCKS = ((29, 9), (29, 10))
 RUSTURF_GATE_CHECK = b"BlueHoennPilot.rusturf_shortcut_open?"
 RUSTURF_GATE_DENIED = b"BlueHoennPilot.rusturf_east_gate"
+DEWFORD_LAYOUT = 1
+DEWFORD_LAYOUT_FIELD = "dewford_layout"
+DEWFORD_DARK_SOURCES = (31, 160, 161)
+DEWFORD_ACTORS = (
+    (28, "HN5_DewfordOldRod", (12, 14), "BlueHoennPilot.old_rod_fisherman", "trainer_FISHERMAN"),
+    (30, "HN5_DewfordShore", (8, 5), "BlueHoennPilot.sign_stage5(:DEWFORD_SHORE)", "trainer_LASS"),
+    (30, "HN5_DewfordSupplies", (26, 7), "BlueHoennPilot.sign_stage5(:DEWFORD_SUPPLIES)", "trainer_HIKER"),
+    (30, "HN5_DewfordPier", (43, 6), "BlueHoennPilot.sign_stage5(:DEWFORD_PIER)", "NPC_DPP_PokeMart_Man"),
+)
+GRANITE_ITEMS = (
+    (160, "B1F_POKE_BALL", (22, 26), "POKEBALL", True),
+    (161, "B2F_REPEL", (11, 9), "REPEL", True),
+    (161, "B2F_RARE_CANDY", (36, 9), "RARECANDY", True),
+    (161, "B2F_EVERSTONE_EAST", (35, 11), "EVERSTONE", False),
+    (161, "B2F_EVERSTONE_CENTER", (22, 16), "EVERSTONE", False),
+)
+DEWFORD_EVENT_SOURCES = (28, 30, 160, 161)
+COAST_SOURCES = frozenset(COAST_ROUTES)
 PLUGIN = "Plugins/ZZZZZ Blue Hoenn Pilot/HoennPilot.rb"
 REQUIRED = (
     "Data/MapInfos.rxdata", "Data/Tilesets.rxdata", PLUGIN,
@@ -156,6 +175,12 @@ def verify_installed(game: Path, *, allow_pending: bool = False) -> dict:
         if type(data[RUSTBORO_LAYOUT_FIELD]) is not int or data[RUSTBORO_LAYOUT_FIELD] != RUSTBORO_LAYOUT:
             raise ValueError("Revisão desconhecida das conexões de Rustboro.")
         verify_rustboro_layout(load_rustboro_maps(lambda rel: safe_file(game, rel).read_bytes(), maps), maps)
+    if DEWFORD_LAYOUT_FIELD in data:
+        if type(data[DEWFORD_LAYOUT_FIELD]) is not int or data[DEWFORD_LAYOUT_FIELD] != DEWFORD_LAYOUT:
+            raise ValueError("Revisão desconhecida do conteúdo de Dewford.")
+        verify_dewford_layout(lambda rel: safe_file(game, rel).read_bytes(), maps)
+    if COAST_SOURCES <= maps.keys():
+        verify_coast(lambda rel: safe_file(game, rel).read_bytes(), maps)
     return {"status": "integrated_files_ready_for_native_QA", "maps": len(maps),
             "start": data["start"], "town": data["town"], "schema": data["schema"],
             "shared_save": True, "game_exe_tested_here": False}
@@ -171,7 +196,8 @@ def reconcile_surf_connections(raw: bytes, mapping: dict[int, int]) -> bytes:
         return ",".join(map(str, (mapping[a], side_a, offset_a,
                                   mapping[b], side_b, offset_b)))
 
-    current = Counter(map(row, ALL_BORDERS))
+    expected = (*ALL_BORDERS, *COAST_BORDERS) if COAST_SOURCES <= mapping.keys() else ALL_BORDERS
+    current = Counter(map(row, expected))
     restored = [row(border) for border in RESTORED_SURF_BORDERS]
     obsolete = {row(border) for border in LEGACY_VOID_SURF_BORDERS}
     legacy = current - Counter(restored) + Counter(obsolete)
@@ -426,11 +452,130 @@ def rustboro_overlay(game: Path, read, mapping) -> dict[str, bytes]:
     return {map_path(mapping[key]): serialize(world, EVENT_CLASSES) for key, world in worlds.items()}
 
 
+def dewford_metadata(raw: bytes, mapping: dict[int, int], *, apply: bool = False) -> bytes:
+    targets = {mapping[key] for key in DEWFORD_DARK_SOURCES}
+    headers = list(re.finditer(rb"(?m)^\[([0-9]+)\][ \t]*(\r?\n)", raw))
+    dark_line = re.compile(rb"(?m)^[ \t]*DarkMap[ \t]*=([^\r\n]*)")
+    seen = set()
+    edits = []
+    for index, header in enumerate(headers):
+        mid = int(header[1])
+        if mid not in targets:
+            continue
+        if mid in seen:
+            raise ValueError(f"Seção de ambiente de Dewford duplicada: {mid}.")
+        seen.add(mid)
+        start = header.end()
+        end = headers[index + 1].start() if index + 1 < len(headers) else len(raw)
+        entries = list(dark_line.finditer(raw, start, end))
+        if len(entries) > 1:
+            raise ValueError(f"DarkMap duplicado no mapa {mid}.")
+        entry = entries[0] if entries else None
+        if entry and entry[1].split(b"#", 1)[0].strip() == b"true":
+            continue
+        if not apply:
+            raise ValueError(f"A escuridão de Dewford não está instalada no mapa {mid}.")
+        if entry:
+            edits.append((entry.start(), entry.end(), b"DarkMap = true"))
+        else:
+            edits.append((start, start, b"DarkMap = true" + header[2]))
+    if seen != targets:
+        raise ValueError("Seções de ambiente de Dewford ou Granite Cave ausentes.")
+    for start, end, replacement in reversed(edits):
+        raw = raw[:start] + replacement + raw[end:]
+    return raw
+
+
+def dewford_maps(read, mapping: dict[int, int]) -> dict:
+    return {key: loads(read(map_path(mapping[key]))) for key in DEWFORD_EVENT_SOURCES}
+
+
+def verify_dewford_layout(read, mapping: dict[int, int]) -> None:
+    worlds = dewford_maps(read, mapping)
+    for key, name, position, handler, _sprite in DEWFORD_ACTORS:
+        matches = [e.attrs for e in worlds[key].attrs["@events"].values() if e.attrs["@name"] == name.encode("ascii")]
+        if len(matches) != 1 or (matches[0]["@x"], matches[0]["@y"]) != position:
+            raise ValueError(f"Personagem de Dewford ausente ou deslocado: {name}.")
+        pages = matches[0]["@pages"]
+        if (len(pages) != 1 or pages[0].attrs["@trigger"] != 0 or
+                not any(cmd.attrs["@code"] == 355 and cmd.attrs["@parameters"] == [handler.encode("ascii")]
+                        for cmd in pages[0].attrs["@list"])):
+            raise ValueError(f"Personagem de Dewford sem interação auditada: {name}.")
+    for key, identifier, position, item, _visible in GRANITE_ITEMS:
+        name = f"HN5_Granite_{identifier}".encode("ascii")
+        matches = [e.attrs for e in worlds[key].attrs["@events"].values() if e.attrs["@name"] == name]
+        if len(matches) != 1 or (matches[0]["@x"], matches[0]["@y"]) != position:
+            raise ValueError(f"Item de Granite Cave ausente ou deslocado: {identifier}.")
+        pages = matches[0]["@pages"]
+        script = granite_pickup(identifier, item, matches[0]["@id"])
+        if (len(pages) != 2 or pages[0].attrs["@trigger"] != 0 or
+                not any(cmd.attrs["@code"] == 355 and cmd.attrs["@parameters"] == [script]
+                        for cmd in pages[0].attrs["@list"]) or
+                not pages[1].attrs["@condition"].attrs["@self_switch_valid"] or
+                pages[1].attrs["@condition"].attrs["@self_switch_ch"] != b"A"):
+            raise ValueError(f"Item de Granite Cave sem recibo auditado: {identifier}.")
+    dewford_metadata(read(MAP_METADATA), mapping)
+
+
+def granite_pickup(identifier: str, item: str, event_id: int) -> bytes:
+    return f'BlueHoennPilot.pickup(:{item}, "GRANITE_{identifier}", {event_id})'.encode("ascii")
+
+
+def dewford_overlay(game: Path, read, mapping: dict[int, int]) -> dict[str, bytes]:
+    worlds = dewford_maps(read, mapping)
+    tiles = loads(read("Data/Tilesets.rxdata"))
+    for sprite in {"Object_Ball", *(row[-1] for row in DEWFORD_ACTORS)}:
+        art = safe_file(game, f"Graphics/Characters/{sprite}.png")
+        if not art.is_file() or not art.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"):
+            raise ValueError(f"Gráfico local de Dewford ausente: {sprite}.")
+    for key, name, (x, y), handler, sprite in DEWFORD_ACTORS:
+        world = worlds[key]
+        if not open_tile(world, tiles[world.attrs["@tileset_id"]], x, y):
+            raise ValueError(f"Personagem de Dewford sem piso auditado: {name}.")
+        append_event(world, name, x, y, event_page(script=handler, sprite=sprite))
+    for key, identifier, (x, y), item, visible in GRANITE_ITEMS:
+        world = worlds[key]
+        tileset = tiles[world.attrs["@tileset_id"]]
+        if not any(open_tile(world, tileset, px, py) for px, py in
+                   ((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1))):
+            raise ValueError(f"Item de Granite Cave fora do alcance: {identifier}.")
+        page = event_page(script="nil", sprite="Object_Ball" if visible else "")
+        event_id = append_event(world, f"HN5_Granite_{identifier}", x, y, page)
+        page.attrs["@list"][0] = command(355, granite_pickup(identifier, item, event_id))
+        collected = event_page(script="nil")
+        collected.attrs["@condition"].attrs["@self_switch_valid"] = True
+        collected.attrs["@through"] = True
+        collected.attrs["@list"] = [command(0)]
+        world.attrs["@events"][event_id].attrs["@pages"].append(collected)
+    changes = {map_path(mapping[key]): serialize(world, EVENT_CLASSES) for key, world in worlds.items()}
+    changes[MAP_METADATA] = dewford_metadata(read(MAP_METADATA), mapping, apply=True)
+    verify_dewford_layout(changes.__getitem__, mapping)
+    return changes
+
+
+def coast_reader(source: Source | None = None):
+    from ensure_hoenn_source import INSTALL_TREE, STAGE, PinnedDownloader
+
+    downloader = None
+
+    def read(relative):
+        nonlocal downloader
+        if source:
+            candidates = (source.data / relative, source.data / Path(relative).name)
+            if any(path.exists() or path.is_symlink() for path in candidates):
+                return source.read(relative)
+        if downloader is None:
+            downloader = PinnedDownloader(INSTALL_TREE, STAGE)
+        return downloader.file(relative).read_bytes()
+
+    return read
+
+
 def migration_file_set(transaction: dict, backup: Path) -> frozenset[str]:
     version = transaction.get("schema")
     if version == 1:
         return MIGRATION_FILES
-    if version not in (2, 3):
+    if version not in (2, 3, 4, 5):
         raise ValueError("Versão desconhecida de recuperação de Hoenn.")
     previous_raw = safe_file(backup, MANIFEST.as_posix()).read_bytes()
     recorded = transaction["files"].get(MANIFEST.as_posix())
@@ -449,10 +594,28 @@ def migration_file_set(transaction: dict, backup: Path) -> frozenset[str]:
         if not isinstance(recorded_houses, list) or len(recorded_houses) != 2 or recorded_houses[0] is not None:
             raise ValueError("Estado anterior das casas de Oldale inválido na recuperação.")
         extras.update((MAP_INFOS, MAP_METADATA, map_path(previous[OLDALE]), houses_file))
-    if version == 3:
+    if version == 3 or (version >= 4 and transaction.get("rustboro_layout") is True):
         if RUSTBORO_LAYOUT_FIELD in previous_manifest:
             raise ValueError("O backup de Rustboro contém uma revisão já migrada.")
         extras.update(map_path(previous[key]) for key in RUSTBORO_LAYOUT_SOURCES)
+    if version == 4 or (version == 5 and transaction.get("dewford_layout") is True):
+        if DEWFORD_LAYOUT_FIELD in previous_manifest:
+            raise ValueError("O backup de Dewford contém uma revisão já migrada.")
+        extras.add(MAP_METADATA)
+        extras.update(map_path(previous[key]) for key in DEWFORD_EVENT_SOURCES)
+    if version == 5:
+        coastal = transaction.get("coast_maps")
+        if (not isinstance(coastal, dict) or set(coastal) != {str(key) for key in COAST_SOURCES} or
+                COAST_SOURCES & previous.keys() or
+                any(type(dest) is not int or dest not in MAP_RANGE or dest in previous.values()
+                    for dest in coastal.values()) or len(set(coastal.values())) != len(coastal) or
+                houses_id in coastal.values()):
+            raise ValueError("MapIDs costeiros inválidos na recuperação de Hoenn.")
+        for dest in coastal.values():
+            recorded_map = transaction["files"].get(map_path(dest))
+            if not isinstance(recorded_map, list) or len(recorded_map) != 2 or recorded_map[0] is not None:
+                raise ValueError("Mapa costeiro já existia antes da migração de Hoenn.")
+        extras.update(coast_paths({int(key): dest for key, dest in coastal.items()}))
     return MIGRATION_FILES | extras
 
 
@@ -493,7 +656,8 @@ def recover_migration(game: Path) -> bool:
 
 def commit_migration(
     game: Path, previous: dict, changes: dict, *, oldale_houses: int | None = None,
-    rustboro_layout: bool = False,
+    rustboro_layout: bool = False, dewford_layout: bool = False,
+    coast_maps: dict[int, int] | None = None,
 ) -> tuple[dict, Path]:
     paths = {rel: safe_file(game, rel) for rel in changes}
     backup = migration_backup(datetime.now(timezone.utc).strftime("hoenn-v2-%Y%m%dT%H%M%S%fZ"))
@@ -510,6 +674,11 @@ def commit_migration(
         transaction.update(schema=2, oldale_houses=oldale_houses)
     if rustboro_layout:
         transaction["schema"] = 3
+    if dewford_layout:
+        transaction.update(schema=4, rustboro_layout=rustboro_layout)
+    if coast_maps:
+        transaction.update(schema=5, rustboro_layout=rustboro_layout, dewford_layout=dewford_layout,
+                           coast_maps={str(key): dest for key, dest in coast_maps.items()})
     if set(changes) != migration_file_set(transaction, backup):
         raise ValueError("Arquivos inesperados na migração de Hoenn.")
     atomic(journal, json.dumps(transaction).encode("utf-8"))
@@ -540,10 +709,12 @@ def migrate_existing(game: Path, commit: bool) -> dict:
     mapping = validate_manifest(proof)
     approved = approved_source_ids(CATALOG_REVISION)
     pending = approved - set(mapping)
-    if pending - {OLDALE_HOUSES} or set(mapping) - approved:
+    coast_additions = pending & COAST_SOURCES
+    if (pending - ({OLDALE_HOUSES} | COAST_SOURCES) or set(mapping) - approved or
+            (coast_additions and coast_additions != COAST_SOURCES)):
         raise ValueError("O lote aditivo de mapas de Hoenn não está implementado.")
     ownership = allocate_hoenn_map_ids(game, sorted(approved), previous=mapping)
-    houses_id = ownership[OLDALE_HOUSES] if pending else None
+    houses_id = ownership[OLDALE_HOUSES] if OLDALE_HOUSES in pending else None
 
     raw = previous[CONNECTIONS]
     if raw is None:
@@ -554,12 +725,14 @@ def migrate_existing(game: Path, commit: bool) -> dict:
         raise ValueError("O manifesto de Hoenn declara conexões que não estão instaladas.")
     plugin = Path(__file__).with_name("HoennPilot.rb").read_bytes()
     needs_rustboro = CATALOG_REVISION >= 2 and RUSTBORO_LAYOUT_FIELD not in proof
+    needs_dewford = CATALOG_REVISION >= 2 and DEWFORD_LAYOUT_FIELD not in proof
     if (proof["schema"] == 2 and proof["catalog_revision"] == CATALOG_REVISION and
-            layout == SURF_LAYOUT and previous[PLUGIN] == plugin and not needs_rustboro):
+            layout == SURF_LAYOUT and previous[PLUGIN] == plugin and not (needs_rustboro or needs_dewford)):
         return {**result, "catalog_migration_pending": False, "catalog_changed": False}
     maps = {source: loads(safe_file(game, f"Data/Map{dest:03}.rxdata").read_bytes())
             for source, dest in mapping.items()}
-    inspect_connections(patched.decode("utf-8-sig"), mapping, maps)
+    inspect_connections(patched.decode("utf-8-sig"), mapping, maps,
+                        extra_borders=COAST_BORDERS if COAST_SOURCES <= mapping.keys() else ())
     if not commit:
         return {**result, "catalog_migration_pending": True, "catalog_changed": False}
 
@@ -590,6 +763,39 @@ def migrate_existing(game: Path, commit: bool) -> dict:
         changed_maps.update(rustboro_overlay(game, read_rustboro, ownership))
         proof[RUSTBORO_LAYOUT_FIELD] = RUSTBORO_LAYOUT
 
+    if needs_dewford:
+        for rel in (MAP_METADATA, *(map_path(ownership[key]) for key in DEWFORD_EVENT_SOURCES)):
+            if rel not in previous:
+                previous[rel] = safe_file(game, rel).read_bytes()
+
+        def read_dewford(rel):
+            if rel in changed_maps:
+                return changed_maps[rel]
+            return previous[rel] if rel in previous else safe_file(game, rel).read_bytes()
+
+        changed_maps.update(dewford_overlay(game, read_dewford, ownership))
+        proof[DEWFORD_LAYOUT_FIELD] = DEWFORD_LAYOUT
+
+    if coast_additions:
+        for rel in coast_paths(ownership):
+            if rel not in previous:
+                previous[rel] = optional_bytes(safe_file(game, rel))
+        if any(previous[map_path(ownership[key])] is not None for key in coast_additions):
+            raise ValueError("MapID costeiro de Hoenn ocupado durante a migração.")
+
+        def read_coastal(rel):
+            if rel == CONNECTIONS:
+                return patched
+            if rel in changed_maps:
+                return changed_maps[rel]
+            return previous[rel] if rel in previous else safe_file(game, rel).read_bytes()
+
+        expanded = coast_overlay(read_coastal, ownership, coast_reader())
+        patched = expanded.pop(CONNECTIONS)
+        changed_maps.update(expanded)
+        maps.update({key: loads(changed_maps[map_path(ownership[key])]) for key in coast_additions})
+        inspect_connections(patched.decode("utf-8-sig"), ownership, maps, extra_borders=COAST_BORDERS)
+
     proof.update(schema=2, catalog_revision=CATALOG_REVISION,
                  legacy_maps=dict(proof.get("legacy_maps", proof["maps"])),
                  maps={str(key): dest for key, dest in ownership.items()},
@@ -609,7 +815,8 @@ def migrate_existing(game: Path, commit: bool) -> dict:
         START_MARKER.as_posix(): markers[START_MARKER.as_posix()],
     }
     result, backup = commit_migration(game, previous, changes, oldale_houses=houses_id,
-                                      rustboro_layout=needs_rustboro)
+                                      rustboro_layout=needs_rustboro, dewford_layout=needs_dewford,
+                                      coast_maps={key: ownership[key] for key in coast_additions})
     return {**result, "catalog_migration_pending": False, "catalog_changed": True, "backup": str(backup)}
 
 
@@ -653,15 +860,20 @@ def prepare_overlay(game: Path, source: Source) -> tuple[dict[str, bytes], dict]
         raise ValueError("O jogo principal não pode receber o boot do piloto.")
     mapping = report["maps"]
     approved = approved_source_ids(CATALOG_REVISION)
-    if approved - set(mapping) == {OLDALE_HOUSES}:
+    pending = approved - mapping.keys()
+    if pending:
         infos = loads(files[MAP_INFOS])
         _, occupied, foreign = hoenn_maps_in_use(game, infos)
         mapping = plan_hoenn_map_ids(sorted(approved), occupied, previous=mapping, foreign=foreign)
+    if OLDALE_HOUSES in pending:
         files.update(oldale_overlay(files.__getitem__, mapping, source))
     if set(mapping) != approved:
         raise ValueError("O instalador não montou todos os MapKeys aprovados.")
     if CATALOG_REVISION >= 2:
         files.update(rustboro_overlay(game, files.__getitem__, mapping))
+        files.update(dewford_overlay(game, files.__getitem__, mapping))
+    if COAST_SOURCES <= pending:
+        files.update(coast_overlay(files.__getitem__, mapping, coast_reader(source)))
     expected_map_files = {map_path(mid) for mid in mapping.values()}
     generated = {rel for rel in files if re.fullmatch(r"Data/Map\d{3}\.rxdata", rel)}
     if generated != expected_map_files:
@@ -687,6 +899,7 @@ def prepare_overlay(game: Path, source: Source) -> tuple[dict[str, bytes], dict]
     }
     if CATALOG_REVISION >= 2:
         proof[RUSTBORO_LAYOUT_FIELD] = RUSTBORO_LAYOUT
+        proof[DEWFORD_LAYOUT_FIELD] = DEWFORD_LAYOUT
     files[COMPACT] = marker_bytes(proof)[COMPACT]
     proof["installed_sha256"][COMPACT] = sha(files[COMPACT])
     return files, proof
@@ -742,7 +955,7 @@ def validated_local_source(archive: Path, inventory: Path) -> tuple[Source, str]
     raise ValueError(
         "Fonte Hoenn ausente: coloque 'The Pokémon World Project - Hoenn.zip' "
         "na mesma pasta de TESTAR_HOENN.bat ou prepare a fonte com TESTAR_HOENN.bat. "
-        "Não é possível liberar viagem sem os 199 mapas reais."
+        "Não é possível liberar viagem sem os mapas aprovados de Hoenn."
     )
 
 

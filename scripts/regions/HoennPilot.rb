@@ -824,7 +824,10 @@ module BlueHoennPilot
     pbMessage(_INTL("{1}: Vamos batalhar?", name))
     setBattleRule("double") if double
     won = TrainerBattle.start(kind, name, version)
-    flags[key] = true if won
+    if won
+      flags[key] = true
+      refresh_dewford_light if version == 31
+    end
     won
   end
 
@@ -1249,6 +1252,9 @@ module BlueHoennPilot
   STAGE5_SIGNS = {
     DEWFORD_GYM: "Ginásio de Dewford. Brawly utiliza Pokémon Lutadores.",
     DEWFORD_TOWN: "Dewford: uma ilha tranquila ao lado de Granite Cave.",
+    DEWFORD_SHORE: "Moradora: Perto das pedras do cais a linha enrosca. Procure um ponto de água livre e espere a fisgada.",
+    DEWFORD_SUPPLIES: "Morador: Levo uma Corda de Fuga quando desço às galerias. Com a luz apagada, marque o caminho de volta.",
+    DEWFORD_PIER: "Moradora: Briney espera no cais. Para seguir até Slateport, converse com Brawly e entregue a carta a Steven.",
     BRAWLY_GYM: "Insígnia do Punho: permite usar Flash em Hoenn.",
     SLATEPORT_CITY: "Slateport: cidade portuária e centro de pesquisa marinha.",
     SLATEPORT_SHIPYARD: "Estaleiro Stern: converse com a equipe para localizar o capitão.",
@@ -1314,9 +1320,37 @@ module BlueHoennPilot
       return false
     end
     flags["brawly_defeated"] = true
+    refresh_dewford_light
     pbMessage(_INTL("Você conquistou a Insígnia do Punho de Hoenn! Flash está liberado nesta região."))
     give_move_tm("brawly_tm_given", :BULKUP, [:TM08, :TM064, :TM0640],
                  "Brawly: receba Bulk Up!")
+    true
+  end
+
+  def self.refresh_dewford_light
+    flags = state
+    return unless flags && $game_map && $game_map.map_id == metadata[1][31] &&
+                  $game_map.metadata&.dark_map
+    darkness = $game_temp&.darkness_sprite
+    return unless darkness && !darkness.disposed?
+    victories = flags.count { |key, won| won == true && key.start_with?("trainer_31_") }
+    fraction = knuckle_badge? ? 1.0 : [victories, 6].min / 7.0
+    darkness.radius = (darkness.radiusMin + (darkness.radiusMax - darkness.radiusMin) * fraction).round
+  end
+
+  def self.old_rod_fisherman
+    flags = state
+    return false unless flags && $bag && GameData::Item.exists?(:OLDROD)
+    if flags["old_rod_received"]
+      pbMessage(_INTL("Pescador: Fique de frente para a água e use a Vara Velha na Bolsa."))
+      return false
+    end
+    unless $bag.has?(:OLDROD) || $bag.add(:OLDROD, 1)
+      pbMessage(_INTL("Pescador: Abra espaço na Bolsa para levar a Vara Velha."))
+      return false
+    end
+    flags["old_rod_received"] = true
+    pbMessage(_INTL("Pescador: Pode usar esta Vara Velha. Recolha a linha assim que sentir uma fisgada."))
     true
   end
 
@@ -1324,21 +1358,23 @@ module BlueHoennPilot
     flags = state
     return false unless flags
     if flags["hm_flash_received"]
-      pbMessage(_INTL("Montanhista: com a Insígnia do Punho você pode usar Flash em Hoenn."))
+      pbMessage(_INTL("Montanhista: Ensine Flash a um Pokémon. A Insígnia do Punho libera seu uso em cavernas escuras."))
       return false
     end
-    hm = [:HM05, :HMFLASH].find { |item| GameData::Item.exists?(item) }
-    unless hm
-      pbMessage(_INTL("O HM Flash não está cadastrado nesta instalação do Blue."))
-      return false
-    end
-    unless $bag && $bag.add(hm, 1)
-      pbMessage(_INTL("Montanhista: deixe espaço na Bolsa para receber HM Flash."))
-      return false
-    end
-    flags["hm_flash_received"] = true
-    pbMessage(_INTL("Você recebeu HM Flash! A Insígnia do Punho libera seu uso em Hoenn."))
-    true
+    field_hm_reward(:FLASH, HOENN_FIELD_ITEMS.fetch(:FLASH), "hm_flash_received",
+                    "Você recebeu Flash! Ensine o golpe e conquiste a Insígnia do Punho para iluminar cavernas.")
+  end
+
+  def self.flash_field_result(selected = nil)
+    flags = state
+    return :unavailable unless flags
+    return :badge unless knuckle_badge?
+    return :hm unless flags["hm_flash_received"]
+    return :unavailable if $game_map && $game_map.map_id == metadata[1][31]
+    return :pokemon unless $player && $player.party.any? { |pkmn|
+      (!selected || pkmn.equal?(selected)) && pkmn.able? && pkmn.hasMove?(:FLASH)
+    }
+    :allowed
   end
 
   def self.steven_letter
@@ -1373,7 +1409,13 @@ module BlueHoennPilot
       pbMessage(_INTL("O barco ainda não está disponível neste ambiente do jogo."))
       return false
     end
+    return false unless flags["peecko_rescued"] && flags["stone_letter_received"]
     _, mapped = metadata
+    origin = mapped.key($game_map.map_id)
+    courses = {105 => [28], 28 => [105, 111], 111 => [28]}
+    return false unless courses.fetch(origin, []).include?(source_id)
+    return false if (origin == 111 || source_id == 111) && !flags["steven_letter_delivered"]
+    return false if source_id == 111 && !knuckle_badge?
     positions = {105 => [11, 6, 2], 28 => [12, 10, 2], 111 => [21, 23, 2]}
     map_id = mapped[source_id]
     return false unless map_id
@@ -1395,7 +1437,7 @@ module BlueHoennPilot
 
   def self.dewford_boat
     flags = state
-    return false unless flags && flags["peecko_rescued"]
+    return false unless flags && flags["peecko_rescued"] && flags["stone_letter_received"]
     if knuckle_badge? && flags["steven_letter_delivered"] &&
        pbConfirmMessage(_INTL("Mr. Briney: seguir para a praia de Slateport agora?"))
       return boat_to(111)
@@ -2883,7 +2925,7 @@ module BlueHoennPilot
     WATERFALL:"RAIN"
   }.freeze
   HOENN_FIELD_ITEMS = {
-    CUT:[:HM01,:HMCUT], FLASH:[:HM05,:HMFLASH],
+    CUT:[:HM01,:HMCUT], FLASH:[:HM05,:HMFLASH,:TM70],
     ROCKSMASH:[:HM06,:HMROCKSMASH,:TM94,:TM98], STRENGTH:[:HM04,:HMSTRENGTH],
     SURF:[:HM03,:HMSURF], DIVE:[:HM08,:HMDIVE],
     WATERFALL:[:HM07,:HMWATERFALL]
@@ -3859,6 +3901,8 @@ module BlueHoennPilot
     route = $map_factory.maps.find { |map| map.map_id == route_id }
     BlueHoennPilot.hide_starter_balls(route)
   end)
+  EventHandlers.add(:on_map_or_spriteset_change, :blue_hoenn_dewford_light,
+                    proc { |_scene, _changed| BlueHoennPilot.refresh_dewford_light })
   EventHandlers.add(:on_enter_map, :blue_hoenn_music, proc do |_old_map|
     Object.prepend(Music) unless Object.ancestors.include?(Music)
   end)

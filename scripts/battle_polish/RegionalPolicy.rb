@@ -81,6 +81,9 @@ module BlueRegionalPolicy
     move_id = move.to_s.upcase.to_sym
     action = FIELD_MOVES[move_id]
     return :native unless action
+    if current["current"] == "HOENN" && move_id == :FLASH && defined?(BlueHoennPilot)
+      return BlueHoennPilot.flash_field_result(selected)
+    end
     # Decades retains its own native badge/event checks; the only additional
     # restriction for a shared regional save is obtaining the HM HERE.
     # Untravelled legacy Decades saves still return :native from state=nil.
