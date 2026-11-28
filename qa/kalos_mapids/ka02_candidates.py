@@ -7,12 +7,15 @@ import json
 import re
 import sys
 import zipfile
+import zlib
+from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT), str(ROOT / "scripts/regions")]
 from audit_unova_a04_mapids import MAX_FILE_BYTES, safe_path, sha256_file
 from audit_unova_a06_references import parse_map
+from server.ruby_marshal import RubyObject, loads, text
 from qa.kalos.ka00_baseline import (
     ANDROID_247_BYTES, ANDROID_247_SHA256, ANDROID_247_TAG, file_report, static_controls,
 )
@@ -79,6 +82,97 @@ def connection_ids(data: bytes) -> tuple[set[int], int]:
         lines += 1
     return ids, lines
 
+TRANSFER = re.compile(
+    r"(?:\b(?:pbTransferPlayer|pbWarpToMap|pbSetPlayerPosition|reserve_transfer|setPlayerLocation)\s*\(\s*"
+    r"|(?:\$game_temp\.)?player_new_map_id\s*=(?!=)\s*)([^,\r\n)]*)", re.I
+)
+MAX_DECODED_SCRIPT = 1024**2
+
+def script_targets(script: str) -> tuple[set[int], int]:
+    """Conservative heuristic: do not run Ruby and never claim all targets."""
+    if not isinstance(script, str) or len(script) > MAX_DECODED_SCRIPT:
+        raise ValueError("Invalid or oversized script section")
+    ids, computed = set(), 0
+    for match in TRANSFER.finditer(script):
+        if re.search(r"\bdef\s*$", script[max(0,match.start()-32):match.start()]):
+            continue
+        arg = match[1].strip()
+        if re.fullmatch(r"[1-9][0-9]{0,4}", arg):
+            ids.add(int(arg))
+        else:
+            computed += 1
+    return ids, computed
+
+def remember_script(value: str, counters: Counter, ids: set[int]) -> None:
+    literal, unknown = script_targets(value)
+    ids.update(literal)
+    counters["script_sections_examined"] += 1
+    counters["script_transfer_unresolved"] += unknown
+
+def command_list(commands, counters: Counter, ids: set[int], common: bool = False):
+    if not isinstance(commands, list) or len(commands) > 50000:
+        raise ValueError("Unexpected RPG command list")
+    parts = []
+    def flush():
+        if parts:
+            remember_script("\n".join(parts), counters, ids)
+            parts.clear()
+    for obj in commands:
+        if not isinstance(obj, RubyObject):
+            raise ValueError("Unexpected RPG command")
+        code = obj.attrs.get("@code")
+        params = obj.attrs.get("@parameters")
+        if code != 655:
+            flush()
+        if code in (355,655) and isinstance(params, list) and params:
+            parts.append(text(params[0]))
+        if common and code == 201:
+            if (isinstance(params, list) and len(params) > 1
+                    and type(params[0]) is int and params[0] == 0
+                    and type(params[1]) is int and 0 < params[1] <= 99999):
+                ids.add(params[1])
+                counters["common_event_direct"] += 1
+            else:
+                counters["common_event_dynamic"] += 1
+    flush()
+
+def inspect_map_scripts(content: bytes, counters: Counter, ids: set[int]) -> None:
+    root = loads(content)
+    for obj in root.attrs["@events"].values():
+        for page in obj.attrs["@pages"]:
+            command_list(page.attrs["@list"],counters,ids)
+
+def inspect_common_events(content: bytes, counters: Counter, ids: set[int]) -> None:
+    events = loads(content)
+    if isinstance(events, dict):
+        events = list(events.values())
+    if not isinstance(events, list) or len(events) > 10000:
+        raise ValueError("Unexpected CommonEvents root")
+    for event in events:
+        if event is None:
+            continue
+        if not isinstance(event, RubyObject) or event.name != "RPG::CommonEvent":
+            raise ValueError("Unexpected CommonEvents entry")
+        counters["common_events_examined"] += 1
+        command_list(event.attrs["@list"],counters,ids,common=True)
+
+def inspect_compiled_script_index(content: bytes, counters: Counter, ids: set[int]) -> None:
+    chunks = loads(content)
+    if not isinstance(chunks, list) or len(chunks) > 5000:
+        raise ValueError("Unexpected compiled Script root")
+    decoded_size = 0
+    for row in chunks:
+        if not isinstance(row,list) or len(row) < 3 or not isinstance(row[2],bytes):
+            counters["unsupported_script_entries"] += 1
+            continue
+        decoder = zlib.decompressobj()
+        block = decoder.decompress(row[2], MAX_DECODED_SCRIPT + 1)
+        decoded_size += len(block)
+        if not decoder.eof or decoder.unused_data or len(block) > MAX_DECODED_SCRIPT or decoded_size > 64 * MAX_DECODED_SCRIPT:
+            raise ValueError("Unsafe compiled script size or encoding")
+        counters["compiled_script_entries_examined"] += 1
+        remember_script(block.decode("utf-8","replace"), counters, ids)
+
 def scan(path: Path) -> dict:
     path = safe_path(path, file=True)
     if path.stat().st_size != ANDROID_247_BYTES or sha256_file(path) != ANDROID_247_SHA256:
@@ -86,6 +180,7 @@ def scan(path: Path) -> dict:
     snapshot = file_report(path, "android-247-historical")
     static_refs, pbs_refs, ids = set(), set(), set()
     dynamic = scripts = pbs_lines = 0
+    script_ids, script_counters, observed = set(), Counter(), set()
     with zipfile.ZipFile(path) as src:
         for entry in src.infolist():
             if not entry.filename.startswith(ARCHIVE_ROOT):
@@ -95,6 +190,15 @@ def scan(path: Path) -> dict:
                 if entry.file_size > MAX_FILE_BYTES:
                     raise ValueError("Oversized map connection file")
                 pbs_refs, pbs_lines = connection_ids(src.read(entry))
+            block_type = rel.casefold()
+            if block_type in {"data/commonevents.rxdata", "data/scripts.rxdata", "data/pluginscripts.rxdata"}:
+                if entry.file_size > MAX_FILE_BYTES:
+                    raise ValueError("Oversized script metadata")
+                observed.add(block_type)
+                if block_type == "data/commonevents.rxdata":
+                    inspect_common_events(src.read(entry), script_counters, script_ids)
+                elif block_type == "data/scripts.rxdata":
+                    inspect_compiled_script_index(src.read(entry), script_counters, script_ids)
             match = MAP.fullmatch(rel)
             if not match:
                 continue
@@ -102,13 +206,21 @@ def scan(path: Path) -> dict:
             if mid in ids or not 0 < entry.file_size <= MAX_FILE_BYTES:
                 raise ValueError("Invalid or duplicate MapNNN data")
             ids.add(mid)
-            findings = parse_map(src.read(entry), mid)
+            raw = src.read(entry)
+            findings = parse_map(raw, mid)
+            inspect_map_scripts(raw, script_counters, script_ids)
             static_refs.update(findings["static_destinations"])
             dynamic += findings["dynamic_transfer_commands"]
             scripts += findings["script_commands_not_executed"]
     if not pbs_lines:
         raise ValueError("PBS map connections not observed")
-    return census(static_controls(), snapshot, static_refs, pbs_refs, dynamic, scripts, len(ids), pbs_lines)
+    return {
+        **census(static_controls(), snapshot, static_refs | script_ids, pbs_refs, dynamic, scripts, len(ids), pbs_lines),
+        "historical_script_scopes_observed": sorted(observed),
+        "historical_script_heuristics": dict(script_counters),
+        "plugins_rxdata_contents_examined": False,
+        "dynamic_destinations_resolved": False,
+    }
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)

@@ -22,6 +22,8 @@ transferência e não é autorização para ocupar IDs. O recorte
   Faixas de cobertura podem se sobrepor sem implicar dupla
   ocupação de fato. Não renumerar mapas, eventos nem saves.
 
+O censo também faz triagem inerte nos comandos de script dos mapas, em CommonEvents e no índice compilado Scripts quando observados. ID literal analisável entra no conjunto conservador; expressão dinâmica continua sem resolução. Plugins não são interpretados por esse scanner.
+
 O relatório publica só agregados e IDs que requerem verificação, sem
 arquivos do jogo. `KALOS_KA02_HISTORICAL_MAPID_GUARD_OK` significa que
 a auditoria histórica funcionou; **não** equivale à aprovação

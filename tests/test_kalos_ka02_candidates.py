@@ -32,6 +32,14 @@ class MapIDConflictGuardTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"hold was removed"):
             audit.protected(self.controls)
 
+    def test_inert_transfer_heuristics_distinguish_literal_from_computed(self):
+        ids, unresolved = audit.script_targets(
+            "def pbTransferPlayer(mapid)\npbTransferPlayer(123, x, y)\n"
+            "$game_temp.player_new_map_id = target + 1\nreserve_transfer(276, a, b)"
+        )
+        self.assertEqual(ids, {123,276})
+        self.assertEqual(unresolved, 1)
+
     def test_connection_validation(self):
         self.assertEqual(audit.connection_ids(b"# comment\n19,North,0,20,South,-2\n"),({19,20},1))
         with self.assertRaisesRegex(ValueError,"Unsupported PBS"):
