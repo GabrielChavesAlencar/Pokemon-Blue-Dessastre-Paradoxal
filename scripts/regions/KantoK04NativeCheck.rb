@@ -46,7 +46,7 @@ module KantoK04NativeCheck
         current = anchor
         return [*legs,exit_leg].map do |leg|
           trace("TOUCH", [leg,current])
-          receipt = D.door!(leg,current,native_ledges: true)
+          receipt = D.door!(leg,current,native_ledges: true,settle_motion: true)
           current = leg.fetch("to_xy")
           receipt
         end
@@ -250,6 +250,11 @@ module KantoK04NativeCheck
       "Power Plant or Lavender installed before its own phase")
     $player.party.replace([Pokemon.new(:BULBASAUR,20)])
     BlueKantoPilot.progress["pilot_starter"] = "BULBASAUR"
+    # Preserve real walking, collision and event interpreters; prevent the
+    # RNG from starting unrelated combat while enumerating ledge witnesses.
+    # Native encounter tables are checked above. This save is disposable.
+    previous_encounters = $game_system.encounter_disabled
+    $game_system.encounter_disabled = true
     errors = {}
     trace("ACTIVE_CUT_OBSTACLES",cut_inventory(ids))
     center = check_area(errors,"NATIVE_NURSE") { center!(ids) }
@@ -272,7 +277,7 @@ module KantoK04NativeCheck
     entrances = check_area(errors,"CENTER_NATIVE_DOORS") do
       into = require!(door(ids,87,22,88,[13,31]), "Center entrance unreachable from its reciprocal landing")
       out = require!(door(ids,88,1,87,[7,8]), "Center exit unreachable")
-      [D.door!(into,[13,31]),D.door!(out,[7,8])]
+      [D.door!(into,[13,31],settle_motion: true),D.door!(out,[7,8],settle_motion: true)]
     end
     north = check_area(errors,"TUNNEL_NORTH_TO_SOUTH") { passage(ids,12,17,[13,31]) }
     south = check_area(errors,"TUNNEL_SOUTH_TO_NORTH") { passage(ids,13,1,[8,68]) }
@@ -284,5 +289,7 @@ module KantoK04NativeCheck
       "manual_playthrough"=>false,"not_a_release"=>true}
     File.write("Data/blue-kanto-k04-proof.txt",report.inspect)
     puts "KANTO_K04_NATIVE_CORRIDOR_FLASH_OK"
+  ensure
+    $game_system.encounter_disabled = previous_encounters if defined?(previous_encounters) && !previous_encounters.nil?
   end
 end
