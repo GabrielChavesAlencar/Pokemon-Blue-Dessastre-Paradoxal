@@ -2,9 +2,27 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1222d318cd6887f34936891298ca0f9cef4ac697",
+      "date": "2026-11-28T10:44:44-03:00",
+      "title": "Merge pull request #383 from GabrielChavesAlencar/codex/hoenn-h01-versioned-catalog",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "a897233ab69c82fe228a7bcee93649779e4acd61",
+      "date": "2026-11-28T10:41:44-03:00",
+      "title": "Registrar migração V2 e recompilação nativa de Hoenn no Windows",
+      "category": "Melhorias"
+    },
+    {
       "sha": "f1498ca4d61a26ee7f9c6b22bda0382445620a9f",
       "date": "2026-11-28T10:40:19-03:00",
       "title": "Merge pull request #382 from GabrielChavesAlencar/codex/hoenn-h00-water-seams",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "10b79a3eda323659c5260db2dbc75eb9310c9bb6",
+      "date": "2026-11-28T10:39:15-03:00",
+      "title": "Integrar H01 ao H00 atual e preservar os contratos de outras regiões",
       "category": "Melhorias"
     },
     {
@@ -257,6 +275,12 @@
       "sha": "3c326fd05777ec383c5405d8bd0db2ab3e402873",
       "date": "2026-11-28T02:47:09-03:00",
       "title": "Audit Lavender portal delta and gate unverified bundled Hoenn redistribution",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "3a52ff196e876a362300bd0531f6c8586320c273",
+      "date": "2026-11-28T02:45:27-03:00",
+      "title": "Hoenn H01: migrate shared installs to a versioned map catalog",
       "category": "Melhorias"
     },
     {
