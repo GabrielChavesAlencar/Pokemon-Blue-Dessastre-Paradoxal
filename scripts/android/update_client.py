@@ -667,6 +667,9 @@ def main(argv=None):
         if args.update:
             command.append("--update")
         return subprocess.run(command,check=False).returncode
+    if (root/".blue-k05-recovery.json").exists():
+        print("Há uma atualização interrompida. Use --source --update; nenhum ZIP será baixado.")
+        return 2 if args.update else 0
     if info.get("source_update") is not None:
         print("A instalação foi construída pela fonte. Use --source com uma receita compatível; nenhum ZIP será baixado.")
         return 2 if args.update else 0

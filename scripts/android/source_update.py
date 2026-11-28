@@ -6,6 +6,7 @@ archive is a local input, not an installed update or proof of compilation.
 from __future__ import annotations
 
 import argparse
+from contextlib import contextmanager
 import hashlib
 import json
 import os
@@ -297,58 +298,154 @@ def atomic_file(path, data):
         Path(temp).unlink(missing_ok=True)
 
 
-def commit_local(root,staged,changed,new_manifest,backup,verify=None):
-    """Apply only already-verified files. Hold a local lock and commit version last."""
+RECOVERY_FILE=".blue-k05-recovery.json"
+UPDATE_LOCK=".blue-k05-update.lock"
+
+
+@contextmanager
+def update_lock(root):
+    """An OS lock releases on process death, without deleting its inode."""
+    path=root/UPDATE_LOCK
+    if path.resolve()!=path:
+        raise ValueError("Trava da atualização não é um arquivo local.")
+    with path.open("a+b") as stream:
+        if os.name=="nt":
+            import msvcrt
+            stream.seek(0)
+            try:
+                msvcrt.locking(stream.fileno(),msvcrt.LK_NBLCK,1)
+            except OSError as exc:
+                raise ValueError("Já há um atualizador usando esta instalação.") from exc
+        else:
+            import fcntl
+            try:
+                fcntl.flock(stream.fileno(),fcntl.LOCK_EX|fcntl.LOCK_NB)
+            except OSError as exc:
+                raise ValueError("Já há um atualizador usando esta instalação.") from exc
+        yield
+
+
+def checked_row(path):
+    if path.resolve()!=path or (path.exists() and not path.is_file()):
+        raise ValueError(f"Caminho de atualização inseguro: {path.name}")
+    return manifest_row(path) if path.is_file() else None
+
+
+def recovery_plan(root):
+    path=root/RECOVERY_FILE
+    if checked_row(path) is None:
+        return None
+    data=json.loads(path.read_text("utf8"))
+    if (data.get("schema")!=1 or data.get("root")!=str(root) or not isinstance(data.get("rows"),dict)
+            or MARKER not in data["rows"] or not isinstance(data.get("backup"),str)):
+        raise ValueError("Registro de recuperação Android inválido.")
+    return data
+
+
+def recover_under_lock(root,backup_base,data):
+    """Validate all files before restoring any; no saves enter the journal."""
+    backup=Path(data["backup"])
+    if (backup.resolve()!=backup or backup.parent!=backup_base.resolve().parent
+            or not backup.name.startswith(backup_base.name+"-") or not backup.is_dir()):
+        raise ValueError("Abra o atualizador com a mesma pasta de compilação para recuperar a instalação.")
+    actions=[]
+    states=[]
+    rows=data["rows"]
+    for name,versions in rows.items():
+        if name!=MARKER and not safe_path(name):
+            raise ValueError("Caminho inesperado no registro de recuperação.")
+        target=root/name
+        previous,new=versions["old"],versions["new"]
+        stored=backup/name
+        if checked_row(stored)!=previous:
+            raise ValueError("Backup de recuperação diverge: "+name)
+        now=checked_row(target)
+        if now not in (previous,new):
+            raise ValueError("Arquivo editado depois da interrupção: "+name)
+        states.append(now==new)
+        if now!=previous:
+            actions.append((target,stored,previous))
+    revision=checked_row(root/MARKER)
+    if revision==rows[MARKER]["new"]:
+        if not all(states):
+            raise ValueError("A revisão mudou sem que todos os arquivos correspondam à atualização.")
+        result="committed"
+    elif revision==rows[MARKER]["old"]:
+        for target,stored,previous in reversed(actions):
+            if previous is None:
+                target.unlink()
+            else:
+                atomic_file(target,stored.read_bytes())
+        result="rolled_back"
+    else:
+        raise ValueError("Revisão desconhecida no registro de recuperação.")
+    (root/RECOVERY_FILE).unlink()
+    return result
+
+
+def recover_source_install(root,work,apply):
+    if not (root/RECOVERY_FILE).exists():
+        return None
+    if not apply:
+        raise ValueError("Há uma atualização interrompida. Feche o JoiPlay e execute com --source --update.")
+    with update_lock(root):
+        receipt=recovery_plan(root)
+        if receipt is None:
+            return None
+        original=receipt.get("baseline")
+        if not isinstance(original,str):
+            raise ValueError("Revisão de recuperação ausente.")
+        result=recover_under_lock(root,work_holder(root,original,work)/"backup",receipt)
+    if result=="rolled_back":
+        print("[OK] Atualização interrompida restaurada. Retomando a instalação.",flush=True)
+    return result
+
+
+def commit_local(root,staged,changed,new_manifest,backup,verify=None,before_marker=None,baseline=None):
+    """Persist backups and hashes before touching files; commit revision last."""
     root,staged,backup=root.resolve(),staged.resolve(),backup.resolve()
-    lock=root/".blue-k05-local-update"
-    lock.mkdir(exist_ok=False)
-    backups={}
-    applied=[]
-    safe_recovery=False
-    try:
-        backup.mkdir(exist_ok=False)
-        for name in [*changed,MARKER]:
+    with update_lock(root):
+        if recovery_plan(root) is not None:
+            raise ValueError("Recupere a atualização anterior antes de gravar novos arquivos.")
+        if before_marker is not None and (root/MARKER).read_bytes()!=before_marker:
+            raise ValueError("O inventário mudou desde a conferência da instalação.")
+        saved=Path(tempfile.mkdtemp(prefix=backup.name+"-",dir=backup.parent)).resolve()
+        paths={}
+        for name in (*changed,MARKER):
+            if name!=MARKER and not safe_path(name):
+                raise ValueError("Caminho de atualização não autorizado: "+name)
             orig=root/name
-            if orig.resolve()!=orig:
-                raise ValueError(f"Caminho de destino inseguro: {name}")
-            if orig.is_file():
-                prior=backup/name
-                prior.parent.mkdir(parents=True,exist_ok=True)
-                shutil.copyfile(orig,prior)
-                backups[name]=prior
-            else:
-                backups[name]=None
-        for name in changed:
-            data=(staged/name).read_bytes()
-            if hashlib.sha256(data).hexdigest()!=changed[name]["sha256"]:
-                raise ValueError(f"O arquivo compilado mudou antes de gravar: {name}")
-            atomic_file(root/name,data)
-            applied.append(name)
-        if verify is not None:
-            verify(root)
-        atomic_file(root/MARKER,new_manifest)
-        applied.append(MARKER)
-        safe_recovery=True
+            previous=checked_row(orig)
+            if previous is not None:
+                atomic_file(saved/name,orig.read_bytes())
+                if checked_row(saved/name)!=previous:
+                    raise OSError("Backup local não confere: "+name)
+            new=changed.get(name,{"size":len(new_manifest),"sha256":hashlib.sha256(new_manifest).hexdigest()})
+            paths[name]={"old":previous,"new":new}
+        receipt={"schema":1,"root":str(root),"backup":str(saved),"rows":paths,"baseline":baseline}
+        atomic_file(root/RECOVERY_FILE,json.dumps(receipt,sort_keys=True).encode("utf8"))
+        try:
+            for name,meta in changed.items():
+                data=(staged/name).read_bytes()
+                if len(data)!=meta["size"] or hashlib.sha256(data).hexdigest()!=meta["sha256"]:
+                    raise ValueError(f"O arquivo compilado mudou antes de gravar: {name}")
+                atomic_file(root/name,data)
+            if verify is not None:
+                verify(root)
+            atomic_file(root/MARKER,new_manifest)
+        except Exception:
+            recover_under_lock(root,backup,receipt)
+            raise
+        (root/RECOVERY_FILE).unlink()
         return len(changed)
-    except Exception:
-        for name in reversed(applied):
-            prior=backups[name]
-            if prior is not None:
-                atomic_file(root/name,prior.read_bytes())
-            else:
-                (root/name).unlink(missing_ok=True)
-        safe_recovery=True
-        raise
-    finally:
-        # Preserve the lock and backup if rollback itself fails.
-        if safe_recovery:
-            lock.rmdir()
 
 
 def finish_local(root,revision,apply=False,work=None):
     from scripts.android.package import verify_regions,fingerprint
     from scripts.android.k05_package_contract import verify_registry
     root=root.resolve()
+    recover_source_install(root,work,apply)
+    before_marker=(root/MARKER).read_bytes()
     old=read_installed(root)
     original=old["revision"]
     if len(original)!=40 or not re.fullmatch("[0-9a-f]{40}",original) or not re.fullmatch("[0-9a-f]{40}",revision):
@@ -390,7 +487,8 @@ def finish_local(root,revision,apply=False,work=None):
     provenance=installed_provenance(files,recipe)
     new={**old,"revision":revision,"files":files,"source_update":provenance}
     if apply:
-        commit_local(root,staged,changed,json.dumps(new,sort_keys=True).encode("utf8"),holder/"backup",verify=verify_regions)
+        commit_local(root,staged,changed,json.dumps(new,sort_keys=True).encode("utf8"),holder/"backup",verify=verify_regions,
+                     before_marker=before_marker,baseline=original)
     return {"status":"SOURCE_UPDATE_APPLIED" if apply else "SOURCE_UPDATE_READY",
             "from_revision":original,"to_revision":revision,"compile_verified":True,
             "files_changed":len(changed),"hoenn_maps_preserved":len(old_hoenn),"updated":apply,
@@ -399,6 +497,8 @@ def finish_local(root,revision,apply=False,work=None):
 def source_workflow(root,work=None,apply=False):
     """Run the update flow without any GitHub game ZIP or binary patch."""
     root=root.expanduser().resolve()
+    work=work if work is not None else root.parent/(root.name+"-Compilar-K05")
+    recover_source_install(root,work,apply)
     installed=read_installed(root)
     revision=installed["revision"]
     proof=preflight(root)
@@ -411,7 +511,6 @@ def source_workflow(root,work=None,apply=False):
         ):
             raise ValueError("A revisão local K05 não tem a prova de instalação pela fonte.")
         return {**proof,"status":"SOURCE_UPDATE_ALREADY_INSTALLED","compile_verified":True}
-    work=work if work is not None else root.parent/(root.name+"-Compilar-K05")
     holder=work_holder(root,revision,work)
     if not apply:
         return {**proof,"target_revision":PRODUCT_REVISION,"no_binary_zip":True}

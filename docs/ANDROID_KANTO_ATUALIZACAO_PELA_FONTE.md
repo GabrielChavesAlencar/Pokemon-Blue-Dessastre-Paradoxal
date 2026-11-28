@@ -48,6 +48,11 @@ O Termux precisa ter acesso ao diretório do jogo.
    contornar a verificação. A atualização final aceita apenas o conjunto
    de arquivos necessário a Kanto.
 
+Se o Termux fechar durante a instalação, mantenha o JoiPlay fechado e rode
+o mesmo comando de atualização novamente, com a mesma pasta de compilação.
+O atualizador confere o registro da instalação interrompida e retoma a partir
+dos arquivos verificados. Não apague a pasta temporária se houver erro.
+
 Após o êxito, abra o atalho original do jogo. O novo `ATUALIZAR-ANDROID.py`
 da pasta instalada reconhece `--source` e a receita no cache acima. Uma
 receita de etapa posterior deve validar o inventário local produzido pela

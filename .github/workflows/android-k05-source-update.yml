@@ -145,6 +145,25 @@ jobs:
         shell: powershell
         run: |
           $rev=$env:K05_PRODUCT_REVISION
+          @'
+          import os
+          from pathlib import Path
+          from scripts.android import source_update as recipe
+          original=recipe.atomic_file
+          def interrupt(path, blob):
+              original(path,blob)
+              if path.name=="Map609.rxdata" and Path(os.environ["ANDROID_247_GAME"]).resolve() in path.parents:
+                  os._exit(91)
+          recipe.atomic_file=interrupt
+          recipe.source_workflow(Path(os.environ["ANDROID_247_GAME"]),Path(os.environ["ANDROID_SOURCE_WORK"]),True)
+          '@ | python -
+          if($LASTEXITCODE -ne 91 -or !(Test-Path -LiteralPath (Join-Path $env:ANDROID_247_GAME '.blue-k05-recovery.json'))){
+            throw 'Crash fixture did not interrupt a real local file write'
+          }
+          $before=Get-Content (Join-Path $env:ANDROID_247_GAME 'Data/blue-update.json') -Raw | ConvertFrom-Json
+          if($before.revision -ne '02732eadaedf49f3728755edb2bd2654ceae3897'){
+            throw 'Interrupted updater committed a revision before the write set was complete'
+          }
           python scripts/android/update_client.py --game-dir $env:ANDROID_247_GAME --source --source-work-dir $env:ANDROID_SOURCE_WORK --update
           if($LASTEXITCODE -ne 0){throw 'Compiled local update could not be applied by the Android updater'}
           $save=Join-Path $env:ANDROID_247_GAME 'K05-SAVE-SYNTHETIC.rxsave'
@@ -167,4 +186,8 @@ jobs:
             ('"' + $updater + '"'),'--game-dir',('"' + $env:ANDROID_247_GAME + '"'),'--update'
           ) -NoNewWindow -Wait -PassThru
           if($guard.ExitCode -ne 2){throw 'The installed source-aware updater did not refuse the stock binary workflow'}
+          if(Test-Path -LiteralPath (Join-Path $env:ANDROID_247_GAME '.blue-k05-recovery.json')){
+            throw 'The recovery journal remained after the successful retry'
+          }
+          Write-Host 'KANTO_K05_ANDROID_CRASH_RECOVERY_OK'
           Write-Host 'KANTO_K05_ANDROID_LOCAL_SOURCE_UPDATE_OK'

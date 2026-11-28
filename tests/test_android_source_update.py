@@ -2,11 +2,13 @@ import contextlib
 import hashlib
 import io
 import json
+import subprocess
+import sys
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
 
-from scripts.android.source_update import preflight, clone_verified_install, commit_local, atomic_file, manifest_row, installed_provenance, PRODUCT_REVISION, write_compiler_ini, compiler_config, local_delta, K05_RUNTIME, K05_COMPILED, work_holder, source_workflow
+from scripts.android.source_update import preflight, clone_verified_install, commit_local, atomic_file, manifest_row, installed_provenance, PRODUCT_REVISION, write_compiler_ini, compiler_config, local_delta, K05_RUNTIME, K05_COMPILED, work_holder, source_workflow, RECOVERY_FILE, recover_source_install
 from unittest.mock import patch
 from scripts.android.update_client import MARKER, read_installed, main as updater_main
 
@@ -241,3 +243,41 @@ class AndroidPinnedSourceUpdateTests(unittest.TestCase):
                 self.assertEqual(source_workflow(root,work,True),{"status":"applied"})
                 finish.assert_called_once_with(root,PRODUCT_REVISION,True,work)
                 self.assertEqual((root/MARKER).read_bytes(),before)
+
+    def test_source_recovery_survives_process_exit_before_and_after_marker(self):
+        child = r"""
+import os,sys
+from pathlib import Path
+from scripts.android import source_update as s
+root,stage,backup=map(Path,sys.argv[1:4])
+pause=sys.argv[4]
+saved=s.atomic_file
+def interrupted(path,data):
+    saved(path,data)
+    if path.name==pause and root in path.parents:
+        os._exit(91)
+s.atomic_file=interrupted
+row="Data/Map609.rxdata"
+s.commit_local(root,stage,{row:s.manifest_row(stage/row)},b"completed",backup,baseline="a"*40)
+"""
+        for point,expected in (("Map609.rxdata","rolled_back"),("blue-update.json","committed")):
+            with self.subTest(point=point),TemporaryDirectory() as folder:
+                d=Path(folder).resolve()
+                root,work=d/"live",d/"visible"
+                root.mkdir()
+                save=self.make(root)
+                old=(root/MARKER).read_bytes()
+                holder=work_holder(root,"a"*40,work)
+                stage=holder/"game"
+                (stage/"Data").mkdir(parents=True)
+                (stage/"Data/Map609.rxdata").write_bytes(b"new Kanto")
+                result=subprocess.run([sys.executable,"-c",child,str(root),str(stage),str(holder/"backup"),point])
+                self.assertEqual(result.returncode,91)
+                self.assertTrue((root/RECOVERY_FILE).is_file())
+                with self.assertRaisesRegex(ValueError,"interrompida"):
+                    recover_source_install(root,work,False)
+                self.assertEqual(recover_source_install(root,work,True),expected)
+                self.assertFalse((root/RECOVERY_FILE).exists())
+                self.assertEqual((root/MARKER).read_bytes(),old if expected=="rolled_back" else b"completed")
+                self.assertEqual((root/"Data/Map609.rxdata").exists(),expected=="committed")
+                self.assertEqual(save.read_bytes(),b"not a real save; do not inspect")
