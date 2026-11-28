@@ -1,0 +1,124 @@
+name: Galar - pesquisa e planejamento
+
+on:
+  pull_request:
+    paths:
+      - 'docs/GALAR_*.md'
+      - '.github/workflows/galar-documentation.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: galar-documentation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  documentation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validar GD00 a GD05, sem fontes externas ou jogo
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check "$BASE_SHA...HEAD"
+          python3 - <<'PY'
+          import json
+          import os
+          import re
+          import subprocess
+          from pathlib import Path
+
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True)
+
+          def read(name):
+              return Path("docs", name).read_text(encoding="utf-8")
+
+          def keys(text, prefix):
+              return re.findall(rf"^\| ({prefix}\d{{2}}) \|", text, re.M)
+
+          def ordered(prefix, count):
+              return [f"{prefix}{i:02}" for i in range(1, count + 1)]
+
+          base = os.environ["BASE_SHA"]
+          assert re.fullmatch(r"[a-f0-9]{40}", base)
+          paths = git("diff", "--name-only", f"{base}...HEAD").splitlines()
+          assert paths and all(
+              re.fullmatch(r"docs/GALAR_[A-Z0-9_]+\.md", path)
+              or path == ".github/workflows/galar-documentation.yml"
+              for path in paths
+          ), paths
+          plan_name = "GALAR_PESQUISA_E_PLANEJAMENTO.md"
+          files = {
+              "GD01": "GALAR_GD01_FONTES_E_DIREITOS.md",
+              "GD02": "GALAR_GD02_INVENTARIO_E_PROGRESSAO.md",
+              "GD03": "GALAR_GD03_DESENHO_E_PRIMEIRO_RECORTE.md",
+              "GD04": "GALAR_GD04_VALIDACAO_E_HANDOFF.md",
+              "GD05": "GALAR_GD05_ATLAS_VISUAL_E_TILES_KANTO.md",
+          }
+          roadmap_name = "GALAR_ROADMAP_CODEX_100_JOGAVEL_WINDOWS_ANDROID.md"
+          plan = read(plan_name)
+          roadmap = read(roadmap_name)
+          assert all(f"| {stage} |" in plan and name in plan for stage, name in files.items())
+          assert keys(roadmap, "GL") == ["GL00", *ordered("GL", 9)]
+          for name in (plan_name, roadmap_name, *files.values()):
+              doc = Path("docs", name)
+              for link in re.findall(r"\]\(([^ )]+)\)", read(name)):
+                  target = link.partition("#")[0]
+                  if not target or target.startswith(("https://", "http://")):
+                      continue
+                  assert (doc.parent / target).is_file(), (name, link)
+
+          rev = "76874bc6494469dfb77827b3707c5cd626a994e2"
+          assert git("rev-parse", f"{rev}^{{tree}}").strip() == "9e44b821a25d4179eff8c8df919ad9e931dcf603"
+          assert len(git("ls-tree", "-r", "--name-only", rev).splitlines()) == 2299
+          galar = json.loads(Path("site/public/data/regions.json").read_text())["regions"]["GALAR"]
+          assert galar["status"] == "planned" and galar["base"] == "Sword / Shield"
+          assert galar["versions"] == ["Sword", "Shield", "Isle of Armor", "Crown Tundra"]
+          assert galar["milestones"] == ["GRASS", "WATER", "FIRE", "FIGHTING_GHOST", "FAIRY", "ROCK_ICE", "DARK", "DRAGON"]
+          assert list(galar["field"]) == ["FLYING_TAXI", "ROTOM_BIKE", "WATER_MODE"]
+          print("GALAR_GD00_BASELINE_DOCUMENTAL_OK")
+
+          sources = read(files["GD01"])
+          for word in ("RPG Maker XP", "Fire Ash", "Pokémon Royal", "SHA-256"):
+              assert word.casefold() in sources.casefold(), word
+          print("GALAR_GD01_FONTES_DOCUMENTAL_OK")
+
+          inv = read(files["GD02"])
+          assert keys(inv, "C") == ordered("C", 11)
+          assert keys(inv, "R") == ordered("R", 10)
+          for key in galar["milestones"]:
+              assert re.search(rf"\b{key}\b", inv), key
+          print("GALAR_GD02_INVENTARIO_PROGRESSAO_DOCUMENTAL_OK")
+
+          design = read(files["GD03"])
+          assert keys(design, "D") == ordered("D", 3)
+          for word in ("Slumbering Weald", "Motostoke", "Milo", "NOT_RUN"):
+              assert word in design, word
+          print("GALAR_GD03_DESENHO_DOCUMENTAL_OK")
+
+          handoff = read(files["GD04"])
+          assert keys(handoff, "T") == ordered("T", 8)
+          for word in ("Blue-Story.exe", "SHA-256", "BLOCKED_RELEASE", "BLOCKED_ENV", "NOT_RUN"):
+              assert word in handoff, word
+          print("GALAR_GD04_HANDOFF_DOCUMENTAL_OK")
+
+          atlas = read(files["GD05"])
+          for prefix in ("C", "R"):
+              assert keys(atlas, prefix) == keys(inv, prefix), prefix
+              for key in keys(inv, prefix):
+                  row = re.search(rf"^\| {key} \|.+$", atlas, re.M).group()
+                  assert row.count("https://") >= 2, key
+          assert "Kanto" in atlas and not re.search(r"!\[[^]]*\]\(", atlas)
+          assert files["GD05"] in roadmap and files["GD05"] in design
+          print("GALAR_GD05_ATLAS_VISUAL_TILES_KANTO_DOCUMENTAL_OK")
+          PY
