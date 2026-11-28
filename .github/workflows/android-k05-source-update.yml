@@ -55,6 +55,8 @@ jobs:
           Set-Content (Join-Path $game 'K05-SAVE-SYNTHETIC.rxsave') 'Synthetic save data; not an actual save.'
           $checksum=(Get-FileHash (Join-Path $game 'K05-SAVE-SYNTHETIC.rxsave') -Algorithm SHA256).Hash
           "ANDROID_247_GAME=$game" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          $other=Get-FileHash (Join-Path $game 'PBS/pokemon_forms_Gen_9_Pack.txt') -Algorithm SHA256
+          "ANDROID_247_UNRELATED_PBS=$($other.Hash)" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
           "ANDROID_247_SAVE=$checksum" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
       - name: Obter a fonte de Kanto e montar uma cópia local
         shell: powershell
@@ -150,5 +152,8 @@ jobs:
               $installed.source_update.recipe_revision -ne $recipe -or
               $installed.source_update.inventory_sha256 -notmatch '^[0-9a-f]{64}$'){
             throw 'Android source update confused product identity and the recipe revision'
+          }
+          if((Get-FileHash (Join-Path $env:ANDROID_247_GAME 'PBS/pokemon_forms_Gen_9_Pack.txt') -Algorithm SHA256).Hash -ne $env:ANDROID_247_UNRELATED_PBS){
+            throw 'Compiler-only form PBS edit reached the installation'
           }
           Write-Host 'KANTO_K05_ANDROID_LOCAL_SOURCE_UPDATE_OK'

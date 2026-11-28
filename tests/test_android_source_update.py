@@ -4,7 +4,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
 
-from scripts.android.source_update import preflight, clone_verified_install, commit_local, atomic_file, manifest_row, installed_provenance, PRODUCT_REVISION, write_compiler_ini, compiler_config
+from scripts.android.source_update import preflight, clone_verified_install, commit_local, atomic_file, manifest_row, installed_provenance, PRODUCT_REVISION, write_compiler_ini, compiler_config, local_delta, K05_RUNTIME, K05_COMPILED
 from unittest.mock import patch
 from scripts.android.update_client import MARKER, read_installed
 
@@ -138,3 +138,44 @@ class AndroidPinnedSourceUpdateTests(unittest.TestCase):
         self.assertEqual(data["rgssVersion"],1)
         self.assertEqual(data["windowTitle"],"original")
         self.assertEqual(data["dataPathApp"],"Isolated compiler")
+
+    def test_recompiled_unrelated_files_are_discarded_and_foreign_maps_refused(self):
+        with TemporaryDirectory() as folder:
+            parent=Path(folder).resolve()
+            root,stage=parent/"installed",parent/"scratch"
+            paths=K05_RUNTIME | K05_COMPILED | {"Data/Map700.rxdata","Data/Map609.rxdata",
+                "PBS/pokemon_forms_Gen_9_Pack.txt","Data/Scripts.rxdata","Data/species.dat"}
+            for base in (root,stage):
+                for name in paths:
+                    dst=base/name
+                    dst.parent.mkdir(parents=True,exist_ok=True)
+                    dst.write_bytes(b"before")
+            names={"Data/Map609.rxdata","PBS/pokemon_forms_Gen_9_Pack.txt","Data/Scripts.rxdata",
+                   "Data/species.dat","Data/items.dat"}
+            for name in names:
+                (stage/name).write_bytes(b"after")
+            old={"files":{name:manifest_row(root/name) for name in paths}}
+            kanto={"maps":{"94":609},"installed_sha256":{"Data\\Map609.rxdata":"a"*64}}
+            changed=local_delta(root,stage,old,kanto)
+            self.assertEqual(set(changed),{"Data/Map609.rxdata","Data/items.dat"})
+            (stage/"Data/Map700.rxdata").write_bytes(b"foreign difference")
+            with self.assertRaisesRegex(ValueError,"fora de Kanto"):
+                local_delta(root,stage,old,kanto)
+
+    def test_final_contract_failure_rolls_back_before_revision_is_written(self):
+        with TemporaryDirectory() as folder:
+            parent=Path(folder).resolve()
+            root,stage=parent/"installed",parent/"scratch"
+            root.mkdir()
+            self.make(root)
+            name="Data/Map609.rxdata"
+            (stage/"Data").mkdir(parents=True)
+            (stage/name).write_bytes(b"new file")
+            before=(root/MARKER).read_bytes()
+            def fail(target):
+                self.assertEqual((target/MARKER).read_bytes(),before)
+                raise ValueError("wrong compiled cache")
+            with self.assertRaisesRegex(ValueError,"wrong compiled cache"):
+                commit_local(root,stage,{name:manifest_row(stage/name)},b"new revision",parent/"backup",verify=fail)
+            self.assertFalse((root/name).exists())
+            self.assertEqual((root/MARKER).read_bytes(),before)

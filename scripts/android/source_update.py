@@ -221,14 +221,36 @@ def manifest_row(path):
     return {"size":path.stat().st_size,"sha256":digest(path)}
 
 
+# Only databases affected by Kanto's own PBS and the shared plugin cache.
+# The native compiler can rewrite unrelated PBS and compiled game tables. Do
+# not install those side effects, and never ship the scratch boot hooks.
+K05_COMPILED={
+    "Data/PluginScripts.rxdata","Data/encounters.dat","Data/trainers.dat",
+    "Data/trainer_types.dat","Data/map_metadata.dat","Data/map_connections.dat","Data/items.dat",
+}
+K05_RUNTIME={
+    "Data/blue-kanto-install.json","Data/blue-kanto-ready.txt","Data/blue-kanto-start.txt",
+    "Data/blue-mobile-build.txt","Plugins/ZZZZ Blue Story and Presentation/RegionStart.rb",
+}
+
+
 def local_delta(root,staged,old,installed_kanto):
-    """No deletions or overwrites of a Hoenn/foreign map are possible."""
+    """Select the regional write set, not incidental RPG Maker resaves."""
     candidate_maps={int(v) for v in installed_kanto["maps"].values()}
-    written={k.replace("\\","/") for k in installed_kanto["installed_sha256"]}
-    names=set(old["files"]) | {k for k in written if safe_path(k)}
+    written={k.replace(chr(92),"/") for k in installed_kanto["installed_sha256"]}
+    names=written | K05_RUNTIME | K05_COMPILED
+    # Foreign maps must not change even in the scratch build. Other unrelated
+    # cache/PBS rewrites never enter the plan or the new installed inventory.
+    for name,row in old["files"].items():
+        m=re.fullmatch(r"Data/Map(\d{3})\.rxdata",name)
+        if m and int(m[1]) not in candidate_maps:
+            checked=staged/name
+            if not checked.is_file() or checked.resolve()!=checked or manifest_row(checked)!=row:
+                raise ValueError(f"Rejeitada modificação em mapa fora de Kanto: {name}")
     changed={}
     for name in sorted(names):
-        if not safe_path(name):
+        m=re.fullmatch(r"Data/Map(\d{3})\.rxdata",name)
+        if not safe_path(name) or (m and int(m[1]) not in candidate_maps):
             raise ValueError(f"Caminho não aceito no inventário de atualização: {name}")
         orig,source=root/name,staged/name
         if source.is_symlink() or source.resolve()!=source or not source.is_file():
@@ -237,11 +259,6 @@ def local_delta(root,staged,old,installed_kanto):
         previous=old["files"].get(name)
         if previous==meta:
             continue
-        m=re.fullmatch(r"Data/Map(\d{3})\.rxdata",name)
-        if (m and int(m[1]) not in candidate_maps) or (
-                not m and name not in written and not name.startswith("Data/") and
-                name!="Plugins/ZZZZ Blue Story and Presentation/RegionStart.rb"):
-            raise ValueError(f"Rejeitada modificação fora de Kanto: {name}")
         if orig.resolve()!=orig or (previous and (not orig.is_file() or manifest_row(orig)!=previous)) or (
                 previous is None and orig.exists()):
             raise ValueError(f"Arquivo original mudou desde a auditoria: {name}")
@@ -262,7 +279,7 @@ def atomic_file(path, data):
         Path(temp).unlink(missing_ok=True)
 
 
-def commit_local(root,staged,changed,new_manifest,backup):
+def commit_local(root,staged,changed,new_manifest,backup,verify=None):
     """Apply only already-verified files. Hold a local lock and commit version last."""
     root,staged,backup=root.resolve(),staged.resolve(),backup.resolve()
     lock=root/".blue-k05-local-update"
@@ -283,12 +300,16 @@ def commit_local(root,staged,changed,new_manifest,backup):
                 backups[name]=prior
             else:
                 backups[name]=None
-        for name in [*changed,MARKER]:
-            data=(staged/name).read_bytes() if name!=MARKER else new_manifest
-            if name!=MARKER and hashlib.sha256(data).hexdigest()!=changed[name]["sha256"]:
+        for name in changed:
+            data=(staged/name).read_bytes()
+            if hashlib.sha256(data).hexdigest()!=changed[name]["sha256"]:
                 raise ValueError(f"O arquivo compilado mudou antes de gravar: {name}")
             atomic_file(root/name,data)
             applied.append(name)
+        if verify is not None:
+            verify(root)
+        atomic_file(root/MARKER,new_manifest)
+        applied.append(MARKER)
         safe_recovery=True
         return len(changed)
     except Exception:
@@ -350,7 +371,7 @@ def finish_local(root,revision,apply=False):
     provenance=installed_provenance(files,recipe)
     new={**old,"revision":revision,"files":files,"source_update":provenance}
     if apply:
-        commit_local(root,staged,changed,json.dumps(new,sort_keys=True).encode("utf8"),holder/"backup")
+        commit_local(root,staged,changed,json.dumps(new,sort_keys=True).encode("utf8"),holder/"backup",verify=verify_regions)
     return {"status":"SOURCE_UPDATE_APPLIED" if apply else "SOURCE_UPDATE_READY",
             "from_revision":original,"to_revision":revision,"compile_verified":True,
             "files_changed":len(changed),"hoenn_maps_preserved":len(old_hoenn),"updated":apply,
