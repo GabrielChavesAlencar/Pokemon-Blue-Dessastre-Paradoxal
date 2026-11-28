@@ -88,7 +88,7 @@ def stable_source_order(wanted):
               *KANTO_PHASE14_SOURCE_IDS, *KANTO_CERULEAN_NORTH_SOURCE_IDS,
               *KANTO_CERULEAN_INTERIOR_SOURCE_IDS, *KANTO_DAY_CARE_SOURCE_IDS,
               *KANTO_VERMILION_INTERIOR_SOURCE_IDS, *KANTO_DIGLETT_SOURCE_IDS,
-              86, 87, 88, 90, 91)
+              86, 87, 88, 90, 91, *range(93,99), *range(100,107))
     result = [source for source in stable if source in chosen]
     result.extend(sorted(chosen - set(stable)))
     return result
@@ -197,15 +197,17 @@ def allocate_kanto_ids(wanted, occupied, existing=None):
     if set(existing.values()).intersection(reserved):
         raise ValueError("Existing Kanto mapping collides with reserved Sinnoh IDs")
     from scripts.regions.k04_corridor import published_destinations
+    from scripts.regions.k05_contract import SLOTS as lavender_slots
     rock_slots = {int(sid): mid for sid, mid in published_destinations().items()}
-    pinned = {sid: mid for sid, mid in rock_slots.items() if sid in wanted}
+    owned = {**rock_slots, **lavender_slots}
+    pinned = {sid: mid for sid, mid in owned.items() if sid in wanted}
     for sid, mid in pinned.items():
         if sid in existing:
             if existing[sid] != mid:
-                raise ValueError(f"K04 source {sid} is not at its reserved map ID {mid}")
+                raise ValueError(f"Kanto source {sid} is not at its reserved map ID {mid}")
         elif mid in occupied:
-            raise ValueError(f"K04 reserved map ID {mid} is already occupied")
-    blocked = set(rock_slots.values())
+            raise ValueError(f"Kanto reserved map ID {mid} is already occupied")
+    blocked = set(owned.values())
     free = (mid for mid in range(max(300, max(occupied, default=0) + 1), 1000)
             if mid not in reserved and mid not in blocked)
     ids = {n: (existing[n] if n in existing else pinned[n] if n in pinned
@@ -235,6 +237,7 @@ def map_plan(source, game, manifest, existing=None):
     encounters = (source / "PBS/encounters.txt").read_text(encoding="utf-8-sig")
     encounter_ids = {int(n) for n in re.findall(r"(?m)^\[(\d+)(?:,\d+)?\]", encounters)}
     pbs = (source / "PBS/map_connections.txt").read_text(encoding="utf-8-sig")
+    from scripts.regions.k05_contract import scoped_connection
     internal, external = [], []
     for line in pbs.splitlines():
         row = line.split("#", 1)[0].strip()
@@ -246,7 +249,7 @@ def map_plan(source, game, manifest, existing=None):
             continue
         if DIRECTION.get(side_a) != side_b:
             raise ValueError(f"Invalid map connection: {row}")
-        if a in ids and b in ids:
+        if a in ids and b in ids and scoped_connection(a,side_a,off_a,b,side_b,off_b):
             internal.append([ids[a], side_a, int(off_a), ids[b], side_b, int(off_b)])
         else:
             external.append(row)

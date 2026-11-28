@@ -6,6 +6,12 @@ on:
       - 'scripts/regions/audit_k05_lavender.py'
       - 'scripts/regions/build_k05_city.py'
       - 'scripts/regions/build_k05_tower.py'
+      - 'scripts/regions/build_k05_product.py'
+      - 'scripts/regions/k05_contract.py'
+      - 'scripts/regions/k05_promotion.py'
+      - 'scripts/regions/k05_migration.py'
+      - 'scripts/regions/qa_k05_migration.py'
+      - 'tests/test_kanto_k05_migration.py'
       - 'scripts/regions/k05_tower_actors.py'
       - 'scripts/regions/KantoK05Tower.rb'
       - 'scripts/regions/k05_lavender_services.py'
@@ -129,6 +135,39 @@ jobs:
           }
           Write-Host ("KANTO_K05_TOWER_NATIVE_REPORT:"+(Get-Content $proof -Raw).Trim())
           Write-Host 'KANTO_K05_TOWER_NATIVE_STAIRS_OK'
+      - name: Repetir prova no produto K05 com catálogo completo isolado
+        shell: powershell
+        run: |
+          python scripts/regions/build_k05_product.py
+          if($LASTEXITCODE -ne 0){throw 'K05 product-shaped candidate failed'}
+          $root=(Resolve-Path .blue-work/kanto-k05-product).Path
+          python scripts/regions/native_check.py $root --k05-tower
+          if($LASTEXITCODE -ne 0){throw 'K05 Tower native fixture injection failed'}
+          $mesaFolder=Join-Path $env:RUNNER_TEMP 'k05-mesa'
+          Get-ChildItem -LiteralPath $mesaFolder -Recurse -File -Filter '*.dll' |
+            Where-Object { $_.Directory.Name -eq 'x64' } |
+            ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $root }
+          $proof="$root/Data/blue-kanto-k05-tower-native-proof.txt"
+          $errorFile="$root/Data/blue-kanto-error.txt"
+          for($attempt=1;$attempt -le 2;$attempt++){
+            $stdout=".blue-work/kanto-k05-product-out-$attempt.txt"
+            $stderr=".blue-work/kanto-k05-product-err-$attempt.txt"
+            $proc=Start-Process -FilePath "$root/Game.exe" -WorkingDirectory $root -WindowStyle Hidden -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+            $handle=$proc.Handle
+            if(-not $proc.WaitForExit(180000)){
+              Stop-Process -Id $proc.Id -ErrorAction SilentlyContinue
+              break
+            }
+            if((Test-Path $proof) -or (Test-Path $errorFile)){break}
+            if($attempt -ne 1 -or -not ((Get-Content $stdout,$stderr -Raw -ErrorAction SilentlyContinue) -match '(?i)compil')){break}
+            Write-Host 'KANTO_K05_TOWER_FIRST_COMPILE_BOOT_RESTART'
+          }
+          if(!(Test-Path $proof -PathType Leaf) -or (Test-Path $errorFile -PathType Leaf)){
+            Get-Content $stdout,$stderr,"$root/Data/blue-kanto-k05-tower-native-stage.txt",$errorFile,"$root/errorlog.txt" -ErrorAction SilentlyContinue | Select-Object -Last 140
+            throw 'K05 native Tower proof missing'
+          }
+          Write-Host ("KANTO_K05_PRODUCT_NATIVE_REPORT:"+(Get-Content $proof -Raw).Trim())
+          Write-Host 'KANTO_K05_PRODUCT_NATIVE_OK'
       - name: Reunir apenas recibos e diagnósticos em diretório visível
         if: always() && hashFiles('.blue-work/kanto-k05-source.json') != ''
         shell: powershell
@@ -138,6 +177,7 @@ jobs:
             '.blue-work/kanto-k05-source.json',
             '.blue-work/kanto-k05-city-stage.json',
             '.blue-work/kanto-k05-tower-stage.json',
+            '.blue-work/kanto-k05-product-proof.json',
             '.blue-work/kanto-k05-city/Data/blue-kanto-k05-city-proof.txt',
             '.blue-work/kanto-k05-city/Data/blue-kanto-k05-city-stage.txt',
             '.blue-work/kanto-k05-city/Data/blue-kanto-error.txt',
@@ -153,6 +193,12 @@ jobs:
             '.blue-work/kanto-k05-tower-err-2.txt'
           ) | ForEach-Object {
             if(Test-Path -LiteralPath $_ -PathType Leaf){ Copy-Item -LiteralPath $_ -Destination $dest.FullName }
+          }
+          foreach($receipt in @('blue-kanto-k05-tower-native-proof.txt','blue-kanto-k05-tower-native-stage.txt','blue-kanto-error.txt')){
+            $path=Join-Path '.blue-work/kanto-k05-product/Data' $receipt
+            if(Test-Path -LiteralPath $path -PathType Leaf){
+              Copy-Item -LiteralPath $path -Destination (Join-Path $dest.FullName ('product-'+$receipt))
+            }
           }
           $towerError='.blue-work/kanto-k05-tower/Data/blue-kanto-error.txt'
           if(Test-Path -LiteralPath $towerError -PathType Leaf){

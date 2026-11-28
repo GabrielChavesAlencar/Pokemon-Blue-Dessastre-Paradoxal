@@ -26,7 +26,11 @@ def prepare(game, integrated=False, k03e=False, k04=False, k05_city=False, k05_t
         if k05_tower:
             SAVE_APP = TOWER_APP
         stage = (ROOT / f".blue-work/kanto-k05-{kind}").resolve()
-        if os.getenv("GITHUB_ACTIONS") != "true" or game != stage:
+        from build_k05_product import PRODUCT_APP, PRODUCT_NAME
+        product = (ROOT / ".blue-work" / PRODUCT_NAME).resolve()
+        if k05_tower and game==product and os.getenv("GITHUB_ACTIONS")=="true":
+            kind,SAVE_APP="product",PRODUCT_APP
+        elif os.getenv("GITHUB_ACTIONS") != "true" or game != stage:
             raise ValueError("K05 requires its disposable fixture only")
         marker = json_file(game / PILOT_META)
         if (not save_namespace_valid(game, SAVE_APP) or len(marker["maps"]) != (178 if k05_tower else 171)
