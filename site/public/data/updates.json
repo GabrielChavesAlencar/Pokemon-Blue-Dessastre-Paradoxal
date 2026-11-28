@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f1498ca4d61a26ee7f9c6b22bda0382445620a9f",
+      "date": "2026-11-28T10:40:19-03:00",
+      "title": "Merge pull request #382 from GabrielChavesAlencar/codex/hoenn-h00-water-seams",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "a4e8334072c69eee1b39b2d6c23e216d7204f763",
+      "date": "2026-11-28T10:34:36-03:00",
+      "title": "Integrar H00 à main e sincronizar o instalador portátil",
+      "category": "Melhorias"
+    },
+    {
       "sha": "9acab12c7980dff7a53ac23c310803ec40062266",
       "date": "2026-11-28T10:21:17-03:00",
       "title": "Recuperar cache do instalador Android após falha no Windows (#397)",
@@ -270,6 +282,12 @@
       "date": "2026-11-28T01:58:55-03:00",
       "title": "Stage native Lavender services and first-visit Tower encounters and trainers",
       "category": "Melhorias"
+    },
+    {
+      "sha": "8802852a0c2261e5683964f94a431781e60c032c",
+      "date": "2026-11-28T01:50:36-03:00",
+      "title": "fix(hoenn): restore traversable ocean borders",
+      "category": "Correções"
     },
     {
       "sha": "91b91194ec4affeb2e8f7b188576f53074f6d851",
