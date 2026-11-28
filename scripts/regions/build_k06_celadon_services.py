@@ -14,7 +14,7 @@ from audit_k06_celadon_services import CITY_DOORS, DEFERRED, INTERIORS, STORE, s
 from build_k05_city import digest
 from k04_gameplay import sprite
 from k06_approach_migration import INSTALL, SAVE, verify_native_graph
-from pbs import catalogue
+from pbs import catalogue, read_blocks
 from pilot import EVENT_CLASSES, command, new_event, write_map
 
 BASE = ".blue-work/kanto-k06-integrated"
@@ -129,6 +129,39 @@ def append_terrain(source, target, donors, original_infos, mapping, infos, tiles
         raise ValueError("Registered foreign tileset changed")
 
 
+def ensure_tea_item(target, report):
+    """Install only an authored, inert key item when the native ID is absent."""
+    tea = [r for r in report["services"] if (r["source"],r["event"],r["page"]) == (128,1,1)]
+    if (len(tea) != 1 or tea[0]["at"] != [2,9] or tea[0]["conditions"] or tea[0]["trigger"] != 0
+            or tea[0]["rewards"] != [{"operation":"pbReceiveItem", "item_or_species":"TEA"}]):
+        raise ValueError("Mansion Tea reward absent or no longer the authored source anchor")
+    pbs = target / "PBS"
+    by_item = {}
+    for path in sorted(pbs.glob("items*.txt")):
+        for key, rows in read_blocks(path, {"BICYCLE","TEA"}).items():
+            if key in by_item:
+                raise ValueError(f"Duplicate Celadon compatibility item {key}")
+            by_item[key] = {k.strip():v.split("#",1)[0].strip()
+                            for row in rows for k,sep,v in [row.partition("=")] if sep}
+    if "TEA" in by_item:
+        fields = by_item["TEA"]
+        flags = {flag.strip().casefold() for flag in fields.get("Flags","").split(",")}
+        if "keyitem" not in flags or fields.get("Consumable","false").casefold() != "false":
+            raise ValueError("Existing Tea item is not a compatible nonconsumable key item")
+        return False
+    bicycle = by_item.get("BICYCLE", {})
+    pocket = bicycle.get("Pocket","")
+    flags = {flag.strip().casefold() for flag in bicycle.get("Flags","").split(",")}
+    if not pocket.isascii() or not pocket.isdecimal() or not 1 <= int(pocket) <= 32 or "keyitem" not in flags:
+        raise ValueError("Cannot resolve native key-item pocket for Celadon Tea")
+    with (pbs / "items_kanto.txt").open("a",encoding="utf8") as out:
+        out.write("\n# Celadon Mansion: original event grants this inert key item.\n"
+                  "[TEA]\nName = Tea\nNamePlural = Tea\n"
+                  f"Pocket = {pocket}\nPrice = 0\nConsumable = false\nFlags = KeyItem\n"
+                  "Description = A gift of tea from Celadon Mansion.\n")
+    return True
+
+
 def reward_anchors(report, items, species):
     rows = {}
     for row in report["services"]:
@@ -204,6 +237,7 @@ def stage_services(source, baseline, target, report):
         raise ValueError("The existing map registry was changed")
     for filename, data in (("MapInfos.rxdata", infos), ("Tilesets.rxdata", tiles)):
         write_map(target / "Data" / filename, data)
+    tea_defined_locally = ensure_tea_item(target, report)
     items = catalogue(target, "items")
     rewards = reward_anchors(report, items, catalogue(target, "pokemon"))
     markets = {(r["source"], r["event"]): r for r in report["services"] if r["shops"]}
@@ -296,7 +330,7 @@ def stage_services(source, baseline, target, report):
             "unchanged_old_ids": len(previous), "unrelated_maps_byte_identical": len(files)-len(changed),
             "unlocked_city_entrances": sorted(CITY_DOORS), "native_marts": len(markets),
             "deferred": sorted(DEFERRED), "new_slots_verified_on_android": False,
-            "staged_authored_reward_events": len(rewards), "publish_allowed": False}
+            "staged_authored_reward_events": len(rewards), "defined_inert_tea": tea_defined_locally, "publish_allowed": False}
 
 
 def run():

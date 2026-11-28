@@ -5,7 +5,7 @@ import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"scripts/regions"))
 from audit_k06_celadon_services import script_groups, typed_services, vending_controls
-from build_k06_celadon_services import CANDIDATES, FLOORS, allocate, commands_for, copy_celadon_fixture, SAVE
+from build_k06_celadon_services import CANDIDATES, FLOORS, allocate, commands_for, copy_celadon_fixture, ensure_tea_item, SAVE
 
 
 class CeladonSourceReceiptsTest(unittest.TestCase):
@@ -84,3 +84,21 @@ class CeladonSourceReceiptsTest(unittest.TestCase):
             {"operation":"native_gold_change","operand":200,"increase":False,"indent":3},
             {"operation":"typed_money_operand","operator":"-=","amount":300},
         ])
+
+    def test_mansion_tea_authored_only_when_missing_and_proven(self):
+        witness = {"services":[{"source":128,"event":1,"page":1,"at":[2,9],"conditions":{},
+                                 "trigger":0,"rewards":[{"operation":"pbReceiveItem","item_or_species":"TEA"}]}]}
+        with TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root/"PBS").mkdir()
+            base = root/"PBS/items.txt"
+            base.write_text("[BICYCLE]\nFlags = KeyItem\nPocket = 8\n", encoding="utf8")
+            with self.assertRaises(ValueError):
+                ensure_tea_item(root, {"services":[]})
+            out = root/"PBS/items_kanto.txt"
+            self.assertFalse(out.exists())
+            self.assertTrue(ensure_tea_item(root, witness))
+            self.assertFalse(ensure_tea_item(root, witness))
+            self.assertIn("Pocket = 8", out.read_text("utf8"))
+            self.assertEqual(out.read_text("utf8").count("[TEA]"), 1)
+            self.assertNotIn("[TEA]", base.read_text("utf8"))
