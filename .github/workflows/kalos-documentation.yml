@@ -1,0 +1,61 @@
+name: Kalos - pesquisa e planejamento
+
+on:
+  pull_request:
+    paths:
+      - 'docs/KALOS_*.md'
+      - '.github/workflows/kalos-documentation.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kalos-documentation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  documentation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validar escopo, baseline e referências locais, sem Game.exe
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        shell: bash
+        run: |
+          git diff --check "$BASE_SHA...HEAD"
+          python3 - <<'PY'
+          import json, os, re, subprocess
+          from pathlib import Path
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True)
+          base = os.environ["BASE_SHA"]
+          assert re.fullmatch(r"[a-f0-9]{40}", base)
+          paths = git("diff", "--name-only", f"{base}...HEAD").splitlines()
+          assert paths and all(re.fullmatch(r"docs/KALOS_[A-Z0-9_]+\.md", p)
+                              or p == ".github/workflows/kalos-documentation.yml" for p in paths), paths
+          catalog = json.loads(Path("site/public/data/regions.json").read_text(encoding="utf8"))
+          kalos = catalog["regions"]["KALOS"]
+          assert kalos["status"] == "planned" and kalos["versions"] == ["X","Y"]
+          assert kalos["milestones"] == ["BUG","CLIFF","RUMBLE","PLANT","VOLTAGE","FAIRY","PSYCHIC","ICEBERG"]
+          plan = Path("docs/KALOS_PESQUISA_E_PLANEJAMENTO.md").read_text(encoding="utf8")
+          assert all(f"KD0{i}" in plan for i in range(5))
+          assert "\n## KD00 " in plan
+          rev = "7903ae94fb18f47e36fecd4c07b6673ef6ea8b70"
+          assert git("rev-parse", f"{rev}^{{tree}}").strip() == "c4501d7c7755e8a7ed77c844a1a2e634cdb766dd"
+          assert len(git("ls-tree", "-r", "--name-only", rev).splitlines()) == 2281
+          for name in paths:
+              if not name.endswith(".md"):
+                  continue
+              path = Path(name)
+              for link in re.findall(r"\]\(([^ )]+)\)", path.read_text(encoding="utf8")):
+                  if link.startswith(("https://","http://","#")):
+                      continue
+                  assert (path.parent / link.partition("#")[0]).resolve().is_file(), (name, link)
+          print("KALOS_KD00_BASELINE_DOCUMENTAL_OK")
+          PY
