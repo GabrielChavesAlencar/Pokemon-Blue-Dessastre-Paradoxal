@@ -20,14 +20,13 @@ module BlueRegionTravel
   end
 
   def self.hoenn_installed?
-    return false unless installed? && defined?(BlueRegionStart) &&
-      BlueRegionStart.respond_to?(:hoenn_integrated?) &&
-      BlueRegionStart.respond_to?(:hoenn_town_point)
-    !!BlueRegionStart.hoenn_integrated? && !!BlueRegionStart.hoenn_town_point
+    !hoenn_town_point.nil?
   end
 
   def self.hoenn_town_point
-    hoenn_installed? ? BlueRegionStart.hoenn_town_point : nil
+    return nil unless installed? && defined?(BlueRegionStart) &&
+      BlueRegionStart.respond_to?(:hoenn_town_point)
+    BlueRegionStart.hoenn_town_point
   end
 
   # The installer writes a simple status inside game/Data so the travel NPC
@@ -170,7 +169,6 @@ module BlueRegionTravel
     elsif key == "HOENN"
       # New Game begins in Littleroot's bedroom. Regional travel goes to a
       # vetted passable outdoor tile in Littleroot, never to that bedroom.
-      return nil unless hoenn_installed?
       hoenn_town_point
     elsif key == "JOHTO"
       # Never use Kanto's maps or Johto's bedroom as an arrival fallback.
@@ -682,11 +680,11 @@ module BlueRegionTravel
   end
 
   # The same physical travel agent appears in Littleroot only after the
-  # 199-map installation has passed its native file/proof gate. Keep the
+  # installed Hoenn catalog has passed its file/proof gate. Keep the
   # source event table untouched and never occupy the travel-arrival tile.
   HOENN_AGENT_NAME = "Agente Regional Hoenn".freeze
   def self.attach_hoenn_agent(map)
-    return unless hoenn_installed? && map && map.events.is_a?(Hash)
+    return unless map && map.events.is_a?(Hash)
     town = hoenn_town_point
     return unless town && map.map_id == town[0]
     state = $PokemonGlobal && $PokemonGlobal.blue_regions
@@ -759,7 +757,7 @@ module BlueRegionTravel
          when "JOHTO"
            johto_installed? ? BlueRegionStart.johto_agent_point&.first : nil
          when "HOENN"
-           hoenn_installed? ? BlueRegionStart.hoenn_town_point&.first : nil
+           hoenn_town_point&.first
          when "SINNOH"
            sinnoh_points&.last&.first
          end

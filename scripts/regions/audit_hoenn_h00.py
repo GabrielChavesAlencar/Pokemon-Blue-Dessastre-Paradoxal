@@ -15,6 +15,7 @@ from hoenn_qa_phase1 import (
     check_tree, load_tree, require_private_path,
 )
 from ensure_hoenn_source import sha_git
+from hoenn_catalog import MAP_RANGE, validate_manifest, verify_markers
 from hoenn_qa_phase2 import audit_map, inspect_connections
 from hoenn_qa_phase3 import parse_compiled_encounters, parse_reference_encounters
 from install_hoenn import MANIFEST, SOURCE_MAPS, verify_installed
@@ -212,21 +213,8 @@ def inspect_delivery(read, paths: set[str]) -> dict:
             raise ValueError(f"MapID compartilhado por duas regiões: {region}")
         ownership[region] = sorted(destinations)
     proof = json.loads(read(MANIFEST.as_posix()))
-    mapping = {int(source): dest for source, dest in proof["maps"].items()}
-    if (set(mapping) != set(SOURCE_MAPS) or len(mapping) != 199 or
-            proof["source_commit"] != UPSTREAM or not all(700 <= dest <= 999 for dest in mapping.values())):
-        raise ValueError("Mapeamento Hoenn não corresponde ao catálogo V1 de 199 mapas")
-    ready = f"BLUE_HOENN_READY_V1,199,{mapping[8]},{','.join(map(str,proof['town']))}".encode("ascii")
-    start = f"BLUE_HOENN_START_V1,HOENN,{mapping[8]},25,6".encode("ascii")
-    if (proof["start"] != [mapping[8], 25, 6, 2] or proof["town"][0] != mapping[7] or
-            read("Data/blue-hoenn-ready.txt").strip() != ready or
-            read("Data/blue-hoenn-start.txt").strip() != start):
-        raise ValueError("Marcadores compactos do spawn e transporte diferem do manifesto")
-    compact = read("Data/blue-hoenn-pilot.txt").decode("ascii").splitlines()
-    if (compact[:2] != ["BLUE_HOENN_PILOT_V1", f"{mapping[8]},25,6"] or
-            len(compact) != len(mapping) + 2 or
-            set(compact[2:]) != {f"{src},{dst}" for src, dst in mapping.items()}):
-        raise ValueError("A tabela compacta usada sem JSON diverge do manifesto de Hoenn")
+    mapping = validate_manifest(proof)
+    verify_markers(read, proof)
     maps = {source: loads(read(f"Data/Map{dest:03}.rxdata")) for source, dest in mapping.items()}
     summaries, errors = {}, {}
     for source, world in sorted(maps.items()):
@@ -252,7 +240,7 @@ def inspect_delivery(read, paths: set[str]) -> dict:
         "global_mapinfo_ids": sorted(infos), "global_file_ids": sorted(ids),
         "highest_observed_id": max(occupied), "manifest_ownership": ownership,
         "observed_other_ids": sorted(occupied - claimed),
-        "observed_unoccupied_in_hoenn_range": sorted(set(range(700, 1000)) - occupied),
+        "observed_unoccupied_in_hoenn_range": sorted(set(MAP_RANGE) - occupied),
         "allocation_approved": False,
     }
 

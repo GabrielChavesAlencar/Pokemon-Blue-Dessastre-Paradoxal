@@ -1,4 +1,4 @@
-"""Merge the locally audited 199-map Hoenn preview into the MAIN Decades game.
+"""Install or migrate the audited Hoenn catalog in the main Decades game.
 
 Unlike pilot_hoenn.stage, this NEVER copies a game, overwrites System/Scripts,
 changes mkxp/save paths, or runs donor event scripts. Dry-run is the default.
@@ -14,10 +14,14 @@ import os
 import re
 import tempfile
 from collections import Counter
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 
 from audit import ROOT
+from hoenn_catalog import (
+    CATALOG_REVISION, LEGACY_SOURCE_IDS, approved_source_ids, marker_bytes, validate_manifest, verify_markers,
+)
 from hoenn_qa_phase1 import check_source, check_tree
 from pilot_hoenn import (
     Source, UPSTREAM, SOURCE_MAPS, START, build_overlay,
@@ -33,6 +37,10 @@ START_MARKER = Path("Data/blue-hoenn-start.txt")
 READY_MARKER = Path("Data/blue-hoenn-ready.txt")
 CONNECTIONS = "PBS/map_connections.txt"
 COMPILE_REQUEST = "Data/blue-compile-request.txt"
+PLUGIN_CACHE = "Data/PluginScripts.rxdata"
+COMPACT = "Data/blue-hoenn-pilot.txt"
+JOURNAL = "Data/.blue-hoenn-install-journal.json"
+LOCK = "Data/.blue-hoenn-install.lock"
 SURF_LAYOUT = 2
 PLUGIN = "Plugins/ZZZZZ Blue Hoenn Pilot/HoennPilot.rb"
 REQUIRED = (
@@ -50,6 +58,11 @@ FORBIDDEN = frozenset({
     "Data/blue-hoenn-compile-request.txt",
 })
 HEX = re.compile(r"^[a-f0-9]{64}$")
+MIGRATION_BACKUP = re.compile(r"hoenn-v2-\d{8}T\d{12}Z")
+MIGRATION_FILES = frozenset({
+    CONNECTIONS, COMPILE_REQUEST, PLUGIN_CACHE, PLUGIN, COMPACT,
+    MANIFEST.as_posix(), START_MARKER.as_posix(), READY_MARKER.as_posix(),
+})
 
 
 def sha(blob: bytes) -> str:
@@ -92,37 +105,16 @@ def detect_existing(game: Path) -> str:
     return "installed" if present else "partial" if partial else "absent"
 
 
-def verify_installed(game: Path) -> dict:
+def verify_installed(game: Path, *, allow_pending: bool = False) -> dict:
     """Read-only after installation; never infer verification from a marker."""
-    proof_file = game / MANIFEST
-    if not proof_file.is_file() or proof_file.is_symlink():
+    if not allow_pending and safe_file(game, JOURNAL).exists():
+        raise ValueError("A migração de Hoenn precisa ser retomada pelo instalador.")
+    proof_file = safe_file(game, MANIFEST.as_posix())
+    if not proof_file.is_file():
         raise ValueError("Hoenn ainda não está integrada.")
-    data = json.loads(proof_file.read_text(encoding="utf-8"))
-    maps = data.get("maps")
-    if (data.get("schema") != 1 or data.get("region") != "HOENN" or
-            data.get("source_commit") != UPSTREAM or
-            data.get("status") != "INTEGRATED_FILES_READY_FOR_NATIVE_QA" or
-            not isinstance(maps, dict) or
-            set(maps) != {str(mid) for mid in SOURCE_MAPS} or
-            len(set(maps.values())) != 199 or
-            any(type(mid) is not int or not 700 <= mid <= 999 for mid in maps.values())):
-        raise ValueError("Manifesto Hoenn inválido ou mapas remapeados.")
-    start, town = data.get("start"), data.get("town")
-    if (start != [maps[str(START[0])], START[1], START[2], 2] or
-            not isinstance(town, list) or len(town) != 4 or
-            town[0] != maps["7"] or
-            not all(type(n) is int for n in town) or
-            any(n < 0 for n in town[1:3]) or town[3] not in (2,4,6,8)):
-        raise ValueError("Pontos iniciais de Hoenn inválidos.")
-    marker = (game / START_MARKER)
-    gate = (game / READY_MARKER)
-    if (not marker.is_file() or marker.is_symlink() or
-            marker.read_text("ascii").strip() !=
-            f"BLUE_HOENN_START_V1,HOENN,{start[0]},{start[1]},{start[2]}" or
-            not gate.is_file() or gate.is_symlink() or
-            gate.read_text("ascii").strip() !=
-            f"BLUE_HOENN_READY_V1,199,{start[0]},{town[0]},{town[1]},{town[2]},{town[3]}"):
-        raise ValueError("Marcadores finais não correspondem ao manifesto.")
+    data = json.loads(proof_file.read_bytes())
+    maps = validate_manifest(data)
+    verify_markers(lambda name: safe_file(game, name).read_bytes(), data)
     entries = data.get("installed_sha256")
     if not isinstance(entries, dict) or not entries:
         raise ValueError("Manifesto sem hashes dos arquivos Hoenn.")
@@ -135,9 +127,14 @@ def verify_installed(game: Path) -> dict:
         path = safe_file(game, rel)
         if not HEX.fullmatch(entries.get(rel, "")) or sha(path.read_bytes()) != entries[rel]:
             raise ValueError(f"Hoenn modificada ou não auditada: {rel}")
-    return {"status": "integrated_files_ready_for_native_QA",
-            "maps": 199, "start": start, "town": town,
+    if data["schema"] == 2:
+        infos = loads(safe_file(game, "Data/MapInfos.rxdata").read_bytes())
+        if not isinstance(infos, dict) or not set(maps.values()) <= infos.keys():
+            raise ValueError("MapInfos não contém todos os MapIDs aprovados de Hoenn.")
+    return {"status": "integrated_files_ready_for_native_QA", "maps": len(maps),
+            "start": data["start"], "town": data["town"], "schema": data["schema"],
             "shared_save": True, "game_exe_tested_here": False}
+
 
 
 def reconcile_surf_connections(raw: bytes, mapping: dict[int, int]) -> bytes:
@@ -177,71 +174,156 @@ def reconcile_surf_connections(raw: bytes, mapping: dict[int, int]) -> bytes:
     return prefix + newline.join(line.encode("ascii") for line in restored) + newline
 
 
-def repair_installed_surf_connections(game: Path, commit: bool) -> dict:
-    """Migrate only the known V1 PBS rows of an already integrated Hoenn."""
+@contextmanager
+def installation_lock(game: Path):
+    # The OS releases the lock if the process exits during a journaled write.
+    with safe_file(game, LOCK).open("a+b") as handle:
+        handle.seek(0)
+        if os.name == "nt":
+            import msvcrt
+            msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+        else:
+            import fcntl
+            fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        yield
+
+
+def optional_bytes(path: Path) -> bytes | None:
+    return path.read_bytes() if path.exists() else None
+
+
+def optional_sha(blob: bytes | None) -> str | None:
+    return sha(blob) if blob is not None else None
+
+
+def migration_backup(name: str) -> Path:
+    root = ROOT / ".blue-backups"
+    if not isinstance(name, str) or not MIGRATION_BACKUP.fullmatch(name) or root.is_symlink():
+        raise ValueError("Pasta de backup da migração de Hoenn inválida.")
+    result = root / name
+    if result.is_symlink():
+        raise ValueError("Pasta de backup indireta da migração de Hoenn.")
+    return result
+
+
+def recover_migration(game: Path) -> bool:
+    journal = safe_file(game, JOURNAL)
+    if not journal.exists():
+        return False
+    transaction = json.loads(journal.read_bytes())
+    files = transaction.get("files") if isinstance(transaction, dict) else None
+    if not isinstance(files, dict) or set(files) != MIGRATION_FILES or transaction.get("schema") != 1:
+        raise ValueError("Registro de recuperação de Hoenn inválido.")
+    backup = migration_backup(transaction.get("backup"))
+    restore = {}
+    for rel, hashes in files.items():
+        if (not isinstance(hashes, list) or len(hashes) != 2 or
+                any(h is not None and (not isinstance(h, str) or not HEX.fullmatch(h)) for h in hashes)):
+            raise ValueError("Hashes inválidos no registro de recuperação de Hoenn.")
+        before, after = hashes
+        path = safe_file(game, rel)
+        current = optional_sha(optional_bytes(path))
+        if current not in (before, after):
+            raise ValueError(f"Arquivo mudou após a interrupção da migração de Hoenn: {rel}")
+        if current != before:
+            raw = safe_file(backup, rel).read_bytes() if before is not None else None
+            if optional_sha(raw) != before:
+                raise ValueError(f"Backup de Hoenn não corresponde ao registro: {rel}")
+            restore[path] = raw
+    for path, raw in reversed(list(restore.items())):
+        if raw is None:
+            path.unlink(missing_ok=True)
+        else:
+            atomic(path, raw)
+    journal.unlink()
+    return True
+
+
+def commit_migration(game: Path, previous: dict, changes: dict) -> tuple[dict, Path]:
+    paths = {rel: safe_file(game, rel) for rel in changes}
+    backup = migration_backup(datetime.now(timezone.utc).strftime("hoenn-v2-%Y%m%dT%H%M%S%fZ"))
+    backup.mkdir(parents=True, exist_ok=False)
+    for rel, raw in previous.items():
+        if raw is not None:
+            atomic(safe_file(backup, rel), raw)
+    if any(optional_bytes(path) != previous[rel] for rel, path in paths.items()):
+        raise ValueError("A instalação mudou durante a preparação da migração de Hoenn.")
+    hashes = {rel: [optional_sha(previous[rel]), optional_sha(raw)] for rel, raw in changes.items()}
+    journal = safe_file(game, JOURNAL)
+    atomic(journal, json.dumps({"schema": 1, "backup": backup.name, "files": hashes}).encode("utf-8"))
+    try:
+        for rel, raw in changes.items():
+            path = paths[rel]
+            if optional_bytes(path) != previous[rel]:
+                raise ValueError(f"Arquivo mudou durante a migração de Hoenn: {rel}")
+            if raw is None:
+                path.unlink(missing_ok=True)
+            elif raw != previous[rel]:
+                atomic(path, raw)
+        result = verify_installed(game, allow_pending=True)
+    except BaseException:
+        recover_migration(game)
+        raise
+    journal.unlink()
+    return result, backup
+
+
+def migrate_existing(game: Path, commit: bool) -> dict:
+    """Upgrade the receipt and runtime in place, without importing legacy maps again."""
     from hoenn_qa_phase2 import inspect_connections
+    from pilot_hoenn import allocate_hoenn_map_ids
 
     result = verify_installed(game)
-    proof_path = safe_file(game, MANIFEST.as_posix())
-    connections = safe_file(game, CONNECTIONS)
-    request = safe_file(game, COMPILE_REQUEST)
-    proof_bytes = proof_path.read_bytes()
-    proof = json.loads(proof_bytes)
-    layout = proof.get("surf_connection_layout")
-    if layout not in (None, SURF_LAYOUT):
-        raise ValueError("Versão das conexões de Hoenn desconhecida.")
-    original = connections.read_bytes()
-    mapping = {int(source): dest for source, dest in proof["maps"].items()}
-    patched = reconcile_surf_connections(original, mapping)
-    if layout == SURF_LAYOUT:
-        if patched != original:
-            raise ValueError("O manifesto de Hoenn declara conexões que não estão instaladas.")
-        return {**result, "surf_connections_changed": False}
-    if not commit:
-        return {**result, "surf_connections_changed": False, "surf_connection_repair_pending": True}
+    previous = {rel: optional_bytes(safe_file(game, rel)) for rel in MIGRATION_FILES}
+    proof = json.loads(previous[MANIFEST.as_posix()])
+    mapping = validate_manifest(proof)
+    if set(mapping) != approved_source_ids(CATALOG_REVISION):
+        raise ValueError("A revisão atual do catálogo requer um lote aditivo de mapas auditados.")
+    ownership = allocate_hoenn_map_ids(game, mapping, previous=mapping)
+    if ownership != mapping:
+        raise ValueError("A migração de Hoenn não preservou os MapIDs registrados.")
 
+    raw = previous[CONNECTIONS]
+    if raw is None:
+        raise ValueError("PBS de conexões de Hoenn ausente.")
+    patched = reconcile_surf_connections(raw, mapping)
+    layout = proof.get("surf_connection_layout")
+    if layout not in (None, SURF_LAYOUT) or (layout == SURF_LAYOUT and patched != raw):
+        raise ValueError("O manifesto de Hoenn declara conexões que não estão instaladas.")
+    plugin = Path(__file__).with_name("HoennPilot.rb").read_bytes()
+    if (proof["schema"] == 2 and proof["catalog_revision"] == CATALOG_REVISION and
+            layout == SURF_LAYOUT and previous[PLUGIN] == plugin):
+        return {**result, "catalog_migration_pending": False, "catalog_changed": False}
     maps = {source: loads(safe_file(game, f"Data/Map{dest:03}.rxdata").read_bytes())
             for source, dest in mapping.items()}
     inspect_connections(patched.decode("utf-8-sig"), mapping, maps)
-    previous_request = request.read_bytes() if request.exists() else None
-    proof["surf_connection_layout"] = SURF_LAYOUT
-    proof["installed_sha256"][CONNECTIONS] = sha(patched)
-    updated_proof = (json.dumps(proof, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
-    previous = {request: previous_request, connections: original, proof_path: proof_bytes}
-    backup = ROOT / ".blue-backups" / ("hoenn-surf-" + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ"))
-    backup.mkdir(parents=True, exist_ok=False)
-    for path, contents in previous.items():
-        if contents is not None:
-            atomic(backup / path.relative_to(game), contents)
+    if not commit:
+        return {**result, "catalog_migration_pending": True, "catalog_changed": False}
 
-    # Recheck every affected file after staging. The compile request comes
-    # first so a restart between PBS and manifest writes can safely resume.
-    for path, contents in previous.items():
-        current = path.read_bytes() if path.exists() else None
-        if current != contents:
-            raise ValueError(f"O arquivo mudou durante a revisão de Hoenn: {path.name}")
-    written = []
-    try:
-        for path, contents in ((request, b"compile"), (connections, patched), (proof_path, updated_proof)):
-            atomic(path, contents)
-            written.append(path)
-        result = verify_installed(game)
-    except BaseException:
-        for path in reversed(written):
-            contents = previous[path]
-            if contents is None:
-                path.unlink(missing_ok=True)
-            else:
-                atomic(path, contents)
-        raise
-    return {**result, "surf_connections_changed": True, "backup": str(backup)}
+    proof.update(schema=2, catalog_revision=CATALOG_REVISION,
+                 legacy_maps=dict(proof.get("legacy_maps", proof["maps"])),
+                 surf_connection_layout=SURF_LAYOUT)
+    markers = marker_bytes(proof)
+    for name, raw in ((PLUGIN, plugin), (COMPACT, markers[COMPACT]), (CONNECTIONS, patched)):
+        proof["installed_sha256"][name] = sha(raw)
+    # New runtime and compile request precede the menu markers. The journal
+    # keeps readers unavailable until final verification and clean commit.
+    changes = {
+        PLUGIN_CACHE: None, COMPILE_REQUEST: b"compile", CONNECTIONS: patched,
+        PLUGIN: plugin, COMPACT: markers[COMPACT],
+        MANIFEST.as_posix(): (json.dumps(proof, ensure_ascii=False, indent=2) + "\n").encode("utf-8"),
+        READY_MARKER.as_posix(): markers[READY_MARKER.as_posix()],
+        START_MARKER.as_posix(): markers[START_MARKER.as_posix()],
+    }
+    result, backup = commit_migration(game, previous, changes)
+    return {**result, "catalog_migration_pending": False, "catalog_changed": True, "backup": str(backup)}
 
 
 def vetted_town(report: dict, overlay: dict[str, bytes]) -> list[int]:
     """Use the builder's passability-verified stop for source Littleroot 7."""
     raw = overlay["Data/blue-hoenn-test-stops.txt"].decode("utf-8").splitlines()
-    if len(raw) != 200 or raw[0] != "BLUE_HOENN_TEST_STOPS_V1":
-        raise ValueError("Paradas de QA não foram auditadas para os 199 mapas.")
+    if len(raw) != len(report["maps"]) + 1 or raw[0] != "BLUE_HOENN_TEST_STOPS_V1":
+        raise ValueError("Paradas de QA não foram auditadas para o catálogo de Hoenn.")
     line = next((line for line in raw[1:] if line.startswith("7|")), None)
     if not line:
         raise ValueError("Nenhum ponto seguro de chegada em Littleroot.")
@@ -262,8 +344,8 @@ def prepare_overlay(game: Path, source: Source) -> tuple[dict[str, bytes], dict]
                  "PBS/map_connections.txt")}
     overlay, report = build_overlay(game, source)
     if (report.get("source_commit") != UPSTREAM or report.get("region") != "HOENN"
-            or set(report.get("maps", {})) != set(SOURCE_MAPS)
-            or len(set(report["maps"].values())) != 199):
+            or set(report.get("maps", {})) != approved_source_ids(CATALOG_REVISION)
+            or len(set(report["maps"].values())) != len(report["maps"])):
         raise ValueError("Auditoria do gerador de Hoenn incompleta.")
     if not isinstance(report.get("qa12"), dict):
         raise ValueError("Auditoria integrada QA12 não foi gerada.")
@@ -284,7 +366,9 @@ def prepare_overlay(game: Path, source: Source) -> tuple[dict[str, bytes], dict]
         if dest.exists() and rel not in ALLOWED_REPLACE and dest.read_bytes() != blob:
             raise ValueError(f"Arquivo existente de outra região não será sobrescrito: {rel}")
     proof = {
-        "schema": 1, "region": "HOENN",
+        "schema": 2, "region": "HOENN",
+        "catalog_revision": CATALOG_REVISION,
+        "legacy_maps": {str(k): v for k, v in report["maps"].items() if k in LEGACY_SOURCE_IDS},
         "status": "INTEGRATED_FILES_READY_FOR_NATIVE_QA",
         "source_commit": UPSTREAM,
         "maps": {str(k): v for k, v in report["maps"].items()},
@@ -296,6 +380,8 @@ def prepare_overlay(game: Path, source: Source) -> tuple[dict[str, bytes], dict]
         "pilot_debug_tools_installed": False,
         "base_before_sha256": original,
     }
+    files[COMPACT] = marker_bytes(proof)[COMPACT]
+    proof["installed_sha256"][COMPACT] = sha(files[COMPACT])
     return files, proof
 
 
@@ -357,15 +443,23 @@ def apply(game: Path, archive: Path, inventory: Path, commit: bool = False) -> d
     game = game.resolve()
     if game != MAIN or not (game / "Game.exe").is_file():
         raise ValueError("Instalação de Hoenn permitida somente no game/ principal.")
+    if commit:
+        with installation_lock(game):
+            recover_migration(game)
+            return apply_catalog(game, archive, inventory, commit=True)
+    return apply_catalog(game, archive, inventory, commit=False)
+
+
+def apply_catalog(game: Path, archive: Path, inventory: Path, commit: bool) -> dict:
     verify_kanto(game)
     status = detect_existing(game)
     if status == "installed":
-        return repair_installed_surf_connections(game, commit)
+        return migrate_existing(game, commit)
     if status == "partial":
         raise ValueError("Hoenn parcial/antiga detectada. Revisão manual obrigatória; IDs não serão migrados.")
     source, origin = validated_local_source(archive, inventory)
     files, proof = prepare_overlay(game, source)
-    result = {"status": "dry_run", "maps": 199, "files": len(files),
+    result = {"status": "dry_run", "maps": len(proof["maps"]), "files": len(files),
               "start": proof["start"], "town": proof["town"],
               "shared_save": True, "native_qa_approved": False,
               "source_kind": origin}
@@ -395,11 +489,10 @@ def apply(game: Path, archive: Path, inventory: Path, commit: bool = False) -> d
         (game / "Data/PluginScripts.rxdata").unlink(missing_ok=True)
         atomic(game / "Data/blue-compile-request.txt", b"compile")
         atomic(game / MANIFEST, (json.dumps(proof, ensure_ascii=False, indent=2) + "\n").encode("utf-8"))
-        atomic(game / READY_MARKER,
-               f"BLUE_HOENN_READY_V1,199,{proof['start'][0]},{','.join(map(str,proof['town']))}\n".encode("ascii"))
-        # LAST write is the actual title/menu gate.
-        atomic(game / START_MARKER,
-               f"BLUE_HOENN_START_V1,HOENN,{proof['start'][0]},25,6\n".encode("ascii"))
+        markers = marker_bytes(proof)
+        atomic(game / READY_MARKER, markers[READY_MARKER.as_posix()])
+        # LAST write is the actual shared title/menu marker.
+        atomic(game / START_MARKER, markers[START_MARKER.as_posix()])
         result.update(verify_installed(game))
     except BaseException:
         for rel, blob in reversed(list(originals.items())):

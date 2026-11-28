@@ -271,13 +271,13 @@ class PinnedDownloader:
         # Check the exact same contract required by the previous local ZIP.
         source = Source(self.stage, self.inventory)
         result = check_source(source)
-        if result["real_map_rxdata_hashes_verified"] != 199:
-            raise ValueError("Nem todos os 199 mapas Hoenn foram verificados.")
+        if result["real_map_rxdata_hashes_verified"] != len(SOURCE_MAPS):
+            raise ValueError("Nem todos os mapas aprovados de Hoenn foram verificados.")
         return {
             "status": "PINNED_HOENN_SOURCE_READY",
             "source_commit": UPSTREAM,
             "tree_sha": PINNED_TREE,
-            "maps": 199,
+            "maps": len(SOURCE_MAPS),
             "files_downloaded": self.written,
             "files_reused": self.reused,
             "bytes_downloaded": self.bytes_downloaded,

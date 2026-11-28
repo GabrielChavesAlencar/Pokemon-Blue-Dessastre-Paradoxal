@@ -115,7 +115,10 @@ from hoenn_audio import BGM, MAP_BGM
 from hoenn_presentation import apply_presentation, add_littleroot_trees
 from hoenn_qa_phase12 import audit_generated as audit_integrated
 
-UPSTREAM = "c59233bdbaac4fbfeca6aa01c7f05be628da2a92"
+from hoenn_catalog import (
+    CATALOG_REVISION, MAP_RANGE, UPSTREAM, approved_source_ids, validate_mapping,
+)
+
 SOURCE_MAPS = {
     7: "Littleroot Town", 8: "Casa do jogador", 11: "Laboratório do Birch",
     101: "Rota 101", 12: "Oldale Town", 13: "Centro Pokémon de Oldale",
@@ -129,6 +132,26 @@ SOURCE_MAPS = {
     **SOURCE_MAPS_STAGE9,
     **SOURCE_MAPS_STAGE10,
 }
+def catalog_source_ids(revision=CATALOG_REVISION):
+    """Check that every approved MapKey has a builder definition."""
+    keys = approved_source_ids(revision)
+    if not keys <= SOURCE_MAPS.keys():
+        raise ValueError("O catálogo de Hoenn não coincide com as definições do gerador")
+    return keys
+
+
+def validate_pilot_mapping(report):
+    """Validate a standalone report without treating it as a shared install."""
+    revision = report.get("catalog_revision", 1)
+    maps = report.get("maps")
+    if not isinstance(maps, dict) or any(type(key) not in (int, str) for key in maps):
+        raise ValueError("Remapeamento de Hoenn inválido")
+    normalized = {str(src): dest for src, dest in maps.items()}
+    if len(normalized) != len(maps):
+        raise ValueError("MapKeys duplicadas no relatório de Hoenn")
+    return validate_mapping(normalized, catalog_source_ids(revision))
+
+
 HOME_OUTSIDE = (7, 5, 9)
 HOME_INSIDE = (8, 10, 10)
 HOME_EXIT_Y = 11
@@ -263,9 +286,11 @@ def open_tile(map_data, tileset, x, y):
 # Source IDs are displayed in the QA menu; native IDs are written only to the
 # PRIVATE installed pilot. Each target is a free standing floor tile, never a
 # donor event, door threshold, water warp or a guessed fixed coordinate.
-def build_test_stops(maps, tiles, mapped_ids):
-    if set(maps) != set(mapped_ids) or len(maps) != 199:
-        raise ValueError("Teleporte Hoenn exige os 199 mapas remapeados originais")
+def build_test_stops(maps, tiles, mapped_ids, *, catalog_revision=CATALOG_REVISION):
+    expected = catalog_source_ids(catalog_revision)
+    if maps.keys() != expected or mapped_ids.keys() != expected or tiles.keys() != expected:
+        raise ValueError(f"Teleporte Hoenn exige os {len(expected)} mapas aprovados e remapeados")
+    validate_pilot_mapping({"catalog_revision": catalog_revision, "maps": mapped_ids})
     stops = []
     for source_id in sorted(maps):
         world = maps[source_id]
@@ -304,8 +329,9 @@ def build_test_stops(maps, tiles, mapped_ids):
     return stops
 
 
-def serialize_test_stops(stops):
-    if len(stops) != 199 or len({r[0] for r in stops}) != 199:
+def serialize_test_stops(stops, *, catalog_revision=CATALOG_REVISION):
+    expected = catalog_source_ids(catalog_revision)
+    if len(stops) != len(expected) or {r[0] for r in stops} != expected:
         raise ValueError("Catálogo de teleporte de Hoenn incompleto")
     return ("BLUE_HOENN_TEST_STOPS_V1\n" +
             "".join("|".join(str(value) for value in row) + "\n" for row in stops)).encode("utf-8")
@@ -1451,30 +1477,114 @@ def preflight_route102_trainers(game: Path) -> list[dict]:
     ]
 
 
+MAP_DATA_NAME = re.compile(r"Map([0-9]+)\.rxdata", re.IGNORECASE)
+NATIVE_REGION_PROOFS = (
+    ("Data/blue-kanto-install.json", "maps"),
+    ("Data/blue-johto-main-preview.json", "map_ids"),
+    ("Data/blue-johto-install.json", "file_hashes"),
+    ("Data/blue-sinnoh-shared.json", "map_ids"),
+)
+
+
+def plan_hoenn_map_ids(source_ids, reserved, previous=None, *, foreign=()):
+    """Preserve verified installed pairs and plan only additive destinations."""
+    source_ids = tuple(source_ids)
+    if not source_ids or any(type(mid) is not int or mid <= 0 for mid in source_ids):
+        raise ValueError("Catálogo de origem de Hoenn inválido")
+    expected = set(source_ids)
+    if len(expected) != len(source_ids):
+        raise ValueError("MapKeys duplicadas no catálogo de Hoenn")
+    previous = {} if previous is None else previous
+    if (not isinstance(previous, dict) or
+            any(type(mid) is not int for mid in previous) or
+            not set(previous) <= expected or
+            any(type(mid) is not int or mid not in MAP_RANGE for mid in previous.values()) or
+            len(set(previous.values())) != len(previous)):
+        raise ValueError("Pares legados de Hoenn incompletos, fora de faixa ou duplicados")
+    owned = set(previous.values())
+    reserved, foreign = set(reserved), set(foreign)
+    if not owned <= reserved:
+        raise ValueError("MapID legado de Hoenn ausente")
+    if conflict := owned & foreign:
+        raise ValueError(f"MapID legado de Hoenn também pertence a outra região: {sorted(conflict)}")
+    reserved |= foreign
+    free = [n for n in range(700, 1000) if n not in reserved]
+    pending = [mid for mid in source_ids if mid not in previous]
+    if len(free) < len(pending):
+        raise ValueError(f"Sem MapIDs livres para Hoenn abaixo de 1000: {len(free)} para {len(pending)} novas entradas")
+    selected = {**previous, **dict(zip(pending, free))}
+    return {mid: selected[mid] for mid in source_ids}
+
+
+def hoenn_maps_in_use(game, native_infos):
+    """Return physical file IDs, occupied IDs and foreign destination claims."""
+    if not isinstance(native_infos, dict) or any(type(mid) is not int for mid in native_infos):
+        raise ValueError("MapInfos do jogo principal inválido")
+    disk_ids = set()
+    for path in (game / "Data").iterdir():
+        match = MAP_DATA_NAME.fullmatch(path.name)
+        if not match:
+            continue
+        mid = int(match[1])
+        regular(path)
+        if mid in disk_ids:
+            raise ValueError(f"MapID local com nomes de arquivo conflitantes: {mid}")
+        disk_ids.add(mid)
+    occupied = set(native_infos) | disk_ids
+    for path in (game / "PBS").glob("*.txt"):
+        stem = path.stem.casefold()
+        if stem.startswith(("encounters", "map_metadata")):
+            body = regular(path).read_text("utf-8-sig")
+            occupied.update(int(m[1]) for m in re.finditer(r"(?m)^\s*\[\s*([0-9]+)", body))
+        elif stem.startswith("map_connections"):
+            for line in regular(path).read_text("utf-8-sig").splitlines():
+                fields = line.split("#", 1)[0].split(",")
+                if len(fields) == 6:
+                    occupied.update(int(fields[i]) for i in (0, 3) if fields[i].strip().isdecimal())
+
+    foreign = set()
+    for rel, key in NATIVE_REGION_PROOFS:
+        path = game / rel
+        if not (path.exists() or path.is_symlink()):
+            continue
+        proof = json.loads(regular(path).read_text("utf-8-sig"))
+        rows = proof.get(key) if isinstance(proof, dict) else None
+        if key == "maps" and isinstance(rows, dict):
+            values = list(rows.values())
+        elif key == "map_ids" and isinstance(rows, list):
+            values = rows
+        elif key == "file_hashes" and isinstance(rows, dict):
+            values = [int(match[1]) for rel in rows
+                      if (match := re.fullmatch(r"Data/Map([0-9]+)\.rxdata", rel))]
+        else:
+            raise ValueError(f"Registro de MapIDs de outra região inválido: {path.name}")
+        if (not values or any(type(mid) is not int or mid <= 0 for mid in values) or
+                len(set(values)) != len(values)):
+            raise ValueError(f"MapIDs de outra região inválidos ou repetidos: {path.name}")
+        foreign.update(values)
+    return disk_ids, occupied, foreign
+
+
+def allocate_hoenn_map_ids(game, source_ids, previous=None, *, native_infos=None):
+    """Allocate only after checking physical files, MapInfos, PBS and proofs."""
+    if native_infos is None:
+        native_infos = loads(regular(game / "Data/MapInfos.rxdata").read_bytes())
+    disk_ids, occupied, foreign = hoenn_maps_in_use(game, native_infos)
+    mapping = plan_hoenn_map_ids(source_ids, occupied, previous, foreign=foreign)
+    if previous and (missing := set(previous.values()) - (disk_ids & set(native_infos))):
+        raise ValueError(f"MapID legado de Hoenn sem arquivo ou registro em MapInfos: {sorted(missing)}")
+    return mapping
+
+
 def build_overlay(game, source):
     trainer_bindings = preflight_route102_trainers(game)
     for name in ("Game.exe", "Game.ini", "mkxp.json", f"{STORY}/RegionStart.rb"):
         regular(game / name)
     native_infos = loads(regular(game / "Data/MapInfos.rxdata").read_bytes())
     native_tiles = loads(regular(game / "Data/Tilesets.rxdata").read_bytes())
-    disk_ids = {int(m[1]) for p in (game / "Data").iterdir()
-                if (m := re.fullmatch(r"Map(\d+)\.rxdata", p.name, re.I))}
-    pbs_ids = set()
-    for path in (game / "PBS").glob("*.txt"):
-        if path.stem.startswith(("encounters", "map_metadata")):
-            body = regular(path).read_text("utf-8-sig")
-            pbs_ids.update(int(m[1]) for m in re.finditer(r"(?m)^\s*\[\s*(\d+)", body))
-        elif path.stem.startswith("map_connections"):
-            body = regular(path).read_text("utf-8-sig")
-            for line in body.splitlines():
-                fields = line.split("#", 1)[0].split(",")
-                if len(fields) == 6:
-                    pbs_ids.update(int(fields[i]) for i in (0, 3) if fields[i].strip().isdecimal())
-    reserved = set(native_infos) | disk_ids | pbs_ids | set(range(600, 682))
-    free = [n for n in range(700, 1000) if n not in reserved]
-    if len(free) < len(SOURCE_MAPS):
-        raise ValueError("Sem MapIDs livres para o piloto abaixo de 1000")
-    ids = dict(zip(SOURCE_MAPS, free))
+    if SOURCE_MAPS.keys() != catalog_source_ids():
+        raise ValueError("O gerador de Hoenn contém MapKeys sem aprovação no catálogo")
+    ids = allocate_hoenn_map_ids(game, SOURCE_MAPS, native_infos=native_infos)
     donor_tiles = loads(source.read("Data/Tilesets.rxdata"))
     maps, tiles, tile_ids, overlay = {}, {}, {}, {}
     stage9_original_events = {}
@@ -2130,6 +2240,7 @@ def build_overlay(game, source):
     ).encode("utf-8")
     overlay["Data/blue-hoenn-compile-request.txt"] = (UPSTREAM + "\n").encode("ascii")
     report = {"region": "HOENN", "kind": "ISOLATED_HOENN_TEST", "source_commit": UPSTREAM,
+              "catalog_revision": CATALOG_REVISION,
               "start": [ids[START[0]], *START[1:]], "maps": ids, "save_profile": PROFILE,
               "trainer_bindings": [{**binding, "destination_map_id": ids[102]}
                                    for binding in trainer_bindings],

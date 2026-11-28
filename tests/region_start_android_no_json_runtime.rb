@@ -21,7 +21,9 @@ Object.send(:remove_const, :Digest) if Object.const_defined?(:Digest, false)
 def pbRgssExists?(name); File.file?(name); end
 def check(ok, msg); raise "JOIPLAY_NEW_GAME: #{msg}" unless ok; end
 
-load File.expand_path(ARGV.fetch(0))
+region_start = File.expand_path(ARGV.fetch(0))
+load region_start
+load File.join(File.dirname(region_start), "TitleKanto.rb")
 check(!defined?(::JSON), "fixture unexpectedly has JSON constant")
 
 Dir.mktmpdir("blue-joiplay-no-json") do |directory|
@@ -51,8 +53,7 @@ Dir.mktmpdir("blue-joiplay-no-json") do |directory|
 
     # The full 199-map verified installation has an independent compact
     # registry and readied markers written by install_hoenn.py.
-    maps = {}
-    199.times { |i| maps[(i + 1).to_s] = 700 + i }
+    maps = BlueRegionStart::HOENN_LEGACY_SOURCES.each_with_index.to_h { |source, index| [source, 700 + index] }
     home = [maps["8"], 25, 6, 2]
     town = [maps["7"], 10, 10, 2]
     File.write("Data/blue-hoenn-install.json",
@@ -89,6 +90,27 @@ Dir.mktmpdir("blue-joiplay-no-json") do |directory|
           "wrong starting position")
     check(BlueRegionStart.hoenn_town_point == town,
           "wrong Littleroot arrival point")
+    # Exercise the same installed files after the V2 migration, including
+    # SHA-256 in the bundled parser path with neither optional gem present.
+    compact_file = BlueRegionStart::HOENN_PILOT_METADATA
+    File.write(compact_file, File.read(compact_file).sub("BLUE_HOENN_PILOT_V1", "BLUE_HOENN_PILOT_V2"))
+    [BlueRegionStart::HOENN_READY, BlueRegionStart::HOENN_START].each do |name|
+      File.write(name, File.read(name).sub("_V1,", "_V2,"))
+    end
+    manifest_file = BlueRegionStart::HOENN_INSTALL
+    manifest_v2 = File.read(manifest_file).sub('"schema":1', '"schema":2,"catalog_revision":1')
+    legacy_blob = maps.map { |source, dest| %("#{source}":#{dest}) }.join(",")
+    compact_hash = BlueSinnohQA.sha256_file(compact_file)
+    manifest_v2 = manifest_v2.sub(/\}\z/,
+      ',"legacy_maps":{' + legacy_blob + '},"installed_sha256":{"' + compact_file + '":"' + compact_hash + '"}}')
+    File.write(manifest_file, manifest_v2)
+    check(BlueRegionStart.hoenn_integrated? && BlueRegionStart.hoenn_spawn == home[0,3],
+          "V2 did not unlock with bundled parser and SHA-256")
+    File.write(manifest_file, manifest_v2.sub('{', '{"schema":1,'))
+    check(!BlueRegionStart.hoenn_integrated?, "V2 accepted duplicate JSON fields")
+    File.write(manifest_file, manifest_v2.sub(compact_hash, "0"*64))
+    check(!BlueRegionStart.hoenn_integrated?, "V2 accepted invalid compact SHA-256")
+    File.write(manifest_file, manifest_v2)
     # Regression: the SAME combined Android ZIP has all 142 Kanto maps.
     # JoiPlay sometimes provides an unusable JSON constant rather than no
     # JSON constant at all. Kanto must work in both cases, just as Hoenn does.

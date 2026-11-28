@@ -100,7 +100,7 @@ jobs:
           python scripts/regions/install_kanto.py --game game --verify-installed
           if($LASTEXITCODE -ne 0){throw 'Kanto nao possui instalacao completa.'}
           python scripts/regions/install_hoenn.py --game game --verify-installed
-          if($LASTEXITCODE -ne 0){throw 'Hoenn nao possui os 199 mapas validados.'}
+          if($LASTEXITCODE -ne 0){throw 'Hoenn nao possui todos os mapas da revisao aprovada do catalogo.'}
           if((Test-Path 'game/Kanto pilot.json') -or (Test-Path 'game/Hoenn pilot.json')){throw 'Perfil de piloto isolado em build compartilhada.'}
       - name: Solicitar compilacao do runtime Android
         shell: powershell

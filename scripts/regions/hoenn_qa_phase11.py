@@ -11,6 +11,8 @@ import json
 import re
 from pathlib import Path
 
+from hoenn_catalog import CATALOG_REVISION, approved_source_ids
+
 from hoenn_audio import AUDIO_LABELS, RECOVERY_DEST
 from server.ruby_marshal import loads
 
@@ -77,9 +79,11 @@ def localized_map_name(name: str) -> str:
 
 def audit_generated(maps: dict, names: dict[int, str],
                     bgm: dict[int, str], stage10_ids: set[int], *,
-                    audio_labels: tuple[str, ...] = AUDIO_LABELS) -> dict:
-    if len(names) != 199 or set(maps) != set(names) or set(bgm) != set(names):
-        raise ValueError("QA11: 199 mapas precisam de nomes e música explícitos")
+                    audio_labels: tuple[str, ...] = AUDIO_LABELS,
+                    catalog_revision: int = CATALOG_REVISION) -> dict:
+    expected = approved_source_ids(catalog_revision)
+    if maps.keys() != expected or names.keys() != expected or bgm.keys() != expected:
+        raise ValueError(f"QA11: os {len(expected)} mapas aprovados precisam de nomes e música explícitos")
     if set(bgm.values()) - set(audio_labels):
         raise ValueError("QA11: música não pertence aos temas OGG preparados")
     translated = {}
@@ -123,18 +127,19 @@ def audit_generated(maps: dict, names: dict[int, str],
 
 def verify_copy(copy: Path) -> dict:
     from hoenn_qa_phase1 import require_private_path
-    from pilot_hoenn import SOURCE_MAPS, MAP_BGM
+    from pilot_hoenn import SOURCE_MAPS, MAP_BGM, validate_pilot_mapping
     from hoenn_stage10 import SOURCE_MAPS_STAGE10
 
     copy = require_private_path(copy)
     manifest = json.loads((copy / "Hoenn pilot.json").read_text("utf-8"))
-    ids, qa = manifest.get("maps"), manifest.get("qa11")
+    qa = manifest.get("qa11")
     if (manifest.get("region") != "HOENN" or
         manifest.get("kind") != "ISOLATED_HOENN_TEST" or
         manifest.get("save_profile") not in ("Hoenn QA Fase11", "Hoenn QA Fase12") or
-        not isinstance(ids, dict) or len(ids) != 199 or
         not isinstance(qa, dict) or not isinstance(manifest.get("qa10"), dict)):
-        raise ValueError("QA11: exige cópia isolada QA11 com 199 mapas e auditoria QA10")
+        raise ValueError("QA11 exige cópia isolada QA11 e auditoria QA10")
+    ids = validate_pilot_mapping(manifest)
+    names = {mid: SOURCE_MAPS[mid] for mid in ids}
     if qa.get("donor_dialogue_scripts_copied") is not False or any(
         qa.get(key) is not False for key in NATIVE_FALSE
     ):
@@ -143,10 +148,8 @@ def verify_copy(copy: Path) -> dict:
     meta = (copy / "PBS/map_metadata_hoenn_pilot.txt").read_text("utf-8-sig")
     metadata = {int(key): label.strip() for key, label in MAP_LABEL_PATTERN.findall(meta)}
     rxdata = {}
-    for source_id, name in SOURCE_MAPS.items():
-        target = ids.get(str(source_id))
-        if type(target) is not int or not 700 <= target <= 999:
-            raise ValueError(f"QA11: remapeamento inválido para {source_id}")
+    for source_id, name in names.items():
+        target = ids[source_id]
         localized = localized_map_name(name)
         if metadata.get(target) != localized:
             raise ValueError(f"QA11: Name PBS não está em PT-BR: {source_id}")
@@ -154,16 +157,16 @@ def verify_copy(copy: Path) -> dict:
         if not info or info.attrs.get("@name") != localized.encode("utf-8"):
             raise ValueError(f"QA11: MapInfos localizados divergem: {source_id}")
         rxdata[source_id] = loads((copy / f"Data/Map{target:03}.rxdata").read_bytes())
-    if len(metadata) != len(SOURCE_MAPS):
+    if metadata.keys() != set(ids.values()):
         raise ValueError("QA11: mapa metadata extra/ausente")
     regional_audio = manifest.get("hoenn_presentation", {}).get("version") == 1
     labels = AUDIO_LABELS if regional_audio else LEGACY_AUDIO_LABELS
-    map_bgm = MAP_BGM if regional_audio else {
+    map_bgm = {mid: MAP_BGM[mid] for mid in ids} if regional_audio else {
         mid: world.attrs["@bgm"].attrs["@name"].decode("ascii").removeprefix("BLUE_HOENN_")
         for mid, world in rxdata.items()
     }
-    result = audit_generated(rxdata, SOURCE_MAPS, map_bgm, set(SOURCE_MAPS_STAGE10),
-                             audio_labels=labels)
+    result = audit_generated(rxdata, names, map_bgm, set(SOURCE_MAPS_STAGE10),
+                             audio_labels=labels, catalog_revision=manifest.get("catalog_revision", 1))
     if qa != result:
         raise ValueError("QA11: manifesto não corresponde à UI e aos áudios compilados")
     audio_paths = [f"Audio/BGM/BLUE_HOENN_{label}.ogg" for label in labels]

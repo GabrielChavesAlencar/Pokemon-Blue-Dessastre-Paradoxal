@@ -75,9 +75,10 @@ def verify_copy(copy: Path) -> dict:
     qa = report.get("qa6")
     if (report.get("region") != "HOENN"
             or report.get("kind") != "ISOLATED_HOENN_TEST"
-            or report.get("save_profile") not in ("Hoenn QA Fase06", "Hoenn QA Fase07", "Hoenn QA Fase08", "Hoenn QA Fase09", "Hoenn QA Fase10", "Hoenn QA Fase11", "Hoenn QA Fase12")
-            or not isinstance(ids, dict) or len(ids) != 199):
-        raise ValueError("QA06 exige a cópia isolada com 199 mapas e perfil próprio")
+            or report.get("save_profile") not in ("Hoenn QA Fase06", "Hoenn QA Fase07", "Hoenn QA Fase08", "Hoenn QA Fase09", "Hoenn QA Fase10", "Hoenn QA Fase11", "Hoenn QA Fase12")):
+        raise ValueError("QA06 exige a cópia isolada com perfil próprio")
+    from pilot_hoenn import validate_pilot_mapping
+    validate_pilot_mapping(report)
     if (not isinstance(qa, dict)
             or qa.get("native_game_exe_tested") is not False
             or qa.get("native_weather_visuals_verified") is not False
