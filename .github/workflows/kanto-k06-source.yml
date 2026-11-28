@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - 'scripts/regions/audit_k06_rocket.py'
+      - 'scripts/regions/build_k06_approach.py'
+      - 'tests/test_kanto_k06_approach.py'
       - '.github/workflows/kanto-k06-source.yml'
   workflow_dispatch:
 permissions:
@@ -11,7 +13,7 @@ permissions:
 jobs:
   intake:
     runs-on: windows-2022
-    timeout-minutes: 12
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -24,9 +26,20 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Pinned K06 source unavailable'}
           python scripts/regions/audit_k06_rocket.py
           if($LASTEXITCODE -ne 0){throw 'K06 source witness could not be generated'}
+      - name: Montar a ligação física de Lavender a Celadon em cópia separada
+        shell: powershell
+        run: |
+          python -m unittest discover -s tests -p 'test_kanto_k06_approach.py'
+          if($LASTEXITCODE -ne 0){throw 'K06 approach unit contracts failed'}
+          python scripts/install_game.py --apply --skip-kanto
+          if($LASTEXITCODE -ne 0){throw 'Cannot prepare disposable Decades game'}
+          python scripts/regions/pilot.py --output .blue-work/kanto-k06-baseline
+          if($LASTEXITCODE -ne 0){throw 'Cannot prepare exact released K05 baseline'}
+          python scripts/regions/build_k06_approach.py
+          if($LASTEXITCODE -ne 0){throw 'K06 approach fixture failed'}
       - name: Preservar somente recibo de IDs e dependências
         uses: actions/upload-artifact@v4
         with:
           name: kanto-k06-source-inventory
-          path: k06-source-receipts/kanto-k06-source.json
+          path: k06-source-receipts/*.json
           if-no-files-found: error
