@@ -20,7 +20,10 @@ module BlueRegionStart
     *(182..189),191,192,*(206..213),215,216,217,*(227..236),*(238..248),
     250,251,252,255,*(258..263),266,322
   ].map(&:to_s).sort.freeze
-  HOENN_CATALOGS = { 1 => HOENN_LEGACY_SOURCES }.freeze
+  HOENN_CATALOGS = {
+    1 => HOENN_LEGACY_SOURCES,
+    2 => (HOENN_LEGACY_SOURCES + ["15"]).sort.freeze
+  }.freeze
 
   def self.read_hoenn_manifest
     return nil unless File.file?(HOENN_INSTALL) && !File.symlink?(HOENN_INSTALL)

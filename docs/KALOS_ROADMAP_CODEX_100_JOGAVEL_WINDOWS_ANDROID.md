@@ -2,13 +2,16 @@
 
 **Projeto:** Pokémon Blue: Dessastre Paradoxal · **Data:** 27/11/2026 · **Fases:** KA00–KA31.
 **Alvo:** campanha X/Y unificada em 2D, no Game.exe principal Decades/Blue (RPG Maker XP + Essentials 21.1), 16 cidades, rotas 1–22, interiores, oito ginásios, Equipe Flare, Mega Evolução, Liga e pós-jogo. Um único save e uma única instalação multirregional. Pokémon Legends: Z-A e Kalos histórica são expansões fora deste escopo.
-**Estado:** plano operacional; nenhuma etapa de gameplay foi executada por este documento.
+**Estado:** plano operacional; nenhuma etapa de gameplay foi executada. A
+[frente de pesquisa e planejamento KD00–KD05](KALOS_PESQUISA_E_PLANEJAMENTO.md)
+não ativa Kalos. Execute KA00–KA31 somente após autorização explícita
+para implementar; este roadmap não é uma ordem permanente para modificar o jogo.
 
 ## 0. Contrato obrigatório de execução
 
-Você, Codex, é o executor. Leia [AGENTS.md](../AGENTS.md), este documento e main atual. Não produza apenas contratos, stubs ou novos documentos quando for possível executar e provar a implementação. Priorize lotes pequenos e verticais, reaproveitando o código real. Não copie engine, scripts, banco global ou saves de outro fangame.
+Se a implementação for autorizada, leia [AGENTS.md](../AGENTS.md), este documento e main atual. Não produza apenas contratos, stubs ou novos documentos quando for possível executar e provar a implementação. Priorize lotes pequenos e verticais, reaproveitando o código real. Não copie engine, scripts, banco global ou saves de outro fangame.
 - Um lote/PR por vez; confira HEAD SHA completo, base atual e PRs concorrentes. Não force-push, não reverta trabalho alheio, não altere Gary, chefes autorais, Decades, Kanto, Johto, Hoenn, Sinnoh, Unova ou suas reservas. Merge somente após checks obrigatórios e pertinentes aprovados na revisão correta.
-- Cada lote perceptível exige publicação Windows **Blue-Story.exe** + Android **multiregion** na mesma revisão funcional, hashes e patches validados antes de avançar. Documentação pura e staging privado sem mudança distribuída não exigem releases. Use [regra vigente](KANTO_ROADMAP_PUBLICACAO_WINDOWS_ANDROID.md). Não publique fonte de terceiros sem direitos.
+- Cada lote perceptível exige publicação Windows **Blue-Story.exe** + Android multirregional **pela fonte** no mesmo produto, hashes e receita validados antes de avançar. Documentação pura e staging privado sem mudança distribuída não exigem releases. Use [regra vigente](KANTO_ROADMAP_PUBLICACAO_WINDOWS_ANDROID.md). Não publique fonte de terceiros sem direitos.
 - QA física é diferente de CI, fixture, execução headless ou publicação. Se faltar ambiente, registre BLOCKED_ENV e o teste exato; somente com autorização explícita para adiar QA pode avançar como DELIVERED_WITH_QA_PENDING. Não contabilize como 100% jogável.
 - Não use teleportes QA, flags forçadas, mapa fictício, alteração de coordenadas sem auditoria, recompensa concedida por debug ou testes enfraquecidos como prova de campanha. Nunca exponha saves, tokens, ZIP privado ou binários de terceiros em logs/artifacts públicos.
 - Preserve saves, MapIDs publicados, IDs de eventos persistentes e chaves de estado; migração aditiva, backup dos arquivos tocados, rollback atômico. Não sobrescreva MapInfos.rxdata, Tilesets.rxdata, System.rxdata, Scripts.rxdata, CommonEvents.rxdata ou PBS globais com arquivos de doador.
@@ -30,7 +33,7 @@ Auditoria de árvore main: tree 0217069c75555709176b144b72e962aac240ad94, 2240 e
 | [Android package](../scripts/android/package.py) | Verificação de regiões existentes, perfil compartilhado e compilação; ampliar sem enfraquecer gates. |
 | Kalos-specific workflows, fonte pinada, mapas nativos, release | Nenhum encontrado na árvore auditada. Zero mapas/cidades/rotas/ginásios com aceite comprovado; não equivale a inspeção do disco pessoal. |
 
-Bloqueios prioritários: origem autorizada e cobertura real; alocador multirregional e compatibilidade de IDs; ausência de mapa de abertura; nenhuma prova de execução nativa e atualização. A campanha original é 3D: adapte topologia, puzzles e gameplay, não câmera literal. Sem uma fonte completa, produza módulos 2D autorais em vez de travar toda a região à espera de ZIP.
+Bloqueios prioritários: origem autorizada e cobertura real; alocador multirregional e compatibilidade de IDs; ausência de mapa de abertura; nenhuma prova de execução nativa e atualização. A campanha original é 3D: adapte topologia, puzzles e gameplay, não câmera literal. Aplique a regra por mapa: sem um mapa RPG Maker XP pronto ou quase pronto e aprovado, refaça o local em 2D com os tilesets de Kanto já usados no Blue. Antes de desenhar, consulte o [atlas visual KD05](KALOS_KD05_ATLAS_VISUAL_E_TILES_KANTO.md) e confronte vistas, percurso, saídas e marcos para se aproximar do traçado de X/Y sem copiar seus assets.
 
 ## 2. Downloads e fontes verificáveis
 
@@ -55,7 +58,7 @@ Procedimento: adquirir na página original, confirmar autorização de reutiliza
 |---|---|
 | Instalação | [install_game.py](../scripts/install_game.py), [Bootstrap.cs](../scripts/windows/Bootstrap.cs), [install_kanto.py](../scripts/regions/install_kanto.py), [install_hoenn.py](../scripts/regions/install_hoenn.py), [release_gate.py](../scripts/regions/release_gate.py) |
 | Runtime | [RegionStart.rb](../scripts/battle_polish/RegionStart.rb), [RegionTravel.rb](../scripts/battle_polish/RegionTravel.rb), [Regions.rb](../scripts/battle_polish/Regions.rb), [RegionalPolicy.rb](../scripts/battle_polish/RegionalPolicy.rb), TitleKanto.rb, Story.rb, Balance.rb; localizar respawn, Trainer Card, Dex e menu reais. |
-| Android | [package.py](../scripts/android/package.py), [publish_updates.py](../scripts/android/publish_updates.py), [update_client.py](../scripts/android/update_client.py), build_manifest.py, select_previous_multiregion_releases.py |
+| Android | [update_client.py](../scripts/android/update_client.py), [source_update.py](../scripts/android/source_update.py) e [modelo de receita K06](ANDROID_K06_ATUALIZACAO_PELA_FONTE.md); ferramentas binárias apenas para baselines históricas |
 | CI | [blue-story-windows.yml](../.github/workflows/blue-story-windows.yml), [android-multiregion.yml](../.github/workflows/android-multiregion.yml), [android-multiregion-repack.yml](../.github/workflows/android-multiregion-repack.yml), [android-updater-regression.yml](../.github/workflows/android-updater-regression.yml), [decades-regional-start.yml](../.github/workflows/decades-regional-start.yml), regression.yml, regional-respawn.yml, evolution-scaling.yml, kanto-gary-regression.yml |
 | Site/editor | [regions.json](../site/public/data/regions.json), scripts/export_site_data.py; localizar catálogo de pilotos, downloads e versão in-game. |
 
@@ -177,7 +180,7 @@ Estender gate real RegionStart/RegionTravel, spawn quarto e agente Vaniville, se
 Estender install_game.py e Bootstrap.cs no fluxo normal, não EXE Kalos separado. Fonte pinada, staging, verificação de ownership/MapIDs, compilação e commit atômico, recovery e status claro. Fresh install e upgrade em cópia de release anterior, offline com cache, download interrompido, ZIP corrompido, execução repetida, arquivo local modificado. Validar Game.exe principal com Kalos e regiões existentes; versão/data/revisão visíveis. Gate KALOS_KA28_WINDOWS_INSTALL_OK.
 
 ### KA29 — Android (mesmo lote Windows)
-Integrar ao pacote multiregion compartilhado, manter nomes/canal legados compatíveis. Atualizar package verifier, manifestos, allowlists e paths dos workflows. Garantir PBS pré-compilados, mesmas flags/mapas/sprites/áudio da revisão funcional Windows, sem marcadores de piloto. Testar atualização incremental, versão antiga→nova, múltiplas baselines, cliente antigo, rollback, arquivo modificado, rede interrompida, sem espaço e save preservado; execução real JoiPlay com controles. Gate KALOS_KA29_ANDROID_INSTALL_OK.
+Integrar ao Android multirregional pela fonte, preservando canal e baselines existentes. Criar receita com SHA próprio, produto S e fonte original autorizada por SHA-256; compilar localmente em cópia descartável, validar e instalar com confirmação de arquivos e marcador por último. Não redistribuir ZIP ou patch de jogo. Testar cadeia anterior compatível, atualização/repetição, rollback, arquivo modificado, rede, espaço e save; aceitar jogo físico somente com prova no JoiPlay. Gate KALOS_KA29_ANDROID_INSTALL_OK.
 
 ### KA30 — migração e regressão (a cada lote)
 Fixture real anonimizada/autorizada antes/depois e fresh install. Preservar todos MapIDs/eventIDs, estado regional, flags, item/PC/party/Box, Dex, dinheiro, opções, save slots, checksums e progresso; testar migração N→M aditiva, idempotência, drift, instalação parcial e interrupção. Rodar Gary, balanceamento, evolução, policy, regional respawn, viagens, Kanto/Johto/Hoenn/Sinnoh/Unova conforme integração real. Gate KALOS_KA30_SAVE_REGRESSION_OK.
@@ -240,26 +243,13 @@ Recibo por caso: phase, test_id, revision SHA, workflow/job URL, platform/versio
 4. Após merge com checks verdes, verificar [workflow Blue Story](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/workflows/blue-story-windows.yml) e eventual workflow compartilhado que gera o EXE. Conferir run/HEAD/base/tag/asset reais, baixar Blue-Story.exe da tag S, SHA-256, testar em instalação limpa e existente. Não presumir que releases/latest é o instalador correto.
 
 ### 9.2 Android
-1. Usar exatamente a mesma revisão funcional e fontes autorizadas, precompilar dados nativos. Integrar Kalos ao canal multiregion, **não renomear** o asset existente Blue-Android-Decades-Kanto-Hoenn.zip sem migração de cliente explicitamente testada (nome observado no workflow); manter compatibilidade de manifests, package.py e seletor paginado.
-2. Comando existente observado no workflow, a adaptar somente se contrato real mudar:
-~~~sh
-python scripts/android/package.py --game-dir game --revision <SHA40> --channel multiregion --output dist/Blue-Android-Decades-Kanto-Hoenn.zip
-python scripts/android/package.py --verify --revision <SHA40> --channel multiregion --output dist/Blue-Android-Decades-Kanto-Hoenn.zip
-~~~
-3. Estender verify_regions/verify_archive e build_manifest para Kalos, exigindo mapas, plugins, receipt e compilados; rejeitar partial/pilot. Reusar select_previous_multiregion_releases.py e publish_updates.py com flags reais do workflow. Gerar patch incremental somente para origens com manifestos compatíveis, validar SHA de patch, destino, cada arquivo alterado e removido; proibir saves, logs, backups e caminhos fora da raiz. Backups incrementais apenas dos arquivos alterados, preservar save. Se full ZIP for inevitável por imutáveis/cliente incompatível, informar claramente e usar procedimento seguro existente; não forçar backup integral no fluxo incremental.
-4. Verificar [workflow Android multiregion](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/workflows/android-multiregion.yml) e [repack](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/workflows/android-multiregion-repack.yml), release do canal, asset completo + .update.json + patch(es), checksum e revision em Data/blue-update.json. Não usar ZIP piloto. Validar patch sobre instalações reais de baseline e instalar em JoiPlay (mesma pasta Game.exe), confirmar versão no menu e continuar save.
-5. No aparelho QA: instalar JoiPlay e RPG Maker Plugin da fonte oficial, extrair ZIP autorizado em pasta acessível; Termux:
-~~~sh
-pkg install python
-termux-setup-storage
-cd ~/storage/shared/Download/<PASTA_REAL_MULTIRREGIONAL>
-python ATUALIZAR-ANDROID.py
-python ATUALIZAR-ANDROID.py --update
-~~~
-Fechar JoiPlay antes de atualizar; confirmar nome da pasta e instruções atuais do cliente. Fazer backup manual dos saves em QA e preservar arquivos pessoais. Testar input toque, batalhas, carregamento, mapa Lumiose, áudio, save/reload, viagem e patch. Sem aparelho, marcar NOT_RUN e não alegar aceite.
+1. Usar a mesma revisão funcional S de Windows, em receita própria R declarando S, predecessor compatível e SHA-256 da fonte original autorizada. Usar a origem da receita: sem redistribuir jogo, patch, binários de terceiros ou saves. O ZIP multirregional antigo fica apenas como referência de baselines históricas.
+2. Conferir versão e pasta real em leitura, fechar o JoiPlay, preparar cópia temporária e compilar nela. O atualizador verifica dados, plugins, referências/MapIDs e hashes, só depois aplica as alterações previstas e grava o marcador. Em falha, manter/repor o estado anterior.
+3. Qualificar separadamente atualização sobre baseline publicada e instalação limpa quando suportada. Evitar troca de canal, cache de outra receita ou downgrade. Ver [plano de validação](KALOS_KD04_VALIDACAO_E_HANDOFF.md) e os [modelos existentes](ANDROID_K06_ATUALIZACAO_PELA_FONTE.md).
+4. Testar no aparelho: toque, combate, desempenho, áudio, save/reload, versão e retomada. Sem teste físico, registrar NOT_RUN/BLOCKED_ENV, não alegar aceite.
 
 ### 9.3 Gate de publicação sincronizada
-Para revisão funcional S: confirmar checks integralmente aprovados; merge sem reverter main; localizar runs pós-merge na revisão correta (ou prova explícita de equivalência funcional se commit documental posterior), verificar conclusão e asset names. Baixar assets de tags específicas via gh release download <tag> --pattern <asset> em diretórios separados; conferir sha256sum ou Get-FileHash, manifestos e revisão; testar Windows e Android sem misturar builds. Verificar patch direto e saltos de versão suportados; falha bloqueia próximo lote. Atualizar portal de downloads existente, changelog, versão in-game e docs; publicar URLs das tags e assets comprovados. Se release ausente, corrigir workflow e reexecutar apenas o necessário. Não inventar número de build ou SHA.
+Após CI pertinente e merge, verificar Blue-Story.exe público com tamanho/SHA-256 e a tag da receita Android com vínculo comprovado ao mesmo produto S. Conferir baselines e versão de fato instalada, sem misturar canais. Sem uma das publicações ou com regressão, corrigir este lote antes do próximo. Documentação pura não publica versão jogável.
 
 ## 10. Progresso e definição de pronto
 
@@ -268,12 +258,12 @@ Tracker proposto site/public/data/kalos-progress.json com 32 fases, subcasos e t
 - [ ] Abertura, rivais, oito badges, Flare, Mega, Liga, AZ, Hall, pós-jogo e todas missões aprovadas.
 - [ ] Encontros, serviços, Pokédex, itens, música, PT-BR e mecânicas de campo verificadas.
 - [ ] Viagens livres por Vaniville, save compartilhado, PC, itens locais, blackout, regras Blue e regressão preservados.
-- [ ] Windows instalação limpa/upgrade e playthrough real, Android JoiPlay e patch incremental/playthrough real; releases da mesma revisão, hashes e assets.
+- [ ] Windows instalação limpa/upgrade e playthrough real, Android JoiPlay e atualização pela fonte/playthrough real; publicações do mesmo produto, hashes e receita.
 - [ ] Nenhum bug bloqueante, softlock, porta faltante, recompensa duplicada ou save corrompido; decisões de equivalentes offline e exclusões aprovadas.
 - [ ] Documentação, tracker, issue, links de release e recibos atualizados; nenhum dado privado publicado.
 
-## 11. Prompt de retomada (copiar para Codex)
+## 11. Prompt de retomada (somente após autorizar a implementação)
 
-> Leia AGENTS.md e docs/KALOS_ROADMAP_CODEX_100_JOGAVEL_WINDOWS_ANDROID.md. Reconfirme main, PRs, workflows e releases atuais; inicie KA00 e execute KA01–03 com fontes autorizadas e auditoria real, não apenas planejamento. Priorize o primeiro corredor Vaniville→Aquacorde→Santalune até Viola, implementando mapas, portas, eventos e testes nativos em lotes verticais. Reaproveite RegionStart, RegionTravel, instalador principal e canal Android multiregion; preserve saves, MapIDs, Gary, balanceamento e demais regiões. Não force flags, não invente recibos, não afrouxe testes. Merge somente após aprovação integral; para cada mudança jogável publique Windows e Android na mesma revisão, valide assets/hashes/patches, disponibilize Blue-Story.exe e registre documentação/issue. Quando fonte ou hardware estiver bloqueado, registre insumo exato, continue somente trabalho independente e não marque 100%. Informe concisamente fase, PR, SHA, CI, evidência real, publicação, bloqueio e próximo passo.
+> Com autorização para implementar, leia AGENTS.md, este roadmap e a frente documental KD00–KD04. Reconfirme main, PRs, workflows e releases atuais; inicie KA00 e execute KA01–03 com fontes autorizadas e auditoria real, não apenas planejamento. Priorize o primeiro corredor Vaniville→Aquacorde→Santalune até Viola, implementando mapas, portas, eventos e testes nativos em lotes verticais. Reaproveite RegionStart, RegionTravel, instalador principal e canal Android multiregion; preserve saves, MapIDs, Gary, balanceamento e demais regiões. Não force flags, não invente recibos, não afrouxe testes. Merge somente após aprovação integral; para cada mudança jogável publique Windows e Android na mesma revisão, valide EXE, hashes e receita Android pela fonte, disponibilize Blue-Story.exe e registre documentação/issue. Quando fonte ou hardware estiver bloqueado, registre insumo exato, continue somente trabalho independente e não marque 100%. Informe concisamente fase, PR, SHA, CI, evidência real, publicação, bloqueio e próximo passo.
 
 **Regra final:** 100% só quando o jogo principal distribuído nas duas plataformas realmente permite a campanha e pós-jogo completos, não quando a documentação ou CI estiver verde.

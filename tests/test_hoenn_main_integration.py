@@ -156,8 +156,9 @@ class HoennMainIntegrationTests(unittest.TestCase):
             return dict.fromkeys(mapping.values()) if blob == index else object()
 
         with patch.object(hoenn, "ROOT", self.root), \
+             patch.object(hoenn, "CATALOG_REVISION", 1), \
              patch.object(hoenn, "loads", side_effect=native_fixture), \
-             patch("pilot_hoenn.allocate_hoenn_map_ids", return_value=mapping), \
+             patch.object(hoenn, "allocate_hoenn_map_ids", return_value=mapping), \
              patch("hoenn_qa_phase2.inspect_connections"):
             dry = hoenn.migrate_existing(self.game, False)
             self.assertTrue(dry["catalog_migration_pending"])
@@ -206,6 +207,44 @@ class HoennMainIntegrationTests(unittest.TestCase):
             self.assertTrue(hoenn.recover_migration(self.game))
             self.assertFalse(hoenn.recover_migration(self.game))
         self.assertEqual({rel: hoenn.optional_bytes(self.game / rel) for rel in old}, old)
+
+    def test_oldale_transaction_rolls_back_city_and_new_map_together(self):
+        self.install_proof_fixture()
+        city = hoenn.map_path(self.maps["12"])
+        houses_id = 899
+        houses = hoenn.map_path(houses_id)
+        names = hoenn.MIGRATION_FILES | {hoenn.MAP_INFOS, hoenn.MAP_METADATA, city, houses}
+        previous = {name: hoenn.optional_bytes(self.game / name) for name in names}
+        changes = {
+            **previous,
+            city: b"city with new doors",
+            houses: b"house interior",
+            hoenn.MAP_INFOS: b"index with house interior",
+        }
+        with patch.object(hoenn, "ROOT", self.root), \
+             patch.object(hoenn, "verify_installed", side_effect=ValueError("interrupted verification")):
+            with self.assertRaisesRegex(ValueError, "interrupted verification"):
+                hoenn.commit_migration(self.game, previous, changes, oldale_houses=houses_id)
+        self.assertEqual({name: hoenn.optional_bytes(self.game / name) for name in names}, previous)
+        self.assertFalse((self.game / hoenn.JOURNAL).exists())
+
+    def test_oldale_audit_checks_both_return_destinations(self):
+        mapping = {12: 704, 15: 899}
+        worlds = {mid: hoenn.ruby("RPG::Map", events={}) for mid in mapping.values()}
+        for mid, name, xy, (target, x, y, direction) in hoenn.oldale_doors(mapping):
+            page = hoenn.event_page(warp=(target, x, y), touch=True)
+            page.attrs["@list"][0].attrs["@parameters"][4] = direction
+            hoenn.append_event(worlds[mid], name, *xy, page)
+
+        def read(relative):
+            mid = int(Path(relative).stem.removeprefix("Map"))
+            return hoenn.serialize(worlds[mid], hoenn.EVENT_CLASSES)
+
+        hoenn.verify_oldale_doors(read, mapping)
+        east_exit = worlds[899].attrs["@events"][2].attrs["@pages"][0]
+        east_exit.attrs["@list"][0].attrs["@parameters"][2:4] = [5, 8]
+        with self.assertRaisesRegex(ValueError, "Destino"):
+            hoenn.verify_oldale_doors(read, mapping)
 
     def test_catalog_rejects_a_swapped_legacy_destination_and_unknown_revision(self):
         proof = self.install_proof_fixture()
@@ -276,14 +315,16 @@ class HoennMainIntegrationTests(unittest.TestCase):
         })
         report={"region":"HOENN","source_commit":hoenn.UPSTREAM,
                 "maps":{int(k):v for k,v in self.maps.items()},"qa12":{"status":"STATIC"}}
-        with patch.object(hoenn,"build_overlay",return_value=(generated,report)):
+        with patch.object(hoenn, "CATALOG_REVISION", 1), \
+             patch.object(hoenn, "build_overlay", return_value=(generated, report)):
             files, proof=hoenn.prepare_overlay(self.game,None)
         self.assertEqual(len(proof["maps"]),199)
         self.assertEqual(proof["town"],self.town)
         self.assertFalse(hoenn.FORBIDDEN & set(files))
         self.assertIn("Data/MapInfos.rxdata",files)
         (self.game / f"Data/Map{self.maps['7']:03}.rxdata").write_bytes(b"foreign-map")
-        with patch.object(hoenn,"build_overlay",return_value=(generated,report)):
+        with patch.object(hoenn, "CATALOG_REVISION", 1), \
+             patch.object(hoenn, "build_overlay", return_value=(generated, report)):
             with self.assertRaisesRegex(ValueError,"sobrescrito"):
                 hoenn.prepare_overlay(self.game,None)
 
