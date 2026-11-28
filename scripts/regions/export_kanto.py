@@ -346,11 +346,19 @@ def slug(key):
 def location_names(manifest):
     size = publication_catalog(manifest["maps"])
     names = {**LOCATION_NAMES, **NAMES} if size >= 160 else LOCATION_NAMES
-    return {**names, **dict(zip(K04_MAPS.values(), K04_NAMES))} if size == 165 else names
+    if size>=165:
+        names={**names,**dict(zip(K04_MAPS.values(),K04_NAMES))}
+    if size==178:
+        from k05_contract import NAMES as lavender
+        names={**names,**lavender}
+    return names
 
 
-def export(preview: Path, *, k03e=False):
-    manifest = json_file(KANTO)
+def export(preview: Path, *, k03e=False, k05=False, manifest=None):
+    manifest = json_file(KANTO) if manifest is None else manifest
+    if k05:
+        from build_k05_product import append_candidate
+        manifest=append_candidate(manifest)
     if k03e:
         manifest = candidate_manifest(manifest)
     names = location_names(manifest)
@@ -366,6 +374,13 @@ def export(preview: Path, *, k03e=False):
             for profile in events.values():
                 kind, name = profile.split(",")
                 rock_roles[kind, name] = (K04_MAPS[source], roles[kind])
+    tower_roles={}
+    if "POKEMON_TOWER_1F" in names:
+        from k05_contract import TOWER
+        from k05_tower_actors import CHANNELERS
+        for sid,rows in CHANNELERS.items():
+            for name,_ in rows.values():
+                tower_roles.setdefault(name,[]).append(TOWER[sid])
     if not k03e and not rock_roles and (preview / "plan.json").is_file():
         plan = json_file(preview / "plan.json")
         encounter_file = preview / "drafts/encounters.txt"
@@ -429,7 +444,13 @@ def export(preview: Path, *, k03e=False):
     for header, lines in read_blocks(trainer_file).items():
         trainer_type, name, version = header.split(",")
         kind = trainer_type.removeprefix("BLUE_KANTO_")
-        if kind == "RIVAL" and int(version) in (31, 32, 33):
+        if kind == "RIVAL_TOWER" and int(version) in (51,52,53):
+            key,role="POKEMON_TOWER_2F","Rival de Kanto"
+            trainer_id,shown_name=slug("blue-tower"),"Gary (Pokémon Tower)"
+        elif kind=="CHANNELER" and name in tower_roles and version=="0":
+            key,role=tower_roles[name][0],"Médium"
+            trainer_id,shown_name=slug(f"{key}-{name}"),name
+        elif kind == "RIVAL" and int(version) in (31, 32, 33):
             key, role = "CERULEAN_CITY", "Rival de Kanto"
             trainer_id, shown_name = slug("blue_cerulean"), "Gary (Cerulean)"
         elif kind == "RIVAL" and int(version) in (41, 42, 43):
@@ -476,6 +497,16 @@ def export(preview: Path, *, k03e=False):
         if not roster:
             raise ValueError(f"Empty Kanto team for {header}")
         trainers[trainer_id]["variants"].append({"starter": STARTERS.get(int(version)), "team": roster})
+    # Jody shares one compiled trainer profile but has separate native
+    # encounters, event keys and locations on floors 4 and 5.
+    for name,keys in tower_roles.items():
+        if len(keys)<=1:
+            continue
+        original=trainers[slug(f"{keys[0]}-{name}")]
+        for key in keys[1:]:
+            ident=slug(f"{key}-{name}")
+            trainers[ident]={**original,"id":ident,"location":slug(key)}
+            locations[key]["trainers"].append(ident)
     return {"version": 1, "source": {"name": manifest["name"], "url": manifest["source"],
                                       "author": manifest["author"]},
             "locations": list(locations.values()), "trainers": list(trainers.values())}
@@ -508,15 +539,54 @@ def k03e_portal_delta(baseline: dict, candidate: dict) -> dict:
     return {"version": 1, "status": "CANDIDATE_NOT_PUBLISHED", "locations": locations, "trainers": trainers}
 
 
+
+def k05_portal_delta(baseline, candidate):
+    """Require old portal results byte-equivalent as data, with 14 new actors."""
+    from k05_contract import MAPS, TOWER
+    from k05_tower_actors import CHANNELERS
+    locations={slug(k) for k in MAPS.values()}
+    trainers={slug(f"{TOWER[sid]}-{name}") for sid,rows in CHANNELERS.items()
+              for name,_ in rows.values()} | {slug("blue-tower")}
+    added={}
+    for field,new_ids in (("locations",locations),("trainers",trainers)):
+        old={row["id"]:row for row in baseline[field]}
+        final={row["id"]:row for row in candidate[field]}
+        if (len(old)!=len(baseline[field]) or len(final)!=len(candidate[field]) or
+                final.keys()-old.keys()!=new_ids or any(final.get(k)!=r for k,r in old.items())):
+            raise ValueError(f"K05 changed released portal data or missed audited {field}")
+        added[field]=[r for r in candidate[field] if r["id"] in new_ids]
+    by_id={r["id"]:r for r in added["locations"]}
+    for floor in range(1,8):
+        record=by_id[slug(f"POKEMON_TOWER_{floor}F")]
+        expected={"CaveDay","CaveNight"} if floor>=3 else set()
+        if {m["id"] for m in record["methods"]}!=expected:
+            raise ValueError(f"Unexpected K05 encounter table at floor {floor}")
+    rival=next(r for r in added["trainers"] if r["id"]==slug("blue-tower"))
+    versions={v["starter"]:v["team"][-1]["species"] for v in rival["variants"]}
+    if versions!={"BULBASAUR":"CHARMELEON","CHARMANDER":"WARTORTLE","SQUIRTLE":"IVYSAUR"}:
+        raise ValueError("K05 portal does not reflect the three original rival profiles")
+    return {"status":"K05_PORTAL_NOT_PUBLISHED",**added}
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--preview", type=Path, default=ROOT / ".blue-work/kanto-preview")
     parser.add_argument("--output", type=Path, default=ROOT / "site/public/data/kanto.json")
     parser.add_argument("--print-preview-chunks", action="store_true",
                         help="Emit source-derived website JSON for manual review in CI logs")
+    parser.add_argument("--k05-product-ci",action="store_true",help="Export isolated candidate to .blue-work only")
     args = parser.parse_args()
-    data = export(args.preview)
+    if args.k05_product_ci:
+        import os
+        if (os.getenv("GITHUB_ACTIONS")!="true" or args.preview.resolve()!=(ROOT/".blue-work/kanto-k05-product").resolve()
+                or args.output.resolve()!=(ROOT/".blue-work/kanto-k05-portal.json").resolve()):
+            raise ValueError("K05 candidate portal must not overwrite published data")
+    data = export(args.preview,k05=args.k05_product_ci)
     args.output.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf8")
+    if args.k05_product_ci:
+        delta=k05_portal_delta(json_file(ROOT/"site/public/data/kanto.json"),data)
+        args.output.with_name("kanto-k05-portal-delta.json").write_text(
+            json.dumps(delta,ensure_ascii=False,indent=2)+"\n",encoding="utf8")
+        print("KANTO_K05_PORTAL_178_VERIFIED")
     if args.print_preview_chunks:
         raw = json.dumps(data, ensure_ascii=True, separators=(",", ":"))
         for index in range(0, len(raw), 2500):

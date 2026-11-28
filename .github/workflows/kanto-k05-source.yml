@@ -11,6 +11,8 @@ on:
       - 'scripts/regions/k05_promotion.py'
       - 'scripts/regions/k05_migration.py'
       - 'scripts/regions/qa_k05_migration.py'
+      - 'scripts/regions/export_kanto.py'
+      - 'scripts/regions/release_gate.py'
       - 'scripts/regions/install_kanto.py'
       - 'scripts/regions/verify_pilot.py'
       - 'scripts/battle_polish/RegionStart.rb'
@@ -175,6 +177,11 @@ jobs:
           }
           Write-Host ("KANTO_K05_PRODUCT_NATIVE_REPORT:"+(Get-Content $proof -Raw).Trim())
           Write-Host 'KANTO_K05_PRODUCT_NATIVE_OK'
+      - name: Validar somente os novos dados do portal
+        shell: powershell
+        run: |
+          python scripts/regions/export_kanto.py --k05-product-ci --preview .blue-work/kanto-k05-product --output .blue-work/kanto-k05-portal.json
+          if($LASTEXITCODE -ne 0){throw 'K05 portal data altered earlier locations or trainer rosters'}
       - name: Migrar K04 instalada pelo instalador normal e repetir prova no Main
         shell: powershell
         run: |
@@ -237,6 +244,7 @@ jobs:
             '.blue-work/kanto-k05-city-stage.json',
             '.blue-work/kanto-k05-tower-stage.json',
             '.blue-work/kanto-k05-product-proof.json',
+            '.blue-work/kanto-k05-portal-delta.json',
             '.blue-work/kanto-k05-migration-165.json',
             '.blue-work/kanto-k05-migration-156.json',
             '.blue-work/kanto-k05-migration-160.json',

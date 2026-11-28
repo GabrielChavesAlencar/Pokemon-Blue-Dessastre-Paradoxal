@@ -46,6 +46,7 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
         156: (156, 163, (28, 99, 68)),
         160: (160, 173, (30, 107, 71)),
         165: (165, 202, (34, 119, 72)),
+        178: (178, 216, (39, 129, 75)),
     }[count]
     if len(expected_ids) != map_total:
         raise ValueError("Kanto catalog differs from the audited stable map identities")
@@ -62,8 +63,11 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
         raise ValueError("Day Care must follow the 151 published save IDs")
     if expected_order[156:160] != (list(MAPS) if count >= 160 else []):
         raise ValueError("K03-E must append the four corridor maps after the 156 published IDs")
-    if expected_order[160:] != (list(K04_MAPS) if count == 165 else []):
+    if expected_order[160:165] != (list(K04_MAPS) if count >= 165 else []):
         raise ValueError("K04 must append the five Rock Tunnel maps after the 160 published IDs")
+    from k05_contract import MAPS as K05_MAPS
+    if expected_order[165:]!=(list(K05_MAPS) if count==178 else []):
+        raise ValueError("K05 must append the 13 exact Lavender maps")
     if set(manifest["maps"].values()) != set(audited_names):
         raise ValueError("Kanto catalog differs from the audited stable map identities")
     preview = set(manifest["preview_only"])
