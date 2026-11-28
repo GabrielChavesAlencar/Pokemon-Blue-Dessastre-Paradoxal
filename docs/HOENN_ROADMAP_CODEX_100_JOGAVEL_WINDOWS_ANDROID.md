@@ -94,6 +94,33 @@ Em clone já existente não repetir git clone; não dar reset em trabalho alheio
 - Instalação atual pode ser verificada em cópia existente: python scripts/regions/install_hoenn.py --game game --verify-installed. O instalador só aplica em game/ principal daquele clone; portanto use clone/ambiente descartável, não instalação pessoal.
 - Saída: relatório baseline, grafo, mapa de propriedade global, inventário e fila ordenada por fase. Gate proposto HOENN_H00_BASELINE_INVENTORY_OK. Se assets/ambiente faltarem, isole o bloqueio, avance apenas trabalho demonstrável.
 
+### Recibo de H00 em 28/11/2026
+
+| Verificação | Resultado |
+|---|---|
+| Revisão | Main `f3d5809a`. Desde a revisão funcional `02732eadaedf49f3728755edb2bd2654ceae3897`, o diff da main estava restrito ao histórico do portal. |
+| Windows | Build 1632, executável baixado e self-test aprovado. SHA-256 `613786df97908f55417f3d169831b6b1d7534c61a224423467c63bd8fac2f4fe`. [Release](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/releases/tag/battle-hub-1632-02732ea) |
+| Android | Build 247, ZIP completo de 1.401.504.567 bytes conferido pelo SHA-256 `0469d877818490a31f6e0a080d8f2d942f954dc65568d5aec38ef3235606f87b` e pelo manifesto interno. Patch 234 → 247 com 27 arquivos alterados e zero removidos, validado pelos hashes dos membros. [Release](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/releases/tag/android-multiregion-247-02732ea) |
+| MapIDs instalados | 199 pares origem/destino idênticos em Windows e Android, faixa observada 700–898. Os dois conjuntos têm 81 mapas com tabelas PBS de encontros. |
+| Game.exe compartilhado | Em cópia Windows descartável, Novo Jogo abriu o quarto de Littleroot em `701,25,6` e o save de QA reabriu na mesma posição. A inspeção nativa encontrou um agente no mapa exterior `700` em `9,10`. Travessia e campanha integral seguem pendentes. |
+| Fonte | 373 arquivos RXDATA conferidos contra os Git blobs da revisão fixada, 100 tilesets e 5.181 eventos inventariados. A fonte tem 25 mapas sem terreno e sem eventos. Entre os 373, a classificação de escopo de 235 entradas ainda precisa de revisão. |
+| QA técnica | QA01 e QA03–QA11 emitiram relatórios estáticos. QA02 reprovou as conexões abaixo e QA12 permaneceu `BLOCKED_STATIC`. O backlog do gerador tem 2.035 candidatos de NPC/treinador/placa, 26 obstáculos a revisar e arte provisória da Elite Four. |
+| Estado | `BLOCKED_INVENTORY` pelas cinco bordas. `BLOCKED_RIGHTS` para nova distribuição de recursos de terceiros. `BLOCKED_ENV` para executar a campanha e o atualizador no JoiPlay. A Barra de aceite nativo segue em 0/12. |
+
+As 34 rotas foram identificadas pelo nome físico original. As cinco fora do catálogo são **105 → fonte 107**, **107 → 109**, **108 → 110**, **115 → 129** e **123 → 142**. Os IDs da fonte permanecem separados dos IDs do jogo compartilhado.
+
+| Conexão sem faixa de travessia geométrica | IDs no Blue |
+|---|---|
+| Rota 126 e Mossdeep | 857 ↔ 810 |
+| Rota 127 e Rota 124 | 858 ↔ 818 |
+| Rota 128 e Rota 124 | 859 ↔ 818 |
+| Rota 129 e Ever Grande Sul | 860 ↔ 846 |
+| Rota 131 e Rota 126 | 862 ↔ 857 |
+
+Os registros originais dessas cinco bordas já contêm os mesmos deslocamentos. A correção precisa de uma âncora de terreno verificável e de teste de travessia de ida e volta. Além disso, Kanto já usa os IDs 600–608 nesta revisão, e o instalador recusou a prévia de Johto para preservar os arquivos existentes. Resolver propriedade global integra o gate de H01. As vagas observadas em 899–999 ainda não constituem reserva aprovada.
+
+O auditor `scripts/regions/audit_hoenn_h00.py` salva o inventário por mapa, o grafo observado, os marcadores compactos, os IDs ocupados e os erros em `.blue-work/hoenn-h00/h00-report.json`. Ele retorna código 2 enquanto a geometria ou o mapeamento tiver falhas. O relatório bruto e os dados de origem ficam no workspace descartável. O `TESTAR_HOENN.bat` também passou a usar o diretório do repositório em `PYTHONPATH` para carregar os módulos das auditorias. [CI da integração da revisão de referência](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/46102703628).
+
 ## 4. H01: migração aditiva 199 → N, antes de qualquer expansão
 
 P0: retirar dependência de igualdade rígida com 199 **sem reduzir garantia de conteúdo**. N é derivado do conjunto completo de MapKeys aprovado para aquela revisão, não um mínimo permissivo.
@@ -395,4 +422,4 @@ Guardar SHA da fonte e build, MapID/posição, flag antes/depois, caso, saída d
 - [ ] H23: viagens/saves/regressões.
 - [ ] H24: homologação, releases pareadas e documentação final.
 
-**Estado inicial deste roadmap:** H00 pendente de revalidação em ambiente real. Base técnica 10/10 + ferramentas QA12 existentes; native_gameplay_verified=false no catálogo consultado. Não foi executado Game.exe/JoiPlay nem realizada nova release nesta entrega documental. Nenhum percentual de jogabilidade integral pode ser afirmado a partir desta auditoria.
+**Estado atual:** H00 executado com cinco bloqueios de geometria, registrados na seção 3. A passagem para H01 permanece pendente. O teste nativo Windows cobriu início e save/reload em Littleroot em cópia descartável. As verificações físicas no JoiPlay e o aceite da campanha integral continuam pendentes.

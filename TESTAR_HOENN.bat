@@ -2,6 +2,7 @@
 setlocal EnableExtensions
 chcp 65001 >nul
 cd /d "%~dp0"
+set "PYTHONPATH=%~dp0;%PYTHONPATH%"
 echo.
 echo =====================================================
 echo    POKEMON BLUE - TESTAR HOENN - QA FASES 01-12/12
