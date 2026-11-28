@@ -933,6 +933,27 @@ module BlueHoennPilot
     true
   end
 
+  def self.roxanne_puzzle(flags)
+    return true if flags["roxanne_puzzle_solved"]
+    type_choice = pbMessage(
+      _INTL("Roxanne: Minha primeira pergunta é sobre uma rocha pura. Qual tipo tem vantagem contra Pedra?"),
+      [_INTL("Elétrico"), _INTL("Água"), _INTL("Normal")], -1
+    )
+    unless type_choice == 1
+      pbMessage(_INTL("Roxanne: Pense no que a água de um rio faz às rochas ao longo dos anos."))
+      return false
+    end
+    tactic = pbMessage(
+      _INTL("Roxanne: Rock Tomb reduziu sua Velocidade. Qual ação desfaz essa redução durante a batalha?"),
+      [_INTL("Usar uma Poção"), _INTL("Esperar um turno"), _INTL("Trocar de Pokémon")], -1
+    )
+    unless tactic == 2
+      pbMessage(_INTL("Roxanne: Uma Poção recupera PS. Ao recolher um Pokémon, mudanças de Velocidade são zeradas."))
+      return false
+    end
+    flags["roxanne_puzzle_solved"] = true
+  end
+
   def self.roxanne
     flags = state
     return false unless flags && $player && !$player.party.empty?
@@ -944,7 +965,8 @@ module BlueHoennPilot
       pbMessage(_INTL("Roxanne: Explore Petalburg Woods e ajude o funcionário Devon antes do desafio."))
       return false
     end
-    pbMessage(_INTL("Roxanne: Sou especialista em Pokémon de Pedra. Aceita meu desafio?"))
+    return false unless roxanne_puzzle(flags)
+    pbMessage(_INTL("Roxanne: Agora mostre como usa essas ideias em batalha!"))
     setBattleRule("canLose")
     unless TrainerBattle.start(:BLUE_HOENN_ROXANNE, "Roxanne", 427)
       $player.heal_party if $player.respond_to?(:heal_party)
@@ -967,18 +989,18 @@ module BlueHoennPilot
       pbMessage(_INTL("Especialista: Ensine Cut a um Pokémon. A Insígnia da Pedra libera seu uso em Hoenn."))
       return false
     end
-    item = [:HM01, :HMCUT].find { |candidate| GameData::Item.exists?(candidate) }
-    unless item
-      pbMessage(_INTL("Especialista: O HM Cut ainda não existe nos itens desta instalação."))
-      return false
+    candidates = HOENN_FIELD_ITEMS.fetch(:CUT)
+    # Legacy saves may already carry a correctly registered HM. Talking to
+    # this specialist records local authorization without adding a duplicate.
+    if $bag && candidates.any? { |id|
+      GameData::Item.exists?(id) && GameData::Item.get(id).move == :CUT && $bag.has?(id)
+    }
+      flags["hm_cut_given"] = true
+      pbMessage(_INTL("Especialista: Registrei seu HM Cut em Hoenn. A Insígnia da Pedra permite usar o movimento."))
+      return true
     end
-    unless $bag && $bag.add(item, 1)
-      pbMessage(_INTL("Especialista: Abra espaço na Bolsa para receber Cut."))
-      return false
-    end
-    flags["hm_cut_given"] = true
-    pbMessage(_INTL("Você recebeu HM Cut! Precisa da Insígnia da Pedra para usá-lo em Hoenn."))
-    true
+    field_hm_reward(:CUT, candidates, "hm_cut_given",
+                    "Você recebeu HM Cut! Precisa da Insígnia da Pedra para usá-lo em Hoenn.")
   end
 
   def self.cut_tree(event_id)
@@ -991,20 +1013,11 @@ module BlueHoennPilot
       $game_map.events[event_id].refresh
       return true
     end
-    unless stone_badge?
-      pbMessage(_INTL("Uma árvore pequena bloqueia a passagem. A Insígnia da Pedra de Hoenn é necessária."))
+    unless flags["hm_cut_given"]
+      pbMessage(_INTL("Fale com o especialista de Rustboro para registrar Cut em Hoenn."))
       return false
     end
-    unless $bag && [:HM01, :HMCUT].any? { |item|
-           GameData::Item.exists?(item) && $bag.has?(item) }
-      pbMessage(_INTL("Você precisa obter o HM Cut em Rustboro."))
-      return false
-    end
-    unless $player.party.any? { |pokemon| pokemon.respond_to?(:hasMove?) &&
-                                     pokemon.hasMove?(:CUT) }
-      pbMessage(_INTL("Nenhum Pokémon da sua equipe conhece Cut."))
-      return false
-    end
+    return false unless field_move_ready?(:CUT, true)
     return false unless pbConfirmMessage(_INTL("Usar Cut para retirar a árvore?"))
     flags[identifier] = true
     $game_self_switches[[$game_map.map_id, event_id, "A"]] = true
@@ -1147,21 +1160,49 @@ module BlueHoennPilot
       pbMessage(_INTL("Mr. Stone: Nossa equipe está procurando um pacote que desapareceu."))
       return false
     end
-    if flags["stone_letter_received"]
-      pbMessage(_INTL("Mr. Stone: Entregue a carta a Steven em Dewford quando a travessia estiver aberta."))
-      return true
-    end
-    if GameData::Item.exists?(:LETTER)
-      unless $bag && $bag.add(:LETTER, 1)
-        pbMessage(_INTL("Mr. Stone: Libere espaço na Bolsa para receber minha carta."))
-        return false
+    unless flags["stone_letter_received"]
+      if GameData::Item.exists?(:LETTER)
+        unless $bag && $bag.add(:LETTER, 1)
+          pbMessage(_INTL("Mr. Stone: Libere espaço na Bolsa para receber minha carta."))
+          return false
+        end
+      else
+        flags["stone_letter_virtual"] = true
+        pbMessage(_INTL("Mr. Stone: A carta para Steven está registrada no diário da viagem."))
       end
-    else
-      flags["stone_letter_virtual"] = true
-      pbMessage(_INTL("Esta instalação não tem o item Carta; registrei a entrega futura no diário regional."))
+      flags["stone_letter_received"] = true
     end
-    flags["stone_letter_received"] = true
-    pbMessage(_INTL("Mr. Stone: Leve esta carta a Steven em Dewford. Briney poderá ajudar na próxima etapa."))
+    unless flags["devon_pokenav_received"]
+      flags["devon_pokenav_received"] = true
+      pbMessage(_INTL("Mr. Stone: Ativei seu PokéNav. Abra o menu para consultar os próximos destinos de Hoenn."))
+    end
+    if flags["steven_letter_delivered"]
+      pbMessage(_INTL("Mr. Stone: Obrigado por levar minha carta a Steven. Consulte o PokéNav se precisar de ajuda."))
+    else
+      pbMessage(_INTL("Mr. Stone: Leve minha carta a Steven em Dewford. Procure Briney na Rota 104."))
+    end
+    true
+  end
+
+  def self.pokenav_available?
+    flags = state
+    # Old saves already earned the navigation service by taking Stone's letter.
+    !!(flags && flags["devon_goods_delivered"] && flags["stone_letter_received"])
+  end
+
+  def self.pokenav
+    return false unless pokenav_available?
+    flags = state
+    destination = if flags["stern_package_delivered"]
+                    _INTL("A entrega a Stern está concluída. A Rota 110 liga Slateport a Mauville.")
+                  elsif flags["steven_letter_delivered"] && knuckle_badge?
+                    _INTL("A carta foi entregue. Converse com Briney em Dewford para seguir a Slateport.")
+                  elsif flags["steven_letter_delivered"]
+                    _INTL("A carta foi entregue. Desafie Brawly em Dewford antes de embarcar para Slateport.")
+                  else
+                    _INTL("Leve a carta a Steven em Granite Cave. Briney embarca para Dewford na Rota 104.")
+                  end
+    pbMessage(_INTL("PokéNav · Destinos de Hoenn\n{1}", destination))
     true
   end
 
@@ -1177,10 +1218,28 @@ module BlueHoennPilot
                            "Escavador: receba Strength! A Insígnia do Calor permite mover pedras em Hoenn.")
   end
 
+  def self.rusturf_shortcut_open?
+    flags = state
+    !!(flags && flags["rusturf_shortcut_open"])
+  end
+
   def self.rusturf_east_gate
-    return false unless state
-    pbMessage(_INTL("A saída leste de Rusturf Tunnel será liberada quando Verdanturf for integrada."))
+    return false unless state && !rusturf_shortcut_open?
+    pbMessage(_INTL("As rochas ainda fecham o atalho. Use Rock Smash dentro do túnel depois de obter a Insígnia do Dínamo."))
     false
+  end
+
+  def self.rusturf_rock(event_id)
+    flags = state
+    return false unless flags && $game_map && $game_map.map_id == metadata[1][157]
+    event = $game_map.events[event_id]
+    return false unless event && %w[HN4_RusturfRock_1 HN4_RusturfRock_2].include?(event.name)
+    unless flags["rock_smash_given"]
+      pbMessage(_INTL("Procure o morador de Mauville que ensina Rock Smash."))
+      return false
+    end
+    return false unless rock_smash_obstacle(event_id)
+    flags["rusturf_shortcut_open"] = true
   end
 
 
@@ -1600,18 +1659,8 @@ module BlueHoennPilot
     flags = state
     return false unless flags
     return false if flags["rock_smash_given"]
-    item = [:HM06, :TM94].find do |candidate|
-      GameData::Item.exists?(candidate) &&
-        GameData::Item.get(candidate).respond_to?(:move) &&
-        GameData::Item.get(candidate).move == :ROCKSMASH
-    end
-    unless item && $bag && $bag.add(item, 1)
-      pbMessage(_INTL("Morador: a técnica Rock Smash precisa estar disponível e caber na Bolsa."))
-      return false
-    end
-    flags["rock_smash_given"] = true
-    pbMessage(_INTL("Você recebeu Rock Smash! A Insígnia do Dínamo autoriza seu uso em Hoenn."))
-    true
+    field_hm_reward(:ROCKSMASH, HOENN_FIELD_ITEMS.fetch(:ROCKSMASH), "rock_smash_given",
+                    "Você recebeu Rock Smash! A Insígnia do Dínamo autoriza seu uso em Hoenn.")
   end
 
   def self.rydel_bikes
@@ -2835,7 +2884,7 @@ module BlueHoennPilot
   }.freeze
   HOENN_FIELD_ITEMS = {
     CUT:[:HM01,:HMCUT], FLASH:[:HM05,:HMFLASH],
-    ROCKSMASH:[:HM06,:TM94], STRENGTH:[:HM04,:HMSTRENGTH],
+    ROCKSMASH:[:HM06,:HMROCKSMASH,:TM94,:TM98], STRENGTH:[:HM04,:HMSTRENGTH],
     SURF:[:HM03,:HMSURF], DIVE:[:HM08,:HMDIVE],
     WATERFALL:[:HM07,:HMWATERFALL]
   }.freeze
@@ -2850,13 +2899,13 @@ module BlueHoennPilot
       return false
     end
     return false unless $bag && defined?(GameData::Item)
-    item=HOENN_FIELD_ITEMS.fetch(move).find{|id|
-      GameData::Item.exists?(id) &&
-      GameData::Item.get(id).respond_to?(:move) &&
-      GameData::Item.get(id).move==move &&
-      $bag.has?(id)
+    candidates = HOENN_FIELD_ITEMS.fetch(move).select { |id|
+      GameData::Item.exists?(id) && GameData::Item.get(id).respond_to?(:move) &&
+        GameData::Item.get(id).move == move
     }
-    unless item
+    # Some native Blue recipes teach Rock Smash using a consumable TM.
+    receipt = move == :ROCKSMASH && flags["rock_smash_given"] && !candidates.empty?
+    unless receipt || candidates.any? { |id| $bag.has?(id) }
       pbMessage(_INTL("Obtenha o HM do movimento {1} antes de usá-lo em Hoenn.",move)) if show_message
       return false
     end
@@ -3822,9 +3871,20 @@ if defined?(Spriteset_Global)
   Spriteset_Global.prepend(BlueHoennPilot::CrisisSprites)
 end
 
-# Only the isolated test copy installs this pause-menu tool; never register
-# a global Debug menu in the main Blue/Decades, Kanto, Johto or Sinnoh.
 if defined?(MenuHandlers)
+  MenuHandlers.add(:pause_menu, :blue_hoenn_pokenav, {
+    "name" => _INTL("PokéNav"),
+    "order" => 54,
+    "condition" => proc { |_menu| BlueHoennPilot.pokenav_available? },
+    "effect" => proc do |menu|
+      menu.pbHideMenu
+      BlueHoennPilot.pokenav
+      menu.pbShowMenu
+      false
+    end
+  })
+
+  # The teleport debug tool remains exclusive to the isolated test copy.
   MenuHandlers.add(:pause_menu, :blue_hoenn_test_teleport, {
     "name" => _INTL("Testar Hoenn · Teleporte"),
     "order" => 72,

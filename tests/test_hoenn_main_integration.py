@@ -228,6 +228,22 @@ class HoennMainIntegrationTests(unittest.TestCase):
         self.assertEqual({name: hoenn.optional_bytes(self.game / name) for name in names}, previous)
         self.assertFalse((self.game / hoenn.JOURNAL).exists())
 
+    def test_combined_oldale_and_rustboro_transaction_recovers_all_owned_maps(self):
+        self.install_proof_fixture()
+        houses_id = 899
+        houses = hoenn.map_path(houses_id)
+        existing = {hoenn.map_path(self.maps[str(key)]) for key in (12, *hoenn.RUSTBORO_LAYOUT_SOURCES)}
+        names = hoenn.MIGRATION_FILES | {hoenn.MAP_INFOS, hoenn.MAP_METADATA, houses} | existing
+        previous = {name: hoenn.optional_bytes(self.game / name) for name in names}
+        changes = {**previous, **{name: b"new region data" for name in existing | {houses}}}
+        with patch.object(hoenn, "ROOT", self.root), \
+             patch.object(hoenn, "verify_installed", side_effect=ValueError("forced verification failure")):
+            with self.assertRaisesRegex(ValueError, "forced verification failure"):
+                hoenn.commit_migration(self.game, previous, changes, oldale_houses=houses_id,
+                                       rustboro_layout=True)
+        self.assertEqual({name: hoenn.optional_bytes(self.game / name) for name in names}, previous)
+        self.assertFalse((self.game / hoenn.JOURNAL).exists())
+
     def test_oldale_audit_checks_both_return_destinations(self):
         mapping = {12: 704, 15: 899}
         worlds = {mid: hoenn.ruby("RPG::Map", events={}) for mid in mapping.values()}

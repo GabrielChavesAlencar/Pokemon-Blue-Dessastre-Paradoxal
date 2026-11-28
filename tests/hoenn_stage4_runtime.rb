@@ -59,12 +59,13 @@ module GameData
   module Item
     ItemRec = Struct.new(:move)
     @registered = {
-      HM01: nil, TM100: :ROCKTOMB, TM39: :SHADOWBALL, QUICKCLAW: nil,
+      HM01: :CUT, TM100: :ROCKTOMB, TM39: :SHADOWBALL, QUICKCLAW: nil,
       DEVONGOODS: nil, LETTER: nil,
     }
     def self.exists?(item); @registered.key?(item); end
     def self.get(item); ItemRec.new(@registered.fetch(item)); end
     def self.delete(item); @registered.delete(item); end
+    def self.register(item, move); @registered[item] = move; end
   end
 end
 module BlueRegions
@@ -107,7 +108,11 @@ def _INTL(message, *args)
   args.each_with_index { |value, index| message = message.gsub("{#{index + 1}}", value.to_s) }
   message
 end
-def pbMessage(message, *_args);$messages << message;end
+$roxanne_answers = []
+def pbMessage(message, commands = nil, *_args)
+  $messages << message
+  commands ? $roxanne_answers.shift : nil
+end
 def pbConfirmMessage(message);$messages << message;$confirm;end
 def setBattleRule(name);$battles << name;end
 def assert(cond, msg);raise "[HOENN_STAGE4] #{msg}" unless cond;end
@@ -136,6 +141,10 @@ flags = BlueHoennPilot.state
 assert(!BlueHoennPilot.roxanne, "Roxanne opened before required story")
 assert(!BlueHoennPilot.rustboro_theft, "Theft triggered before Roxanne")
 assert(!BlueHoennPilot.cut_tree(11), "Cut allowed before Stone")
+GameData::Item.register(:HM01, :FLY)
+assert(!BlueHoennPilot.cutter, "Specialist handed out an HM for the wrong move")
+assert(!flags["hm_cut_given"] && $bag.items[:HM01] == 0, "Invalid item produced a local receipt")
+GameData::Item.register(:HM01, :CUT)
 assert(BlueHoennPilot.cutter, "Cutter did not deliver HM")
 assert($bag.items[:HM01] == 1, "HM Cut missing")
 assert(!BlueHoennPilot.cutter, "HM Cut duplicated")
@@ -143,9 +152,15 @@ assert(!BlueHoennPilot.cut_tree(11), "HM alone bypassed Stone Badge")
 
 flags["wally_captured"] = true
 flags["forest_aqua_defeated"] = true
+$roxanne_answers = [-1]
+assert(!BlueHoennPilot.roxanne && TrainerBattle.history.empty?, "Canceled puzzle started Roxanne")
+$roxanne_answers = [1, 0]
+assert(!BlueHoennPilot.roxanne && !flags["roxanne_puzzle_solved"], "Wrong answer cleared puzzle")
+$roxanne_answers = [1, 2]
 TrainerBattle.result = false
 assert(!BlueHoennPilot.roxanne, "Loss marked Stone Badge")
 assert(!BlueHoennPilot.stone_badge?, "Stone badge granted on loss")
+assert(flags["roxanne_puzzle_solved"] && $roxanne_answers.empty?, "Solved puzzle was lost on defeat")
 assert($PokemonGlobal.blue_regions["achievements"] == {}, "Achievement changed on loss")
 
 $bag.can_add = false
@@ -168,6 +183,14 @@ assert(TrainerBattle.history.count([:BLUE_HOENN_ROXANNE, "Roxanne", 427]) == 2,
 # The player must actually teach Cut, after acquiring both HM and STONE.
 assert(!BlueHoennPilot.cut_tree(11), "Cut allowed with no Pokémon knowing it")
 $player.party.first.known_moves << :CUT
+flags.delete("hm_cut_given")
+assert(!BlueHoennPilot.cut_tree(11), "An HM in the bag bypassed local acquisition")
+assert(!$game_self_switches[[783, 11, "A"]], "Unregistered Cut cleared a tree")
+assert(BlueHoennPilot.cutter, "Existing Cut HM could not be registered by the specialist")
+assert(flags["hm_cut_given"] && $bag.items[:HM01] == 1, "Registering Cut duplicated the item")
+GameData::Item.register(:HM01, :FLY)
+assert(!BlueHoennPilot.cut_tree(11), "An HM for a different move passed Cut validation")
+GameData::Item.register(:HM01, :CUT)
 $confirm = false
 assert(!BlueHoennPilot.cut_tree(11), "Declining Cut removed tree")
 assert(!$game_self_switches[[783, 11, "A"]], "Decline set self switch")
@@ -216,12 +239,25 @@ assert($bag.items[:DEVONGOODS] == 0, "Devon removed Goods twice")
 $bag.can_add = false
 assert(!BlueHoennPilot.mr_stone, "Letter delivered with full bag")
 assert(!flags["stone_letter_received"], "Full bag marked Stone letter received")
+assert(!BlueHoennPilot.pokenav_available?, "Navigation unlocked before the letter")
 $bag.can_add = true
 assert(BlueHoennPilot.mr_stone, "Mr Stone didn't deliver LETTER")
 assert($bag.items[:LETTER] == 1, "Letter missing")
+assert(flags["devon_pokenav_received"] && BlueHoennPilot.pokenav, "Regional navigation missing")
+flags.delete("devon_pokenav_received")
+assert(BlueHoennPilot.pokenav, "Older save could not open its earned navigation")
 assert(BlueHoennPilot.mr_stone, "Mr Stone repeat dialogue missing")
 assert($bag.items[:LETTER] == 1, "Letter duplicated")
 assert(!BlueHoennPilot.rusturf_east_gate, "Verdanturf premature exit")
+GameData::Item.register(:TM98, :ROCKSMASH)
+$PokemonGlobal.blue_regions["achievements"]["HOENN"] << "DYNAMO"
+$player.party.first.known_moves << :ROCKSMASH
+assert(!BlueHoennPilot.field_move_ready?(:ROCKSMASH), "No regional receipt or TM still allowed Rock Smash")
+assert(BlueHoennPilot.rock_smash_teacher && $bag.items[:TM98] == 1, "Teacher rejected the native TM98")
+assert($bag.remove(:TM98, 1), "Could not consume the teaching TM")
+assert(BlueHoennPilot.field_move_ready?(:ROCKSMASH), "Consumed TM invalidated the regional receipt")
+assert(!BlueHoennPilot.rock_smash_teacher, "Teacher duplicated the Rock Smash reward")
+$PokemonGlobal.blue_regions["achievements"]["HOENN"].delete("DYNAMO")
 assert(BlueHoennPilot.sign_stage4(:RUSTBORO_GYM), "Gym sign missing")
 assert(!BlueHoennPilot.sign_stage4(:MISSING), "Unknown sign accepted")
 
@@ -239,5 +275,6 @@ prev = Marshal.dump($PokemonGlobal.blue_regions)
 assert(!BlueHoennPilot.roxanne, "Roxanne ran in Kanto")
 assert(!BlueHoennPilot.cut_tree(11), "Cut permission leaked to Kanto")
 assert(!BlueHoennPilot.devon_employee, "Devon ran in Kanto")
+assert(!BlueHoennPilot.pokenav, "Hoenn navigation leaked into Kanto")
 assert(Marshal.dump($PokemonGlobal.blue_regions) == prev, "Kanto save polluted")
 puts "HOENN_STAGE4_RUNTIME_OK"
