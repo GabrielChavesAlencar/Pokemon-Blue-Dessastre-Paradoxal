@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - 'scripts/regions/audit_k05_lavender.py'
+      - 'scripts/regions/build_k05_city.py'
+      - 'tests/test_kanto_k05_city.py'
       - 'tests/test_kanto_k05_source.py'
       - '.github/workflows/kanto-k05-source.yml'
   workflow_dispatch:
@@ -24,7 +26,7 @@ jobs:
       - name: Validar contrato do inventário
         shell: powershell
         run: |
-          python -m unittest discover -s tests -p 'test_kanto_k05_source.py'
+          python -m unittest discover -s tests -p 'test_kanto_k05*.py'
           if($LASTEXITCODE -ne 0){throw 'K05 source contract tests failed'}
       - name: Auditar cidade, serviços e torre na fonte fixada
         shell: powershell
@@ -35,10 +37,19 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Pinned Kanto source unavailable'}
           python scripts/regions/audit_k05_lavender.py
           if($LASTEXITCODE -ne 0){throw 'K05 source audit failed'}
+      - name: Preparar terreno e serviços de Lavender em cópia isolada
+        shell: powershell
+        run: |
+          python scripts/regions/pilot.py --output .blue-work/kanto-k05-baseline
+          if($LASTEXITCODE -ne 0){throw 'Cannot build published 165-map K04 baseline'}
+          python scripts/regions/build_k05_city.py
+          if($LASTEXITCODE -ne 0){throw 'K05 city adapter failed'}
       - name: Guardar recibo sem jogo, scripts de origem ou saves
         if: always() && hashFiles('.blue-work/kanto-k05-source.json') != ''
         uses: actions/upload-artifact@v4
         with:
           name: kanto-k05-source-inventory
-          path: .blue-work/kanto-k05-source.json
+          path: |
+            .blue-work/kanto-k05-source.json
+            .blue-work/kanto-k05-city-stage.json
           if-no-files-found: error

@@ -26,10 +26,12 @@ class K05SourceTests(unittest.TestCase):
     def test_source_seam_and_deferred_lanes(self):
         with TemporaryDirectory() as tmp:
             p = Path(tmp) / "map_connections.txt"
-            p.write_text("93,North,0,87,South,0\n93,South,0,83,North,0\n", encoding="utf8")
-            known = scoped_links(p,{87})
+            p.write_text("93,North,0,87,South,0\n93,South,0,83,North,0\n93,West,0,86,East,90\n", encoding="utf8")
+            known = scoped_links(p,{86,87})
             self.assertTrue(known[0]["both_ends_in_first_visit"])
             self.assertFalse(known[1]["both_ends_in_first_visit"])
+            self.assertTrue(known[2]["both_ends_in_first_visit"])
+            self.assertEqual([r["city_fixture_allowed"] for r in known],[True,False,False])
             p.write_text("93,North,1,87,South,0\n", encoding="utf8")
             with self.assertRaisesRegex(ValueError, "zero offset"):
                 scoped_links(p,{87})

@@ -48,8 +48,10 @@ def scoped_links(path, existing):
         cols = [s.strip() for s in row.split(",")]
         a, b = int(cols[0]), int(cols[3])
         if a in K05 or b in K05:
-            links.append({"source_row": [a, cols[1], int(cols[2]), b, cols[4], int(cols[5])],
-                          "both_ends_in_first_visit": {a,b} <= set(existing) | set(K05)})
+            original = (a, cols[1], int(cols[2]), b, cols[4], int(cols[5]))
+            links.append({"source_row":list(original),
+                          "both_ends_in_first_visit":{a,b} <= set(existing) | set(K05),
+                          "city_fixture_allowed":original == LAVENDER_BOUNDARY})
     observed = {tuple(r["source_row"]) for r in links}
     if LAVENDER_BOUNDARY not in observed:
         raise ValueError("Source no longer proves Lavender north ↔ Route 10 south at zero offset")
