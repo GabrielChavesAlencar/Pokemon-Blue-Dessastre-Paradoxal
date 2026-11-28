@@ -54,6 +54,7 @@ on:
       - 'scripts/regions/install_hoenn.py'
       - 'scripts/regions/install_kanto.py'
       - 'data/regions/kanto-source.json'
+      - 'data/regions/hoenn-source.json'
       - 'data/kanto-music-rules.json'
       - '.github/workflows/android-multiregion.yml'
 permissions:
@@ -215,8 +216,24 @@ jobs:
           }
 
           if((Get-Item dist/Blue-Android-Decades-Kanto-Hoenn.zip).Length -gt 2147483648){throw 'Asset excede 2 GiB do GitHub.'}
+      - name: Verificar a autorização de redistribuição de Hoenn
+        id: hoenn_publication
+        shell: pwsh
+        run: |
+          $allowed = $false
+          try {
+            $manifest = Get-Content -LiteralPath 'data/regions/hoenn-source.json' -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+            $approval = $manifest.source.public_redistribution_approved
+            $allowed = $manifest.schema -eq 1 -and $manifest.region -ceq 'HOENN' -and $approval -is [bool] -and $approval
+          } catch {
+            Write-Output 'Não foi possível ler a autorização de Hoenn.'
+          }
+          Add-Content -LiteralPath $env:GITHUB_OUTPUT -Value "allowed=$($allowed.ToString().ToLowerInvariant())" -Encoding utf8
+          if (-not $allowed) {
+            Write-Output '::notice title=ZIP multirregional de Hoenn::A publicação aguarda a autorização de redistribuição registrada no projeto.'
+          }
       - name: Publicar release experimental apenas apos sucesso integral
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && steps.hoenn_publication.outputs.allowed == 'true'
         shell: powershell
         env:
           GH_TOKEN: ${{ github.token }}
