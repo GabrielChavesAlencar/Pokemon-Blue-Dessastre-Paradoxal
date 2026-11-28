@@ -2,6 +2,60 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7899b30ce3a4cb49d3ffcb8b054ff5f39ebcb47d",
+      "date": "2026-11-28T05:30:11-03:00",
+      "title": "Android K05: atualização pela fonte sem redistribuição",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "4bda388e0f6d07763c95cfd9877ce337e61f9cb9",
+      "date": "2026-11-28T05:08:23-03:00",
+      "title": "Recover interrupted Kanto source updates before retrying on Android",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "d7ba4cdf1ee201f91b0779abd402a65525ccb8a3",
+      "date": "2026-11-28T04:55:01-03:00",
+      "title": "Route K05 through the Android updater without a redistributed game archive",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "e9840084543dbe37b9bd2bc2d18dde95a614858a",
+      "date": "2026-11-28T04:36:19-03:00",
+      "title": "Install only Kanto assets and required caches after native compilation",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "7eee91589c41ef8addbb336996078cc5c2cb0313",
+      "date": "2026-11-28T04:23:09-03:00",
+      "title": "Launch the disposable Android compiler from a verified short game root",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "68670a2bda1b9a9f173816a0bd6b5b0631fc5336",
+      "date": "2026-11-28T04:09:35-03:00",
+      "title": "Normalize the isolated JoiPlay compiler and separate K05 product from recipe identity",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "5b2880da5fb2f2a6429fd1a4d498bf68b53295a2",
+      "date": "2026-11-28T03:55:47-03:00",
+      "title": "Treat verified refusal of uncompiled Android updates as a passing guard",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "b12d9b9d5ca9d55a9e9baecfde3e8667a3336d1a",
+      "date": "2026-11-28T03:46:14-03:00",
+      "title": "Resolve Windows temporary paths before source-update isolation checks",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "0ad0edd5533d16e1aa32cc6af11a4ada31330ffc",
+      "date": "2026-11-28T03:44:26-03:00",
+      "title": "Stage source-fetched JoiPlay updates locally with hash checks and rollback",
+      "category": "Melhorias"
+    },
+    {
       "sha": "0eaf9401b2d9e828e8549f7c7fea28c5de748157",
       "date": "2026-11-28T03:43:38-03:00",
       "title": "K05: ativar Lavender e a primeira visita à Pokémon Tower",
