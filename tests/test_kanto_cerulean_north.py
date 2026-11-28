@@ -211,9 +211,11 @@ puts "KANTO_K02C_MESSAGE_PREPEND_RESTORE_OK"
 
     def test_04_android_ready_gate_accepts_only_verified_old_and_new_registry(self):
         source = (ROOT / "scripts/battle_polish/RegionStart.rb").read_text("utf-8")
-        self.assertIn('["142", "145", "151", "152", "156", "160", "165"].include?(fields[1])', source)
-        self.assertIn('[142, 145, 151, 152, 156, 160, 165].include?(expected_count)', source)
+        self.assertIn('["142", "145", "151", "152", "156", "160", "165", "178"].include?(fields[1])', source)
+        self.assertIn('[142, 145, 151, 152, 156, 160, 165, 178].include?(expected_count)', source)
         self.assertIn('if expected_count >= 160', source)
+        self.assertIn('if expected_count == 178', source)
+        self.assertIn('lavender.all? { |source,id| maps[source]==id }', source)
         self.assertIn('rock_slots.all? { |source, id| maps[source] == id }', source)
         self.assertIn('["23","79","81","82"].all?', source)
         self.assertIn('maps[source].is_a?(Integer) && !(452..595).include?(maps[source])', source)

@@ -4,6 +4,9 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shutil
+import subprocess
+import sys
 from pathlib import Path
 from unittest.mock import patch
 
@@ -20,6 +23,10 @@ CONTROL={PROOF,installer.READY_GATE,installer.MARKER,Path("Data/PluginScripts.rx
          Path("Data/blue-compile-request.txt")}
 LATE_WRITE=Path("Data/Map621.rxdata")
 READY_COUNT=178
+HISTORICAL={
+    156:"3f53555ed82b3ffaad86422fae572130b0fca2a2",
+    160:"4c21940ae4936adb1919c0052007e3f2812b077d",
+}
 
 
 def locations(size):
@@ -56,6 +63,36 @@ def seed_165():
     result=installer.apply_install(seed,WORK/"kanto-k05-baseline",True)
     require(result["maps"]==165 and installer.verify_installed(seed)["maps"]==165,
             "Could not seed a source-valid 165-map K04 installation")
+
+
+def seed_historical(size):
+    """Build and install with the immutable historical recipes, not mocked PAL."""
+    if os.getenv("GITHUB_ACTIONS")!="true" or os.name!="nt" or size not in HISTORICAL:
+        raise ValueError("K05 historical setup is Windows Actions only")
+    tree=WORK/f"kanto-k05-historical-{size}"
+    seed,_,_=locations(size)
+    historical_game=tree/"game"
+    require(not seed.exists() and not historical_game.exists() and
+            tree.resolve().parent==WORK.resolve() and tree.is_dir(),
+            "Historical fixture path is not clean")
+    observed=subprocess.check_output(
+        ["git","rev-parse","HEAD"],cwd=tree,text=True).strip()
+    if observed!=HISTORICAL[size] or len(json_file(tree/"data/regions/kanto-source.json")["maps"])!=size:
+        raise ValueError("Historical Kanto source recipe is not exactly pinned")
+    copy_for_ci(ROOT/"game",historical_game)
+    tool=tree/"scripts/regions/install_kanto.py"
+    pilot=tree/".blue-work"/"kanto-historical"
+    subprocess.run([sys.executable,str(tool),"--game",str(historical_game),"--pilot",str(pilot),
+                    "--source",str(installer.SOURCE),"--apply"],cwd=tree,check=True)
+    receipt=json_file(historical_game/PROOF)
+    require(len(receipt["maps"])==size and
+            (historical_game/"Data/blue-kanto-ready.txt").read_bytes()==installer.ready_gate_bytes(
+                {int(sid):mid for sid,mid in receipt["maps"].items()}),
+            "Historical installer did not produce the exact predecessor")
+    seed.parent.mkdir(exist_ok=True)
+    historical_game.rename(seed)
+    shutil.rmtree(pilot)
+    print(f"KANTO_K05_PINNED_PREDECESSOR_{size}_OK:{observed}",flush=True)
 
 
 def run(size):
@@ -128,8 +165,11 @@ if __name__=="__main__":
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("prior",type=int,choices=[156,160,165])
     parser.add_argument("--seed-165",action="store_true")
+    parser.add_argument("--seed-historical",action="store_true")
     a=parser.parse_args()
     if a.seed_165:
         require(a.prior==165,"Wrong seed option")
         seed_165()
+    if a.seed_historical:
+        seed_historical(a.prior)
     run(a.prior)

@@ -15,6 +15,7 @@ on:
       - 'scripts/regions/verify_pilot.py'
       - 'scripts/battle_polish/RegionStart.rb'
       - 'tests/region_start_android_no_json_runtime.rb'
+      - 'tests/test_kanto_cerulean_north.py'
       - 'tests/test_kanto_k05_migration.py'
       - 'scripts/regions/k05_tower_actors.py'
       - 'scripts/regions/KantoK05Tower.rb'
@@ -36,7 +37,7 @@ concurrency:
 jobs:
   audit:
     runs-on: windows-2022
-    timeout-minutes: 35
+    timeout-minutes: 45
     env:
       GALLIUM_DRIVER: llvmpipe
       ALSOFT_DRIVERS: 'null'
@@ -207,6 +208,25 @@ jobs:
           }
           Write-Host ("KANTO_K05_MIGRATED_NATIVE_REPORT:"+(Get-Content $proof -Raw).Trim())
           Write-Host 'KANTO_K05_MIGRATED_NATIVE_OK'
+      - name: Fixar instalador de Kanto com 156 mapas
+        uses: actions/checkout@v4
+        with:
+          ref: 3f53555ed82b3ffaad86422fae572130b0fca2a2
+          path: .blue-work/kanto-k05-historical-156
+          persist-credentials: false
+      - name: Fixar instalador de Kanto com 160 mapas
+        uses: actions/checkout@v4
+        with:
+          ref: 4c21940ae4936adb1919c0052007e3f2812b077d
+          path: .blue-work/kanto-k05-historical-160
+          persist-credentials: false
+      - name: Validar atualização direta das versões com 156 e 160 mapas
+        shell: powershell
+        run: |
+          foreach($prior in @(156,160)){
+            python scripts/regions/qa_k05_migration.py $prior --seed-historical
+            if($LASTEXITCODE -ne 0){throw "K05 direct migration failed from the pinned $prior-map install"}
+          }
       - name: Reunir apenas recibos e diagnósticos em diretório visível
         if: always() && hashFiles('.blue-work/kanto-k05-source.json') != ''
         shell: powershell
@@ -218,6 +238,8 @@ jobs:
             '.blue-work/kanto-k05-tower-stage.json',
             '.blue-work/kanto-k05-product-proof.json',
             '.blue-work/kanto-k05-migration-165.json',
+            '.blue-work/kanto-k05-migration-156.json',
+            '.blue-work/kanto-k05-migration-160.json',
             '.blue-work/kanto-k05-city/Data/blue-kanto-k05-city-proof.txt',
             '.blue-work/kanto-k05-city/Data/blue-kanto-k05-city-stage.txt',
             '.blue-work/kanto-k05-city/Data/blue-kanto-error.txt',
