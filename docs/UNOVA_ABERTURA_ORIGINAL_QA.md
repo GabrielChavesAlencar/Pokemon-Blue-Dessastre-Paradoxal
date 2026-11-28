@@ -16,4 +16,16 @@ Na raiz do repositório, execute `python scripts/regions/unova_original_opening.
 
 Os testes releem os sete RXDATA e conferem o grafo de seis ligações, as células de retorno distintas e a alcançabilidade geométrica. As coordenadas são candidatas para compilação em eventos. A tabela de passagem de um tileset compartilhado e os eventos do RPG Maker ainda precisam ser vinculados e testados.
 
-MapIDs, encontros, personagens e enredo continuam pendentes. A instalação do corredor depende da [revisão F01 das faixas](UNOVA_F01_BASELINE_WINDOWS_ANDROID.md) e das evidências Windows e JoiPlay do [roadmap](UNOVA_ROADMAP_CODEX_100_JOGAVEL_WINDOWS_ANDROID.md).
+## Overlay descartável com portas RMXP
+
+Os sete mapas usam 276–282 no perfil de QA, na ordem da tabela. A escolha usa o primeiro trecho contíguo da alternativa histórica 276–299. O compilador rejeita colisões com arquivos ou entradas de MapInfos, inventário Android, transferências estáticas, conexões, pontos nativos e manifestos regionais. A leitura estática produz evidência para o piloto e deixa a reserva pública em aberto.
+
+```powershell
+python scripts/regions/unova_opening_stage.py --base-game "<base Windows>" --android-manifest "<update.json multiregional>"
+```
+
+A exportação privada em `.blue-work/unova/opening-rmxp-qa/` contém um tileset com passagens, sete mapas e doze eventos Player Touch com comando nativo 201. As coordenadas de chegada ficam fora de todos os gatilhos. O manifesto indica os hashes da base e da saída. Use o overlay somente no ambiente descartável para o qual foi gerado.
+
+O [workflow Windows de QA](../.github/workflows/unova-opening-native.yml) instala uma base pinada em um runner descartável e cria um perfil de saves exclusivo. A prova inicia no quarto, percorre as doze portas caminhando, verifica o destino aplicado pela cena e faz save/reload no centro em Accumula. O recibo de CI registra a revisão e cada travessia confirmada pelo Game.exe.
+
+A reserva pública dos MapIDs, a história, os encontros, o JoiPlay em aparelho e as releases pareadas seguem os gates do [roadmap](UNOVA_ROADMAP_CODEX_100_JOGAVEL_WINDOWS_ANDROID.md). A fonte dos números e as faixas excluídas estão na [revisão F01](UNOVA_F01_BASELINE_WINDOWS_ANDROID.md).
