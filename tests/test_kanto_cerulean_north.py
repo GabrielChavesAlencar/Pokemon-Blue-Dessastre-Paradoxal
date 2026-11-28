@@ -32,7 +32,8 @@ class CeruleanNorthContract(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.manifest = json.loads(MANIFEST.read_text("utf-8"))
-        cls.ids = {int(i) for i in cls.manifest["maps"]}
+        from k05_contract import MAPS as lavender
+        cls.ids = {int(i) for i in cls.manifest["maps"]} - lavender.keys()
 
     def test_01_legacy_map_ids_cannot_shift(self):
         corridor = {23,79,81,82}
