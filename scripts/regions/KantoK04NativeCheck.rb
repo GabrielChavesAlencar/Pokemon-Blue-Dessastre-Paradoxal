@@ -15,7 +15,7 @@ module KantoK04NativeCheck
     File.open("Data/blue-kanto-k04-stage.txt","a") { |f| f.puts("#{label}:#{value.inspect}") }
   end
 
-  def self.door(ids, source, eid, dest, anchor, native_ledges: true)
+  def self.door(ids, source, eid, dest, anchor, native_ledges: false)
     from,to = ids.values_at(source,dest)
     component = C.opening_component(from,anchor,[],false,native_ledges)
     event = require!($game_map.events[eid], "missing warp #{source}/#{eid}")
@@ -39,14 +39,14 @@ module KantoK04NativeCheck
       key = [area,at]
       next if visited[key]
       visited[key] = true
-      component = C.opening_component(ids.fetch(area),at,[],false,true)
+      component = C.opening_component(ids.fetch(area),at)
       trace("FLOOR_COMPONENT",[area,at,component.length,legs.map { |leg| leg["event_id"] }])
       if area == 90 && legs.length >= 3 && (exit_leg = door(ids,90,last,87,at))
         require!(exit_leg["to_xy"] == (north ? [8,68] : [8,30]), "wrong tunnel mouth return")
         current = anchor
         return [*legs,exit_leg].map do |leg|
           trace("TOUCH", [leg,current])
-          receipt = D.door!(leg,current,native_ledges: true,settle_motion: true)
+          receipt = D.door!(leg,current,settle_motion: true)
           current = leg.fetch("to_xy")
           receipt
         end
@@ -287,6 +287,32 @@ module KantoK04NativeCheck
     end
   end
 
+  def self.save_reload!(ids,flash)
+    floor = ids.fetch(90)
+    require!($game_map.map_id == floor && [$game_player.x,$game_player.y] == [24,7],
+      "Flash test did not finish in the north entrance")
+    slot = "Kanto K04 Native CI"
+    require!(Game.save(slot), "native synthetic save failed")
+    path = SaveData.get_full_path(slot)
+    require!(File.file?(path), "native save file is missing")
+    begin
+      $map_factory.setup(ids.fetch(88))
+      $game_player.moveto(7,8)
+      facts = C.reload_native_slot(path)
+      hm = flash.fetch("hm").to_sym
+      require!($game_map.map_id == floor && [$game_player.x,$game_player.y] == [24,7],
+        "save reopened on wrong Rock Tunnel map or position")
+      require!(facts.fetch("region") == "KANTO" && $bag.quantity(hm) == 1 &&
+        BlueKantoPilot.progress.fetch("pilot_items").include?("KANTO_021_FLASH_AIDE"),
+        "native save lost Kanto identity, HM or one-time quest flag")
+      require!($PokemonGlobal.pokecenterMapId == ids.fetch(88),
+        "save lost Rock Tunnel Center respawn")
+      {"map"=>floor,"xy"=>[24,7],"hm"=>hm,"center"=>ids.fetch(88)}
+    ensure
+      File.delete(path) if File.file?(path)
+    end
+  end
+
   def self.run
     SaveData.initialize_bootup_values
     Game.start_new
@@ -325,6 +351,13 @@ module KantoK04NativeCheck
       out = require!(door(ids,88,1,87,[7,8],native_ledges: false), "Center exit unreachable")
       [D.door!(into,[13,31]),D.door!(out,[7,8])]
     end
+    # The corridor probe models many native ledge jumps while planning
+    # candidate positions; run the ordinary cave contacts and Action probes
+    # first, so they can never inherit the route scan's movement timers.
+    north = check_area(errors,"TUNNEL_NORTH_TO_SOUTH") { passage(ids,12,17,[13,31]) }
+    south = check_area(errors,"TUNNEL_SOUTH_TO_NORTH") { passage(ids,13,1,[8,68]) }
+    flash = check_area(errors,"NATIVE_FLASH") { flash!(ids) }
+    saved = check_area(errors,"NATIVE_SAVE_RELOAD") { save_reload!(ids,flash) } if flash
     center_path = [39,86,87,88].map { |sid| ids[sid] }
     roads = check_area(errors,"CERULEAN_ROUTE9_ROUTE10") do
       # Test fixture represents a player who finished S.S. Anne. Same native
@@ -341,13 +374,10 @@ module KantoK04NativeCheck
         "Cerulean / routes / medical center corridor is not reciprocal")
       [from_city,to_city]
     end
-    north = check_area(errors,"TUNNEL_NORTH_TO_SOUTH") { passage(ids,12,17,[13,31]) }
-    south = check_area(errors,"TUNNEL_SOUTH_TO_NORTH") { passage(ids,13,1,[8,68]) }
-    flash = check_area(errors,"NATIVE_FLASH") { flash!(ids) }
     require!(errors.empty?, "native gate failures: #{errors.inspect}")
     report = {"map_ids"=>ids,"encounters"=>encounters,"center_service"=>center,
       "center_doors"=>entrances,"north_to_south"=>north,"south_to_north"=>south,
-      "seams"=>[roads[0].take(2),roads[1].drop(1)],"flash"=>flash,
+      "seams"=>[roads[0].take(2),roads[1].drop(1)],"flash"=>flash,"native_save"=>saved,
       "manual_playthrough"=>false,"not_a_release"=>true}
     File.write("Data/blue-kanto-k04-proof.txt",report.inspect)
     puts "KANTO_K04_NATIVE_CORRIDOR_FLASH_OK"
