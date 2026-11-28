@@ -1,0 +1,59 @@
+name: Kalos KA01 - fontes e procedencia
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/kalos-ka01-sources.yml'
+      - 'qa/kalos_sources/ka01*'
+      - 'tests/test_kalos_ka01_sources.py'
+      - 'docs/kalos/KA01_FONTES_EXECUCAO.md'
+permissions:
+  contents: read
+concurrency:
+  group: kalos-ka01-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+      - name: Provar escopo e bloqueios com testes negativos
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^2)" = "$PR_HEAD"
+          git diff --check "$BASE" HEAD
+          python - <<'PY'
+          import os, subprocess
+          paths = set(subprocess.check_output(["git","diff","--name-only",os.environ["BASE"],"HEAD"], text=True).splitlines())
+          assert paths == {
+              ".github/workflows/kalos-ka01-sources.yml",
+              "docs/kalos/KA01_FONTES_EXECUCAO.md",
+              "qa/kalos_sources/ka01_source_audit.py",
+              "qa/kalos_sources/ka01_sources.json",
+              "tests/test_kalos_ka01_sources.py",
+          }, paths
+          print("Kalos KA01 PR head", os.environ["PR_HEAD"])
+          PY
+          python -m unittest discover -s tests -p test_kalos_ka01_sources.py -v
+      - name: Ler só o índice público pelo hash fixado
+        run: |
+          set -euo pipefail
+          index="$RUNNER_TEMP/kalos-ka01-index.rxdata"
+          curl --fail --silent --show-error --proto '=https' --max-time 35 --max-filesize 1048576 \
+            'https://raw.githubusercontent.com/Luc-ker/fire-ash-public/078d41222a30fafeee7cc0a65b7a11bd2f19b2f4/Data/MapInfos.rxdata' \
+            --output "$index"
+          mkdir -p .blue-work/kalos-ka01
+          python qa/kalos_sources/ka01_source_audit.py --index "$index" > .blue-work/kalos-ka01/receipt.json
+          rm -- "$index"
+          echo KALOS_KA01_SOURCE_AUDIT_OK
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kalos-ka01-sanitized-source-evidence
+          path: .blue-work/kalos-ka01/receipt.json
+          if-no-files-found: error
