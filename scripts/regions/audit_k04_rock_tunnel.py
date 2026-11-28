@@ -7,6 +7,7 @@ from pathlib import Path
 
 from audit import KANTO, ROOT, allocate_kanto_ids, inventory, json_file, load, stable_source_order, text
 from audit_cerulean_interiors import inspect_events, transfers
+from kanto_overworld import source_obstacle
 
 K04 = (86, 87, 88, 90, 91)
 FORBIDDEN = {89, 92}  # hierarchy and Power Plant, a later delivery
@@ -134,6 +135,22 @@ def main():
     report = summarize(source, inspect_events(source, K04), candidate)
     report["flash_acquisition"] = flash_acquisition(source)
     print("KANTO_K04_FLASH_HM_ANCHORS:" + json.dumps(report["flash_acquisition"]), flush=True)
+    _, by_id = inventory(source)
+    report["cut_anchors"] = {
+        str(sid): [{"event": eid, "xy": [ev.attrs["@x"], ev.attrs["@y"]]}
+                   for eid, ev in load(by_id[sid]).attrs["@events"].items()
+                   if source_obstacle(ev) == "cut"] for sid in (39, 86, 87)
+    }
+    flash_page = load(by_id[21]).attrs["@events"][2].attrs["@pages"][0].attrs
+    # Report guard names and numeric inputs, not raw source Ruby.
+    report["route2_flash_branch_guards"] = [
+        {"native_kind": op.attrs["@parameters"][0],
+         "tokens": sorted(set(re.findall(r"(?i)(?:pokedex|(?:owned|seen)(?:_?count)?|HM05|HMFLASH|\d+)",
+                                       text(op.attrs["@parameters"][-1]))))}
+        for op in flash_page["@list"] if op.attrs["@code"] == 111 and op.attrs["@parameters"]
+    ]
+    print("KANTO_K04_ROUTE2_FLASH_GUARDS:" + json.dumps(report["route2_flash_branch_guards"]), flush=True)
+    print("KANTO_K04_SOURCE_CUT_ANCHORS:" + json.dumps(report["cut_anchors"]), flush=True)
     # Source scripts and engine files are not included in the receipt.
     target = ROOT / ".blue-work/kanto-k04-source.json"
     target.write_text(json.dumps(report, ensure_ascii=True, indent=2) + "\n", encoding="utf-8")

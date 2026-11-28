@@ -72,15 +72,33 @@ class MultiregionReleasePaginationTests(unittest.TestCase):
             release("android-multiregion-hotfix-30-ba020a5", "2026-11-19T01:04:03Z"),
             release("android-multiregion-hotfix-31-e7200ef", "2026-11-26T19:30:00Z"),
             release("android-multiregion-82-e23ff33", "2026-11-26T15:00:00Z"),
+            release("android-multiregion-208-20644ab", "2026-11-27T17:17:32Z"),
         ]
         tags, _, count = select_releases([rows, [old, *pinned]],
                                          require_known_baselines=True)
-        self.assertEqual(count, 18)
-        self.assertEqual(tags[0], "android-multiregion-hotfix-31-e7200ef")
+        self.assertEqual(count, 19)
+        self.assertEqual(tags[0], "android-multiregion-208-20644ab")
         self.assertEqual(len(tags), len(set(tags)))
         for tag in REQUIRED_BASELINES:
             self.assertIn(tag, tags)
         self.assertIn(old["tag_name"], tags)
+
+    def test_pending_device_baseline_survives_multiple_newer_releases(self):
+        baseline = "android-multiregion-208-20644ab"
+        known = [release(tag, "2026-11-27T17:17:32Z") for tag in REQUIRED_BASELINES]
+        newer = [release(f"android-multiregion-{n}-abcdef0",
+                         f"2026-11-28T{n-250:02d}:00:00Z") for n in range(250, 258)]
+        oldest = release("android-multiregion-1-abcdef0", "2026-11-01T00:00:00Z")
+        pages = [newer, [oldest, *known]]
+        tags, _, _ = select_releases(pages, require_known_baselines=True)
+        self.assertNotIn(baseline, tags[:6])
+        self.assertEqual(tags.count(baseline), 1)
+        with self.assertRaisesRegex(ValueError, baseline):
+            select_releases([newer, [oldest, *(r for r in known if r["tag_name"] != baseline)]],
+                            require_known_baselines=True)
+        self.assertIn(
+            "'android-multiregion-208-20644ab'='20644ab2f7a0b4c56f54e761c4c3b3ecf878dc7c'",
+            WORKFLOW.read_text("utf8"))
 
     def test_required_baseline_missing_or_unuploaded_blocks_production(self):
         newest = release("android-multiregion-73-abcdef0", "2026-11-26T00:00:00Z")

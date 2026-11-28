@@ -52,6 +52,52 @@ module KantoK04NativeCheck
     raise "K04 no collision-verified path through B1F from exterior mouth #{first} to #{last}"
   end
 
+  def self.cut_inventory(ids)
+    [39,86,87].to_h do |sid|
+      $map_factory.setup(ids.fetch(sid))
+      cut = $game_map.events.values.select { |ev| BlueKantoPilot.cut_tree_obstacle?(ev) }
+      [sid,cut.map { |ev| [ev.id,ev.x,ev.y] }]
+    end
+  end
+
+  def self.center!(ids)
+    id = ids.fetch(88)
+    component = C.opening_component(id,[7,8])
+    nurse = require!($game_map.events.values.find { |event|
+      Array(event.list).any? { |op| op.code == 355 && op.parameters[0].to_s == "BlueKantoPilot.heal" }
+    }, "healing service missing")
+    witness = require!(C.opening_action_witness(component,nurse), "healing service is not reachable")
+    $game_player.moveto(*witness.fetch("standing"))
+    $game_player.direction = witness.fetch("direction")
+    $player.party.first.hp = 1
+    $game_map.events.each_value { |ev| ev.clear_starting }
+    $game_player.check_event_trigger_there([0])
+    require!(nurse.starting, "native action button did not select nurse")
+    interpreter = pbMapInterpreter
+    interpreter.setup_starting_event
+    require!(interpreter.running? && interpreter.instance_variable_get(:@event_id) == nurse.id,
+      "native interpreter did not select nurse")
+    deadline = System.uptime + 5
+    while interpreter.running? && System.uptime < deadline
+      interpreter.update
+      Graphics.update
+    end
+    require!(!interpreter.running? && $player.party.first.hp == $player.party.first.totalhp,
+      "native nurse did not heal damaged party")
+    require!($PokemonGlobal.pokecenterMapId == id, "healing did not register Rock Tunnel respawn")
+    witness
+  end
+
+  def self.check_area(errors, label)
+    output = yield
+    trace(label, output)
+    output
+  rescue StandardError => error
+    errors[label] = error.message
+    trace(label + "_ERROR", error.full_message)
+    nil
+  end
+
   def self.flash!(ids)
     $map_factory.setup(ids[90])
     $game_player.moveto(24,7)
@@ -123,21 +169,29 @@ module KantoK04NativeCheck
       "Power Plant or Lavender installed before its own phase")
     $player.party.replace([Pokemon.new(:BULBASAUR,20)])
     BlueKantoPilot.progress["pilot_starter"] = "BULBASAUR"
+    errors = {}
+    trace("ACTIVE_CUT_OBSTACLES",cut_inventory(ids))
+    center = check_area(errors,"NATIVE_NURSE") { center!(ids) }
     center_path = [39,86,87,88].map { |sid| ids[sid] }
-    from_city = C.k03a_chain(center_path,[22,20],[7,8])
-    to_city = C.k03a_chain(center_path.reverse,[7,8],[22,20])
-    require!(from_city && to_city && [from_city,to_city].all? { |legs| legs.length == 3 },
-      "Cerulean / routes / medical center corridor is not reciprocal")
-    into_center = D.door!(from_city.last,from_city[-2].fetch("to_xy"))
-    from_center = D.door!(to_city.first,[7,8])
-    trace("CENTER_RETURN",from_center)
-    north = passage(ids,12,17,from_center.fetch("landing"))
-    south = passage(ids,13,1,north.last.fetch("landing"))
-    trace("PASSAGES", {"north_to_south"=>north.length,"south_to_north"=>south.length})
-    flash = flash!(ids)
-    report = {"map_ids"=>ids,"encounters"=>encounters,"center_door"=>into_center,
-      "center_return"=>from_center,"north_to_south"=>north,"south_to_north"=>south,
-      "seams"=>[from_city.take(2),to_city.drop(1)],"flash"=>flash,
+    roads = check_area(errors,"CERULEAN_ROUTE9_ROUTE10") do
+      from_city = C.k03a_chain(center_path,[22,20],[7,8])
+      to_city = C.k03a_chain(center_path.reverse,[7,8],[22,20])
+      require!(from_city && to_city && [from_city,to_city].all? { |legs| legs.length == 3 },
+        "Cerulean / routes / medical center corridor is not reciprocal")
+      [from_city,to_city]
+    end
+    entrances = check_area(errors,"CENTER_NATIVE_DOORS") do
+      into = require!(door(ids,87,22,88,[13,31]), "Center entrance unreachable from its reciprocal landing")
+      out = require!(door(ids,88,1,87,[7,8]), "Center exit unreachable")
+      [D.door!(into,[13,31]),D.door!(out,[7,8])]
+    end
+    north = check_area(errors,"TUNNEL_NORTH_TO_SOUTH") { passage(ids,12,17,[13,31]) }
+    south = check_area(errors,"TUNNEL_SOUTH_TO_NORTH") { passage(ids,13,1,[8,68]) }
+    flash = check_area(errors,"NATIVE_FLASH") { flash!(ids) }
+    require!(errors.empty?, "native gate failures: #{errors.inspect}")
+    report = {"map_ids"=>ids,"encounters"=>encounters,"center_service"=>center,
+      "center_doors"=>entrances,"north_to_south"=>north,"south_to_north"=>south,
+      "seams"=>[roads[0].take(2),roads[1].drop(1)],"flash"=>flash,
       "manual_playthrough"=>false,"not_a_release"=>true}
     File.write("Data/blue-kanto-k04-proof.txt",report.inspect)
     puts "KANTO_K04_NATIVE_CORRIDOR_FLASH_OK"

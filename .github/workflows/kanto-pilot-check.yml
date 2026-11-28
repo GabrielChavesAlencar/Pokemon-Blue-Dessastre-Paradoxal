@@ -985,7 +985,7 @@ jobs:
             Write-Host 'KANTO_K04_FIRST_COMPILE_BOOT_RESTART'
           }
           if(!(Test-Path $proof -PathType Leaf) -or (Test-Path $errorFile -PathType Leaf)){
-            Get-Content $stdout,$stderr,"$candidate/Data/blue-kanto-k04-stage.txt",$errorFile,"$candidate/errorlog.txt" -ErrorAction SilentlyContinue | Select-Object -Last 120
+            Get-Content $stdout,$stderr,"$candidate/Data/blue-kanto-k03a-trace.txt","$candidate/Data/blue-kanto-k01b-route-trace.txt","$candidate/Data/blue-kanto-k04-stage.txt",$errorFile,"$candidate/errorlog.txt" -ErrorAction SilentlyContinue | Select-Object -Last 120
             throw 'K04 native corridor and Flash proof missing'
           }
           Write-Host ("KANTO_K04_NATIVE_CORRIDOR_REPORT:" + (Get-Content $proof -Raw).Trim())
@@ -998,6 +998,8 @@ jobs:
           path: |
             .blue-work/kanto-k04-gameplay/Data/blue-kanto-k04-proof.txt
             .blue-work/kanto-k04-gameplay/Data/blue-kanto-k04-stage.txt
+            .blue-work/kanto-k04-gameplay/Data/blue-kanto-k03a-trace.txt
+            .blue-work/kanto-k04-gameplay/Data/blue-kanto-k01b-route-trace.txt
             .blue-work/kanto-k04-gameplay/Data/blue-kanto-error.txt
           if-no-files-found: ignore
       # The Kanto ZIP is a separate compiled game. It cannot be the Decades ZIP.
