@@ -5,7 +5,7 @@ import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"scripts/regions"))
 from audit_k06_celadon_services import script_groups, typed_services, vending_controls
-from build_k06_celadon_services import CANDIDATES, FLOORS, allocate, commands_for, copy_celadon_fixture, ensure_tea_item, SAVE
+from build_k06_celadon_services import CANDIDATES, FLOORS, allocate, check_approach_stamp, commands_for, copy_celadon_fixture, ensure_tea_item, SAVE
 
 
 class CeladonSourceReceiptsTest(unittest.TestCase):
@@ -102,3 +102,14 @@ class CeladonSourceReceiptsTest(unittest.TestCase):
             self.assertIn("Pocket = 8", out.read_text("utf8"))
             self.assertEqual(out.read_text("utf8").count("[TEA]"), 1)
             self.assertNotIn("[TEA]", base.read_text("utf8"))
+
+    def test_released_android_approach_stage_is_in_source_receipt(self):
+        source = {"source_update":{"stage":"K06_APPROACH"}}
+        check_approach_stamp({}, android_base=source)
+        check_approach_stamp({"content_stage":"K06_APPROACH"})
+        with self.assertRaises(ValueError):
+            check_approach_stamp({})
+        with self.assertRaises(ValueError):
+            check_approach_stamp({}, android_base={"source_update":None})
+        with self.assertRaises(ValueError):
+            check_approach_stamp({"content_stage":"OTHER"}, android_base=source)

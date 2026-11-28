@@ -214,11 +214,25 @@ def copy_celadon_fixture(baseline, target):
         stream.write(expected)
 
 
+def check_approach_stamp(stamp, *, android_base=None):
+    phase = stamp.get("content_stage")
+    if android_base is None:
+        matches = phase == "K06_APPROACH"
+    else:
+        # The published Android updater stores the phase in its
+        # authenticated source_update receipt; its embedded Kanto registry
+        # intentionally predates the separate Windows-stage field.
+        proof = android_base.get("source_update")
+        matches = (phase in (None, "K06_APPROACH") and isinstance(proof,dict)
+                   and proof.get("stage") == "K06_APPROACH")
+    if not matches:
+        raise ValueError("Celadon services require the delivered approach stage")
+
+
 def stage_services(source, baseline, target, report, *, android_base=None):
     verify_native_graph(baseline)
     stamp = json_file(baseline / INSTALL)
-    if stamp.get("content_stage") != "K06_APPROACH":
-        raise ValueError("Celadon services require the delivered approach stage")
+    check_approach_stamp(stamp, android_base=android_base)
     previous = {int(sid): mid for sid, mid in stamp["maps"].items()}
     infos, files = inventory(baseline)
     mapping = allocate(infos, files, previous)

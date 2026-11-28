@@ -17,9 +17,9 @@ sys.path[:0] = [str(ROOT), str(ROOT / "scripts/regions")]
 
 from audit import KANTO, inventory, json_file
 from audit_k06_celadon_services import summarize
-from build_k06_celadon_services import CANDIDATES, STAGE_LOCAL, STORE, stage_services
+from build_k06_celadon_services import CANDIDATES, STAGE_LOCAL, STORE, check_approach_stamp, stage_services
 from ensure_source import RELATIVE_ARCHIVE, RELATIVE_SOURCE
-from k06_approach_migration import INSTALL, checked_file, verify_native_graph
+from k06_approach_migration import APPROACH, INSTALL, READY, checked_file, verify_native_graph
 from qa_k04_migration import save_namespace_valid
 from scripts.android import source_update as source
 from scripts.android.package import (
@@ -43,7 +43,9 @@ def verify_predecessor(game):
     if (game/source.RECOVERY_FILE).exists() or (game/source.RECOVERY_FILE).is_symlink():
         raise ValueError("Resolve the interrupted Android update first")
     old = read_installed(game)
-    proof = old.get("source_update", {})
+    proof = old.get("source_update")
+    if not isinstance(proof,dict):
+        raise ValueError("The verified Android source provenance is absent")
     expected = source.installed_provenance(old["files"], RECIPE)["inventory_sha256"]
     previous = proof.get("previous_inventory_sha256")
     if (old["channel"], old["revision"], proof.get("mode"), proof.get("product_revision"),
@@ -53,9 +55,13 @@ def verify_predecessor(game):
         raise ValueError("Celadon requires the exact, verified source-built K06 approach")
     regions, _ = source.protected_map_inventory(game, old)
     registered = json_file(checked_file(game, INSTALL))
-    if registered.get("content_stage") != "K06_APPROACH" or len(regions["kanto"]) != 178 or len(regions["hoenn"]) != 199:
+    check_approach_stamp(registered, android_base=old)
+    approach = json_file(checked_file(game, READY))
+    if ((approach.get("status"), approach.get("population"), approach.get("source_ids")) != (
+            "K06_APPROACH_CANDIDATE", 178, list(APPROACH))
+            or len(regions["kanto"]) != 178 or len(regions["hoenn"]) != 199):
         raise ValueError("Celadon predecessor has an invalid shared regional registry")
-    for rel in ("Data/MapInfos.rxdata", "Data/Tilesets.rxdata", INSTALL):
+    for rel in ("Data/MapInfos.rxdata", "Data/Tilesets.rxdata", INSTALL, READY):
         if source.checked_row(game/rel) != old["files"].get(rel):
             raise ValueError(f"Android predecessor registry hash mismatch: {rel}")
     verify_native_graph(game, compiled=True)
