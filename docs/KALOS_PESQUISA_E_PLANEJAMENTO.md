@@ -5,7 +5,16 @@ Escopo autorizado: pesquisa, documentação e planejamento da campanha X/Y em
 MapIDs, save, instalador, catálogo público ou versão jogável muda nesta
 entrega. O [roadmap KA00–KA31](KALOS_ROADMAP_CODEX_100_JOGAVEL_WINDOWS_ANDROID.md)
 é referência para planejar, não autorização para executar seus lotes de jogo.
-O único YAML novo valida a documentação no GitHub Actions.
+O workflow de Kalos valida só documentação no GitHub Actions.
+
+## Regra de reconstrução dos mapas
+
+Para cada cidade e rota, usar o [atlas visual de X/Y](KALOS_KD05_ATLAS_VISUAL_E_TILES_KANTO.md) para reunir
+vistas do traçado, saídas, desníveis e marcos. Sem mapa pronto ou quase
+pronto, editável e aprovado para reaproveitamento, reconstruir o local
+em 2D com os tilesets de Kanto já usados no Blue. O local deve lembrar
+o máximo possível o original, mantendo o visual de Kanto. Nenhum mapa
+doador de Kalos está homologado.
 
 ## Etapas documentais
 
@@ -16,6 +25,7 @@ O único YAML novo valida a documentação no GitHub Actions.
 | KD02 | [Inventário e progressão](KALOS_KD02_INVENTARIO_E_PROGRESSAO.md) | [Validada no Actions](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/46152122459) |
 | KD03 | [Desenho 2D e primeiro recorte](KALOS_KD03_DESENHO_E_PRIMEIRO_RECORTE.md) | [Validada no Actions](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/46152913501) |
 | KD04 | [Validação, publicação futura e handoff](KALOS_KD04_VALIDACAO_E_HANDOFF.md) | [Resultado final no PR documental](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/pull/398/checks) |
+| KD05 | [Atlas visual: 16 cidades/vilas, 22 rotas e áreas ligadas](KALOS_KD05_ATLAS_VISUAL_E_TILES_KANTO.md) | Referências e regra de reconstrução com tiles de Kanto |
 
 Um lote por vez nesta frente documental: conferir o commit, o resultado do
 workflow e sua evidência. Se falhar, corrigir e validar a mesma fase antes

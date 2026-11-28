@@ -3,7 +3,7 @@
 **Projeto:** Pokémon Blue: Dessastre Paradoxal · **Data:** 27/11/2026 · **Fases:** KA00–KA31.
 **Alvo:** campanha X/Y unificada em 2D, no Game.exe principal Decades/Blue (RPG Maker XP + Essentials 21.1), 16 cidades, rotas 1–22, interiores, oito ginásios, Equipe Flare, Mega Evolução, Liga e pós-jogo. Um único save e uma única instalação multirregional. Pokémon Legends: Z-A e Kalos histórica são expansões fora deste escopo.
 **Estado:** plano operacional; nenhuma etapa de gameplay foi executada. A
-[frente de pesquisa e planejamento KD00–KD04](KALOS_PESQUISA_E_PLANEJAMENTO.md)
+[frente de pesquisa e planejamento KD00–KD05](KALOS_PESQUISA_E_PLANEJAMENTO.md)
 não ativa Kalos. Execute KA00–KA31 somente após autorização explícita
 para implementar; este roadmap não é uma ordem permanente para modificar o jogo.
 
@@ -33,7 +33,7 @@ Auditoria de árvore main: tree 0217069c75555709176b144b72e962aac240ad94, 2240 e
 | [Android package](../scripts/android/package.py) | Verificação de regiões existentes, perfil compartilhado e compilação; ampliar sem enfraquecer gates. |
 | Kalos-specific workflows, fonte pinada, mapas nativos, release | Nenhum encontrado na árvore auditada. Zero mapas/cidades/rotas/ginásios com aceite comprovado; não equivale a inspeção do disco pessoal. |
 
-Bloqueios prioritários: origem autorizada e cobertura real; alocador multirregional e compatibilidade de IDs; ausência de mapa de abertura; nenhuma prova de execução nativa e atualização. A campanha original é 3D: adapte topologia, puzzles e gameplay, não câmera literal. Sem uma fonte completa, produza módulos 2D autorais em vez de travar toda a região à espera de ZIP.
+Bloqueios prioritários: origem autorizada e cobertura real; alocador multirregional e compatibilidade de IDs; ausência de mapa de abertura; nenhuma prova de execução nativa e atualização. A campanha original é 3D: adapte topologia, puzzles e gameplay, não câmera literal. Aplique a regra por mapa: sem um mapa RPG Maker XP pronto ou quase pronto e aprovado, refaça o local em 2D com os tilesets de Kanto já usados no Blue. Antes de desenhar, consulte o [atlas visual KD05](KALOS_KD05_ATLAS_VISUAL_E_TILES_KANTO.md) e confronte vistas, percurso, saídas e marcos para se aproximar do traçado de X/Y sem copiar seus assets.
 
 ## 2. Downloads e fontes verificáveis
 

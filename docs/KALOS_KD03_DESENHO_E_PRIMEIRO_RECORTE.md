@@ -69,7 +69,10 @@ do manifesto; não introduzir segunda política de progressão.
    escada/porta correspondentes em dois sentidos, travessia medida em
    tile e estabilidade após reabrir. Usar fontes do [KD01](KALOS_KD01_FONTES_E_DIREITOS.md)
    sem importar conteúdo não aprovado; não copiar tile, mapa ou script
-   sem direito. Assets do recorte têm lista separada por autoria/licença.
+   sem direito. Se não houver mapa editável pronto ou quase pronto e
+   aprovado, reconstruir com os tilesets de Kanto já usados no Blue.
+   O [atlas KD05](KALOS_KD05_ATLAS_VISUAL_E_TILES_KANTO.md) orienta croqui,
+   marcos, portas, equivalências visuais e registro de lacunas.
 4. Revisar no motor de teste isolado primeiro: caminho real, saídas,
    colisões, segunda abertura, evento idempotente, perfil de saves
    descartável. Fixtures sem testemunho nativo não são aceitação.
