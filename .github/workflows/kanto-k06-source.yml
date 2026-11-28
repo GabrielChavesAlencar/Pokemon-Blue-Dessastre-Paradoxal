@@ -1,0 +1,32 @@
+name: "Kanto K06: auditar Celadon e Rocket"
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/regions/audit_k06_rocket.py'
+      - '.github/workflows/kanto-k06-source.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  intake:
+    runs-on: windows-2022
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Auditar a fonte fixada sem carregar scripts ou jogo
+        shell: powershell
+        run: |
+          python scripts/regions/ensure_source.py
+          if($LASTEXITCODE -ne 0){throw 'Pinned K06 source unavailable'}
+          python scripts/regions/audit_k06_rocket.py
+          if($LASTEXITCODE -ne 0){throw 'K06 source witness could not be generated'}
+      - name: Preservar somente recibo de IDs e dependências
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k06-source-inventory
+          path: k06-source-receipts/kanto-k06-source.json
+          if-no-files-found: error
