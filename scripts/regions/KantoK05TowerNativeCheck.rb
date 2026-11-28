@@ -95,6 +95,55 @@ module KantoK05TowerNativeCheck
     end
   end
 
+  def self.first_visit!(seen)
+    BlueKantoPilot.progress["pilot_starter"]="BULBASAUR"
+    roster = [51,52,53].map do |v|
+      opponent = GameData::Trainer.get(:BLUE_KANTO_RIVAL_TOWER,"Blue",v)
+      want(opponent && opponent.pokemon.size==5,"Tower rival roster absent: #{v}")
+      opponent.pokemon.last[:species]
+    end
+    want(roster==[:CHARMELEON,:WARTORTLE,:IVYSAUR],"Tower rival selection is not source ordered")
+    encounter = (617..621).map do |mid|
+      table = GameData::Encounter.get(mid)
+      want(table && table.types.keys.sort==[:CaveDay,:CaveNight], "missing native Tower encounters on #{mid}")
+      [mid,table.types.transform_values(&:length)]
+    end
+    $map_factory.setup(617)
+    before = seen.size
+    want(WildBattle.start([:GASTLY,18],can_override:true) &&
+      WildBattle.start([:GASTLY,18],[:GASTLY,19],can_override:true), "native ghost dispatch failed")
+    want(seen.size==before+2 && seen.last(2).all? { |e| e.match?(/fantasma|ghost/i) && !e.include?("Gastly") },
+      "unidentified ghost leaked species or failed to present")
+    battle = TrainerBattle.method(:start)
+    calls = []
+    outcomes = [false,true,true,true]
+    TrainerBattle.define_singleton_method(:start) do |type,name,version|
+      GameData::Trainer.get(type,name,version)
+      calls << [type,name,version]
+      outcomes.shift
+    end
+    wins = (BlueKantoPilot.progress["pilot_wins"] ||= [])
+    wins.concat(["Blue","Jody"])
+    $map_factory.setup(616)
+    want(!BlueKantoTower.rival && !wins.include?(BlueKantoTower::RIVAL_KEY),
+      "Tower rival defeat or legacy name incorrectly counted")
+    want(BlueKantoTower.rival && BlueKantoTower.rival && calls.size==2 &&
+      [3,6].all? { |e| $game_self_switches[[616,e,"A"]] }, "rival lane replayed or failed to save")
+    $map_factory.setup(618)
+    want(BlueKantoTower.channeler(103,2,"Jody") && $game_self_switches[[618,2,"A"]],
+      "first Jody event did not complete")
+    $map_factory.setup(619)
+    want(!$game_self_switches[[619,5,"A"]] && BlueKantoTower.channeler(104,5,"Jody") &&
+      $game_self_switches[[619,5,"A"]] && calls.size==4,
+      "Jody on a different floor was suppressed")
+    {"rival_variants"=>roster,"calls"=>calls,"native_tables"=>encounter,
+      "legacy_names_did_not_skip_battle"=>true,"masked_single_and_double"=>true,
+      "battle_outcome_controlled"=>true}
+  ensure
+    TrainerBattle.define_singleton_method(:start,battle) if battle
+    $game_temp.clear_battle_rules if $game_temp
+  end
+
   def self.run
     SaveData.initialize_bootup_values
     Game.start_new
@@ -130,8 +179,9 @@ module KantoK05TowerNativeCheck
     end
     down = stairs!(DOWN,[16,10])
     want($game_map.map_id==609 && [$game_player.x,$game_player.y]==[18,7], "native exit did not return to Lavender")
+    gameplay = first_visit!(seen)
     report = {"native_up"=>up,"native_down"=>down,"summit_gate"=>blocked,
-              "native_scope_exists"=>scope_in_catalog,"remained_in_scope"=>true,"actors_tested"=>false,"manual_playthrough"=>false,"published"=>false}
+              "native_scope_exists"=>scope_in_catalog,"remained_in_scope"=>true,"first_visit_gameplay"=>gameplay,"manual_playthrough"=>false,"published"=>false}
     File.write("Data/blue-kanto-k05-tower-native-proof.txt",report.inspect)
     puts "KANTO_K05_TOWER_NATIVE_STAIRS_OK"
   end

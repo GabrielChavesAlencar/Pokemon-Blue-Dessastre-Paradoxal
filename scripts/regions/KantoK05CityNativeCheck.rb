@@ -82,6 +82,31 @@ module KantoK05CityNativeCheck
     sample
   end
 
+  def self.name_rater!(map)
+    mon = Pokemon.new(:BULBASAUR,20)
+    stranger = Pokemon.new(:RATTATA,20)
+    stranger.owner = Pokemon::Owner.new(($player.id ^ 1), "Visitor", 0, 0)
+    $player.party.replace([mon,stranger])
+    picked, text = -1,""
+    prompts = []
+    BlueKantoLavender.define_singleton_method(:select_for_nickname) { picked }
+    BlueKantoLavender.define_singleton_method(:pick_nickname) { |pkmn| prompts << pkmn; text }
+    before = [mon.name,stranger.name]
+    service!(map,[4,7],1)
+    require!([mon.name,stranger.name]==before && prompts.empty?, "party cancellation changed a nickname")
+    picked = 1
+    service!(map,[4,7],1)
+    require!(stranger.name==before.last && prompts.empty?, "foreign Pokémon reached text entry")
+    picked = 0
+    service!(map,[4,7],1)
+    require!(mon.name==before.first && prompts==[mon], "empty text entry changed a nickname")
+    text = "Folha"
+    service!(map,[4,7],1)
+    require!(mon.name=="Folha" && stranger.name==before.last, "approved original owner nickname was not applied")
+    {"native_action"=>true,"party_cancelled"=>true,"text_cancelled"=>true,"foreign_refused"=>true,
+      "renamed"=>mon.name,"input_screens_scripted"=>true}
+  end
+
   def self.no_shortcuts!(ids)
     known = ids.fetch(93)
     rows = File.readlines("PBS/map_connections_kanto.txt").filter_map do |line|
@@ -149,9 +174,10 @@ module KantoK05CityNativeCheck
              BlueKantoPilot.progress.fetch("regional_pokecenters",{}).fetch("KANTO",[]).first==ids.fetch(94),"Lavender nurse did not heal/save regional checkpoint")
     mart = service!(ids.fetch(95),[4,7],2)
     require!(calls==[STOCK] && STOCK.all? { |item| GameData::Item.exists?(item) }, "shop stock differs from original")
+    rater = name_rater!(ids.fetch(97))
     saved = save_reopen!(ids)
     report = {"maps"=>ids,"seams"=>seams,"native_door_pairs"=>doors,"center"=>center,
-              "mart"=>mart,"stock"=>calls.first,"native_save"=>saved,
+              "mart"=>mart,"stock"=>calls.first,"name_rater"=>rater,"native_save"=>saved,
               "tower_or_fuji_reward"=>false,"manual_playthrough"=>false,"published"=>false}
     File.write("Data/blue-kanto-k05-city-proof.txt",report.inspect)
     puts "KANTO_K05_CITY_NATIVE_OK"

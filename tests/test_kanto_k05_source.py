@@ -59,7 +59,7 @@ class K05SourceTests(unittest.TestCase):
                          {"native_nickname_calls":["pbChangePokemonName"]})
 
     def test_encounter_receipt_has_typed_slots(self):
-        pbs = {"102,0":["CaveDay,8\n90,GASTLY,12,14 # verified\n10,HAUNTER,20,20\nCaveNight,10\n100,GASTLY,13,14"]}
+        pbs = {"102,0":["CaveDay,8\n90,GASTLY,12,13,14 # verified\n10,HAUNTER,20,20\nCaveNight,10\n100,GASTLY,13,14"]}
         receipt = encounter_rows(pbs,102)["102,0"]
-        self.assertEqual(receipt["CaveDay"],{"step_chance":8,"slots":[[90,"GASTLY",12,14],[10,"HAUNTER",20,20]]})
-        self.assertEqual(receipt["CaveNight"],{"step_chance":10,"slots":[[100,"GASTLY",13,14]]})
+        self.assertEqual(receipt["CaveDay"],{"step_chance":8,"slots":[[90,"GASTLY",[12,13,14]],[10,"HAUNTER",[20,20]]]})
+        self.assertEqual(receipt["CaveNight"],{"step_chance":10,"slots":[[100,"GASTLY",[13,14]]]})

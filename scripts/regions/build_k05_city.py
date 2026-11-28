@@ -14,6 +14,7 @@ from audit_cerulean_interiors import inspect_events
 from audit_k05_lavender import assemble, K05, propose_slots
 from k04_corridor import LAVENDER_BOUNDARY, published_destinations
 from k04_gameplay import sprite
+from k05_lavender_services import add_services, install_runtime, verify_name_rater
 from pbs import catalogue
 from pilot import EVENT_CLASSES, PILOT_META, command, new_event, write_map
 from qa_k04_migration import copy_for_ci
@@ -161,6 +162,7 @@ def run():
     occup,files = inventory(ROOT/"game")
     report = assemble(source,inspect_events(source,K05),catalog,propose_slots(catalog,occup.keys()|files.keys()))
     verify_source(report)
+    verify_name_rater(report)
     _,prior_files = inventory(baseline)
     old_hashes = {path.relative_to(baseline):digest(path) for mid,path in prior_files.items() if mid in mapping.values()}
     _,source_maps = inventory(source)
@@ -172,6 +174,7 @@ def run():
         info_path=target/"Data/MapInfos.rxdata"
         info=load(info_path)
         stock=[]
+        service_events={}
         for sid,name in zip(CITY_MAPS,CITY_NAMES):
             mid=actual[sid]
             path=target/"Data"/f"Map{mid:03d}.rxdata"
@@ -181,6 +184,7 @@ def run():
             found=add_city_events(source,target,donor,native,sid,actual)
             if found:
                 stock=found
+            service_events[sid]=add_services(source,target,donor,native,sid)
             info[mid].attrs["@name"]=name.encode("utf8")
             write_map(path,native,EVENT_CLASSES)
             if load(path)!=native:
@@ -198,13 +202,15 @@ def run():
             out.write("\n"+seam+"\n")
         if len(old_hashes)!=165 or any(digest(target/r)!=h or digest(baseline/r)!=h for r,h in old_hashes.items()):
             raise ValueError("K05 changed a previously published map")
+        install_runtime(target)
         base["maps"]={**mapping,**actual}
         isolate(target,base)
         (target/"Data/blue-compile-request.txt").write_text("compile",encoding="ascii")
         (target/"Data/PluginScripts.rxdata").unlink(missing_ok=True)
         target.rename(output)
     proof={"maps":actual,"preserved_k04_maps":len(old_hashes),"doors":len(CITY_DOORS),
-           "seam":seam,"shop_stock":stock,"center":[actual[94],2],
+           "seam":seam,"shop_stock":stock,"center":[actual[94],2],"name_rater":[actual[97],1],
+           "service_events":service_events,
            "tower_enabled":False,"fuji_reward_enabled":False,"published":False,"native_gameplay":False}
     (work/"kanto-k05-city-stage.json").write_text(json.dumps(proof,ensure_ascii=False,indent=2)+"\n",encoding="utf8")
     print("KANTO_K05_CITY_STAGE_OK:"+json.dumps(proof),flush=True)

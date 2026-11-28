@@ -107,14 +107,17 @@ def encounter_rows(blocks, sid):
                 if not line:
                     continue
                 m = re.fullmatch(r'(CaveDay|CaveNight),(\d+)', line)
-                slot = re.fullmatch(r'(\d+),\s*([A-Z][A-Z0-9_]*)\s*,\s*(\d+)\s*,\s*(\d+)',line)
+                slot = re.fullmatch(r'(\d+),\s*([A-Z][A-Z0-9_]*)([\s,\d]+)',line)
                 if m:
                     method,rate = m.groups()
                     out.setdefault(row["section"],{})[method] = {"step_chance":int(rate), "slots":[]}
                     methods.append(method)
                 elif slot and methods:
-                    weight,species,lo,hi = slot.groups()
-                    out[row["section"]][methods[-1]]["slots"].append([int(weight),species,int(lo),int(hi)])
+                    weight,species,levels = slot.groups()
+                    fields=levels.split(",")
+                    if not fields[0].strip() and len(fields)>1 and all(n.strip().isdecimal() for n in fields[1:]):
+                        out[row["section"]][methods[-1]]["slots"].append(
+                            [int(weight),species,[int(n) for n in fields[1:]]])
     return out
 
 def role(name):

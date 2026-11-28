@@ -9,6 +9,8 @@ from tempfile import TemporaryDirectory
 from audit import KANTO, ROOT, inventory, json_file, load
 from audit_k05_lavender import TOWER
 from build_k05_city import CITY_SLOTS, digest, extend_terrain, isolate
+from k05_tower_actors import (CHANNELERS, install_encounter_pbs, install_events,
+                               install_runtime, install_trainer_pbs, profiles)
 from pilot import EVENT_CLASSES, PILOT_META, command, new_event, write_map
 
 LABELS = {sid: f"POKEMON_TOWER_{sid-99}F" for sid in TOWER}
@@ -78,6 +80,7 @@ def run():
         raise ValueError("K05 Tower requires the isolated city stage")
     report=json_file(work/"kanto-k05-source.json")
     verify_evidence(report)
+    specs=profiles(report)
     source_info={row["id"]:row for row in report["maps"]}
     _,old=inventory(baseline)
     _,donors=inventory(source)
@@ -116,6 +119,7 @@ def run():
                         raise ValueError("K05 warning moved from the original ghost anchor")
                     events[eid]=new_event(event,[ghost_warning()],1,b"")
             if sid in TOWER:
+                install_events(source,target,donor,native,sid)
                 map_info[n].attrs["@name"]=source_info[sid]["name"].encode("utf8")
             write_map(ours,native,EVENT_CLASSES)
             if load(ours)!=native:
@@ -126,12 +130,16 @@ def run():
                 pbs.write(f"\n[{n:03d}]\nName = {source_info[sid]['name']}\n")
         if any(digest(baseline/p)!=h or (p!=expected_city and digest(target/p)!=h) for p,h in before.items()):
             raise ValueError("K05 Tower changed an outside map or prior city service")
+        install_trainer_pbs(source,target,specs)
+        install_encounter_pbs(source,target,mapping,report)
+        install_runtime(target)
         meta["maps"]=mapping
         meta.pop("k05_city_fixture_only")
         isolate(target,meta,profile=SAVE_APP,fixture="k05_tower_fixture_only")
         target.rename(output)
     result={"map_ids":SLOTS,"guard":list(SUMMIT_GATE),"ghost_contacts":GHOST_CONTACTS,"summit_activated":False,
-            "fuji_transfer_enabled":False,"encounters_and_actors_enabled":False,
+            "fuji_transfer_enabled":False,"masked_encounter_tables":5,"channeler_events":sum(map(len,CHANNELERS.values())),
+            "distinct_trainer_profiles":len(specs),
             "native_gameplay":False,"published":False,"preserved_prior_maps":len(before)-1,
             "city_entrance_event_only":[mapping[93],8]}
     (work/"kanto-k05-tower-stage.json").write_text(json.dumps(result,indent=2)+"\n",encoding="utf8")
