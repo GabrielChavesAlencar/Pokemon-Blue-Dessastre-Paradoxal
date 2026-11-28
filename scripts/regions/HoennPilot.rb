@@ -448,6 +448,24 @@ module BlueHoennPilot
     $game_map && $game_map.map_id == metadata[1][101]
   end
 
+  # The north border of Route 101 leads to Oldale. Keep the return to
+  # Littleroot open while the rescue is active.
+  def self.birch_exit_blocked?(destination_y)
+    return false unless destination_y < 0
+    region = $PokemonGlobal&.blue_regions
+    return false unless region.is_a?(Hash) && region["current"] == "HOENN"
+    flags = region["hoenn_pilot"]
+    return false unless flags.is_a?(Hash) && flags["birch_rescue_active"]
+    !flags["birch_rescued"] && !flags["met_birch"] && on_birch_route?
+  end
+
+  module Route101RescueGate
+    def isPassableFromEdge?(x, y)
+      return false if BlueHoennPilot.birch_exit_blocked?(y)
+      super
+    end
+  end
+
   def self.route_birch
     flags = state
     return false unless flags && on_birch_route?
@@ -569,23 +587,33 @@ module BlueHoennPilot
 
   def self.rival_103
     flags = state
-    return false unless flags && starter
+    chosen = starter
+    player = $player
+    return false unless flags && chosen && player && player.able_pokemon_count > 0
     return false unless flags["birch_rescued"] || flags["met_birch"]
-    return false if flags["rival_103_done"]
-    name = rival_name
-    pbMessage(_INTL("{1}: Vamos testar nossos Pokémon antes de voltar a Littleroot!", name))
-    setBattleRule("canLose")
-    victory = TrainerBattle.start(:RIVAL1, name, RIVAL_VERSIONS.fetch(starter))
-    $player.heal_party if $player && $player.respond_to?(:heal_party)
-    unless victory
-      pbMessage(localized(
-        "{1}: Heal up and come back when you're ready for a rematch.",
-        "{1}: Cure sua equipe e volte quando quiser uma revanche.", name))
-      return false
+    return false if flags["rival_103_done"] || @rival_103_in_progress
+
+    @rival_103_in_progress = true
+    begin
+      name = rival_name
+      pbMessage(_INTL("{1}: Vamos testar nossos Pokémon antes de voltar a Littleroot!", name))
+      setBattleRule("canLose")
+      victory = TrainerBattle.start(:RIVAL1, name, RIVAL_VERSIONS.fetch(chosen))
+      return false unless $player.equal?(player) && state.equal?(flags)
+
+      player.heal_party
+      unless victory == true
+        pbMessage(localized(
+          "{1}: Heal up and come back when you're ready for a rematch.",
+          "{1}: Cure sua equipe e volte quando quiser uma revanche.", name))
+        return false
+      end
+      flags["rival_103_done"] = true
+      pbMessage(_INTL("{1}: Você batalhou muito bem! Volte ao laboratório de Birch.", name))
+      true
+    ensure
+      @rival_103_in_progress = false
     end
-    flags["rival_103_done"] = true
-    pbMessage(_INTL("{1}: Você batalhou muito bem! Volte ao laboratório de Birch.", name))
-    true
   end
 
   def self.birch
@@ -622,6 +650,9 @@ module BlueHoennPilot
 
 
   STAGE3_SIGNS = {
+    OLDALE_TOWN: "Você está em Oldale. Ao norte fica a Rota 103. Pela Rota 102, siga a oeste até Petalburg.",
+    OLDALE_CENTER: "Centro Pokémon de Oldale. Entre para cuidar da sua equipe.",
+    OLDALE_MART: "Poké Mart de Oldale. Confira seus suprimentos antes de seguir viagem.",
     PETALBURG_CITY: "Petalburg: cidade de encontro entre pessoas e natureza.",
     PETALBURG_GYM: "Ginásio de Petalburg. Líder Norman, tipo Normal.",
     WALLY_HOUSE: "Casa de Wally.",
@@ -655,6 +686,42 @@ module BlueHoennPilot
     true
   end
 
+  def self.wally_capture_tutorial
+    trainer = NPCTrainer.new("Wally", :BLUE_HOENN_WALLY)
+    trainer.party = [Pokemon.new(:SHROOMISH, 5, trainer)]
+    ralts = Pokemon.new(:RALTS, 5)
+    scene = Battle::Scene.new
+    battle = Battle.new(scene, trainer.party, [ralts], trainer, nil)
+    # This demonstration owns both Pokémon. The regular battle completion
+    # hooks, inventory and Pokédex must never run against the campaign player.
+    battle.internalBattle = false
+    battle.expGain = false
+    pbFadeOutIn do
+      send_outs = battle.pbSetUpSides
+      scene.pbStartBattle(battle)
+      begin
+        battle.pbStartBattleSendOut(send_outs)
+        if battle.pbDisplayConfirm(_INTL("Wally: Devo enfraquecer o Ralts antes de tentar capturá-lo?"))
+          target = battle.battlers[1]
+          target.pbReduceHP(target.hp - 1)
+          if battle.pbDisplayConfirm(_INTL("Wally: A barra de PS ficou vermelha. Lanço minha Poké Bola agora?"))
+            # Guarantee the result after the demonstrated preparation. The
+            # real engine still calculates, animates and resolves the throw.
+            battle.pbThrowPokeBall(1, :POKEBALL, 300)
+          end
+        end
+      ensure
+        scene.pbEndBattle(battle.decision)
+      end
+    end
+    battle.decision == 4
+  end
+
+  def self.norman_challenge_unlocked?
+    badges = BlueRegions.local_achievements($PokemonGlobal.blue_regions, "HOENN")
+    %w[STONE KNUCKLE DYNAMO HEAT].all? { |badge| badges.include?(badge) }
+  end
+
   def self.norman_intro
     flags = state
     return false unless flags
@@ -663,13 +730,17 @@ module BlueHoennPilot
       return false
     end
     unless flags["wally_captured"]
-      pbMessage(_INTL("Norman: Wally quer aprender a capturar Pokémon. Vamos ajudá-lo!"))
-      pbMessage(_INTL("Wally encontrou um Ralts, lançou uma Poké Bola e conseguiu capturá-lo!"))
+      pbMessage(_INTL("Norman: Wally trouxe seu Shroomish para praticar. Você pode orientá-lo na captura?"))
+      unless wally_capture_tutorial
+        pbMessage(_INTL("Wally: Tudo bem. Podemos tentar de novo quando você estiver pronto."))
+        return false
+      end
       flags["wally_captured"] = true
-      pbMessage(_INTL("Norman: Muito bem, Wally! Continue sua jornada até Rustboro."))
+      pbMessage(_INTL("Wally: Consegui! Vou cuidar bem do Ralts. Obrigado pela ajuda!"))
+      pbMessage(_INTL("Norman: Agora siga para Rustboro pela Rota 104."))
       return true
     end
-    pbMessage(heat_badge? ? _INTL("Norman: você está pronto para o desafio da Insígnia do Equilíbrio. Venha ao fundo do ginásio!") :
+    pbMessage(norman_challenge_unlocked? ? _INTL("Norman: você está pronto para o desafio da Insígnia do Equilíbrio. Venha ao fundo do ginásio!") :
       _INTL("Norman: Volte quando tiver quatro insígnias de Hoenn. Então batalharemos!"))
     true
   end
@@ -1992,9 +2063,7 @@ module BlueHoennPilot
     flags=state
     return false unless flags && $player && !$player.party.empty?
     return norman_tm if balance_badge?
-    needed=["STONE","KNUCKLE","DYNAMO","HEAT"]
-    badges=BlueRegions.local_achievements($PokemonGlobal.blue_regions,"HOENN")
-    unless needed.all?{|badge|badges.include?(badge)}
+    unless norman_challenge_unlocked?
       pbMessage(_INTL("Norman: enfrente-me depois das quatro primeiras insígnias de Hoenn!"))
       return false
     end
@@ -3760,3 +3829,4 @@ if defined?(MenuHandlers)
   })
 end
 
+PokemonMapFactory.prepend(BlueHoennPilot::Route101RescueGate) if defined?(PokemonMapFactory)

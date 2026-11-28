@@ -20,7 +20,7 @@ from urllib.parse import quote
 from urllib.request import Request, urlopen
 
 from hoenn_qa_phase1 import (
-    PINNED_TREE, check_source, check_tree, load_tree,
+    INSTALL_TREE, PINNED_TREE, check_source, check_tree, load_tree,
     PINNED_MAPINFOS_SHA256, PINNED_TILESETS_SHA256,
 )
 from pilot_hoenn import BGM, PNG, ROOT, SOURCE_MAPS, Source, UPSTREAM
@@ -34,7 +34,7 @@ RAW_BASE = (
     f"https://raw.githubusercontent.com/{PUBLIC_REPO}/{UPSTREAM}/"
     f"{quote(SOURCE_DIR, safe='')}/"
 )
-INVENTORY = ROOT / ".blue-work/hoenn-tree-pinned.json"
+INVENTORY = INSTALL_TREE
 STAGE = ROOT / ".blue-work/hoenn-source" / hashlib.sha256(
     PINNED_TREE.encode("ascii")).hexdigest()[:16]
 MAX_BLOB_BYTES = 100 * 1024 * 1024
@@ -121,7 +121,7 @@ class PinnedDownloader:
         self.stage = Path(stage)
         self.opener = opener
         safe_stage(self.stage)
-        tree = load_tree(self.inventory)
+        tree = load_tree(self.inventory, offline=self.inventory == INSTALL_TREE)
         check_tree(tree)
         self.blobs = {row["path"]: row for row in tree["tree"] if row.get("type") == "blob"}
         self.written = 0
@@ -208,7 +208,7 @@ class PinnedDownloader:
     def collect(self) -> dict:
         # First obtain the minimum source to discover tileset dependencies.
         files = [
-            "Data/MapInfos.rxdata", "Data/Tilesets.rxdata",
+            "Data/MapInfos.rxdata", "Data/Tilesets.rxdata", "Data/Map015.rxdata",
             "PBS/map_connections.txt", "PBS/encounters.txt",
             *(f"Data/Map{mid:03}.rxdata" for mid in SOURCE_MAPS),
         ]

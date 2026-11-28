@@ -13,7 +13,7 @@ import hashlib
 import json
 from pathlib import Path
 
-from hoenn_catalog import CATALOG_REVISION, approved_source_ids
+from hoenn_catalog import PILOT_CATALOG_REVISION, approved_source_ids
 
 # Each QA01..QA11 report is generated immediately before QA12 by TESTAR_HOENN.bat.
 # Order matters; a missing or BLOCKED report stops the acceptance gate.
@@ -61,7 +61,7 @@ def report_filename(key: str) -> str:
     return f"hoenn-qa-fase12-{key}-report.json"
 
 
-def accepted_reports(evidence: dict[str, dict], *, catalog_revision=CATALOG_REVISION) -> list[dict]:
+def accepted_reports(evidence: dict[str, dict], *, catalog_revision=PILOT_CATALOG_REVISION) -> list[dict]:
     """Validate cross-stage outputs; NEVER accept booleans asserting native QA."""
     expected_maps = len(approved_source_ids(catalog_revision))
     validated = []

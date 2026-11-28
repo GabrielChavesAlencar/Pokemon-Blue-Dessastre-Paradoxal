@@ -20,7 +20,10 @@ module BlueRegionStart
     *(182..189),191,192,*(206..213),215,216,217,*(227..236),*(238..248),
     250,251,252,255,*(258..263),266,322
   ].map(&:to_s).sort.freeze
-  HOENN_CATALOGS = { 1 => HOENN_LEGACY_SOURCES }.freeze
+  HOENN_CATALOGS = {
+    1 => HOENN_LEGACY_SOURCES,
+    2 => (HOENN_LEGACY_SOURCES + ["15"]).sort.freeze
+  }.freeze
 
   def self.read_hoenn_manifest
     return nil unless File.file?(HOENN_INSTALL) && !File.symlink?(HOENN_INSTALL)
@@ -313,7 +316,7 @@ module BlueRegionStart
     return false unless spawn && File.file?(path) && !File.symlink?(path)
     fields = File.read(path, 128).strip.split(",")
     fields.length == 3 && fields[0] == "BLUE_KANTO_READY_V1" &&
-      ["142", "145", "151", "152", "156", "160", "165"].include?(fields[1]) && fields[2] == spawn[0].to_s
+      ["142", "145", "151", "152", "156", "160", "165", "178"].include?(fields[1]) && fields[2] == spawn[0].to_s
   rescue StandardError
     false
   end
@@ -338,7 +341,7 @@ module BlueRegionStart
     # MUST agree; random or partial archives remain fail-closed.
     gate = File.read("Data/blue-kanto-ready.txt", 128).strip.split(",")
     expected_count = Integer(gate[1], 10)
-    return nil unless [142, 145, 151, 152, 156, 160, 165].include?(expected_count)
+    return nil unless [142, 145, 151, 152, 156, 160, 165, 178].include?(expected_count)
     return nil unless rest.empty? && pairs.length == expected_count
     maps = {}
     pairs.each do |src, dst|
@@ -366,8 +369,13 @@ module BlueRegionStart
         maps[source].is_a?(Integer) && !(452..595).include?(maps[source]) }
     end
     rock_slots = {"86"=>604, "87"=>605, "88"=>606, "90"=>607, "91"=>608}
-    if expected_count == 165
+    if expected_count >= 165
       return nil unless rock_slots.all? { |source, id| maps[source] == id }
+    end
+    lavender = ((93..98).to_a + (100..106).to_a).each_with_index.to_h { |sid, index| [sid.to_s,609+index] }
+    if expected_count == 178
+      return nil unless lavender.all? { |source,id| maps[source]==id }
+
     end
     return nil unless maps.values.all? { |id|
       pbRgssExists?(sprintf("Data/Map%03d.rxdata", id))

@@ -95,9 +95,16 @@ def _rules(project: Path) -> tuple[dict, dict, dict]:
     return rules, source, catalog
 
 
-def compile_bytes(project: Path, game: Path, mapping: dict, *, candidate_manifest=None) -> tuple[bytes, dict]:
+def compile_bytes(project: Path, game: Path, mapping: dict, *, candidate_manifest=None, k05_base=False) -> tuple[bytes, dict]:
     """Pure compilation; checks all actual MapXXX.rxdata files, writes nothing."""
     rules, source, catalog = _rules(project)
+    if k05_base:
+        from scripts.regions.k05_contract import MAPS as K05, baseline_manifest
+        if candidate_manifest is not None or not game.parent.name.startswith(".kanto-build-"):
+            raise ValueError("Historical soundtrack scope must be staged privately")
+        source=baseline_manifest(source)
+        roles=set(K05.values())
+        rules={**rules,"maps":[r for r in rules["maps"] if r["map"] not in roles]}
     maps = source.get("maps")
     if (not isinstance(maps, dict) or maps.get("58") != "DAY_CARE" or
             not {"68", "69", "70", "71"} <= maps.keys()):

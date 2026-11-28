@@ -37,6 +37,11 @@ class Stage3Map
     @events = {3 => Stage3Event.new}
   end
 end
+module BlueRegions
+  def self.local_achievements(regions, region)
+    regions.fetch("badges", {}).fetch(region, [])
+  end
+end
 module BlueRegionStart
   def self.select_and_prepare
     false
@@ -96,10 +101,25 @@ assert(Marshal.dump($PokemonGlobal.blue_regions) == before, "Foreign save pollut
 $PokemonGlobal.blue_regions = {"current"=>"HOENN", "hoenn_pilot"=>{"pokedex_given"=>true}}
 flags = BlueHoennPilot.state
 assert(!BlueHoennPilot.forest_aqua, "Aqua should require Wally's story")
+class << BlueHoennPilot
+  attr_accessor :tutorial_result, :tutorial_calls
+  def wally_capture_tutorial
+    self.tutorial_calls = (tutorial_calls || 0) + 1
+    tutorial_result
+  end
+end
+BlueHoennPilot.tutorial_result = false
+assert(!BlueHoennPilot.norman_intro && !flags["wally_captured"], "Canceled tutorial changed progress")
+BlueHoennPilot.tutorial_result = true
 assert(BlueHoennPilot.norman_intro, "Norman/Wally capture introduction missing")
 assert(flags["wally_captured"], "Wally event not persisted")
 assert(BlueHoennPilot.wally_family, "Wally family dialogue unavailable")
 assert(BlueHoennPilot.norman_intro, "Norman repeated conversation failed")
+assert(BlueHoennPilot.tutorial_calls == 2, "Finished tutorial replayed")
+$PokemonGlobal.blue_regions["badges"] = {"HOENN"=>["HEAT"], "KANTO"=>["STONE", "KNUCKLE", "DYNAMO"]}
+assert(!BlueHoennPilot.norman_challenge_unlocked?, "Norman accepted foreign badges")
+$PokemonGlobal.blue_regions["badges"]["HOENN"].concat(%w[STONE KNUCKLE DYNAMO])
+assert(BlueHoennPilot.norman_challenge_unlocked?, "Norman rejected four local badges")
 assert(BlueHoennPilot.sign(:PETALBURG_CITY), "Petalburg sign missing")
 assert(!BlueHoennPilot.sign(:UNLISTED), "Unknown sign accepted")
 

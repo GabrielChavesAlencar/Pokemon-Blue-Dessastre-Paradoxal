@@ -15,6 +15,9 @@ class K04AuditTests(unittest.TestCase):
     def setUp(self):
         self.catalog = json.loads((ROOT / "data/regions/kanto-source.json").read_text("utf8"))
         from k04_corridor import publication_catalog
+        from scripts.regions.k05_contract import baseline_manifest
+        if publication_catalog(self.catalog["maps"])==178:
+            self.catalog=baseline_manifest(self.catalog)
         if publication_catalog(self.catalog["maps"]) == 165:
             for sid in K04:
                 del self.catalog["maps"][str(sid)]

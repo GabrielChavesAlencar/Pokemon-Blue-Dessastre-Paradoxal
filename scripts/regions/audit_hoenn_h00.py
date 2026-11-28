@@ -15,10 +15,10 @@ from hoenn_qa_phase1 import (
     check_tree, load_tree, require_private_path,
 )
 from ensure_hoenn_source import sha_git
-from hoenn_catalog import MAP_RANGE, validate_manifest, verify_markers
+from hoenn_catalog import CATALOG_REVISION, MAP_RANGE, approved_source_ids, validate_manifest, verify_markers
 from hoenn_qa_phase2 import audit_map, inspect_connections
 from hoenn_qa_phase3 import parse_compiled_encounters, parse_reference_encounters
-from install_hoenn import MANIFEST, SOURCE_MAPS, verify_installed
+from install_hoenn import MANIFEST, verify_installed
 from scripts.android.build_manifest import verify_manifest
 from scripts.android.package import verify_archive
 from server.ruby_marshal import RubyData, RubyObject, loads, text
@@ -27,15 +27,41 @@ from server.ruby_marshal import RubyData, RubyObject, loads, text
 ARCHIVE_ROOT = "Pokemon-Blue-Android/"
 MAP_FILE = re.compile(r"Data/Map([0-9]{3,})\.rxdata")
 ROUTE = re.compile(r"Route (10[1-9]|1[12][0-9]|13[0-4])", re.IGNORECASE)
-MANIFESTS = {
-    "KANTO": "Data/blue-kanto-install.json",
-    "HOENN": MANIFEST.as_posix(),
-}
+MANIFESTS = (
+    ("KANTO", "Data/blue-kanto-install.json", "maps"),
+    ("JOHTO", "Data/blue-johto-main-preview.json", "map_ids"),
+    ("JOHTO", "Data/blue-johto-install.json", "file_hashes"),
+    ("SINNOH", "Data/blue-sinnoh-shared.json", "map_ids"),
+    ("HOENN", MANIFEST.as_posix(), "maps"),
+)
 FRONTIER_AREAS = {
     "Altering Cave", "Battle Frontier", "Desert Underpass", "Marine Cave",
-    "S.S. Tidal", "Terra Cave",
+    "S.S. Tidal", "Terra Cave", "Marine Cave_U", "Battle Frontier First Visit",
 }
 EXTERNAL_AREAS = {"Birth Island", "Southern Island", "The... Moon?"}
+
+STORY_DUNGEONS = {
+    "Petalburg Woods", "Rusturf Tunnel", "Granite Cave", "Fiery Path",
+    "Mt. Chimney", "Jagged Pass", "Magma Hideout", "Meteor Falls",
+    "Mt. Pyre", "Aqua Hideout", "Seafloor Cavern", "Cave of Origin",
+    "Sky Pillar", "Victory Road",
+}
+OPTIONAL_AREAS = {
+    "Abandoned Ship", "New Mauville", "Mirage Tower", "Scorched Slab",
+    "Safari Zone", "Shoal Cave High", "Shoal Cave Low", "Sealed Chamber",
+    "Island Cave", "Desert Ruins", "Ancient Tomb", "Trainer Hill",
+}
+STORY_LOCATIONS = {
+    "Littleroot Town", "Oldale Town", "Petalburg City", "Rustboro City",
+    "Dewford Town", "Slateport City", "Mauville City", "Verdanturf Town",
+    "Fallarbor Town", "Lavaridge Town", "Fortree City", "Lilycove City",
+    "Mossdeep City", "Sootopolis City", "Pacifidlog Town",
+    "Ever Grande City South", "Ever Grande City North", "Birch's Lab",
+    "Devon Corporation", "Slateport City Harbor", "Oceanic Museum",
+    "Mossdeep Space Center", "Weather Institute", "Mr. Briney's House",
+    "Intro Truck", "Hall of Fame", "League Champion", "E4 Hallways",
+    "Pokémon League", "Pokemon League",
+}
 
 
 def digest(blob: bytes) -> str:
@@ -69,6 +95,18 @@ def scope_for(name: str, ancestors: list[str], has_tiles: bool, event_count: int
         return "postgame_candidate"
     if ROUTE.fullmatch(name):
         return "emerald_main_route"
+    if names & STORY_DUNGEONS:
+        return "emerald_story_dungeon_reference"
+    if names & OPTIONAL_AREAS:
+        return "emerald_optional_reference"
+    if "Underwater Maps" in names:
+        return "emerald_underwater_reference"
+    if "Cutscene Maps" in names or name in {"Intro", "Region Transfer Map", "Routes"}:
+        return "donor_scene_or_integration_reference"
+    if name in STORY_LOCATIONS or name.endswith(" Gym") or name.startswith("Elite Four "):
+        return "emerald_story_location_reference"
+    if "Cities" in ancestors or "Routes" in ancestors:
+        return "city_or_route_interior_reference"
     return "scope_review_required"
 
 
@@ -120,6 +158,7 @@ def source_inventory(tree_path: Path, source: Path) -> dict:
     encounters, encounter_audit = parse_reference_encounters(
         checked("PBS/encounters.txt").decode("utf-8-sig"), map_ids)
     checked("PBS/map_connections.txt")
+    catalogued = approved_source_ids(CATALOG_REVISION)
     rows = []
     for map_id in sorted(map_ids):
         raw = checked(f"Data/Map{map_id:03}.rxdata")
@@ -136,7 +175,8 @@ def source_inventory(tree_path: Path, source: Path) -> dict:
         events = []
         for event_id, event in sorted(world.attrs["@events"].items()):
             events.append({
-                "id": event_id, "xy": [event.attrs["@x"], event.attrs["@y"]],
+                "id": event_id, "name": text(event.attrs["@name"]),
+                "xy": [event.attrs["@x"], event.attrs["@y"]],
                 "triggers": [page.attrs["@trigger"] for page in event.attrs["@pages"]],
                 "command_codes": sorted({
                     command.attrs["@code"] for page in event.attrs["@pages"]
@@ -145,21 +185,30 @@ def source_inventory(tree_path: Path, source: Path) -> dict:
             })
         rows.append({
             "source_id": map_id, "name": name, "parents": parents, "sha256": digest(raw),
-            "catalogued": map_id in SOURCE_MAPS, "has_terrain": has_terrain,
+            "catalogued": map_id in catalogued, "has_terrain": has_terrain,
             "dimensions": [world.attrs["@width"], world.attrs["@height"]],
             "tileset": tile_id, "tileset_name": text(tile["@tileset_name"]),
             "tileset_tables": sorted(key for key in tile if key in {"@passages", "@priorities", "@terrain_tags"}),
             "scope": scope_for(name, parents, has_terrain, len(events)), "events": events,
             "encounter_methods": sorted(encounters.get(map_id, {})),
         })
+    first_copy_by_digest = {}
+    for row in rows:
+        if row["has_terrain"] or row["events"]:
+            first_copy = first_copy_by_digest.setdefault(row["sha256"], row["source_id"])
+            if first_copy != row["source_id"]:
+                row["identical_rxdata_to"] = first_copy
     routes = routes_by_number(rows)
     return {
         "revision": UPSTREAM, "map_count": len(rows),
         "tileset_count": sum(isinstance(tile, RubyObject) for tile in tiles),
-        "catalogued": len(SOURCE_MAPS),
+        "catalogued": len(catalogued),
         "scope_counts": dict(Counter(row["scope"] for row in rows)),
+        "scope_review_ids": [row["source_id"] for row in rows if row["scope"] == "scope_review_required"],
+        "identical_non_empty_rxdata": {row["source_id"]: row["identical_rxdata_to"]
+                                     for row in rows if "identical_rxdata_to" in row},
         "primary_routes": routes,
-        "uncatalogued_routes": {number: mid for number, mid in routes.items() if mid not in SOURCE_MAPS},
+        "uncatalogued_routes": {number: mid for number, mid in routes.items() if mid not in catalogued},
         "route_classification_basis": "exact source names and physical terrain",
         "encounter_audit": encounter_audit, "maps": rows,
     }
@@ -200,18 +249,28 @@ def inspect_delivery(read, paths: set[str]) -> dict:
     infos = loads(read("Data/MapInfos.rxdata"))
     ids = materialized_ids(paths)
     ownership = {}
-    for region, rel in MANIFESTS.items():
+    for region, rel, key in MANIFESTS:
         if rel not in paths:
             continue
         proof = json.loads(read(rel))
-        mapping = {int(source): dest for source, dest in proof["maps"].items()}
-        destinations = set(mapping.values())
-        if (not mapping or len(destinations) != len(mapping) or
-                not destinations <= ids.intersection(infos)):
+        claimed = proof.get(key) if isinstance(proof, dict) else None
+        if key == "maps" and isinstance(claimed, dict):
+            values = list(claimed.values())
+        elif key == "file_hashes" and isinstance(claimed, dict):
+            values = [int(match[1]) for path in claimed if (match := MAP_FILE.fullmatch(path))]
+        elif key == "map_ids" and isinstance(claimed, list):
+            values = claimed
+        else:
+            raise ValueError(f"Manifesto de MapIDs inválido: {rel}")
+        if not values or any(type(dest) is not int or dest <= 0 for dest in values):
+            raise ValueError(f"{region} tem MapIDs ausentes ou inválidos: {rel}")
+        destinations = set(values)
+        if len(destinations) != len(values) or not destinations <= ids.intersection(infos):
             raise ValueError(f"{region} perdeu arquivos, identidades ou entradas em MapInfos")
-        if any(destinations.intersection(current) for current in ownership.values()):
+        if any(destinations.intersection(current) for owner, current in ownership.items()
+               if owner != region):
             raise ValueError(f"MapID compartilhado por duas regiões: {region}")
-        ownership[region] = sorted(destinations)
+        ownership[region] = sorted(destinations.union(ownership.get(region, [])))
     proof = json.loads(read(MANIFEST.as_posix()))
     mapping = validate_manifest(proof)
     verify_markers(read, proof)

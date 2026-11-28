@@ -137,6 +137,23 @@ A atualização de Hoenn já instalado reconhece o conjunto de bordas anterior, 
 
 O bloqueio geométrico de H00 foi corrigido. O teste físico de abertura, travessia e atualização no JoiPlay segue pendente, assim como a autorização de redistribuição e a publicação pareada. As rotas 105, 107, 108, 115 e 123 continuam no backlog. H01 depende também da confirmação de propriedade dos IDs em conflito com Johto.
 
+### Classificação e conferência do catálogo H00
+
+A conferência de 28/11/2026 verificou byte a byte os 373 RXDATA da fonte pelo hash de cada blob e classificou todos com base na hierarquia, no terreno e nos eventos. O catálogo compartilhado cobre 199 MapKeys. A auditoria mantém a decisão de incluir um mapa separada de sua classificação.
+
+| Grupo de referência | Mapas |
+|---|---:|
+| Rotas com numeração confirmada | 34 |
+| Locais de história e dungeons da campanha | 100 |
+| Interiores, serviços urbanos e anexos de rota | 76 |
+| Locais opcionais e referências subaquáticas | 47 |
+| Áreas de pós-Liga candidatas | 35 |
+| Áreas de eventos externos | 5 |
+| Variantes e filler da fonte | 41 |
+| Hierarquia vazia, cenas e apoio à integração | 35 |
+
+Sete entradas não vazias têm RXDATA idêntico ao do MapID fonte 271. O inventário preserva suas identidades para revisão. A instalação compartilhada recompilada no Windows apresentou 44 bordas de Hoenn com sobreposição, 81 mapas de encontros e 199 MapIDs de Hoenn sem sobreposição com os 178 de Kanto. O auditor também verifica os registros compartilhados de Johto e Sinnoh quando presentes.
+
 ## 4. H01: migração aditiva 199 → N, antes de qualquer expansão
 
 P0: retirar dependência de igualdade rígida com 199 **sem reduzir garantia de conteúdo**. N é derivado do conjunto completo de MapKeys aprovado para aquela revisão, não um mínimo permissivo.
@@ -158,7 +175,9 @@ O manifesto compartilhado V2 usa o catálogo versionado em `data/regions/hoenn-m
 
 Uma instalação compartilhada V1 conserva seus mapas e saves. O instalador valida as reservas globais e os registros de Hoenn, guarda os arquivos afetados, atualiza o manifesto e os marcadores compactos e solicita recompilação. Se a gravação for interrompida, a próxima preparação restaura o estado anterior com base nos hashes registrados antes de tentar outra vez. A leitura V1 continua disponível para instalações anteriores e para a cópia isolada de QA.
 
-O proprietário adiou os testes em aparelho Android e pediu trabalho de código seguido de execução no Windows. A publicação oficial e a aprovação física do JoiPlay continuam pendentes.
+Em 28/11/2026, uma cópia descartável da instalação compartilhada anterior foi migrada de V1 para V2 no Windows. O ensaio conservou os 199 pares de MapIDs, reparou as conexões marítimas do H00 e preservou o save de teste byte a byte. O Game.exe recompilou os plugins e o PBS. A segunda execução conservou o manifesto já migrado. Os testes de alocação cobrem conjuntos maiores em ambiente isolado. A revisão 1 continua instalando os mesmos 199 mapas.
+
+O atualizador Android pela fonte usa a contagem do catálogo ativo. A validação em aparelho com JoiPlay permanece adiada a pedido do proprietário.
 
 ## 5. Fases H02–H17: campanha jogável ponta a ponta
 
@@ -173,6 +192,9 @@ Para cada subfase use inventário H00, fonte autorizada e geometria nativa. Reut
 - Rival_103 e Birch: May/Brendan e equipe conforme perfil e inicial; derrota/retry sem avanço indevido, Pokédex/Poké Balls/Running Shoes uma vez. Reusar cura e Mart reais; entrar/sair de todas as casas, placas e portas. Preservar tabela R102 (Poochyena, Zigzagoon, Wurmple, Lotad, Seedot, Ralts, Surskit); conferir taxas da fonte.
 - Petalburg: trocar norman_intro textual por cena autoral real de tutorial de captura do Wally com Ralts, sem alterar party do jogador; flags independentes, bloquear Norman até quatro badges. Testar R102→Petalburg e retorno.
 - Gate HOENN_H03_RIVAL_POKEDEX_WALLY_OK.
+- O catálogo compartilhado revisão 2 incorpora as casas de Oldale (MapKey 15) e mantém os 199 pares instalados. As duas portas retornam a pontos distintos de Oldale. O Centro, o Mart e as três placas usam os serviços e o diálogo da campanha. O único recurso novo de instalação é a geometria baixada do commit de origem já fixado.
+- Em Petalburg, o jogador orienta Wally pelo menu da cena de batalha. O tutorial usa a animação e a resolução de captura do motor. Cancelar permite nova tentativa. A captura altera somente a flag regional e Norman exige as quatro primeiras insígnias locais.
+- Ensaio Windows automatizado com Game.exe: ida e volta pelas duas casas, Centro e Mart, travessia da Rota 102 até Petalburg e de volta, cancelamento e captura concluída com party, Bolsa, PC e estatísticas intactos. As escolhas do tutorial foram fornecidas pelo ensaio e a animação foi executada pelo motor.
 
 ### H04 — Rustboro, R104, Petalburg Woods, R116 e Devon
 - Floresta: recruta Aqua, empregado, item e bloqueio, treinadores, itens visíveis/ocultos, saídas norte/sul e floricultura/Wailmer Pail. Rustboro: todas as casas, escola, Devon e ginásio; Roxanne e puzzle, STONE/TM/uma esmeralda, aquisição de Cut na casa correta. Não confundir desbloqueio por badge com aquisição do HM.
