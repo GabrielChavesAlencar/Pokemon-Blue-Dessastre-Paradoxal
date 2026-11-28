@@ -1,0 +1,98 @@
+name: "Android K05: atualizar pela fonte sem redistribuir"
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/android/source_update.py'
+      - 'scripts/regions/ensure_source.py'
+      - 'tests/test_android_source_update.py'
+      - '.github/workflows/android-k05-source-update.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: android-k05-source-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  disposable-source-update:
+    runs-on: windows-2022
+    timeout-minutes: 35
+    env:
+      GALLIUM_DRIVER: llvmpipe
+      ALSOFT_DRIVERS: 'null'
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Provar verificação e rollback com arquivos sintéticos
+        shell: powershell
+        run: |
+          python -m unittest discover -s tests -p 'test_android_source_update.py'
+          if($LASTEXITCODE -ne 0){throw 'Local source-update contracts failed'}
+      - name: Preparar cópia descartável da versão 247
+        shell: powershell
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $fixture=New-Item -ItemType Directory -Path '.blue-work/android-source-ci'
+          $asset='Blue-Android-Decades-Kanto-Hoenn.zip'
+          gh release download android-multiregion-247-02732ea -R '${{ github.repository }}' --pattern $asset --dir $fixture.FullName
+          if($LASTEXITCODE -ne 0){throw 'Pinned Android 247 fixture unavailable'}
+          $zip=Join-Path $fixture.FullName $asset
+          if((Get-Item -LiteralPath $zip).Length -ne 1401504567 -or
+              (Get-FileHash -LiteralPath $zip -Algorithm SHA256).Hash.ToLowerInvariant() -ne '0469d877818490a31f6e0a080d8f2d942f954dc65568d5aec38ef3235606f87b'){
+            throw 'Pinned Android 247 ZIP did not match its published checksum'}
+          & "$env:ProgramFiles/7-Zip/7z.exe" x $zip "-o$($fixture.FullName)" -y | Out-Null
+          if($LASTEXITCODE -ne 0){throw 'Could not unpack pinned Android fixture'}
+          Remove-Item -LiteralPath $zip -Force
+          $game=(Resolve-Path (Join-Path $fixture.FullName 'Pokemon-Blue-Android')).Path
+          Set-Content (Join-Path $game 'K05-SAVE-SYNTHETIC.rxsave') 'Synthetic save data; not an actual save.'
+          $checksum=(Get-FileHash (Join-Path $game 'K05-SAVE-SYNTHETIC.rxsave') -Algorithm SHA256).Hash
+          "ANDROID_247_GAME=$game" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          "ANDROID_247_SAVE=$checksum" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+      - name: Obter a fonte de Kanto e montar uma cópia local
+        shell: powershell
+        run: |
+          python scripts/android/source_update.py --game-dir $env:ANDROID_247_GAME --stage
+          if($LASTEXITCODE -ne 0){throw 'K05 direct-source staging failed'}
+          $stage=(Resolve-Path '.blue-work/android-source-update/02732eadaedf49f3728755edb2bd2654ceae3897/game').Path
+          "ANDROID_SOURCE_STAGE=$stage" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          python scripts/android/source_update.py --game-dir $env:ANDROID_247_GAME --finish (git rev-parse HEAD) --apply-local
+          if($LASTEXITCODE -eq 0){throw 'The source updater applied an uncompiled copy'}
+      - name: Compilar a cópia sem abrir saves do jogador
+        shell: powershell
+        run: |
+          $ProgressPreference='SilentlyContinue'
+          $mesa=Join-Path $env:RUNNER_TEMP 'android-source-mesa.7z'
+          Invoke-WebRequest -UseBasicParsing 'https://github.com/pal1000/mesa-dist-win/releases/download/26.2.6/mesa3d-26.2.6-release-mingw.7z' -OutFile $mesa
+          if((Get-FileHash -LiteralPath $mesa -Algorithm SHA256).Hash.ToLower() -ne 'da0f71d9181b672c1918f3c342f11118c687f6059a46b16502845160733cc388'){throw 'Mesa checksum failed'}
+          $dir=Join-Path $env:RUNNER_TEMP 'android-source-mesa'
+          & "$env:ProgramFiles/7-Zip/7z.exe" x $mesa "-o$dir" -y | Out-Null
+          if($LASTEXITCODE -ne 0){throw 'Mesa extraction failed'}
+          Get-ChildItem -LiteralPath $dir -Recurse -File -Filter '*.dll' |
+            Where-Object { $_.Directory.Name -eq 'x64' } |
+            ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $env:ANDROID_SOURCE_STAGE }
+          $proof=Join-Path $env:ANDROID_SOURCE_STAGE 'Data/blue-android-compiled.txt'
+          for($attempt=1;$attempt -le 3;$attempt++){
+            $p=Start-Process -FilePath "$env:ANDROID_SOURCE_STAGE/Game.exe" -WorkingDirectory $env:ANDROID_SOURCE_STAGE -WindowStyle Hidden -PassThru -RedirectStandardOutput '.blue-work/android-source-ci/native-out.txt' -RedirectStandardError '.blue-work/android-source-ci/native-err.txt'
+            $handle=$p.Handle
+            if(-not $p.WaitForExit(240000)){Stop-Process -Id $p.Id; break}
+            if(Test-Path $proof){break}
+          }
+          if(!(Test-Path $proof -PathType Leaf)){
+            Get-Content '.blue-work/android-source-ci/native-out.txt','.blue-work/android-source-ci/native-err.txt',"$env:ANDROID_SOURCE_STAGE/Data/blue-android-error.txt" -ErrorAction SilentlyContinue | Select-Object -Last 130
+            throw 'The disposable update never compiled'
+          }
+      - name: Instalar somente localmente e conferir 199 mapas e save sentinela
+        shell: powershell
+        run: |
+          $rev=(git rev-parse HEAD).Trim()
+          python scripts/android/source_update.py --game-dir $env:ANDROID_247_GAME --finish $rev --apply-local
+          if($LASTEXITCODE -ne 0){throw 'Compiled local update could not be applied'}
+          $save=Join-Path $env:ANDROID_247_GAME 'K05-SAVE-SYNTHETIC.rxsave'
+          if((Get-FileHash $save -Algorithm SHA256).Hash -ne $env:ANDROID_247_SAVE){throw 'Source update touched the disposable save'}
+          $installed=Get-Content (Join-Path $env:ANDROID_247_GAME 'Data/blue-update.json') -Raw | ConvertFrom-Json
+          if($installed.revision -ne $rev){throw 'Android source update did not commit the exact verified revision'}
+          Write-Host 'KANTO_K05_ANDROID_LOCAL_SOURCE_UPDATE_OK'
