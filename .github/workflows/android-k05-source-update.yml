@@ -1,4 +1,4 @@
-name: "Android K05: atualizar pela fonte sem redistribuir"
+name: "Android K05: regressão da receita publicada"
 on:
   pull_request:
     branches: [main]
@@ -26,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          ref: 4bda388e0f6d07763c95cfd9877ce337e61f9cb9
           fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
@@ -34,6 +34,7 @@ jobs:
       - name: Provar verificação e rollback com arquivos sintéticos
         shell: powershell
         run: |
+          if((git rev-parse HEAD).Trim() -ne '4bda388e0f6d07763c95cfd9877ce337e61f9cb9'){throw 'Unexpected historical K05 recipe'}
           python -m unittest discover -s tests -p 'test_android_source_update.py'
           if($LASTEXITCODE -ne 0){throw 'Local source-update contracts failed'}
       - name: Preparar cópia descartável da versão 247

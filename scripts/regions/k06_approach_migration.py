@@ -168,8 +168,12 @@ def stage_ci():
     exact=set(result["destinations"].values())|{INSTALL,READY,CONNECTIONS}
     if set(changes)!=exact:
         raise ValueError("Unexpected K06 migration scope")
-    for rel,data in changes.items():
-        atomic(game/rel,data)
+    from k06_windows_approach import install as apply_windows_overlay
+    if not apply_windows_overlay(game,ci=True) or apply_windows_overlay(game,ci=True):
+        raise ValueError("K06 Windows update failed first apply or was not idempotent")
+    for name,data in changes.items():
+        if name not in {INSTALL,READY} and (game/name).read_bytes()!=data:
+            raise ValueError(f"Windows launcher wrote different approach data: {name}")
     verify_native_graph(game)
     if (before["maps"]!=json_file(game/INSTALL)["maps"] or verify_installed(game)["maps"]!=178
             or any(digest(game/rel)!=value for rel,value in state.items() if rel not in exact)):

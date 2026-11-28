@@ -6,6 +6,9 @@ on:
       - 'scripts/regions/audit_k06_rocket.py'
       - 'scripts/regions/build_k06_approach.py'
       - 'scripts/regions/k06_approach_migration.py'
+      - 'scripts/regions/k06_windows_approach.py'
+      - 'scripts/regions/auto_integrate_kanto.py'
+      - 'tests/test_kanto_auto_integrate.py'
       - 'scripts/regions/KantoK06ApproachNativeCheck.rb'
       - 'scripts/regions/native_check.py'
       - 'tests/test_kanto_k06_approach.py'
@@ -37,6 +40,8 @@ jobs:
         run: |
           python -m unittest discover -s tests -p 'test_kanto_k06_approach.py'
           if($LASTEXITCODE -ne 0){throw 'K06 approach unit contracts failed'}
+          python -m unittest discover -s tests -p 'test_kanto_auto_integrate.py'
+          if($LASTEXITCODE -ne 0){throw 'K06 launcher routing contract failed'}
           python scripts/install_game.py --apply --skip-kanto
           if($LASTEXITCODE -ne 0){throw 'Cannot prepare disposable Decades game'}
           python scripts/regions/pilot.py --output .blue-work/kanto-k06-baseline

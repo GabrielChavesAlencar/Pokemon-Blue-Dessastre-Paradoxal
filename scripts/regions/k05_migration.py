@@ -14,8 +14,10 @@ from pilot import EVENT_CLASSES, PILOT_META, write_map
 
 
 def predecessor_edits(old,new):
+    fixed={**rock_slots(),**published_destinations()}
     if (predecessor_sets(new).get(len(old))!=set(old) or
-        any(new.get(sid)!=dest for sid,dest in {**old,**rock_slots(),**published_destinations()}.items())):
+        any(new.get(sid)!=dest for sid,dest in old.items()) or
+        any(new.get(sid)!=dest for sid,dest in fixed.items())):
         raise ValueError("K05 predecessor map IDs or scope differ from the exact published append")
     return {156:{18,FLASH_MAP},160:{FLASH_MAP},165:set()}[len(old)]
 

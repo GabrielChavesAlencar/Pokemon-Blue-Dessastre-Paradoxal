@@ -331,18 +331,18 @@ def checked_row(path):
     return manifest_row(path) if path.is_file() else None
 
 
-def recovery_plan(root):
+def recovery_plan(root,*,record_marker=MARKER):
     path=root/RECOVERY_FILE
     if checked_row(path) is None:
         return None
     data=json.loads(path.read_text("utf8"))
     if (data.get("schema")!=1 or data.get("root")!=str(root) or not isinstance(data.get("rows"),dict)
-            or MARKER not in data["rows"] or not isinstance(data.get("backup"),str)):
+            or record_marker not in data["rows"] or not isinstance(data.get("backup"),str)):
         raise ValueError("Registro de recuperação Android inválido.")
     return data
 
 
-def recover_under_lock(root,backup_base,data):
+def recover_under_lock(root,backup_base,data,*,record_marker=MARKER):
     """Validate all files before restoring any; no saves enter the journal."""
     backup=Path(data["backup"])
     if (backup.resolve()!=backup or backup.parent!=backup_base.resolve().parent
@@ -352,7 +352,7 @@ def recover_under_lock(root,backup_base,data):
     states=[]
     rows=data["rows"]
     for name,versions in rows.items():
-        if name!=MARKER and not safe_path(name):
+        if name!=record_marker and not safe_path(name):
             raise ValueError("Caminho inesperado no registro de recuperação.")
         target=root/name
         previous,new=versions["old"],versions["new"]
@@ -365,12 +365,12 @@ def recover_under_lock(root,backup_base,data):
         states.append(now==new)
         if now!=previous:
             actions.append((target,stored,previous))
-    revision=checked_row(root/MARKER)
-    if revision==rows[MARKER]["new"]:
+    revision=checked_row(root/record_marker)
+    if revision==rows[record_marker]["new"]:
         if not all(states):
             raise ValueError("A revisão mudou sem que todos os arquivos correspondam à atualização.")
         result="committed"
-    elif revision==rows[MARKER]["old"]:
+    elif revision==rows[record_marker]["old"]:
         for target,stored,previous in reversed(actions):
             if previous is None:
                 target.unlink()
@@ -401,18 +401,20 @@ def recover_source_install(root,work,apply):
     return result
 
 
-def commit_local(root,staged,changed,new_manifest,backup,verify=None,before_marker=None,baseline=None):
+def commit_local(root,staged,changed,new_manifest,backup,verify=None,before_marker=None,baseline=None,*,record_marker=MARKER):
     """Persist backups and hashes before touching files; commit revision last."""
+    if record_marker not in {MARKER,"Data/blue-kanto-install.json"}:
+        raise ValueError("Marcador local de instalação não autorizado.")
     root,staged,backup=root.resolve(),staged.resolve(),backup.resolve()
     with update_lock(root):
-        if recovery_plan(root) is not None:
+        if recovery_plan(root,record_marker=record_marker) is not None:
             raise ValueError("Recupere a atualização anterior antes de gravar novos arquivos.")
-        if before_marker is not None and (root/MARKER).read_bytes()!=before_marker:
+        if before_marker is not None and (root/record_marker).read_bytes()!=before_marker:
             raise ValueError("O inventário mudou desde a conferência da instalação.")
         saved=Path(tempfile.mkdtemp(prefix=backup.name+"-",dir=backup.parent)).resolve()
         paths={}
-        for name in (*changed,MARKER):
-            if name!=MARKER and not safe_path(name):
+        for name in (*changed,record_marker):
+            if name!=record_marker and not safe_path(name):
                 raise ValueError("Caminho de atualização não autorizado: "+name)
             orig=root/name
             previous=checked_row(orig)
@@ -432,9 +434,9 @@ def commit_local(root,staged,changed,new_manifest,backup,verify=None,before_mark
                 atomic_file(root/name,data)
             if verify is not None:
                 verify(root)
-            atomic_file(root/MARKER,new_manifest)
+            atomic_file(root/record_marker,new_manifest)
         except Exception:
-            recover_under_lock(root,backup,receipt)
+            recover_under_lock(root,backup,receipt,record_marker=record_marker)
             raise
         (root/RECOVERY_FILE).unlink()
         return len(changed)
