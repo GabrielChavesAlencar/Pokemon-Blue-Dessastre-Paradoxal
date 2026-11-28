@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bbf07e1796072a8a8a9c533d24eae49b5be47e87",
+      "date": "2026-11-28T14:48:18-03:00",
+      "title": "Kanto K06: loja de departamentos e interiores de Celadon",
+      "category": "Melhorias"
+    },
+    {
       "sha": "e800600b860670208271322c32b601bfc9fe737d",
       "date": "2026-11-28T13:41:08-03:00",
       "title": "Hoenn H05: integra Dewford, Granite Cave e costa (#409)",
