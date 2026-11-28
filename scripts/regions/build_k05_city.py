@@ -103,15 +103,44 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def isolate(target,meta):
+def isolate(target,meta,profile=SAVE_APP,fixture="k05_city_fixture_only"):
     for name in ("Game.ini","mkxp.json"):
         config = target/name
         value=config.read_text(encoding="utf-8-sig")
         if value.count(meta["save_app"]) != 1:
             raise ValueError("K05 cannot isolate test save namespace")
-        config.write_text(value.replace(meta["save_app"],SAVE_APP),encoding="utf8")
-    meta.update(save_app=SAVE_APP,k05_city_fixture_only=True)
+        config.write_text(value.replace(meta["save_app"],profile),encoding="utf8")
+    meta.update(save_app=profile)
+    meta[fixture] = True
     (target/PILOT_META).write_text(json.dumps(meta),encoding="utf8")
+
+
+def extend_terrain(source,baseline,tmp,catalog,labels,slots):
+    """Append exact donor terrain with a collision-safe graphics merge."""
+    terrain,target = tmp/"terrain",tmp/"game"
+    # Stage against an inert view of the exact released registry/PBS.
+    # The existing game already contains shared FRLG Preview graphics;
+    # stage() refuses preexisting assets without owned mapping, so merge
+    # and hash-check just the new geometry resources below.
+    registry_view = tmp/"registry"
+    shutil.copytree(baseline/"Data",registry_view/"Data")
+    shutil.copytree(baseline/"PBS",registry_view/"PBS")
+    planned = stage(ROOT,source,registry_view,terrain,manifest={
+        **catalog,"maps":{str(k):v for k,v in labels.items()},"preview_only":[]})
+    actual = {r["source_id"]:r["proposed_id"] for r in planned["maps"]}
+    if actual != slots or planned["connections"]:
+        raise ValueError("K05 terrain slots or internal connections changed")
+    copy_for_ci(baseline,target)
+    shutil.copytree(terrain/"Data",target/"Data",dirs_exist_ok=True)
+    for src in (terrain/"Graphics").rglob("*"):
+        if src.is_file():
+            dst = target/src.relative_to(terrain)
+            if dst.exists() and (dst.is_symlink() or digest(dst)!=digest(src)):
+                raise ValueError(f"K05 terrain conflicts with an existing graphic: {dst.name}")
+            if not dst.exists():
+                dst.parent.mkdir(parents=True,exist_ok=True)
+                shutil.copyfile(src,dst)
+    return target,actual
 
 
 def run():
@@ -137,31 +166,9 @@ def run():
     _,source_maps = inventory(source)
     with TemporaryDirectory(prefix=".k05-city-",dir=work) as folder:
         tmp = Path(folder)
-        terrain,target = tmp/"terrain",tmp/"game"
-        # Stage against an inert view of the exact released registry/PBS.
-        # The existing game already contains shared FRLG Preview graphics;
-        # stage() refuses preexisting assets without owned mapping, so merge
-        # and hash-check just the new geometry resources below.
-        registry_view = tmp/"registry"
-        shutil.copytree(baseline/"Data",registry_view/"Data")
-        shutil.copytree(baseline/"PBS",registry_view/"PBS")
-        planned = stage(ROOT,source,registry_view,terrain,manifest={
-            **catalog,"maps":{str(k):v for k,v in CITY_MAPS.items()},"preview_only":[]})
-        actual = {r["source_id"]:r["proposed_id"] for r in planned["maps"]}
-        if actual != CITY_SLOTS or set(actual.values()) & prior_files.keys():
-            raise ValueError("K05 stage reallocated a legacy ID or chose unverified city slots")
-        if planned["connections"]:
-            raise ValueError("Unexpected city-only raw connection")
-        copy_for_ci(baseline,target)
-        shutil.copytree(terrain/"Data",target/"Data",dirs_exist_ok=True)
-        for src in (terrain/"Graphics").rglob("*"):
-            if src.is_file():
-                dst = target/src.relative_to(terrain)
-                if dst.exists() and (dst.is_symlink() or digest(dst)!=digest(src)):
-                    raise ValueError(f"K05 terrain conflicts with an existing graphic: {dst.name}")
-                if not dst.exists():
-                    dst.parent.mkdir(parents=True,exist_ok=True)
-                    shutil.copyfile(src,dst)
+        target,actual = extend_terrain(source,baseline,tmp,catalog,CITY_MAPS,CITY_SLOTS)
+        if set(actual.values()) & prior_files.keys():
+            raise ValueError("K05 stage collided with a prior MapID")
         info_path=target/"Data/MapInfos.rxdata"
         info=load(info_path)
         stock=[]

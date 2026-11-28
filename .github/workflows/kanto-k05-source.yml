@@ -5,6 +5,8 @@ on:
     paths:
       - 'scripts/regions/audit_k05_lavender.py'
       - 'scripts/regions/build_k05_city.py'
+      - 'scripts/regions/build_k05_tower.py'
+      - 'tests/test_kanto_k05_tower.py'
       - 'scripts/regions/KantoK05CityNativeCheck.rb'
       - 'scripts/regions/native_check.py'
       - 'tests/test_kanto_k05_city.py'
@@ -49,6 +51,11 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Cannot build published 165-map K04 baseline'}
           python scripts/regions/build_k05_city.py
           if($LASTEXITCODE -ne 0){throw 'K05 city adapter failed'}
+      - name: Preparar sete andares e manter o topo da Torre bloqueado
+        shell: powershell
+        run: |
+          python scripts/regions/build_k05_tower.py
+          if($LASTEXITCODE -ne 0){throw 'K05 Tower terrain and guard adapter failed'}
       - name: Provar fronteira, portas e serviços na engine Windows
         shell: powershell
         run: |
@@ -86,17 +93,29 @@ jobs:
           }
           Write-Host ("KANTO_K05_CITY_NATIVE_REPORT:"+(Get-Content $proof -Raw).Trim())
           Write-Host 'KANTO_K05_CITY_NATIVE_OK'
-      - name: Guardar recibo sem jogo, scripts de origem ou saves
+      - name: Reunir apenas recibos e diagnósticos em diretório visível
         if: always() && hashFiles('.blue-work/kanto-k05-source.json') != ''
+        shell: powershell
+        run: |
+          $dest=New-Item -ItemType Directory -Force -Path 'k05-receipts'
+          @(
+            '.blue-work/kanto-k05-source.json',
+            '.blue-work/kanto-k05-city-stage.json',
+            '.blue-work/kanto-k05-tower-stage.json',
+            '.blue-work/kanto-k05-city/Data/blue-kanto-k05-city-proof.txt',
+            '.blue-work/kanto-k05-city/Data/blue-kanto-k05-city-stage.txt',
+            '.blue-work/kanto-k05-city/Data/blue-kanto-error.txt',
+            '.blue-work/kanto-k05-city-out-1.txt',
+            '.blue-work/kanto-k05-city-err-1.txt',
+            '.blue-work/kanto-k05-city-out-2.txt',
+            '.blue-work/kanto-k05-city-err-2.txt'
+          ) | ForEach-Object {
+            if(Test-Path -LiteralPath $_ -PathType Leaf){ Copy-Item -LiteralPath $_ -Destination $dest.FullName }
+          }
+      - name: Guardar recibo sem jogo, scripts de origem ou saves
+        if: always() && hashFiles('k05-receipts/kanto-k05-source.json') != ''
         uses: actions/upload-artifact@v4
         with:
           name: kanto-k05-source-inventory
-          path: |
-            .blue-work/kanto-k05-source.json
-            .blue-work/kanto-k05-city-stage.json
-            .blue-work/kanto-k05-city/Data/blue-kanto-k05-city-proof.txt
-            .blue-work/kanto-k05-city/Data/blue-kanto-k05-city-stage.txt
-            .blue-work/kanto-k05-city/Data/blue-kanto-error.txt
-            .blue-work/kanto-k05-city-out-*.txt
-            .blue-work/kanto-k05-city-err-*.txt
+          path: k05-receipts/
           if-no-files-found: error
