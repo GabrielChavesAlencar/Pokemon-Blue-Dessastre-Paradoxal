@@ -2,15 +2,33 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1a720aa7aa0b36c99f98a71138ec7d28d5b97125",
+      "date": "2026-11-28T05:31:02-03:00",
+      "title": "Publicar receita verificada K05 Android sem dados do jogo",
+      "category": "Melhorias"
+    },
+    {
       "sha": "7899b30ce3a4cb49d3ffcb8b054ff5f39ebcb47d",
       "date": "2026-11-28T05:30:11-03:00",
       "title": "Android K05: atualização pela fonte sem redistribuição",
       "category": "Melhorias"
     },
     {
+      "sha": "0a8d0264576a542240db21a08469b34209eb0128",
+      "date": "2026-11-28T05:08:58-03:00",
+      "title": "Require exact crash-recovery proof before publishing K05 Android recipe",
+      "category": "Melhorias"
+    },
+    {
       "sha": "4bda388e0f6d07763c95cfd9877ce337e61f9cb9",
       "date": "2026-11-28T05:08:23-03:00",
       "title": "Recover interrupted Kanto source updates before retrying on Android",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "4dfe9f5656fc64fe2c8f1c437e18bda73710d206",
+      "date": "2026-11-28T05:05:48-03:00",
+      "title": "Publish the exact verified Android K05 updater recipe without game assets",
       "category": "Melhorias"
     },
     {
