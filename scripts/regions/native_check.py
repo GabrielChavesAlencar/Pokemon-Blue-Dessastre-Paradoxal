@@ -23,10 +23,13 @@ def prepare(game, integrated=False, k03e=False, k04=False):
         if os.getenv("GITHUB_ACTIONS") != "true" or not (standalone or migrated):
             raise ValueError("K04 requires a disposable CI product game")
         from k04_corridor import published_destinations
+        from qa_k04_migration import MIGRATED_PROFILE, STANDALONE_PROFILE, save_namespace_valid
         marker = json_file(game / (PILOT_META if standalone else "Data/blue-kanto-install.json"))
-        if (len(marker["maps"]) != 165 or any(marker["maps"].get(k) != mid for k, mid in published_destinations().items())
+        profile = STANDALONE_PROFILE if standalone else MIGRATED_PROFILE
+        if (not save_namespace_valid(game, profile) or len(marker["maps"]) != 165
+                or any(marker["maps"].get(k) != mid for k, mid in published_destinations().items())
                 or (standalone and (marker.get("k04_fixture_only") is not True or
-                                    marker["save_app"] != "Kanto K04 Gameplay CI"))
+                                    marker["save_app"] != profile))
                 or (migrated and not (game / "Data/blue-k04-ci-isolated.txt").is_file())):
             raise ValueError("K04 fixture identity or save isolation is missing")
     if k03e:
