@@ -29,6 +29,7 @@ PRODUCT_REVISION="0eaf9401b2d9e828e8549f7c7fea28c5de748157"
 RECIPE_PATHS=frozenset({
     ".github/workflows/android-k05-source-update.yml",
     "scripts/android/source_update.py",
+    "scripts/android/update_client.py",
     "scripts/regions/ensure_source.py",
     "tests/test_android_source_update.py",
     "docs/ANDROID_KANTO_ATUALIZACAO_PELA_FONTE.md",
@@ -167,7 +168,20 @@ def write_compiler_ini(game):
     )
 
 
-def stage_local(root):
+def work_holder(root, revision, work=None):
+    """Use a separate exact checkpoint, optionally visible to Android apps."""
+    if not re.fullmatch(r"[0-9a-f]{40}",revision):
+        raise ValueError("Revisão Android local inválida.")
+    home=ROOT/".blue-work/android-source-update" if work is None else Path(work).expanduser()
+    root,home=root.resolve(),home.resolve()
+    holder=home/revision
+    if (home==ROOT.resolve() or ROOT.resolve().is_relative_to(home) or
+        home.is_relative_to(root) or root.is_relative_to(home) or holder.resolve()!=holder):
+        raise ValueError("A preparação deve ficar em uma pasta separada do jogo.")
+    return holder
+
+
+def stage_local(root,work=None):
     """Prepare sandboxed assets, leave public revision markers untouched."""
     from install_kanto import migrate_existing, verify_installed
     from scripts.android.package import request_compile, REGION_START_PLUGIN
@@ -179,10 +193,8 @@ def stage_local(root):
     installed=read_installed(root)
     recipe=recipe_revision()
     revision=installed["revision"]
-    if len(revision)!=40 or any(c not in "0123456789abcdef" for c in revision):
-        raise ValueError("Revisão Android local inválida.")
-    holder=(ROOT/".blue-work/android-source-update"/revision).resolve()
-    if holder.exists() or holder.is_relative_to(root) or root.is_relative_to(holder):
+    holder=work_holder(root,revision,work)
+    if holder.exists():
         raise ValueError("Use uma pasta de preparação separada e vazia.")
     game=holder/"game"
     pristine=holder/"mkxp.original.json"
@@ -207,8 +219,13 @@ def stage_local(root):
         if not save_namespace_valid(game,app):
             raise ValueError("Não foi possível isolar o perfil da compilação.")
         write_compiler_ini(game)
+        # The existing manifest tracks this authored updater as a mutable
+        # file. Install it only with the verified game transaction.
+        if "ATUALIZAR-ANDROID.py" not in installed["files"]:
+            raise ValueError("O atualizador local não é rastreado por esta versão.")
+        shutil.copyfile(ROOT/"scripts/android/update_client.py",game/"ATUALIZAR-ANDROID.py")
         request_compile(game)
-        proof.update(status="SOURCE_UPDATE_STAGED_AWAITING_COMPILER",staged_game=str(game),
+        proof.update(status="SOURCE_UPDATE_STAGED_AWAITING_COMPILER",staged_game=str(game),installed_root=str(root),
                      pinned_source_prepared_locally=True,protected_hoenn_maps=len(old_hoenn),target_revision=PRODUCT_REVISION,recipe_revision=recipe)
         (holder/"proof.json").write_text(json.dumps(proof,ensure_ascii=False),encoding="utf8")
     except Exception:
@@ -229,6 +246,7 @@ K05_COMPILED={
     "Data/trainer_types.dat","Data/map_metadata.dat","Data/map_connections.dat","Data/items.dat",
 }
 K05_RUNTIME={
+    "ATUALIZAR-ANDROID.py",
     "Data/blue-kanto-install.json","Data/blue-kanto-ready.txt","Data/blue-kanto-start.txt",
     "Data/blue-mobile-build.txt","Plugins/ZZZZ Blue Story and Presentation/RegionStart.rb",
 }
@@ -327,7 +345,7 @@ def commit_local(root,staged,changed,new_manifest,backup,verify=None):
             lock.rmdir()
 
 
-def finish_local(root,revision,apply=False):
+def finish_local(root,revision,apply=False,work=None):
     from scripts.android.package import verify_regions,fingerprint
     from scripts.android.k05_package_contract import verify_registry
     root=root.resolve()
@@ -338,12 +356,13 @@ def finish_local(root,revision,apply=False):
     if revision==original or revision!=PRODUCT_REVISION:
         raise ValueError("A atualização é apenas para a revisão funcional K05, não para o SHA da receita.")
     recipe=recipe_revision()
-    holder=(ROOT/".blue-work/android-source-update"/original).resolve()
+    holder=work_holder(root,original,work)
     staged=holder/"game"
-    if not staged.is_dir() or not holder.is_relative_to(ROOT.resolve()) or holder.is_relative_to(root):
+    if not staged.is_dir() or staged.resolve()!=staged:
         raise ValueError("Nenhuma cópia local isolada encontrada.")
     header=json.loads((holder/"proof.json").read_text("utf8"))
     if (header.get("status")!="SOURCE_UPDATE_STAGED_AWAITING_COMPILER" or
+            header.get("installed_root")!=str(root) or header.get("staged_game")!=str(staged) or
             header.get("current_revision")!=original or header.get("target_revision")!=revision or
             header.get("recipe_revision")!=recipe or read_installed(staged)!=old):
         raise ValueError("A instalação original não corresponde à cópia preparada.")
@@ -377,9 +396,44 @@ def finish_local(root,revision,apply=False):
             "files_changed":len(changed),"hoenn_maps_preserved":len(old_hoenn),"updated":apply,
             **provenance}
 
+def source_workflow(root,work=None,apply=False):
+    """Run the update flow without any GitHub game ZIP or binary patch."""
+    root=root.expanduser().resolve()
+    installed=read_installed(root)
+    revision=installed["revision"]
+    proof=preflight(root)
+    if revision==PRODUCT_REVISION:
+        stamp=installed.get("source_update",{})
+        wanted=installed_provenance(installed["files"],stamp.get("recipe_revision"))
+        if not (
+            proof["kanto_maps"]==178 and stamp==wanted and
+            re.fullmatch(r"[0-9a-f]{40}",str(wanted["recipe_revision"]))
+        ):
+            raise ValueError("A revisão local K05 não tem a prova de instalação pela fonte.")
+        return {**proof,"status":"SOURCE_UPDATE_ALREADY_INSTALLED","compile_verified":True}
+    work=work if work is not None else root.parent/(root.name+"-Compilar-K05")
+    holder=work_holder(root,revision,work)
+    if not apply:
+        return {**proof,"target_revision":PRODUCT_REVISION,"no_binary_zip":True}
+    if not holder.exists():
+        return stage_local(root,work)
+    staged=holder/"game"
+    if not staged.is_dir() or staged.resolve()!=staged:
+        raise ValueError("Cópia de compilação incompleta; nenhum arquivo original alterado.")
+    if not (staged/"Data/blue-android-compiled.txt").is_file():
+        header=json.loads((holder/"proof.json").read_text("utf8"))
+        if header.get("installed_root")!=str(root) or header.get("staged_game")!=str(staged):
+            raise ValueError("A cópia preparada não pertence a esta instalação.")
+        return header
+    return finish_local(root,PRODUCT_REVISION,True,work)
+
+
 def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--game-dir",type=Path,required=True)
+    parser.add_argument("--work-dir",type=Path,help="Pasta separada, acessível ao JoiPlay, para preparar a compilação")
+    parser.add_argument("--source-workflow",action="store_true",help=argparse.SUPPRESS)
+    parser.add_argument("--update",action="store_true",help=argparse.SUPPRESS)
     parser.add_argument("--fetch-source",action="store_true",
                         help="Baixar a fonte fixada no cache do projeto, sem alterar o jogo")
     parser.add_argument("--stage",action="store_true",
@@ -387,13 +441,21 @@ def main(argv=None):
     parser.add_argument("--finish",metavar="REVISAO",help="Conferir a compilação local para esta revisão")
     parser.add_argument("--apply-local",action="store_true",help="Confirmar instalação local após a conferência")
     args=parser.parse_args(argv)
+    if args.source_workflow:
+        result=source_workflow(args.game_dir,args.work_dir,args.update)
+        print(json.dumps(result,ensure_ascii=False,indent=2))
+        if result["status"]=="SOURCE_UPDATE_STAGED_AWAITING_COMPILER":
+            print("No JoiPlay, adicione temporariamente a cópia abaixo como um jogo separado.")
+            print(str(Path(result["staged_game"])/"Game.exe"))
+            print("Após a compilação fechar, feche o JoiPlay e execute o mesmo comando para atualizar.")
+        return
     if args.apply_local and not args.finish:
         parser.error("--apply-local exige a revisão com --finish")
     if args.finish:
-        print(json.dumps(finish_local(args.game_dir,args.finish,args.apply_local),ensure_ascii=False,indent=2))
+        print(json.dumps(finish_local(args.game_dir,args.finish,args.apply_local,args.work_dir),ensure_ascii=False,indent=2))
         return
     if args.stage:
-        print(json.dumps(stage_local(args.game_dir),ensure_ascii=False,indent=2))
+        print(json.dumps(stage_local(args.game_dir,args.work_dir),ensure_ascii=False,indent=2))
         return
     result=preflight(args.game_dir)
     if args.fetch_source:

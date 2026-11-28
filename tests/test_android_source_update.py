@@ -1,12 +1,14 @@
+import contextlib
 import hashlib
+import io
 import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
 
-from scripts.android.source_update import preflight, clone_verified_install, commit_local, atomic_file, manifest_row, installed_provenance, PRODUCT_REVISION, write_compiler_ini, compiler_config, local_delta, K05_RUNTIME, K05_COMPILED
+from scripts.android.source_update import preflight, clone_verified_install, commit_local, atomic_file, manifest_row, installed_provenance, PRODUCT_REVISION, write_compiler_ini, compiler_config, local_delta, K05_RUNTIME, K05_COMPILED, work_holder, source_workflow
 from unittest.mock import patch
-from scripts.android.update_client import MARKER, read_installed
+from scripts.android.update_client import MARKER, read_installed, main as updater_main
 
 
 class AndroidPinnedSourceUpdateTests(unittest.TestCase):
@@ -179,3 +181,63 @@ class AndroidPinnedSourceUpdateTests(unittest.TestCase):
                 commit_local(root,stage,{name:manifest_row(stage/name)},b"new revision",parent/"backup",verify=fail)
             self.assertFalse((root/name).exists())
             self.assertEqual((root/MARKER).read_bytes(),before)
+
+    def test_source_updater_dispatches_without_querying_binary_releases(self):
+        with TemporaryDirectory() as folder:
+            root=Path(folder).resolve()
+            self.make(root)
+            with patch("scripts.android.update_client.subprocess.run") as process, \
+                    patch("scripts.android.update_client.remote_update") as remote:
+                process.return_value.returncode=0
+                rc=updater_main(["--source","--update","--game-dir",str(root)])
+                self.assertEqual(rc,0)
+                self.assertIn("--source-workflow",process.call_args.args[0])
+                remote.assert_not_called()
+            mark=read_installed(root)
+            mark["source_update"]={"mode":"pinned-source-local"}
+            (root/MARKER).write_text(json.dumps(mark))
+            with patch("scripts.android.update_client.remote_update") as remote, \
+                    contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(updater_main(["--update","--game-dir",str(root)]),2)
+                remote.assert_not_called()
+
+    def test_source_staging_requires_a_separate_visible_directory(self):
+        with TemporaryDirectory() as folder:
+            root=Path(folder).resolve()/"installed"
+            root.mkdir()
+            self.make(root)
+            with self.assertRaisesRegex(ValueError,"pasta separada"):
+                work_holder(root,"a"*40,root/"danger")
+            with self.assertRaisesRegex(ValueError,"pasta separada"):
+                work_holder(root,"a"*40,root.parent)
+            target=root.parent/"visible-copy"
+            proof=source_workflow(root,target)
+            self.assertFalse(target.exists())
+            self.assertTrue(proof["no_binary_zip"])
+            self.assertEqual(proof["target_revision"],PRODUCT_REVISION)
+
+    def test_updater_resumes_only_after_compiler_proof(self):
+        with TemporaryDirectory() as folder:
+            parent=Path(folder).resolve()
+            root,work=parent/"installed",parent/"work"
+            root.mkdir()
+            self.make(root)
+            before=(root/MARKER).read_bytes()
+            with patch("scripts.android.source_update.stage_local") as stage, \
+                    patch("scripts.android.source_update.finish_local") as finish:
+                stage.return_value={"status":"staged"}
+                self.assertEqual(source_workflow(root,work,True),{"status":"staged"})
+                stage.assert_called_once_with(root,work)
+                finish.assert_not_called()
+                holder=work/("a"*40)
+                staged=holder/"game"
+                (staged/"Data").mkdir(parents=True)
+                receipt={"installed_root":str(root),"staged_game":str(staged)}
+                (holder/"proof.json").write_text(json.dumps(receipt))
+                self.assertEqual(source_workflow(root,work,True),receipt)
+                finish.assert_not_called()
+                (staged/"Data/blue-android-compiled.txt").write_text("simulated marker")
+                finish.return_value={"status":"applied"}
+                self.assertEqual(source_workflow(root,work,True),{"status":"applied"})
+                finish.assert_called_once_with(root,PRODUCT_REVISION,True,work)
+                self.assertEqual((root/MARKER).read_bytes(),before)

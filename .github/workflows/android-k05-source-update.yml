@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - 'scripts/android/source_update.py'
+      - 'scripts/android/update_client.py'
       - 'scripts/regions/ensure_source.py'
       - 'tests/test_android_source_update.py'
       - '.github/workflows/android-k05-source-update.yml'
@@ -61,8 +62,10 @@ jobs:
       - name: Obter a fonte de Kanto e montar uma cópia local
         shell: powershell
         run: |
-          python scripts/android/source_update.py --game-dir $env:ANDROID_247_GAME --stage
-          if($LASTEXITCODE -ne 0){throw 'K05 direct-source staging failed'}
+          $work=Join-Path (Resolve-Path '.blue-work').Path 'android-source-update'
+          "ANDROID_SOURCE_WORK=$work" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          python scripts/android/update_client.py --game-dir $env:ANDROID_247_GAME --source --source-work-dir $work --update
+          if($LASTEXITCODE -ne 0){throw 'K05 direct-source updater staging failed'}
           $stage=(Resolve-Path '.blue-work/android-source-update/02732eadaedf49f3728755edb2bd2654ceae3897/game').Path
           "ANDROID_SOURCE_STAGE=$stage" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
           $marker=Join-Path $env:ANDROID_247_GAME 'Data/blue-update.json'
@@ -142,8 +145,8 @@ jobs:
         shell: powershell
         run: |
           $rev=$env:K05_PRODUCT_REVISION
-          python scripts/android/source_update.py --game-dir $env:ANDROID_247_GAME --finish $rev --apply-local
-          if($LASTEXITCODE -ne 0){throw 'Compiled local update could not be applied'}
+          python scripts/android/update_client.py --game-dir $env:ANDROID_247_GAME --source --source-work-dir $env:ANDROID_SOURCE_WORK --update
+          if($LASTEXITCODE -ne 0){throw 'Compiled local update could not be applied by the Android updater'}
           $save=Join-Path $env:ANDROID_247_GAME 'K05-SAVE-SYNTHETIC.rxsave'
           if((Get-FileHash $save -Algorithm SHA256).Hash -ne $env:ANDROID_247_SAVE){throw 'Source update touched the disposable save'}
           $installed=Get-Content (Join-Path $env:ANDROID_247_GAME 'Data/blue-update.json') -Raw | ConvertFrom-Json
@@ -156,4 +159,12 @@ jobs:
           if((Get-FileHash (Join-Path $env:ANDROID_247_GAME 'PBS/pokemon_forms_Gen_9_Pack.txt') -Algorithm SHA256).Hash -ne $env:ANDROID_247_UNRELATED_PBS){
             throw 'Compiler-only form PBS edit reached the installation'
           }
+          $updater=Join-Path $env:ANDROID_247_GAME 'ATUALIZAR-ANDROID.py'
+          if((Get-FileHash $updater).Hash -ne (Get-FileHash 'scripts/android/update_client.py').Hash){
+            throw 'The source-aware updater did not install'
+          }
+          $guard=Start-Process -FilePath (Get-Command python).Source -ArgumentList @(
+            ('"' + $updater + '"'),'--game-dir',('"' + $env:ANDROID_247_GAME + '"'),'--update'
+          ) -NoNewWindow -Wait -PassThru
+          if($guard.ExitCode -ne 2){throw 'The installed source-aware updater did not refuse the stock binary workflow'}
           Write-Host 'KANTO_K05_ANDROID_LOCAL_SOURCE_UPDATE_OK'
