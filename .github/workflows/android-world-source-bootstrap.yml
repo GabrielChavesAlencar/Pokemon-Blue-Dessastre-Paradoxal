@@ -108,7 +108,12 @@ jobs:
 
           root = Path(os.environ["BLUE_QA_ROOT"]).resolve(strict=True)
           assert current_install(root)["revision"] == os.environ["GITHUB_SHA"]
-          assert verify_regions(root)[1]["maps"] == 199
+          kanto, hoenn = verify_regions(root, allow_celadon=True)
+          assert hoenn["maps"] == 199
+          if (Path("data") / "regions" / "k06-services-release.json").is_file():
+              assert kanto["maps"] == 182
+              assert "Data/blue-kanto-k06-services.json" in current_install(root)["files"]
+              print("KANTO_K06_CELADON_WORLD_SOURCE_FRESH_OK")
           assert (root/"ATUALIZAR-ANDROID.py").is_file()
           '@ | python -
           if ($LASTEXITCODE -ne 0) { throw 'Mapas ou inventário da instalação não conferem.' }

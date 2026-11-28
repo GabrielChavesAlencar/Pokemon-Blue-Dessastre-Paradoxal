@@ -14,7 +14,7 @@ from audit_k06_celadon_services import summarize
 from build_k06_celadon_services import CANDIDATES, STORE, stage_services
 from ensure_source import prepare
 from install_kanto import recorded_hashes, verify_installed
-from k06_approach_migration import INSTALL, checked_file, require_hashes, verify_native_graph
+from k06_approach_migration import INSTALL, checked_file, managed_world_assembly, require_hashes, verify_native_graph
 from pilot import EVENT_CLASSES, command
 from stage import serialize
 from server.ruby_marshal import RubyData, RubyObject
@@ -223,7 +223,8 @@ def recover(game, backup_home):
 
 def install(game):
     game = game.resolve()
-    if os.name!="nt" or game!=(ROOT/"game").resolve() or not activation_enabled(ROOT):
+    if (game!=(ROOT/"game").resolve() or not activation_enabled(ROOT)
+            or not (os.name=="nt" or managed_world_assembly(ROOT,game))):
         raise ValueError("Instalação de Celadon não habilitada nesta pasta gerenciada.")
     backup_home = ROOT/".blue-backups"
     backup_home.mkdir(exist_ok=True)

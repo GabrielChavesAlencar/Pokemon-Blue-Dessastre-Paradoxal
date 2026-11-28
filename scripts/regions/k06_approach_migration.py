@@ -23,6 +23,20 @@ SAVE = "saves/K06-SYNTHETIC-SENTINEL.rxdata"
 SOURCE = ROOT / ".blue-work/frlg-source/Essentials FRLG"
 
 
+def managed_world_assembly(project, game):
+    """Allow the source bootstrap only in its owned, disposable checkout."""
+    raw = os.environ.get("BLUE_KANTO_WORLD_TARGET")
+    if not raw or game!=(project/"game").resolve():
+        return False
+    owner = project/".blue-work/android-source-owner.json"
+    target = Path(raw)
+    if (not target.is_absolute() or target.resolve()!=target or target.is_relative_to(project)
+            or project.is_relative_to(target) or owner.is_symlink() or not owner.is_file()
+            or owner.resolve()!=owner):
+        return False
+    return json_file(owner)=={"game":str(game),"target":str(target)}
+
+
 def sha_bytes(data):
     return hashlib.sha256(data).hexdigest()
 

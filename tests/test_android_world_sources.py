@@ -84,3 +84,31 @@ class AndroidWorldSourceTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "outra edição"):
                 updater.workflow(root, 1, "b"*40)
             self.assertEqual(sorted(root.rglob("*")), before)
+
+    def test_world_inventory_keeps_celadon_receipt_not_saves(self):
+        with TemporaryDirectory() as work:
+            game = Path(work).resolve()
+            data = game / "Data"
+            data.mkdir()
+            receipt = data / "blue-kanto-k06-services.json"
+            receipt.write_text("{}")
+            (data / "File G.rxdata").write_bytes(b"user")
+            self.assertEqual(updater.source_inventory(game),
+                             {"Data/blue-kanto-k06-services.json": receipt})
+
+    def test_non_windows_kanto_overlay_requires_exact_world_ownership(self):
+        from k06_approach_migration import managed_world_assembly
+        with TemporaryDirectory() as work:
+            root = Path(work).resolve()
+            project, target = root / "recipe", root / "Blue"
+            game = project / "game"
+            game.mkdir(parents=True)
+            owner = project / ".blue-work/android-source-owner.json"
+            with patch.dict("os.environ", {"BLUE_KANTO_WORLD_TARGET": str(target)}):
+                self.assertFalse(managed_world_assembly(project, game))
+                owner.parent.mkdir()
+                updater.put_json(owner, {"game": str(game), "target": str(target)})
+                self.assertTrue(managed_world_assembly(project, game))
+                self.assertFalse(managed_world_assembly(project, target))
+                updater.put_json(owner, {"game": str(game), "target": str(root / "Other")})
+                self.assertFalse(managed_world_assembly(project, game))
