@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "497b880e176b88cd94480c378e77b9b8ab7a8427",
+      "date": "2026-11-28T05:32:07-03:00",
+      "title": "Corrigir leitura do recibo de publicação K05 Android",
+      "category": "Correções"
+    },
+    {
+      "sha": "d6395d734a7b91a373261dde9c5151d81d0856ac",
+      "date": "2026-11-28T05:31:45-03:00",
+      "title": "Capture ANSI workflow logs privately for the existing proof gate",
+      "category": "Melhorias"
+    },
+    {
       "sha": "1a720aa7aa0b36c99f98a71138ec7d28d5b97125",
       "date": "2026-11-28T05:31:02-03:00",
       "title": "Publicar receita verificada K05 Android sem dados do jogo",
