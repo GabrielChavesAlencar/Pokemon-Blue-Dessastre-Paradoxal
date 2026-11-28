@@ -740,8 +740,19 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Kanto import dry-run failed'}
           # This must be the SAME automatic entry point called by the site's
           # Blue-Story.exe, never a hand-executed BAT or a special CI shortcut.
-          python scripts/regions/auto_integrate_kanto.py
-          if($LASTEXITCODE -ne 0){throw 'Blue-Story automatic Kanto integration failed'}
+          $k06Flag='data/regions/k06-approach-release.json'
+          $historicalFlag=Join-Path $env:RUNNER_TEMP 'k06-approach-held-for-k04.json'
+          $holdK06=$env:BLUE_KANTO_HISTORIC_FIXTURE -and (Test-Path -LiteralPath $k06Flag -PathType Leaf)
+          if($holdK06){
+            if(Test-Path -LiteralPath $historicalFlag){throw 'Stale historical K06 flag hold'}
+            Move-Item -LiteralPath $k06Flag -Destination $historicalFlag
+          }
+          try {
+            python scripts/regions/auto_integrate_kanto.py
+            if($LASTEXITCODE -ne 0){throw 'Blue-Story automatic Kanto integration failed'}
+          } finally {
+            if($holdK06){Move-Item -LiteralPath $historicalFlag -Destination $k06Flag}
+          }
           $status=Get-Content '.blue-work/kanto-install-status.json' -Raw | ConvertFrom-Json
           if($status.status -ne 'integrated' -or -not $status.ready){throw 'Automatic installation falsely reported Kanto ready'}
           python scripts/regions/install_kanto.py --verify-installed --game game

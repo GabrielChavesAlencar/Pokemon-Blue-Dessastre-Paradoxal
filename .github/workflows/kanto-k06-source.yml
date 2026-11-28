@@ -99,6 +99,23 @@ jobs:
               Write-Host 'KANTO_K06_INTEGRATED_NATIVE_APPROACH_OK'
             }
           }
+      - name: Exercitar a entrada normal do Blue-Story com a passagem K06 ativa
+        if: hashFiles('data/regions/k06-approach-release.json') != ''
+        shell: powershell
+        run: |
+          if(Test-Path -LiteralPath '.blue-work/kanto-pilot'){throw 'Unexpected preexisting Kanto launcher fixture'}
+          Move-Item -LiteralPath '.blue-work/kanto-k06-baseline' -Destination '.blue-work/kanto-pilot'
+          python scripts/regions/auto_integrate_kanto.py
+          if($LASTEXITCODE -ne 0){throw 'Normal launcher did not seed Kanto and apply the K06 overlay'}
+          $first=Get-Content '.blue-work/kanto-install-status.json' -Raw | ConvertFrom-Json
+          if(!$first.ready -or !$first.changed -or !$first.k06_approach){throw 'First K06 launcher status is wrong'}
+          python scripts/regions/auto_integrate_kanto.py
+          if($LASTEXITCODE -ne 0){throw 'Normal launcher could not reopen the K06 installation'}
+          $second=Get-Content '.blue-work/kanto-install-status.json' -Raw | ConvertFrom-Json
+          if(!$second.ready -or $second.changed -or !$second.k06_approach){throw 'Repeat K06 launcher status is wrong'}
+          $installed=Get-Content 'game/Data/blue-kanto-install.json' -Raw | ConvertFrom-Json
+          if($installed.content_stage -ne 'K06_APPROACH'){throw 'Installed K06 product marker absent'}
+          Write-Host 'KANTO_K06_CANONICAL_LAUNCHER_FRESH_AND_REPEAT_OK'
       - name: Preservar somente recibo de IDs e dependências
         if: always() && hashFiles('k06-source-receipts/kanto-k06-source.json') != ''
         uses: actions/upload-artifact@v4
