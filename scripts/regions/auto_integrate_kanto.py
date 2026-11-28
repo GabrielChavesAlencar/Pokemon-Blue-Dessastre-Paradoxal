@@ -189,13 +189,20 @@ def integrate(project: Path = ROOT, game: Path | None = None,
                 k04_migration = (target_count == 165 and old_count == 160 and
                                  rock_sources | k03e_sources <= target_maps.keys() and
                                  set(old_maps) == target_maps.keys() - rock_sources)
+                k05_migration = False
+                if target_count == 178 and old_count in (156,160,165):
+                    try:
+                        from scripts.regions.k05_contract import predecessor_sets
+                    except ModuleNotFoundError:
+                        from k05_contract import predecessor_sets
+                    k05_migration = set(old_maps)==predecessor_sets(target_maps).get(old_count)
                 candidate = (legacy.get("schema") == 1 and
                              legacy.get("source") == "Essentials FRLG 21.1" and
                              ((target_count == 145 and old_count == 142) or
                               (target_count == 151 and old_count in (142, 145)) or
                               (target_count == 152 and old_count in (142, 145, 151)) or
                               (target_count == 156 and old_count in (142, 145, 151, 152)) or
-                              k03e_migration or k04_migration or
+                              k03e_migration or k04_migration or k05_migration or
                               (target_count == old_count and target_count >= 151 and
                                ("Cerulean door" in str(err) or
                                 "S.S. Anne rival gate:" in str(err)))) and

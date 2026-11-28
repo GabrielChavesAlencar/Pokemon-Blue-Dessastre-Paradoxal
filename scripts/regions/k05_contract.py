@@ -21,8 +21,12 @@ def published_destinations():
 
 def predecessor_sets(wanted):
     """Only the exact released 156-, 160- and 165-map subsets may skip to K05."""
-    from scripts.regions.k03e_contract import MAPS as DIGLETT
-    from scripts.regions.k04_corridor import MAPS as ROCK
+    try:
+        from scripts.regions.k03e_contract import MAPS as DIGLETT
+        from scripts.regions.k04_corridor import MAPS as ROCK
+    except ModuleNotFoundError:
+        from k03e_contract import MAPS as DIGLETT
+        from k04_corridor import MAPS as ROCK
     wanted=set(wanted)
     groups=[{str(i) for i in group} for group in (MAPS,ROCK,DIGLETT)]
     if len(wanted)!=K05_COUNT or not set.union(*groups)<=wanted:
@@ -37,3 +41,11 @@ def predecessor_sets(wanted):
 def scoped_connection(a,side_a,off_a,b,side_b,off_b):
     """Decide just the K05-specific road; preserve every previous route."""
     return not {a,b} & MAPS.keys() or (a,side_a,int(off_a),b,side_b,int(off_b))==LAVENDER_BOUNDARY
+
+
+def baseline_manifest(active):
+    """Private 165 source scope used while assembling the active 178 product."""
+    expected={str(i):key for i,key in MAPS.items()}
+    if len(active["maps"])!=K05_COUNT or any(active["maps"].get(i)!=key for i,key in expected.items()):
+        raise ValueError("K05 release catalog is not active or an audited source ID changed")
+    return {**active,"maps":{i:key for i,key in active["maps"].items() if i not in expected}}

@@ -628,6 +628,9 @@ def migrate_existing(game, source, pilot, commit=False, *, candidate=False):
     if len(mapping) == 160 and len(json_file(pilot / PILOT_META)["maps"]) == 165:
         from k04_migration import prepare
         prepare(game, pilot, proof)
+    if len(mapping)<178 and len(json_file(pilot/PILOT_META)["maps"])==178:
+        from k05_migration import prepare
+        prepare(game,pilot,proof)
     return apply_install(game, pilot, commit, migration=proof)
 
 
@@ -715,9 +718,13 @@ def sync_runtime(game, commit=False):
     if current != recorded:
         raise ValueError("Kanto runtime was edited locally; refusing overwrite.")
     body = source.read_bytes()
-    if verified["maps"] == 165:
+    if verified["maps"] >= 165:
         from k04_gameplay import runtime_payload
         body = runtime_payload(body)
+    if verified["maps"]==178:
+        for filename in ("KantoK05City.rb","KantoK05Tower.rb"):
+            field=(ROOT/"scripts/regions"/filename).read_bytes()
+            body+=b"\n"+field.strip()+b"\n"
     wanted = hashlib.sha256(body).hexdigest()
     if wanted == current:
         return {"status": "runtime_current", "changed": False}

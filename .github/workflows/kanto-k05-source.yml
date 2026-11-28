@@ -30,6 +30,11 @@ on:
       - 'tests/test_kanto_k05_city.py'
       - 'tests/test_kanto_k05_source.py'
       - '.github/workflows/kanto-k05-source.yml'
+  push:
+    branches: [main]
+    paths:
+      - "data/regions/kanto-source.json"
+      - ".github/workflows/kanto-k05-source.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -48,6 +53,18 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Isolar o catálogo histórico quando K05 estiver ativa
+        shell: powershell
+        run: |
+          $catalog=Get-Content data/regions/kanto-source.json -Raw | ConvertFrom-Json
+          if($catalog.maps.'93' -eq 'LAVENDER_TOWN'){
+            $historic='02732eadaedf49f3728755edb2bd2654ceae3897'
+            git fetch --no-tags --depth=1 origin $historic
+            if($LASTEXITCODE -ne 0){throw 'Cannot fetch exact K04 fixture'}
+            git restore --source=$historic -- data/regions/kanto-source.json data/kanto-music-rules.json site/public/data/kanto.json
+            if($LASTEXITCODE -ne 0){throw 'Cannot restore K04 fixture scope'}
+            'BLUE_K05_ACTIVE_RECIPE=1' | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          }
       - name: Validar contrato do inventário
         shell: powershell
         run: |
@@ -234,6 +251,19 @@ jobs:
             python scripts/regions/qa_k05_migration.py $prior --seed-historical
             if($LASTEXITCODE -ne 0){throw "K05 direct migration failed from the pinned $prior-map install"}
           }
+      - name: Testar instalação padrão ativa de Kanto no Windows
+        if: env.BLUE_K05_ACTIVE_RECIPE == '1'
+        shell: powershell
+        run: |
+          git restore --source=HEAD -- data/regions/kanto-source.json data/kanto-music-rules.json site/public/data/kanto.json
+          if($LASTEXITCODE -ne 0){throw 'Cannot switch from historical test scope to the active recipe'}
+          python scripts/regions/install_kanto.py --game game --pilot .blue-work/kanto-k05-live --apply
+          if($LASTEXITCODE -ne 0){throw 'Ordinary K05 install failed'}
+          python scripts/regions/install_kanto.py --game game --verify-installed
+          if($LASTEXITCODE -ne 0){throw 'Ordinary K05 installed-proof check failed'}
+          python scripts/regions/release_gate.py --pilot .blue-work/kanto-k05-live
+          if($LASTEXITCODE -ne 0){throw 'Ordinary K05 active catalog verification failed'}
+          Write-Host 'KANTO_K05_WINDOWS_ACTIVE_178_OK'
       - name: Reunir apenas recibos e diagnósticos em diretório visível
         if: always() && hashFiles('.blue-work/kanto-k05-source.json') != ''
         shell: powershell

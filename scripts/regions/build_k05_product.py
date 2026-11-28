@@ -58,6 +58,10 @@ def compose(source,baseline,output,catalog):
         if any(digest(baseline/p)!=h or digest(target/p)!=h for p,h in hashes.items()):
             raise ValueError("K05 product modified a K04 or non-Kanto map")
         old_meta["maps"]=mapping
+        if publication_catalog(json_file(KANTO)["maps"])==178:
+            from scripts.music.compile_kanto_music import compile_bytes
+            music,_=compile_bytes(ROOT,target,mapping)
+            (target/"Data/blue-kanto-music.txt").write_bytes(music)
         (target/PILOT_META).write_text(json.dumps(old_meta),encoding="utf8")
         (target/"Data/blue-compile-request.txt").write_text("compile",encoding="ascii")
         (target/"Data/PluginScripts.rxdata").unlink(missing_ok=True)
