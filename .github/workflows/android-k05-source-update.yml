@@ -86,19 +86,55 @@ jobs:
           $dir=Join-Path $env:RUNNER_TEMP 'android-source-mesa'
           & "$env:ProgramFiles/7-Zip/7z.exe" x $mesa "-o$dir" -y | Out-Null
           if($LASTEXITCODE -ne 0){throw 'Mesa extraction failed'}
-          Get-ChildItem -LiteralPath $dir -Recurse -File -Filter '*.dll' |
-            Where-Object { $_.Directory.Name -eq 'x64' } |
-            ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $env:ANDROID_SOURCE_STAGE }
-          $proof=Join-Path $env:ANDROID_SOURCE_STAGE 'Data/blue-android-compiled.txt'
-          for($attempt=1;$attempt -le 3;$attempt++){
-            $p=Start-Process -FilePath "$env:ANDROID_SOURCE_STAGE/Game.exe" -WorkingDirectory $env:ANDROID_SOURCE_STAGE -WindowStyle Hidden -PassThru -RedirectStandardOutput '.blue-work/android-source-ci/native-out.txt' -RedirectStandardError '.blue-work/android-source-ci/native-err.txt'
-            $handle=$p.Handle
-            if(-not $p.WaitForExit(240000)){Stop-Process -Id $p.Id; break}
-            if(Test-Path $proof){break}
-          }
-          if(!(Test-Path $proof -PathType Leaf)){
-            Get-Content '.blue-work/android-source-ci/native-out.txt','.blue-work/android-source-ci/native-err.txt',"$env:ANDROID_SOURCE_STAGE/Data/blue-android-error.txt","$env:ANDROID_SOURCE_STAGE/Data/blue-android-stage.txt","$env:ANDROID_SOURCE_STAGE/errorlog.txt" -ErrorAction SilentlyContinue | Select-Object -Last 130
-            throw 'The disposable update never compiled'
+          # A short physical working path avoids path-length quirks in the
+          # bundled runtime. Never copy or bring the installed game into it.
+          $stage=$env:ANDROID_SOURCE_STAGE
+          $short=Join-Path $env:RUNNER_TEMP 'k05-compile'
+          if(Test-Path -LiteralPath $short){throw 'Isolated compiler root already exists'}
+          Move-Item -LiteralPath $stage -Destination $short
+          try {
+            Get-ChildItem -LiteralPath $dir -Recurse -File -Filter '*.dll' |
+              Where-Object { $_.Directory.Name -eq 'x64' } |
+              ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $short }
+            $env:K05_COMPILER_ROOT=$short
+            @'
+          import hashlib, json, os, pathlib, subprocess
+          root=pathlib.Path(os.environ["K05_COMPILER_ROOT"]).resolve(strict=True)
+          logs=pathlib.Path(".blue-work/android-source-ci").resolve(strict=True)
+          must=("Game.exe","Game.ini","mkxp.json","Data/Scripts.rxdata","Data/blue-android-build-request.txt")
+          for name in must:
+              asset=root/name
+              print(name,asset.stat().st_size,hashlib.file_digest(asset.open("rb"),"sha256").hexdigest(),flush=True)
+          config=json.loads((root/"mkxp.json").read_text("ascii"))
+          if config["gameFolder"]!="." or config["execName"]!="Game" or config["dataPathApp"]!="Kanto Android Source Build":
+              raise SystemExit("Unexpected compiler root or profile")
+          isolated=root.parent/"k05-profile"
+          isolated.mkdir(exist_ok=False)
+          variables={**os.environ,"APPDATA":str(isolated),"LOCALAPPDATA":str(isolated)}
+          proof=root/"Data/blue-android-compiled.txt"
+          for attempt in (1,2):
+              with (logs/f"native-{attempt}.txt").open("wb") as log:
+                  try:
+                      subprocess.run([str(root/"Game.exe"),"debug"],cwd=root,env=variables,
+                                     stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT,timeout=130)
+                  except subprocess.TimeoutExpired:
+                      print(f"Native compiler timed out, attempt {attempt}",flush=True)
+              raw=(logs/f"native-{attempt}.txt").read_text("utf8",errors="replace")
+              print(raw[-12000:],flush=True)
+              if proof.is_file():
+                  break
+              if (root/"Data/blue-android-error.txt").is_file() or "Could not read Game.ini" in raw:
+                  break
+          if not proof.is_file():
+              for name in ("Data/blue-android-error.txt","Data/blue-android-stage.txt","errorlog.txt"):
+                  path=root/name
+                  if path.is_file():
+                      print(name,path.read_text("utf8",errors="replace")[-12000:],flush=True)
+              raise SystemExit("The disposable update never compiled")
+          '@ | python -
+            if($LASTEXITCODE -ne 0){throw 'Android native compile failed'}
+          } finally {
+            Move-Item -LiteralPath $short -Destination $stage
           }
       - name: Instalar somente localmente e conferir 199 mapas e save sentinela
         shell: powershell

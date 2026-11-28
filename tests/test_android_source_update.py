@@ -4,7 +4,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
 
-from scripts.android.source_update import preflight, clone_verified_install, commit_local, atomic_file, manifest_row, installed_provenance, PRODUCT_REVISION, write_compiler_ini
+from scripts.android.source_update import preflight, clone_verified_install, commit_local, atomic_file, manifest_row, installed_provenance, PRODUCT_REVISION, write_compiler_ini, compiler_config
 from unittest.mock import patch
 from scripts.android.update_client import MARKER, read_installed
 
@@ -128,3 +128,13 @@ class AndroidPinnedSourceUpdateTests(unittest.TestCase):
             self.assertIn(b"Scripts=Data\\Scripts.rxdata",ini)
             self.assertEqual(ini.decode("ascii").encode("ascii"),ini)
             self.assertEqual((game/"Game.ini").read_bytes(),supplied)
+
+    def test_compiler_config_pins_the_relative_entry_point(self):
+        original='{"gameFolder":"another-folder","execName":"Other","customScript":"other.rb","windowTitle":"original"}'
+        data=json.loads(compiler_config(original,"Isolated compiler"))
+        self.assertEqual(data["gameFolder"],".")
+        self.assertEqual(data["execName"],"Game")
+        self.assertEqual(data["customScript"],"")
+        self.assertEqual(data["rgssVersion"],1)
+        self.assertEqual(data["windowTitle"],"original")
+        self.assertEqual(data["dataPathApp"],"Isolated compiler")

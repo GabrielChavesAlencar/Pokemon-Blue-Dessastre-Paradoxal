@@ -149,6 +149,15 @@ def clone_verified_install(root,stage,installed):
         raise
 
 
+def compiler_config(original, app):
+    from qa_k04_migration import isolated_config
+    config=json.loads(isolated_config(original,app))
+    # Do not inherit a machine-specific root or alternate entry point from the
+    # released runtime. All paths below refer only to the disposable copy.
+    config.update(gameFolder=".",execName="Game",customScript="",rgssVersion=1)
+    return json.dumps(config,ensure_ascii=True,indent=2)+"\n"
+
+
 def write_compiler_ini(game):
     """ASCII native bootstrap is only for the disposable compile copy."""
     path=game/"Game.ini"
@@ -162,7 +171,7 @@ def stage_local(root):
     """Prepare sandboxed assets, leave public revision markers untouched."""
     from install_kanto import migrate_existing, verify_installed
     from scripts.android.package import request_compile, REGION_START_PLUGIN
-    from qa_k04_migration import isolated_config, save_namespace_valid
+    from qa_k04_migration import save_namespace_valid
     root=root.resolve()
     proof=preflight(root)
     if proof["kanto_maps"]==178:
@@ -193,7 +202,7 @@ def stage_local(root):
         if any(digest(game/p)!=old_maps[p] for p in old_hoenn):
             raise ValueError("A preparação tentou alterar um mapa de Hoenn.")
         shutil.copyfile(ROOT/"scripts/battle_polish/RegionStart.rb",game/REGION_START_PLUGIN)
-        gameconf.write_text(isolated_config(original_conf.decode("utf-8-sig"),app),encoding="utf8")
+        gameconf.write_text(compiler_config(original_conf.decode("utf-8-sig"),app),encoding="utf8")
         pristine.write_bytes(original_conf)
         if not save_namespace_valid(game,app):
             raise ValueError("Não foi possível isolar o perfil da compilação.")
