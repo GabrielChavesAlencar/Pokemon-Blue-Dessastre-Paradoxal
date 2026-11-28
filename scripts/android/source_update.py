@@ -401,7 +401,7 @@ def recover_source_install(root,work,apply):
     return result
 
 
-def commit_local(root,staged,changed,new_manifest,backup,verify=None,before_marker=None,baseline=None,*,record_marker=MARKER):
+def commit_local(root,staged,changed,new_manifest,backup,verify=None,before_marker=None,baseline=None,*,record_marker=MARKER,removed=()):
     """Persist backups and hashes before touching files; commit revision last."""
     if record_marker not in {MARKER,"Data/blue-kanto-install.json"}:
         raise ValueError("Marcador local de instalação não autorizado.")
@@ -412,8 +412,11 @@ def commit_local(root,staged,changed,new_manifest,backup,verify=None,before_mark
         if before_marker is not None and (root/record_marker).read_bytes()!=before_marker:
             raise ValueError("O inventário mudou desde a conferência da instalação.")
         saved=Path(tempfile.mkdtemp(prefix=backup.name+"-",dir=backup.parent)).resolve()
+        removed=set(removed)
+        if removed.intersection(changed) or record_marker in removed:
+            raise ValueError("O registro deve gravar ou remover cada arquivo uma única vez.")
         paths={}
-        for name in (*changed,record_marker):
+        for name in (*changed,*sorted(removed),record_marker):
             if name!=record_marker and not safe_path(name):
                 raise ValueError("Caminho de atualização não autorizado: "+name)
             orig=root/name
@@ -422,7 +425,8 @@ def commit_local(root,staged,changed,new_manifest,backup,verify=None,before_mark
                 atomic_file(saved/name,orig.read_bytes())
                 if checked_row(saved/name)!=previous:
                     raise OSError("Backup local não confere: "+name)
-            new=changed.get(name,{"size":len(new_manifest),"sha256":hashlib.sha256(new_manifest).hexdigest()})
+            new=None if name in removed else changed.get(
+                name,{"size":len(new_manifest),"sha256":hashlib.sha256(new_manifest).hexdigest()})
             paths[name]={"old":previous,"new":new}
         receipt={"schema":1,"root":str(root),"backup":str(saved),"rows":paths,"baseline":baseline}
         atomic_file(root/RECOVERY_FILE,json.dumps(receipt,sort_keys=True).encode("utf8"))
@@ -432,6 +436,8 @@ def commit_local(root,staged,changed,new_manifest,backup,verify=None,before_mark
                 if len(data)!=meta["size"] or hashlib.sha256(data).hexdigest()!=meta["sha256"]:
                     raise ValueError(f"O arquivo compilado mudou antes de gravar: {name}")
                 atomic_file(root/name,data)
+            for name in removed:
+                (root/name).unlink(missing_ok=True)
             if verify is not None:
                 verify(root)
             atomic_file(root/record_marker,new_manifest)
