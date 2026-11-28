@@ -158,7 +158,9 @@ O manifesto compartilhado V2 usa o catálogo versionado em `data/regions/hoenn-m
 
 Uma instalação compartilhada V1 conserva seus mapas e saves. O instalador valida as reservas globais e os registros de Hoenn, guarda os arquivos afetados, atualiza o manifesto e os marcadores compactos e solicita recompilação. Se a gravação for interrompida, a próxima preparação restaura o estado anterior com base nos hashes registrados antes de tentar outra vez. A leitura V1 continua disponível para instalações anteriores e para a cópia isolada de QA.
 
-O proprietário adiou os testes em aparelho Android e pediu trabalho de código seguido de execução no Windows. A publicação oficial e a aprovação física do JoiPlay continuam pendentes.
+Em 28/11/2026, uma cópia descartável da instalação compartilhada anterior foi migrada de V1 para V2 no Windows. O ensaio conservou os 199 pares de MapIDs, reparou as conexões marítimas do H00 e preservou o save de teste byte a byte. O Game.exe recompilou os plugins e o PBS. A segunda execução conservou o manifesto já migrado. Os testes de alocação cobrem conjuntos maiores em ambiente isolado. A revisão 1 continua instalando os mesmos 199 mapas.
+
+O atualizador Android pela fonte usa a contagem do catálogo ativo. A validação em aparelho com JoiPlay permanece adiada a pedido do proprietário.
 
 ## 5. Fases H02–H17: campanha jogável ponta a ponta
 
