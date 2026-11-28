@@ -20,8 +20,8 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
       PRODUCT: 0eaf9401b2d9e828e8549f7c7fea28c5de748157
-      RECIPE: d7ba4cdf1ee201f91b0779abd402a65525ccb8a3
-      VERIFIED_RUN: '46123384868'
+      RECIPE: 4bda388e0f6d07763c95cfd9877ce337e61f9cb9
+      VERIFIED_RUN: '46124410475'
       TAG: android-source-k05-0eaf940
     steps:
       - name: Confirmar revisão, PR integrado e teste exato
@@ -30,11 +30,12 @@ jobs:
           set -euo pipefail
           pr=$(gh api "repos/$GH_REPO/pulls/389" --jq '[.merged, .head.sha, .base.ref] | @tsv')
           [[ "$pr" == "$(printf 'true\t%s\tmain' "$RECIPE")" ]]
-          run=$(gh api "repos/$GH_REPO/actions/runs/$VERIFIED_RUN" --jq '[.head_sha, .conclusion, .path, .event] | @tsv')
+          run=$(gh api "repos/$GH_REPO/actions/runs/$VERIFIED_RUN" --jq '[.head_sha, .conclusion, (.path | sub("@refs/pull/389/merge$"; "")), .event] | @tsv')
           [[ "$run" == "$(printf '%s\tsuccess\t%s\tpull_request' "$RECIPE" '.github/workflows/android-k05-source-update.yml')" ]]
           job=$(gh api "repos/$GH_REPO/actions/runs/$VERIFIED_RUN/jobs" --jq '.jobs[] | select(.name=="disposable-source-update" and .conclusion=="success") | .id')
           [[ "$job" =~ ^[0-9]+$ ]]
           gh api "repos/$GH_REPO/actions/jobs/$job/logs" > "$RUNNER_TEMP/k05-source-proof.log"
+          grep -Eq 'Z KANTO_K05_ANDROID_CRASH_RECOVERY_OK[[:space:]]*$' "$RUNNER_TEMP/k05-source-proof.log"
           grep -Eq 'Z KANTO_K05_ANDROID_LOCAL_SOURCE_UPDATE_OK[[:space:]]*$' "$RUNNER_TEMP/k05-source-proof.log"
 
       - name: Publicar referência exata (sem arquivos do jogo)
@@ -50,7 +51,7 @@ jobs:
           - Revisão funcional: \`$PRODUCT\`, a mesma de Windows 1634.
           - Revisão exata da receita: \`$RECIPE\`.
           - O atualizador baixa a fonte diretamente do autor, confere o SHA-256 e compila em uma cópia local. Não há ZIP do jogo, patch misto, fonte de terceiros, runtime ou saves anexados.
-          - [Teste automatizado da instalação e preservação dos 199 mapas de Hoenn e save sintético]($proof_link). Teste no aparelho Android ainda pendente.
+          - [Teste automatizado da instalação, recuperação após interrupção e preservação dos 199 mapas de Hoenn e save sintético]($proof_link). Teste no aparelho Android ainda pendente.
 
           ### Quando for testar
           No Termux, com acesso à pasta do jogo, instale \`python\`, \`git\` e \`bsdtar\`. Use um cache novo, sem substituir uma cópia anterior:
