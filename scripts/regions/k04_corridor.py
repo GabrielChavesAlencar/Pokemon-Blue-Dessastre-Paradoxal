@@ -59,13 +59,15 @@ def verify_source(report):
 def publication_catalog(maps):
     """Classify historical or K04 catalog by audited append identities."""
     from scripts.regions.k03e_contract import MAPS as preceding
+    from scripts.regions.k05_contract import MAPS as lavender
 
     count = len(maps)
     k03e = {str(i): key for i, key in preceding.items()}
     k04 = {str(i): key for i, key in MAPS.items()}
-    points = k03e.keys() | k04.keys()
+    k05 = {str(i): key for i,key in lavender.items()}
+    points = k03e.keys() | k04.keys() | k05.keys()
     present = maps.keys() & points
-    expected = {156: {}, 160: k03e, 165: {**k03e, **k04}}.get(count)
+    expected = {156:{},160:k03e,165:{**k03e,**k04},178:{**k03e,**k04,**k05}}.get(count)
     if expected is None or present != expected.keys() or any(
             maps.get(i) != key for i, key in expected.items()):
         raise ValueError("Unknown Kanto publication catalog")

@@ -27,6 +27,16 @@ jobs:
       - name: Preparar Blue e a fonte editável de Kanto
         shell: powershell
         run: |
+          $catalog=Get-Content data/regions/kanto-source.json -Raw | ConvertFrom-Json
+          if($catalog.maps.'93' -eq 'LAVENDER_TOWN'){
+            $historic='02732eadaedf49f3728755edb2bd2654ceae3897'
+            git fetch --no-tags --depth=1 origin $historic
+            if($LASTEXITCODE -ne 0){throw 'Cannot fetch historical K04 controls'}
+            git restore --source=$historic -- data/regions/kanto-source.json data/kanto-music-rules.json site/public/data/kanto.json
+            if($LASTEXITCODE -ne 0){throw 'Cannot load historical K04 controls'}
+            "BLUE_KANTO_HISTORIC_FIXTURE=$historic" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+            Write-Host 'The dedicated K05 workflow owns the 178-map product; this job preserves K04 regression.'
+          }
           python scripts/install_game.py --apply --skip-kanto
           if($LASTEXITCODE -ne 0){throw 'Blue installation failed'}
           if($env:GITHUB_HEAD_REF -eq 'sinnoh-f12d-integrated-gameplay'){
@@ -730,8 +740,19 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Kanto import dry-run failed'}
           # This must be the SAME automatic entry point called by the site's
           # Blue-Story.exe, never a hand-executed BAT or a special CI shortcut.
-          python scripts/regions/auto_integrate_kanto.py
-          if($LASTEXITCODE -ne 0){throw 'Blue-Story automatic Kanto integration failed'}
+          $k06Flag='data/regions/k06-approach-release.json'
+          $historicalFlag=Join-Path $env:RUNNER_TEMP 'k06-approach-held-for-k04.json'
+          $holdK06=$env:BLUE_KANTO_HISTORIC_FIXTURE -and (Test-Path -LiteralPath $k06Flag -PathType Leaf)
+          if($holdK06){
+            if(Test-Path -LiteralPath $historicalFlag){throw 'Stale historical K06 flag hold'}
+            Move-Item -LiteralPath $k06Flag -Destination $historicalFlag
+          }
+          try {
+            python scripts/regions/auto_integrate_kanto.py
+            if($LASTEXITCODE -ne 0){throw 'Blue-Story automatic Kanto integration failed'}
+          } finally {
+            if($holdK06){Move-Item -LiteralPath $historicalFlag -Destination $k06Flag}
+          }
           $status=Get-Content '.blue-work/kanto-install-status.json' -Raw | ConvertFrom-Json
           if($status.status -ne 'integrated' -or -not $status.ready){throw 'Automatic installation falsely reported Kanto ready'}
           python scripts/regions/install_kanto.py --verify-installed --game game
@@ -938,7 +959,9 @@ jobs:
       - name: Testar Game.exe com catálogo ativo e preparar só o piloto atual
         shell: powershell
         run: |
-          git restore --source=$env:GITHUB_SHA -- data/regions/kanto-source.json data/kanto-music-rules.json site/public/data/kanto.json
+          $fixture=$env:GITHUB_SHA
+          if($env:BLUE_KANTO_HISTORIC_FIXTURE){$fixture=$env:BLUE_KANTO_HISTORIC_FIXTURE}
+          git restore --source=$fixture -- data/regions/kanto-source.json data/kanto-music-rules.json site/public/data/kanto.json
           if($LASTEXITCODE -ne 0){throw 'Cannot restore current release inputs'}
           $release=(Resolve-Path .blue-work/kanto-release-pilot).Path
           python scripts/regions/native_check.py $release --k03e
@@ -1029,7 +1052,7 @@ jobs:
           if-no-files-found: ignore
       # The Kanto ZIP is a separate compiled game. It cannot be the Decades ZIP.
       - name: Compilar versão mobile do piloto de Kanto
-        if: github.event_name == 'push' && contains(github.event.head_commit.message, '[android-kanto-release]')
+        if: github.event_name == 'push' && env.BLUE_KANTO_HISTORIC_FIXTURE == '' && contains(github.event.head_commit.message, '[android-kanto-release]')
         shell: powershell
         run: |
           $pilot=(Resolve-Path '.blue-work/kanto-release-pilot').Path
@@ -1059,7 +1082,7 @@ jobs:
           python scripts/android/verify_kanto_cerulean.py --channel kanto --archive dist/Blue-Android-Kanto-Piloto.zip
           if($LASTEXITCODE -ne 0){throw 'Rotas 24/25 ou Luis/Diana nao chegaram ao Android Kanto'}
       - name: Gerar manifesto e atualização incremental de Kanto
-        if: github.event_name == 'push' && contains(github.event.head_commit.message, '[android-kanto-release]')
+        if: github.event_name == 'push' && env.BLUE_KANTO_HISTORIC_FIXTURE == '' && contains(github.event.head_commit.message, '[android-kanto-release]')
         shell: powershell
         env:
           GH_TOKEN: ${{ github.token }}
@@ -1085,7 +1108,7 @@ jobs:
           if($patches.Count -eq 0){throw 'No incremental Kanto patch generated; publication blocked'}
 
       - name: Guardar ZIP de testes de Kanto
-        if: github.event_name == 'push' && contains(github.event.head_commit.message, '[android-kanto-release]')
+        if: github.event_name == 'push' && env.BLUE_KANTO_HISTORIC_FIXTURE == '' && contains(github.event.head_commit.message, '[android-kanto-release]')
         uses: actions/upload-artifact@v4
         with:
           name: blue-android-kanto-piloto
@@ -1098,7 +1121,7 @@ jobs:
           retention-days: 14
           if-no-files-found: error
       - name: Publicar release experimental Kanto (se compilado e conferido)
-        if: github.event_name == 'push' && contains(github.event.head_commit.message, '[android-kanto-release]')
+        if: github.event_name == 'push' && env.BLUE_KANTO_HISTORIC_FIXTURE == '' && contains(github.event.head_commit.message, '[android-kanto-release]')
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}

@@ -1,0 +1,319 @@
+name: "Kanto K05: inventário da fonte Lavender"
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/regions/audit_k05_lavender.py'
+      - 'scripts/regions/build_k05_city.py'
+      - 'scripts/regions/build_k05_tower.py'
+      - 'scripts/regions/build_k05_product.py'
+      - 'scripts/regions/k05_contract.py'
+      - 'scripts/regions/k05_promotion.py'
+      - 'scripts/regions/k05_migration.py'
+      - 'scripts/regions/qa_k05_migration.py'
+      - 'scripts/regions/export_kanto.py'
+      - 'scripts/regions/release_gate.py'
+      - 'scripts/regions/install_kanto.py'
+      - 'scripts/regions/verify_pilot.py'
+      - 'scripts/battle_polish/RegionStart.rb'
+      - 'tests/region_start_android_no_json_runtime.rb'
+      - 'tests/test_kanto_cerulean_north.py'
+      - 'tests/test_kanto_k05_migration.py'
+      - 'scripts/regions/k05_tower_actors.py'
+      - 'scripts/regions/KantoK05Tower.rb'
+      - 'scripts/regions/k05_lavender_services.py'
+      - 'scripts/regions/KantoK05City.rb'
+      - 'tests/test_kanto_k05_tower.py'
+      - 'scripts/regions/KantoK05CityNativeCheck.rb'
+      - 'scripts/regions/KantoK05TowerNativeCheck.rb'
+      - 'scripts/regions/native_check.py'
+      - 'tests/test_kanto_k05_city.py'
+      - 'tests/test_kanto_k05_source.py'
+      - '.github/workflows/kanto-k05-source.yml'
+  push:
+    branches: [main]
+    paths:
+      - "data/regions/kanto-source.json"
+      - ".github/workflows/kanto-k05-source.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: kanto-k05-source-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  audit:
+    runs-on: windows-2022
+    timeout-minutes: 45
+    env:
+      GALLIUM_DRIVER: llvmpipe
+      ALSOFT_DRIVERS: 'null'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Isolar o catálogo histórico quando K05 estiver ativa
+        shell: powershell
+        run: |
+          $catalog=Get-Content data/regions/kanto-source.json -Raw | ConvertFrom-Json
+          if($catalog.maps.'93' -eq 'LAVENDER_TOWN'){
+            $historic='02732eadaedf49f3728755edb2bd2654ceae3897'
+            git fetch --no-tags --depth=1 origin $historic
+            if($LASTEXITCODE -ne 0){throw 'Cannot fetch exact K04 fixture'}
+            git restore --source=$historic -- data/regions/kanto-source.json data/kanto-music-rules.json site/public/data/kanto.json
+            if($LASTEXITCODE -ne 0){throw 'Cannot restore K04 fixture scope'}
+            'BLUE_K05_ACTIVE_RECIPE=1' | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          }
+      - name: Validar contrato do inventário
+        shell: powershell
+        run: |
+          python -m unittest discover -s tests -p 'test_kanto_k05*.py'
+          if($LASTEXITCODE -ne 0){throw 'K05 source contract tests failed'}
+          ruby tests/region_start_android_no_json_runtime.rb scripts/battle_polish/RegionStart.rb
+          if($LASTEXITCODE -ne 0){throw 'K05 JoiPlay read-only no-JSON registry guard failed'}
+      - name: Auditar cidade, serviços e torre na fonte fixada
+        shell: powershell
+        run: |
+          python scripts/install_game.py --apply --skip-kanto
+          if($LASTEXITCODE -ne 0){throw 'Disposable Decades base unavailable'}
+          python scripts/regions/ensure_source.py
+          if($LASTEXITCODE -ne 0){throw 'Pinned Kanto source unavailable'}
+          python scripts/regions/audit_k05_lavender.py
+          if($LASTEXITCODE -ne 0){throw 'K05 source audit failed'}
+      - name: Preparar terreno e serviços de Lavender em cópia isolada
+        shell: powershell
+        run: |
+          python scripts/regions/pilot.py --output .blue-work/kanto-k05-baseline
+          if($LASTEXITCODE -ne 0){throw 'Cannot build published 165-map K04 baseline'}
+          python scripts/regions/build_k05_city.py
+          if($LASTEXITCODE -ne 0){throw 'K05 city adapter failed'}
+      - name: Preparar sete andares e manter o topo da Torre bloqueado
+        shell: powershell
+        run: |
+          python scripts/regions/build_k05_tower.py
+          if($LASTEXITCODE -ne 0){throw 'K05 Tower terrain and guard adapter failed'}
+      - name: Provar fronteira, portas e serviços na engine Windows
+        shell: powershell
+        run: |
+          $root=(Resolve-Path .blue-work/kanto-k05-city).Path
+          python scripts/regions/native_check.py $root --k05-city
+          if($LASTEXITCODE -ne 0){throw 'K05 native injection failed'}
+          $ProgressPreference='SilentlyContinue'
+          $mesa=Join-Path $env:RUNNER_TEMP 'k05-mesa.7z'
+          Invoke-WebRequest -UseBasicParsing 'https://github.com/pal1000/mesa-dist-win/releases/download/26.2.6/mesa3d-26.2.6-release-mingw.7z' -OutFile $mesa
+          if((Get-FileHash -LiteralPath $mesa -Algorithm SHA256).Hash.ToLower() -ne 'da0f71d9181b672c1918f3c342f11118c687f6059a46b16502845160733cc388'){throw 'Mesa checksum failed'}
+          $mesaFolder=Join-Path $env:RUNNER_TEMP 'k05-mesa'
+          & "$env:ProgramFiles/7-Zip/7z.exe" x $mesa "-o$mesaFolder" -y | Out-Null
+          if($LASTEXITCODE -ne 0){throw 'Mesa extraction failed'}
+          Get-ChildItem -LiteralPath $mesaFolder -Recurse -File -Filter '*.dll' |
+            Where-Object { $_.Directory.Name -eq 'x64' } |
+            ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $root }
+          $proof="$root/Data/blue-kanto-k05-city-proof.txt"
+          $errorFile="$root/Data/blue-kanto-error.txt"
+          for($attempt=1;$attempt -le 2;$attempt++){
+            $stdout=".blue-work/kanto-k05-city-out-$attempt.txt"
+            $stderr=".blue-work/kanto-k05-city-err-$attempt.txt"
+            $proc=Start-Process -FilePath "$root/Game.exe" -WorkingDirectory $root -WindowStyle Hidden -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+            $handle=$proc.Handle
+            if(-not $proc.WaitForExit(180000)){
+              Stop-Process -Id $proc.Id -ErrorAction SilentlyContinue
+              break
+            }
+            if((Test-Path $proof) -or (Test-Path $errorFile)){break}
+            if($attempt -ne 1 -or -not ((Get-Content $stdout,$stderr -Raw -ErrorAction SilentlyContinue) -match '(?i)compil')){break}
+            Write-Host 'KANTO_K05_FIRST_COMPILE_BOOT_RESTART'
+          }
+          if(!(Test-Path $proof -PathType Leaf) -or (Test-Path $errorFile -PathType Leaf)){
+            Get-Content $stdout,$stderr,"$root/Data/blue-kanto-k05-city-stage.txt","$root/Data/blue-kanto-k01b-route-trace.txt",$errorFile,"$root/errorlog.txt" -ErrorAction SilentlyContinue | Select-Object -Last 140
+            throw 'K05 native Lavender proof missing'
+          }
+          Write-Host ("KANTO_K05_CITY_NATIVE_REPORT:"+(Get-Content $proof -Raw).Trim())
+          Write-Host 'KANTO_K05_CITY_NATIVE_OK'
+      - name: Subir e descer a Torre na engine sem abrir o topo
+        shell: powershell
+        run: |
+          $root=(Resolve-Path .blue-work/kanto-k05-tower).Path
+          python scripts/regions/native_check.py $root --k05-tower
+          if($LASTEXITCODE -ne 0){throw 'K05 Tower native fixture injection failed'}
+          $mesaFolder=Join-Path $env:RUNNER_TEMP 'k05-mesa'
+          Get-ChildItem -LiteralPath $mesaFolder -Recurse -File -Filter '*.dll' |
+            Where-Object { $_.Directory.Name -eq 'x64' } |
+            ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $root }
+          $proof="$root/Data/blue-kanto-k05-tower-native-proof.txt"
+          $errorFile="$root/Data/blue-kanto-error.txt"
+          for($attempt=1;$attempt -le 2;$attempt++){
+            $stdout=".blue-work/kanto-k05-tower-out-$attempt.txt"
+            $stderr=".blue-work/kanto-k05-tower-err-$attempt.txt"
+            $proc=Start-Process -FilePath "$root/Game.exe" -WorkingDirectory $root -WindowStyle Hidden -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+            $handle=$proc.Handle
+            if(-not $proc.WaitForExit(180000)){
+              Stop-Process -Id $proc.Id -ErrorAction SilentlyContinue
+              break
+            }
+            if((Test-Path $proof) -or (Test-Path $errorFile)){break}
+            if($attempt -ne 1 -or -not ((Get-Content $stdout,$stderr -Raw -ErrorAction SilentlyContinue) -match '(?i)compil')){break}
+            Write-Host 'KANTO_K05_TOWER_FIRST_COMPILE_BOOT_RESTART'
+          }
+          if(!(Test-Path $proof -PathType Leaf) -or (Test-Path $errorFile -PathType Leaf)){
+            Get-Content $stdout,$stderr,"$root/Data/blue-kanto-k05-tower-native-stage.txt",$errorFile,"$root/errorlog.txt" -ErrorAction SilentlyContinue | Select-Object -Last 140
+            throw 'K05 native Tower proof missing'
+          }
+          Write-Host ("KANTO_K05_TOWER_NATIVE_REPORT:"+(Get-Content $proof -Raw).Trim())
+          Write-Host 'KANTO_K05_TOWER_NATIVE_STAIRS_OK'
+      - name: Repetir prova no produto K05 com catálogo completo isolado
+        shell: powershell
+        run: |
+          python scripts/regions/build_k05_product.py
+          if($LASTEXITCODE -ne 0){throw 'K05 product-shaped candidate failed'}
+          $root=(Resolve-Path .blue-work/kanto-k05-product).Path
+          python scripts/regions/native_check.py $root --k05-tower
+          if($LASTEXITCODE -ne 0){throw 'K05 Tower native fixture injection failed'}
+          $mesaFolder=Join-Path $env:RUNNER_TEMP 'k05-mesa'
+          Get-ChildItem -LiteralPath $mesaFolder -Recurse -File -Filter '*.dll' |
+            Where-Object { $_.Directory.Name -eq 'x64' } |
+            ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $root }
+          $proof="$root/Data/blue-kanto-k05-tower-native-proof.txt"
+          $errorFile="$root/Data/blue-kanto-error.txt"
+          for($attempt=1;$attempt -le 2;$attempt++){
+            $stdout=".blue-work/kanto-k05-product-out-$attempt.txt"
+            $stderr=".blue-work/kanto-k05-product-err-$attempt.txt"
+            $proc=Start-Process -FilePath "$root/Game.exe" -WorkingDirectory $root -WindowStyle Hidden -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+            $handle=$proc.Handle
+            if(-not $proc.WaitForExit(180000)){
+              Stop-Process -Id $proc.Id -ErrorAction SilentlyContinue
+              break
+            }
+            if((Test-Path $proof) -or (Test-Path $errorFile)){break}
+            if($attempt -ne 1 -or -not ((Get-Content $stdout,$stderr -Raw -ErrorAction SilentlyContinue) -match '(?i)compil')){break}
+            Write-Host 'KANTO_K05_TOWER_FIRST_COMPILE_BOOT_RESTART'
+          }
+          if(!(Test-Path $proof -PathType Leaf) -or (Test-Path $errorFile -PathType Leaf)){
+            Get-Content $stdout,$stderr,"$root/Data/blue-kanto-k05-tower-native-stage.txt",$errorFile,"$root/errorlog.txt" -ErrorAction SilentlyContinue | Select-Object -Last 140
+            throw 'K05 native Tower proof missing'
+          }
+          Write-Host ("KANTO_K05_PRODUCT_NATIVE_REPORT:"+(Get-Content $proof -Raw).Trim())
+          Write-Host 'KANTO_K05_PRODUCT_NATIVE_OK'
+      - name: Validar somente os novos dados do portal
+        shell: powershell
+        run: |
+          python scripts/regions/export_kanto.py --k05-product-ci --preview .blue-work/kanto-k05-product --output .blue-work/kanto-k05-portal.json
+          if($LASTEXITCODE -ne 0){throw 'K05 portal data altered earlier locations or trainer rosters'}
+      - name: Migrar K04 instalada pelo instalador normal e repetir prova no Main
+        shell: powershell
+        run: |
+          python scripts/regions/qa_k05_migration.py 165 --seed-165
+          if($LASTEXITCODE -ne 0){throw 'K05 ordinary 165-to-178 installer or rollback failed'}
+          $root=(Resolve-Path .blue-work/kanto-k05-migration-ci/from-165).Path
+          python scripts/regions/native_check.py $root --k05-tower
+          if($LASTEXITCODE -ne 0){throw 'K05 Tower native fixture injection failed'}
+          $mesaFolder=Join-Path $env:RUNNER_TEMP 'k05-mesa'
+          Get-ChildItem -LiteralPath $mesaFolder -Recurse -File -Filter '*.dll' |
+            Where-Object { $_.Directory.Name -eq 'x64' } |
+            ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $root }
+          $proof="$root/Data/blue-kanto-k05-tower-native-proof.txt"
+          $errorFile="$root/Data/blue-kanto-error.txt"
+          for($attempt=1;$attempt -le 2;$attempt++){
+            $stdout=".blue-work/kanto-k05-migrated-out-$attempt.txt"
+            $stderr=".blue-work/kanto-k05-migrated-err-$attempt.txt"
+            $proc=Start-Process -FilePath "$root/Game.exe" -WorkingDirectory $root -WindowStyle Hidden -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+            $handle=$proc.Handle
+            if(-not $proc.WaitForExit(180000)){
+              Stop-Process -Id $proc.Id -ErrorAction SilentlyContinue
+              break
+            }
+            if((Test-Path $proof) -or (Test-Path $errorFile)){break}
+            if($attempt -ne 1 -or -not ((Get-Content $stdout,$stderr -Raw -ErrorAction SilentlyContinue) -match '(?i)compil')){break}
+            Write-Host 'KANTO_K05_TOWER_FIRST_COMPILE_BOOT_RESTART'
+          }
+          if(!(Test-Path $proof -PathType Leaf) -or (Test-Path $errorFile -PathType Leaf)){
+            Get-Content $stdout,$stderr,"$root/Data/blue-kanto-k05-tower-native-stage.txt",$errorFile,"$root/errorlog.txt" -ErrorAction SilentlyContinue | Select-Object -Last 140
+            throw 'K05 native Tower proof missing'
+          }
+          Write-Host ("KANTO_K05_MIGRATED_NATIVE_REPORT:"+(Get-Content $proof -Raw).Trim())
+          Write-Host 'KANTO_K05_MIGRATED_NATIVE_OK'
+      - name: Fixar instalador de Kanto com 156 mapas
+        uses: actions/checkout@v4
+        with:
+          ref: 3f53555ed82b3ffaad86422fae572130b0fca2a2
+          path: .blue-work/kanto-k05-historical-156
+          persist-credentials: false
+      - name: Fixar instalador de Kanto com 160 mapas
+        uses: actions/checkout@v4
+        with:
+          ref: 4c21940ae4936adb1919c0052007e3f2812b077d
+          path: .blue-work/kanto-k05-historical-160
+          persist-credentials: false
+      - name: Validar atualização direta das versões com 156 e 160 mapas
+        shell: powershell
+        run: |
+          foreach($prior in @(156,160)){
+            python scripts/regions/qa_k05_migration.py $prior --seed-historical
+            if($LASTEXITCODE -ne 0){throw "K05 direct migration failed from the pinned $prior-map install"}
+          }
+      - name: Testar instalação padrão ativa de Kanto no Windows
+        if: env.BLUE_K05_ACTIVE_RECIPE == '1'
+        shell: powershell
+        run: |
+          git restore --source=HEAD -- data/regions/kanto-source.json data/kanto-music-rules.json site/public/data/kanto.json
+          if($LASTEXITCODE -ne 0){throw 'Cannot switch from historical test scope to the active recipe'}
+          python scripts/regions/install_kanto.py --game game --pilot .blue-work/kanto-k05-live --apply
+          if($LASTEXITCODE -ne 0){throw 'Ordinary K05 install failed'}
+          python scripts/regions/install_kanto.py --game game --verify-installed
+          if($LASTEXITCODE -ne 0){throw 'Ordinary K05 installed-proof check failed'}
+          python scripts/regions/release_gate.py --pilot .blue-work/kanto-k05-live
+          if($LASTEXITCODE -ne 0){throw 'Ordinary K05 active catalog verification failed'}
+          Write-Host 'KANTO_K05_WINDOWS_ACTIVE_178_OK'
+      - name: Reunir apenas recibos e diagnósticos em diretório visível
+        if: always() && hashFiles('.blue-work/kanto-k05-source.json') != ''
+        shell: powershell
+        run: |
+          $dest=New-Item -ItemType Directory -Force -Path 'k05-receipts'
+          @(
+            '.blue-work/kanto-k05-source.json',
+            '.blue-work/kanto-k05-city-stage.json',
+            '.blue-work/kanto-k05-tower-stage.json',
+            '.blue-work/kanto-k05-product-proof.json',
+            '.blue-work/kanto-k05-portal-delta.json',
+            '.blue-work/kanto-k05-migration-165.json',
+            '.blue-work/kanto-k05-migration-156.json',
+            '.blue-work/kanto-k05-migration-160.json',
+            '.blue-work/kanto-k05-city/Data/blue-kanto-k05-city-proof.txt',
+            '.blue-work/kanto-k05-city/Data/blue-kanto-k05-city-stage.txt',
+            '.blue-work/kanto-k05-city/Data/blue-kanto-error.txt',
+            '.blue-work/kanto-k05-city-out-1.txt',
+            '.blue-work/kanto-k05-city-err-1.txt',
+            '.blue-work/kanto-k05-city-out-2.txt',
+            '.blue-work/kanto-k05-city-err-2.txt',
+            '.blue-work/kanto-k05-tower/Data/blue-kanto-k05-tower-native-proof.txt',
+            '.blue-work/kanto-k05-tower/Data/blue-kanto-k05-tower-native-stage.txt',
+            '.blue-work/kanto-k05-tower-out-1.txt',
+            '.blue-work/kanto-k05-tower-err-1.txt',
+            '.blue-work/kanto-k05-tower-out-2.txt',
+            '.blue-work/kanto-k05-tower-err-2.txt'
+          ) | ForEach-Object {
+            if(Test-Path -LiteralPath $_ -PathType Leaf){ Copy-Item -LiteralPath $_ -Destination $dest.FullName }
+          }
+          foreach($receipt in @('blue-kanto-k05-tower-native-proof.txt','blue-kanto-k05-tower-native-stage.txt','blue-kanto-error.txt')){
+            $path=Join-Path '.blue-work/kanto-k05-product/Data' $receipt
+            if(Test-Path -LiteralPath $path -PathType Leaf){
+              Copy-Item -LiteralPath $path -Destination (Join-Path $dest.FullName ('product-'+$receipt))
+            }
+          }
+          foreach($receipt in @('blue-kanto-k05-tower-native-proof.txt','blue-kanto-k05-tower-native-stage.txt','blue-kanto-error.txt')){
+            $path=Join-Path '.blue-work/kanto-k05-migration-ci/from-165/Data' $receipt
+            if(Test-Path -LiteralPath $path -PathType Leaf){
+              Copy-Item -LiteralPath $path -Destination (Join-Path $dest.FullName ('migrated-'+$receipt))
+            }
+          }
+          $towerError='.blue-work/kanto-k05-tower/Data/blue-kanto-error.txt'
+          if(Test-Path -LiteralPath $towerError -PathType Leaf){
+            Copy-Item -LiteralPath $towerError -Destination (Join-Path $dest.FullName 'k05-tower-native-error.txt')
+          }
+      - name: Guardar recibo sem jogo, scripts de origem ou saves
+        if: always() && hashFiles('k05-receipts/kanto-k05-source.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k05-source-inventory
+          path: k05-receipts/
+          if-no-files-found: error

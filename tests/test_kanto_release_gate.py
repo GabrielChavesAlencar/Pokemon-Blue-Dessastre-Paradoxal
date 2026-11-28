@@ -36,12 +36,12 @@ class KantoReleaseGateTests(unittest.TestCase):
     def test_current_catalog_is_safe_prototype_not_final_acceptance(self):
         result=release_gate.inspect(ROOT)
         self.assertTrue(result["ci_preflight_passed"])
-        self.assertEqual(result["map_count"],165)
+        self.assertEqual(result["map_count"],178)
         self.assertEqual(result["preview_maps"],35)
-        self.assertEqual(result["trainers"],202)
-        self.assertEqual(result["wild_locations"],34)
-        self.assertEqual(result["wild_methods"],119)
-        self.assertEqual(result["wild_species"],72)
+        self.assertEqual(result["trainers"],216)
+        self.assertEqual(result["wild_locations"],39)
+        self.assertEqual(result["wild_methods"],129)
+        self.assertEqual(result["wild_species"],75)
         self.assertEqual(result["encounter_review_maps"],[209])
         self.assertFalse(result["declared_playable"])
         self.assertFalse(result["accepted_integrally"])
@@ -71,7 +71,7 @@ class KantoReleaseGateTests(unittest.TestCase):
             self.clone(root)
             self.patch_json(root,"site/public/data/kanto.json",
                             lambda d:d["locations"].pop())
-            with self.assertRaisesRegex(ValueError,"165 maps/202 grouped trainers"):
+            with self.assertRaisesRegex(ValueError,"178 maps/216 grouped trainers"):
                 release_gate.inspect(root)
 
     def test_ship_rival_wrong_team_rejected_even_with_correct_count(self):

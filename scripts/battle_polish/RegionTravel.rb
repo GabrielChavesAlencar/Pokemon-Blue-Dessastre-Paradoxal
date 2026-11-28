@@ -757,7 +757,7 @@ module BlueRegionTravel
          when "JOHTO"
            johto_installed? ? BlueRegionStart.johto_agent_point&.first : nil
          when "HOENN"
-           hoenn_town_point&.first
+           hoenn_installed? ? hoenn_town_point&.first : nil
          when "SINNOH"
            sinnoh_points&.last&.first
          end
