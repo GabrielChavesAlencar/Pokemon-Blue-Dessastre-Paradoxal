@@ -6,7 +6,7 @@ on:
       - '.github/workflows/kalos-ka00-baseline.yml'
       - 'qa/kalos/**'
       - 'tests/test_kalos_ka00_baseline.py'
-      - 'docs/KALOS_KA00_BASELINE_EXECUCAO.md'
+      - 'docs/kalos/KA00_BASELINE_EXECUCAO.md'
 permissions:
   contents: read
 concurrency:
@@ -37,7 +37,7 @@ jobs:
           assert subprocess.check_output(["git", "rev-parse", "HEAD^2"], text=True).strip() == head
           permitted = {
               ".github/workflows/kalos-ka00-baseline.yml",
-              "docs/KALOS_KA00_BASELINE_EXECUCAO.md",
+              "docs/kalos/KA00_BASELINE_EXECUCAO.md",
               "tests/test_kalos_ka00_baseline.py",
               "qa/kalos/ka00_baseline.py",
           }
