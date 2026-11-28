@@ -577,11 +577,14 @@ module BlueHoennPilot
     setBattleRule("canLose")
     victory = TrainerBattle.start(:RIVAL1, name, RIVAL_VERSIONS.fetch(starter))
     $player.heal_party if $player && $player.respond_to?(:heal_party)
-    # A canLose result is a completed story battle whether victory or loss.
+    unless victory
+      pbMessage(localized(
+        "{1}: Heal up and come back when you're ready for a rematch.",
+        "{1}: Cure sua equipe e volte quando quiser uma revanche.", name))
+      return false
+    end
     flags["rival_103_done"] = true
-    pbMessage(victory ?
-      _INTL("{1}: Você batalhou muito bem! Volte ao laboratório de Birch.", name) :
-      _INTL("{1}: Foi uma boa batalha! Volte ao laboratório de Birch.", name))
+    pbMessage(_INTL("{1}: Você batalhou muito bem! Volte ao laboratório de Birch.", name))
     true
   end
 
@@ -605,7 +608,7 @@ module BlueHoennPilot
       return false
     end
     if flags["balls_at_lab_pending"]
-      unless $bag && $bag.add(:POKEBALL, 5)
+      unless $bag && $bag.add_all(:POKEBALL, 5)
         pbMessage(_INTL("Birch: Abra espaço na Bolsa para receber cinco Poké Bolas."))
         return false
       end

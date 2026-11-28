@@ -55,15 +55,21 @@ end
 
 class HoennDummyBag
   attr_reader :items
-  attr_accessor :can_add
+  attr_accessor :can_add, :room
   def initialize
     @items = Hash.new(0)
     @can_add = true
+    @room = 999
   end
   def add(item, count)
     return false unless @can_add
-    @items[item] += count
-    true
+    added = [@room, count].min
+    @items[item] += added
+    @room -= added
+    added == count
+  end
+  def add_all(item, count)
+    @room >= count && add(item, count)
   end
 end
 
@@ -275,6 +281,11 @@ Dir.mktmpdir("blue-hoenn-runtime-") do |dir|
     check(!BlueHoennPilot.birch, "Full bag did not postpone reward")
     check(!$player.has_pokedex, "Full bag granted Pokédex")
     $bag.can_add = true
+    $bag.room = 3
+    check(!BlueHoennPilot.birch, "Partially full bag did not postpone reward")
+    check($bag.items[:POKEBALL] == 0 && BlueHoennPilot.state["balls_at_lab_pending"],
+          "A failed handoff gave some of the five balls")
+    $bag.room = 5
     check(BlueHoennPilot.birch, "Pokédex reward not granted")
     check($player.has_pokedex, "Pokédex not activated")
     check($bag.items[:POKEBALL] == 5, "Lab must grant five balls once")
@@ -290,19 +301,43 @@ Dir.mktmpdir("blue-hoenn-runtime-") do |dir|
     check(!BlueHoennPilot.choose_birch_ball(:MUDKIP), "Starter duplicated after reload")
     check($bag.items[:POKEBALL] == 5, "Reload changed bag reward")
 
-    # Loss is a completed tutorial encounter; the next story event must open.
     $PokemonGlobal.blue_regions["hoenn_pilot"] = {
-      "starter" => "MUDKIP", "met_birch" => true
+      "starter" => "MUDKIP", "met_birch" => true, "balls_at_lab_pending" => true
     }
-    $player.gender = 1
+    $player = HoennDummyPlayer.new(1)
+    $player.party << [:MUDKIP, 5]
+    $bag = HoennDummyBag.new
     TrainerBattle.result = false
-    check(BlueHoennPilot.rival_103, "Rival loss did not complete")
+    check(!BlueHoennPilot.rival_103, "Rival defeat advanced the story")
     check(TrainerBattle.history.last == [:RIVAL1, "Brendan", 212],
           "Wrong Brendan team counter")
-    check(BlueHoennPilot.state["rival_103_done"], "Loss not persisted")
+    check(!BlueHoennPilot.state["rival_103_done"], "Defeat was saved as a victory")
+    check($player.healed == 1, "Defeated player cannot retry")
+    check(!BlueHoennPilot.birch, "Defeat unlocked Birch's rewards")
+    BlueHoennPilot.mother
+    check(!$player.has_pokedex && !$player.has_running_shoes && $bag.items[:POKEBALL] == 0,
+          "Early rewards leaked after defeat")
 
-    # Legacy pilot saves got five Poké Balls during starter selection.
-    # Missing pending flag must NOT grant them again on migration.
+    $PokemonGlobal.blue_regions = Marshal.load(Marshal.dump($PokemonGlobal.blue_regions))
+    TrainerBattle.result = true
+    check(BlueHoennPilot.rival_103, "Rival retry lost after reload")
+    check(TrainerBattle.history.last(2) == [[:RIVAL1, "Brendan", 212]] * 2,
+          "Rival retry changed teams")
+    check(BlueHoennPilot.birch, "Victory did not unlock Birch's rewards")
+    check(BlueHoennPilot.mother, "Victory did not unlock Running Shoes")
+    check($player.has_pokedex && $player.has_running_shoes && $bag.items[:POKEBALL] == 5,
+          "Victory rewards incomplete")
+    check(!BlueHoennPilot.rival_103 && !BlueHoennPilot.birch,
+          "Completed rival or lab reward could be repeated")
+    check($bag.items[:POKEBALL] == 5, "Revisit duplicated Balls")
+
+    # Older saves recorded completion regardless of battle result. Preserve
+    # their progress because the old flags cannot distinguish win from loss.
+    $PokemonGlobal.blue_regions["hoenn_pilot"] = {
+      "starter" => "MUDKIP", "met_birch" => true, "rival_103_done" => true
+    }
+    $player.has_pokedex = false
+    check(!BlueHoennPilot.rival_103, "Completed legacy rival reopened")
     check(BlueHoennPilot.birch, "Legacy game cannot receive Pokédex")
     check($bag.items[:POKEBALL] == 5, "Migrated legacy reward duplicated")
     check($player.has_pokedex, "Legacy Pokédex lost")
