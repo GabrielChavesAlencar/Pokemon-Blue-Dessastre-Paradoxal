@@ -229,6 +229,9 @@ No percurso contínuo em Windows, uma parede isolava o corredor de Steven. A mig
 - Embarque a Slateport, R109 e casa de praia, mercado, Fan Club, centro/mart, estaleiro, porto, Battle Tent (sistema opcional H19). Museu Oceanic: entrada/taxa conforme referência, grunts Aqua em ordem, entrega Devon Goods, flags e retorno.
 - R110 acessível por percurso físico após missão. Todos os estabelecimentos devem ter porta e saída funcionais. Não manter texto provisório em evento alcançável.
 - Gate HOENN_H06_STERN_MUSEUM_ACCESS_OK.
+- O segundo recruta Aqua só batalha depois da primeira vitória. Toda a borda norte de Slateport fica fechada até Stern registrar a entrega. O retorno à Rota 109 continua disponível.
+- O ensaio Windows partiu do save do H05 na Rota 109. Em 556 passos foram verificadas as portas da praia e da cidade, a taxa única de ₽50, as duas vitórias Aqua, a entrega a Stern e a travessia de ida e volta na Rota 110. O save reabriu na rota com a entrega registrada. Recibo Windows `HOENN_H06_STERN_MUSEUM_ACCESS_OK`.
+- Restam os serviços do mercado e do porto. As regras da Battle Tent seguem no H19.
 
 ### H07 — Mauville, rival e Wattson
 - R110, Cycling Road e portarias, rival_110 variantes, Itemfinder, acesso normal e de bicicleta. Rydel: Mach/Acro, troca sem duplicar itens, controles no Android, queda/obstáculos. Wally no ginásio, batalha/retry, tio.

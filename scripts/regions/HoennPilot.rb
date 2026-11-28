@@ -459,9 +459,9 @@ module BlueHoennPilot
     !flags["birch_rescued"] && !flags["met_birch"] && on_birch_route?
   end
 
-  module Route101RescueGate
+  module StoryBorderGates
     def isPassableFromEdge?(x, y)
-      return false if BlueHoennPilot.birch_exit_blocked?(y)
+      return false if BlueHoennPilot.birch_exit_blocked?(y) || BlueHoennPilot.slateport_exit_blocked?(y)
       super
     end
   end
@@ -1499,6 +1499,10 @@ module BlueHoennPilot
       pbMessage(_INTL("Recruta Aqua: ainda não é hora de batalhar."))
       return false
     end
+    if index == 2 && !flags["museum_aqua_1_defeated"]
+      pbMessage(_INTL("Recruta Aqua: meu parceiro vai cuidar de você primeiro!"))
+      return false
+    end
     version = index == 1 ? 539 : 540
     pbMessage(_INTL("Recruta Aqua: os produtos da Devon agora pertencem à nossa equipe!"))
     setBattleRule("canLose")
@@ -1532,6 +1536,12 @@ module BlueHoennPilot
     flags["stern_package_delivered"] = true
     pbMessage(_INTL("Capitão Stern: obrigado! A encomenda da Devon chegou em segurança."))
     true
+  end
+
+  def self.slateport_exit_blocked?(destination_y)
+    return false unless destination_y < 0 && $game_map
+    flags = state
+    flags && !flags["stern_package_delivered"] && $game_map.map_id == metadata[1][32]
   end
 
   def self.slateport_north_gate
@@ -1579,7 +1589,7 @@ module BlueHoennPilot
     RYDEL: "Rydel's Cycles: Mach Bike e Acro Bike disponíveis.",
     CYCLING_SIGN: "Cycling Road: é obrigatório ter uma bicicleta.",
     CYCLING_NORTH_SIGN: "Cycling Road. Portaria norte.",
-    TRICK_HOUSE: "Trick House: conteúdo em preparação.",
+    TRICK_HOUSE: "Casa dos Truques. Slateport fica ao sul e Mauville fica ao norte.",
     SLATEPORT_DIRECTION: "Slateport fica ao sul.",
     MAUVILLE_DIRECTION: "Mauville fica ao norte."
   }.freeze
@@ -3942,4 +3952,4 @@ if defined?(MenuHandlers)
   })
 end
 
-PokemonMapFactory.prepend(BlueHoennPilot::Route101RescueGate) if defined?(PokemonMapFactory)
+PokemonMapFactory.prepend(BlueHoennPilot::StoryBorderGates) if defined?(PokemonMapFactory)
