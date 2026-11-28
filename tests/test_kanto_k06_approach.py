@@ -1,10 +1,12 @@
 """Verify only exact original approaches can enter the disposable test graph."""
 from pathlib import Path
 import sys
+from tempfile import TemporaryDirectory
 import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"scripts/regions"))
 from audit_k06_rocket import audit_conditions, selectors
+from k06_approach_migration import require_hashes, sha_bytes
 from build_k06_approach import APPROACH, EXACT_SEAMS, TEMP_GATES, TRANSFERS, planned_connections, verify_source
 
 
@@ -36,3 +38,15 @@ class K06ApproachTests(unittest.TestCase):
         self.assertEqual(selectors({"code":123,"parameters":["A",0]}),{"self_switch":["A",0]})
         self.assertEqual(audit_conditions({"@switch1_valid":True,"@switch1_id":58,
                                            "@switch2_valid":False,"@switch2_id":99}),{"@switch1_id":58})
+
+
+    def test_installed_plan_rejects_unowned_or_modified_baseline(self):
+        with TemporaryDirectory() as temp:
+            root=Path(temp).resolve()
+            rel="Map107.rxdata"
+            path=root/rel
+            path.write_bytes(b"owned")
+            require_hashes(root,[rel],{rel:sha_bytes(b"owned")})
+            with self.assertRaisesRegex(ValueError,"not the recorded baseline"):
+                require_hashes(root,[rel],{rel:sha_bytes(b"edited")})
+            self.assertEqual(path.read_bytes(),b"owned")

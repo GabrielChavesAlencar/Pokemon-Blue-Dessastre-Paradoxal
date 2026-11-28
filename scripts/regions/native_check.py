@@ -20,11 +20,24 @@ def prepare(game, integrated=False, k03e=False, k04=False, k05_city=False, k05_t
         from audit import json_file
         from build_k06_approach import MAP_DIR, PROOF, SAVE_APP, APPROACH
         from qa_k04_migration import save_namespace_valid
-        if os.getenv("GITHUB_ACTIONS")!="true" or game!=(ROOT/".blue-work"/MAP_DIR).resolve():
+        from k06_approach_migration import CI_PATH, CI_PROFILE, INSTALL, READY
+        candidate=(ROOT/CI_PATH).resolve()
+        pilot=(ROOT/".blue-work"/MAP_DIR).resolve()
+        if os.getenv("GITHUB_ACTIONS")!="true" or game not in {candidate,pilot}:
             raise ValueError("K06 approach native check requires its disposable fixture")
-        marker=json_file(game/PILOT_META)
-        if (marker.get(PROOF) is not True or marker.get("save_app")!=SAVE_APP or
-                not save_namespace_valid(game,SAVE_APP) or len(marker["maps"])!=178 or
+        if game==candidate:
+            marker=json_file(game/INSTALL)
+            receipt=json_file(game/READY)
+            if (receipt.get("status")!="K06_APPROACH_CANDIDATE" or receipt.get("population")!=178 or
+                    receipt.get("source_ids")!=list(APPROACH) or (game/PILOT_META).exists()):
+                raise ValueError("K06 integrated approach receipt missing")
+            profile=CI_PROFILE
+        else:
+            marker=json_file(game/PILOT_META)
+            if marker.get(PROOF) is not True or marker.get("save_app")!=SAVE_APP:
+                raise ValueError("K06 isolated approach fixture marker missing")
+            profile=SAVE_APP
+        if (not save_namespace_valid(game,profile) or len(marker["maps"])!=178 or
                 not all(str(i) in marker["maps"] for i in APPROACH) or
                 marker["maps"].get("93")!=609):
             raise ValueError("K06 approach save isolation or map identities invalid")
