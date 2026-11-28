@@ -39,7 +39,8 @@ EXPECTED_SNIPPETS={
 ),
 "HOENN":(
   'free = [n for n in range(700, 1000) if n not in reserved]',
-  'reserved = set(native_infos) | disk_ids | pbs_ids | set(range(600, 682))',
+  'occupied = set(native_infos) | disk_ids',
+  'reserved |= foreign',
   'tile_ids[native_id] = len(native_tiles)',
 ),
 "SINNOH_CONVERTER":(

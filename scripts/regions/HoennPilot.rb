@@ -448,6 +448,24 @@ module BlueHoennPilot
     $game_map && $game_map.map_id == metadata[1][101]
   end
 
+  # The north border of Route 101 leads to Oldale. Keep the return to
+  # Littleroot open while the rescue is active.
+  def self.birch_exit_blocked?(y, direction)
+    return false unless y == 0 && direction == 8
+    region = $PokemonGlobal&.blue_regions
+    return false unless region.is_a?(Hash) && region["current"] == "HOENN"
+    flags = region["hoenn_pilot"]
+    return false unless flags.is_a?(Hash) && flags["birch_rescue_active"]
+    !flags["birch_rescued"] && !flags["met_birch"] && on_birch_route?
+  end
+
+  module Route101RescueGate
+    def passable?(x, y, direction, strict = false)
+      return false if BlueHoennPilot.birch_exit_blocked?(y, direction)
+      super
+    end
+  end
+
   def self.route_birch
     flags = state
     return false unless flags && on_birch_route?
@@ -3766,3 +3784,5 @@ if defined?(MenuHandlers)
   })
 end
 
+
+Game_Player.prepend(BlueHoennPilot::Route101RescueGate) if defined?(Game_Player)

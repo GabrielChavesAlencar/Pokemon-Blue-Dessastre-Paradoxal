@@ -15,11 +15,11 @@ O **Blue-Story.exe** da página de downloads confere a `main` ao abrir e executa
 Na primeira instalação com internet, após preparar a base Decades/Blue, o instalador:
 
 1. Obtém a fonte editável FRLG no endereço do autor original, a partir da versão fixada no manifesto. Valida o **SHA-256 antes de extrair** e só aceita mapas, PBS e gráficos permitidos (nunca executáveis/scripts da fonte).
-2. Monta e audita o **pacote atual com 142 mapas catalogados** em `.blue-work`, preservando IDs e recusando colisões; grava os arquivos regionais em `game/` com backup/rollback.
+2. Monta e audita o **catálogo regional (178 MapIDs em K05/K06)** em `.blue-work`, preservando IDs e recusando colisões; grava os arquivos regionais em `game/` com backup/rollback.
 3. Atualiza os plugins Blue, mescla as traduções de Kanto com as originais de Decades e solicita recompilação dos dados do Essentials.
 4. Abre o **mesmo Game.exe**. Em **Novo Jogo**, selecione **Kanto** para começar na casa de Pallet ou **Decades** para manter a campanha original. Os saves existentes não são migrados nem excluídos.
 
-**Em atualizações posteriores**, o instalador reconhece o pacote já integrado, verifica seus arquivos e pode atualizar o **plugin Ruby próprio de Kanto** quando o hash corresponder ao instalado anteriormente. Jamais substitui mapas/MapIDs ou alterações locais de terceiros automaticamente. O procedimento de migração de instalações antigas com 13/25 mapas continua bloqueado, para não corromper saves.
+**Em atualizações posteriores**, o instalador reconhece o pacote já integrado, verifica seus arquivos e pode atualizar o **plugin Ruby próprio de Kanto** quando o hash corresponder ao instalado anteriormente. As migrações autorizadas podem atualizar arquivos de Kanto verificados, preservando os MapIDs e recusando arquivos locais modificados. No primeiro lote K06, a alteração se limita aos sete mapas da passagem para Celadon. O procedimento de migração de instalações antigas com 13/25 mapas continua bloqueado, para não corromper saves.
 
 **Falha de download/offline?** O **Blue-Story.exe não declara mais a instalação completa** quando Kanto está ausente. Ele interrompe a conclusão, informa que é necessário tentar novamente e salva os detalhes em `.blue-work/kanto-install-status.json` e `.blue-work/kanto-install.log`. A instalação e os saves de **Decades permanecem preservados**. O download tenta dois endpoints do mesmo arquivo FRLG, sempre exigindo o SHA-256 fixado; também pode reutilizar o piloto Kanto em cache. Se já existirem 13/25 mapas, uma atualização automática destrutiva continua bloqueada. Consulte [KANTO_INTEGRACAO_DECADES.md](KANTO_INTEGRACAO_DECADES.md). O pacote Android/JoiPlay permanece separado e não recebe essa montagem automática do EXE Windows.
 
@@ -43,7 +43,11 @@ As escolhas ficam salvas separadamente dos saves em `blue-keyboard-controls.txt`
 
 ## Android experimental
 
-Baixe **Blue-Android-JoiPlay.zip**, instale JoiPlay e RPG Maker Plugin pelos [downloads oficiais](https://www.joiplay.net/), extraia o ZIP inteiro e adicione `Pokemon-Blue-Android/Game.exe` ao JoiPlay. Na abertura, escolha História ou Hub offline. O pacote já contém os dados compilados e as músicas.
+**Instalação nova com Decades, Kanto e Hoenn:** baixe **Blue-Android-Instalador-Fontes.zip** no [canal Android pelas fontes](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/releases?q=android-source-world). Extraia o ZIP e execute o atualizador no Termux. Ele obtém o jogo das fontes originais e procura novas versões sempre que for executado. Siga o [guia de instalação e atualização no JoiPlay](ANDROID_INSTALACAO_PELAS_FONTES.md).
+
+**Instalações multirregionais K05/K06 existentes:** use o [atualizador pela fonte original](ANDROID_K06_ATUALIZACAO_PELA_FONTE.md) da receita Kanto publicada. Não instale o ZIP de Decades por cima da edição multirregional. A compilação é local e a receita não redistribui os arquivos do jogo.
+
+**Decades, sem a edição multirregional:** baixe **Blue-Android-JoiPlay.zip**, instale JoiPlay e RPG Maker Plugin pelos [downloads oficiais](https://www.joiplay.net/), extraia o ZIP inteiro e adicione `Pokemon-Blue-Android/Game.exe` ao JoiPlay. Na abertura, escolha História ou Hub offline. O pacote já contém os dados compilados e as músicas.
 
 É um pacote para o interpretador, não um APK nativo. Ainda requer validação em aparelhos Android reais. O multiplayer e o download de links PokéPaste usam o auxiliar Windows; no Android, utilize os times prontos ou o texto do time.
 

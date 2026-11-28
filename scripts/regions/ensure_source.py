@@ -167,13 +167,23 @@ def selected_members(listing: str) -> list[str]:
 
 
 def find_tar() -> str:
-    candidate = shutil.which("tar")
-    if candidate:
-        return candidate
-    for directory in (ROOT / "tools").glob("git-*/usr/bin/tar.exe"):
-        if directory.is_file():
-            return str(directory)
-    raise RuntimeError("O extrator tar do Windows não foi encontrado.")
+    """Require libarchive's RAR reader; GNU tar cannot open the pinned input."""
+    candidates = [shutil.which("bsdtar"), shutil.which("tar")]
+    windows = os.environ.get("SystemRoot")
+    if windows:
+        candidates.append(str(Path(windows)/"System32/tar.exe"))
+    candidates.extend(str(path) for path in (ROOT/"tools").glob("git-*/usr/bin/tar.exe")
+                      if path.is_file())
+    for candidate in dict.fromkeys(path for path in candidates if path):
+        try:
+            probe=subprocess.run([candidate,"--version"],text=True,capture_output=True,
+                                 check=True,timeout=5)
+        except (OSError,subprocess.SubprocessError):
+            continue
+        output=(probe.stdout+"\n"+probe.stderr).lower()
+        if "bsdtar" in output and "libarchive" in output:
+            return candidate
+    raise RuntimeError("Extrator RAR indisponível: no Termux use o bsdtar (libarchive), não GNU tar.")
 
 
 def prepare(root: Path = ROOT, url: str = SOURCE_URL) -> Path:
