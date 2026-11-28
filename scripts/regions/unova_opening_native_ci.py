@@ -11,7 +11,7 @@ import sys
 from audit_unova_a13_private_qa import no_symlink_ancestors
 from install_sinnoh_qa_copy import jsonc
 from stage_sinnoh_shared_qa import run_native_probe, engine_output
-from unova_opening_stage import ROOT, MAP_INFOS, TILESETS, write_overlay, OUTPUT
+from unova_opening_stage import ENCOUNTERS_PBS, MAP_INFOS, OUTPUT, ROOT, STORY, TILESETS, encounters_pbs, write_overlay
 from unova_original_opening import checksum
 from server.ruby_marshal import loads
 from stage import serialize
@@ -59,6 +59,7 @@ def patch_main(source, *, compile_only):
         return source.replace(compiler, compiler + "    exit\n")
     return source.replace(compiler, "").replace(ready, ready + f'''
     begin
+      load "{STORY}"
       load "{PROBE}"
       config = Marshal.load(File.binread("{INPUT}"))
       report = UnovaOpeningNativeCheck.run(config)
@@ -85,6 +86,9 @@ def run(android_manifest):
     if not (GAME / "Game.exe").is_file() or any((GAME / name).exists() for name in previous_outputs):
         raise ValueError("A cópia descartável precisa ser uma instalação nova de CI.")
     isolate_profile()
+    encounters = GAME / ENCOUNTERS_PBS
+    with encounters.open("xb") as stream:
+        stream.write(encounters_pbs())
     compiled = run_native_probe(GAME, lambda source: patch_main(source, compile_only=True), timeout=360)
     if (compiled.returncode != 0 or b"Successfully compiled all game data" not in compiled.stdout
             or not (GAME / "Data/species.dat").is_file()):
@@ -98,8 +102,13 @@ def run(android_manifest):
     for name, digest in config["files_sha256"].items():
         path = GAME / name
         raw = (ROOT / OUTPUT / name).read_bytes()
-        if (checksum(raw) != digest or
-                (name in expected_base and checksum(path.read_bytes()) != expected_base[name]) or
+        if checksum(raw) != digest:
+            raise ValueError("O conteúdo do overlay mudou antes da aplicação.")
+        if name == ENCOUNTERS_PBS:
+            if path.read_bytes() != raw:
+                raise ValueError("O PBS compilado diverge do overlay.")
+            continue
+        if ((name in expected_base and checksum(path.read_bytes()) != expected_base[name]) or
                 (name not in expected_base and (path.exists() or path.is_symlink()))):
             raise ValueError("O conteúdo do overlay ou da base mudou antes da aplicação.")
         payload[path] = raw
@@ -107,7 +116,7 @@ def run(android_manifest):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(raw)
     (GAME / PROBE).write_bytes((ROOT / "scripts/regions/UnovaOpeningNativeCheck.rb").read_bytes())
-    scenario = {key: config[key] for key in ("spawn", "map_ids", "doors", "journey")}
+    scenario = {key: config[key] for key in ("spawn", "map_ids", "doors", "journey", "fieldwork", "encounters")}
     (GAME / INPUT).write_bytes(serialize(convert_strings(scenario, str.encode, str)))
     result = run_native_probe(GAME, lambda source: patch_main(source, compile_only=False), timeout=240)
     if result.returncode != 0 or not (GAME / RESULT).is_file():
@@ -115,14 +124,15 @@ def run(android_manifest):
                          + diagnostic(result))
     proof = convert_strings(loads((GAME / RESULT).read_bytes()), bytes.decode, bytes)
     if (proof["windows_game_exe"] is not True or len(proof["doors"]) != len(config["doors"])
-            or proof["visited_map_ids"] != sorted(config["map_ids"].values())):
+            or proof["visited_map_ids"] != sorted(config["map_ids"].values())
+            or proof["fieldwork"]["reported"] is not True or not proof["wild_encounter"]["selected"]):
         raise ValueError("Resultado nativo incompleto.")
     proof["revision"] = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     proof["map_ids"] = config["map_ids"]
     proof["overlay_files_sha256"] = config["files_sha256"]
     proof["android_reference"] = config["baselines"]["android"]
     (WORK / "windows-native-receipt.json").write_text(json.dumps(proof, indent=2), encoding="utf-8")
-    print(f"Game.exe verificou {len(proof['doors'])} portas e save/reload.")
+    print(f"Game.exe verificou {len(proof['doors'])} portas, missão, encontro e save/reload.")
 
 
 def diagnostic(result):

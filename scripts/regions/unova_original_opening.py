@@ -8,7 +8,7 @@ import tempfile
 
 from generate_sinnoh_original_j10a import (
     BED, BOOK, BRIDGE, COMPUTER, COUNTER, DESK, DOOR, FENCE, FLOOR, FLOOR_ALT,
-    FLOWERS, GRASS, LAB_BENCH, LAMP, MACHINE, PATH, PILLOW, PLANT, ROCK, RUG,
+    FLOWERS, GRASS, LAB_BENCH, LAMP, MACHINE, PATH, PILLOW, PLANT, RUG,
     SHELF, SINK, SOFA, STAIR, TABLE, TREE, WALL, WATER, WINDOW,
     at, box, checksum, fill, png_bytes, svg_preview, validate_scene,
 )
@@ -122,7 +122,7 @@ def route():
     fill(scene, 1, 19, 16, 23, 16, FENCE)
     for x, y in ((5, 14), (7, 15), (24, 9), (25, 11)):
         at(scene, 1, x, y, FLOWERS)
-    at(scene, 1, 18, 13, ROCK)
+    at(scene, 1, 18, 13, MACHINE)
     at(scene, 2, 24, 5, LAMP)
     scene["landmarks"] = [(6, 15), (24, 10)]
     return scene

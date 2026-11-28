@@ -13,17 +13,20 @@ import audit_unova_a06_references as a06
 import audit_unova_a08_readiness as a08
 import audit_unova_a10_dynamic_matrix as a10
 from audit_unova_a13_private_qa import no_symlink_ancestors
-from build_johto_events import EVENT_CLASSES, event_page, ruby
+from build_johto_events import EVENT_CLASSES, command, event_page, ruby
 from compile_sinnoh_playable_j04 import passable_point
-from prepare_sinnoh_nine_original_j11c import proposal
+from generate_sinnoh_original_j10a import GRASS
+from prepare_sinnoh_nine_original_j11c import decode1, proposal, table1
 from server.ruby_marshal import RubyObject, loads
 from stage import serialize
 import unova_original_opening as opening
 
 ROOT = opening.ROOT
-OUTPUT = Path(".blue-work/unova/opening-rmxp-qa")
+OUTPUT = Path(".blue-work/unova/opening-fieldwork-qa")
 TILESET = "BlueUnovaOpeningQA"
 ART_PATH = f"Graphics/Tilesets/{TILESET}.png"
+STORY = "Data/unova-opening-story.rb"
+ENCOUNTERS_PBS = "PBS/encounters_unova_opening_qa.txt"
 MAP_INFOS = "Data/MapInfos.rxdata"
 TILESETS = "Data/Tilesets.rxdata"
 MAP_IDS = {
@@ -40,6 +43,41 @@ JOURNEY = (
     opening.ROUTE, opening.ACCUMULA, opening.CENTER, opening.ACCUMULA,
     opening.ROUTE, opening.NUVEMA, opening.HOUSE, opening.BEDROOM,
 )
+FIELDWORK = {
+    opening.LAB: ("check_in", 11, 3),
+    opening.ROUTE: ("read_gauge", 18, 13),
+    opening.CENTER: ("deliver_report", 10, 4),
+}
+ENCOUNTERS = ((60, "PATRAT", 2, 3), (40, "LILLIPUP", 2, 3))
+
+
+def encounters_pbs():
+    rows = (",".join(map(str, encounter)) for encounter in ENCOUNTERS)
+    return (f"[{MAP_IDS[opening.ROUTE]:03d}]\nLand,21\n" + "\n".join(rows) + "\n").encode("ascii")
+
+
+def guard_route(page):
+    transfer, terminator = page.attrs["@list"]
+    transfer.attrs["@indent"] = 1
+    prompt = command(355, b"BlueUnovaOpeningStory.block_route")
+    prompt.attrs["@indent"] = 1
+    page.attrs["@list"] = [
+        command(111, 12, b"BlueUnovaOpeningStory.checked_in?"),
+        transfer, command(411), prompt, command(412), terminator,
+    ]
+
+
+def fieldwork_event(world, tiles, symbol, map_id):
+    action, x, y = FIELDWORK[symbol]
+    events = world.attrs["@events"]
+    if any((event.attrs["@x"], event.attrs["@y"]) == (x, y) for event in events.values()):
+        raise ValueError("Interação do posto sobre uma porta.")
+    passable_point(world, tiles, x, y + 1)
+    event_id = len(events) + 1
+    page = event_page(script=f"BlueUnovaOpeningStory.{action}")
+    events[event_id] = ruby("RPG::Event", id=event_id, name=action.encode("ascii"),
+                            x=x, y=y, pages=[page])
+    return {"map": map_id, "event": event_id, "approach": [x, y + 1]}
 
 
 def read_data(game, relative):
@@ -140,9 +178,17 @@ def compile_overlay(game, android_manifest):
     tile_id = len(tiles)
     tile = proposal("J10A_INTERIORS", manifest["tileset_sha256"], tile_id)
     tile.attrs.update({"@name": b"Blue Unova abertura QA", "@tileset_name": TILESET.encode("ascii")})
+    tags = decode1(tile.attrs["@terrain_tags"])
+    tags[GRASS] = 2  # Essentials 21.1 Grass terrain
+    tile.attrs["@terrain_tags"] = table1(tags)
     tiles.append(tile)
-    files = {ART_PATH: art}
+    files = {
+        ART_PATH: art,
+        STORY: (ROOT / "scripts/regions/UnovaOpeningStory.rb").read_bytes(),
+        ENCOUNTERS_PBS: encounters_pbs(),
+    }
     doors = []
+    fieldwork = {}
     order = max(info.attrs["@order"] for info in infos.values())
     for symbol, map_id in MAP_IDS.items():
         row = manifest["maps"][symbol]
@@ -156,11 +202,16 @@ def compile_overlay(game, android_manifest):
             passable_point(world, tiles, x, y)
             dest_id = MAP_IDS[door["destination"]]
             page = event_page(warp=(dest_id, *door["arrival"]), touch=True)
+            if symbol == opening.NUVEMA and door["destination"] == opening.ROUTE:
+                guard_route(page)
             world.attrs["@events"][event_id] = ruby(
                 "RPG::Event", id=event_id, name=f"Unova QA door {event_id}".encode("ascii"),
                 x=x, y=y, pages=[page])
             doors.append({"source": map_id, "event": event_id, "threshold": door["threshold"],
                           "destination": dest_id, "arrival": door["arrival"]})
+        if symbol in FIELDWORK:
+            action = FIELDWORK[symbol][0]
+            fieldwork[action] = fieldwork_event(world, tiles, symbol, map_id)
         files[f"Data/Map{map_id:03d}.rxdata"] = serialize(world, EVENT_CLASSES)
 
     thresholds = {(door["source"], *door["threshold"]) for door in doors}
@@ -181,6 +232,8 @@ def compile_overlay(game, android_manifest):
         "spawn": [MAP_IDS[opening.BEDROOM], 8, 6],
         "journey": [MAP_IDS[symbol] for symbol in JOURNEY],
         "doors": doors,
+        "fieldwork": fieldwork,
+        "encounters": ENCOUNTERS,
         "files_sha256": {name: opening.checksum(raw) for name, raw in files.items()},
     }
 

@@ -24,8 +24,14 @@ Os sete mapas usam 276–282 no perfil de QA, na ordem da tabela. A escolha usa 
 python scripts/regions/unova_opening_stage.py --base-game "<base Windows>" --android-manifest "<update.json multiregional>"
 ```
 
-A exportação privada em `.blue-work/unova/opening-rmxp-qa/` contém um tileset com passagens, sete mapas e doze eventos Player Touch com comando nativo 201. As coordenadas de chegada ficam fora de todos os gatilhos. O manifesto indica os hashes da base e da saída. Use o overlay somente no ambiente descartável para o qual foi gerado.
+A exportação privada em `.blue-work/unova/opening-fieldwork-qa/` contém um tileset com passagens, sete mapas, doze eventos Player Touch com comando nativo 201 e três interações do Posto do Canal. As coordenadas de chegada ficam fora de todos os gatilhos. O manifesto indica os hashes da base e da saída. Use o overlay somente no ambiente descartável para o qual foi gerado.
 
-O [workflow Windows de QA](../.github/workflows/unova-opening-native.yml) instala uma base pinada em um runner descartável e cria um perfil de saves exclusivo. A prova inicia no quarto, percorre as doze portas caminhando, verifica o destino aplicado pela cena e faz save/reload no centro em Accumula. O recibo de CI registra a revisão e cada travessia confirmada pelo Game.exe.
+## Primeira missão autoral
 
-A reserva pública dos MapIDs, a história, os encontros, o JoiPlay em aparelho e as releases pareadas seguem os gates do [roadmap](UNOVA_ROADMAP_CODEX_100_JOGAVEL_WINDOWS_ANDROID.md). A fonte dos números e as faixas excluídas estão na [revisão F01](UNOVA_F01_BASELINE_WINDOWS_ANDROID.md).
+O jogador se credencia no laboratório de Nuvema e escolhe um parceiro de campo. A porta da Rota 1 depende da credencial. Depois da ponte, o jogador registra a leitura do medidor e entrega a informação no centro em Accumula. O posto entrega cinco Poké Bolas uma vez. O save de QA guarda parceiro, leitura e entrega.
+
+Na Rota 1, as células de grama usam o terreno de encontro do Essentials. O fragmento PBS declara Patrat e Lillipup de nível 2 a 3. A tabela e suas probabilidades pertencem a essa missão de QA.
+
+O [workflow Windows de QA](../.github/workflows/unova-opening-native.yml) instala uma base pinada em um runner descartável e cria um perfil de saves exclusivo. A prova usa movimento e interpretador de eventos reais, confirma o bloqueio sem parceiro, testa cancelamento e revisita, lê o medidor e verifica a escolha nativa de um encontro. Também confere a recompensa ao recarregar o save e percorre as doze portas.
+
+A campanha completa, as batalhas, a reserva pública dos MapIDs e o JoiPlay em aparelho seguem os gates do [roadmap](UNOVA_ROADMAP_CODEX_100_JOGAVEL_WINDOWS_ANDROID.md). A fonte dos números e as faixas excluídas estão na [revisão F01](UNOVA_F01_BASELINE_WINDOWS_ANDROID.md).
