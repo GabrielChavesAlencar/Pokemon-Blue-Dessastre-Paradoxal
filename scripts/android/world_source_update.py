@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import stat
 import subprocess
 import sys
 
@@ -88,17 +89,31 @@ def verify_pairs(baseline, candidate):
             raise ValueError(f"A atualização mudaria um MapID instalado de {region.title()}.")
 
 
+def reset_assembly(game, owner, root):
+    identity = {"game": str(game), "target": str(root)}
+    if game.exists() or game.is_symlink():
+        if (game.resolve() != game or not owner.is_file() or owner.resolve() != owner or
+                json.loads(owner.read_bytes()) != identity):
+            raise ValueError("Já existe uma pasta game fora desta montagem. Seus arquivos foram preservados.")
+
+        def remove_readonly(action, name, error):
+            file = Path(name)
+            # Git packs in the disposable Windows checkout may be read-only.
+            if (os.name != "nt" or not isinstance(error[1], PermissionError) or
+                    not file.is_file() or file.is_symlink() or not file.resolve().is_relative_to(game) or
+                    file.stat().st_mode & stat.S_IWRITE):
+                raise error[1]
+            file.chmod(stat.S_IREAD | stat.S_IWRITE)
+            action(name)
+
+        shutil.rmtree(game, onerror=remove_readonly)
+    put_json(owner, identity)
+
+
 def assemble(root, staged, previous):
     game = ROOT / "game"
-    # This checkout is private to one installation and recipe. Reuse verified
-    # source downloads across retries, but rebuild the game from clean inputs.
-    owner = ROOT / ".blue-work/android-source-owner.json"
-    if game.exists() or game.is_symlink():
-        if (game.resolve() != game or not owner.is_file() or owner.is_symlink() or
-                json.loads(owner.read_bytes()) != {"game": str(game), "target": str(root)}):
-            raise ValueError("Já existe uma pasta game fora desta montagem. Seus arquivos foram preservados.")
-        shutil.rmtree(game)
-    put_json(owner, {"game": str(game), "target": str(root)})
+    # Reuse the verified downloads, then rebuild the private working game.
+    reset_assembly(game, ROOT / ".blue-work/android-source-owner.json", root)
     state = ROOT / ".blue-work/installation.json"
     state.unlink(missing_ok=True)
     if previous:

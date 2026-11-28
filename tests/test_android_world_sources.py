@@ -1,6 +1,8 @@
 import contextlib
 import io
+import stat
 import json
+import os
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
@@ -112,3 +114,21 @@ class AndroidWorldSourceTests(unittest.TestCase):
                 self.assertFalse(managed_world_assembly(project, target))
                 updater.put_json(owner, {"game": str(game), "target": str(root / "Other")})
                 self.assertFalse(managed_world_assembly(project, game))
+
+    @unittest.skipUnless(os.name == "nt", "Git packs are read-only on Windows.")
+    def test_retry_removes_readonly_cache_only_for_the_same_installation(self):
+        with TemporaryDirectory() as work:
+            folder = Path(work).resolve()
+            root = folder / "Blue"
+            game = folder / "recipe" / "game"
+            owner = game.parent / ".blue-work/android-source-owner.json"
+            updater.reset_assembly(game, owner, root)
+            pack = game / ".git/objects/pack/source.idx"
+            pack.parent.mkdir(parents=True)
+            pack.write_bytes(b"source")
+            pack.chmod(stat.S_IREAD)
+            with self.assertRaisesRegex(ValueError, "fora desta montagem"):
+                updater.reset_assembly(game, owner, folder / "Another install")
+            self.assertTrue(pack.is_file())
+            updater.reset_assembly(game, owner, root)
+            self.assertFalse(game.exists())
