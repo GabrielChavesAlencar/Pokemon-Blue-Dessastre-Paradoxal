@@ -41,3 +41,23 @@ def verify_source(report):
             if any("DarkMap = true" in r.splitlines() for r in m["metadata"])}
     if dark != DARK:
         raise ValueError("K04 source must mark only both tunnel floors dark")
+
+
+def publication_catalog(maps):
+    """Classify historical or K04 catalog by audited append identities."""
+    from scripts.regions.k03e_contract import MAPS as preceding
+
+    count = len(maps)
+    k03e = {str(i): key for i, key in preceding.items()}
+    k04 = {str(i): key for i, key in MAPS.items()}
+    points = k03e.keys() | k04.keys()
+    present = maps.keys() & points
+    expected = {156: {}, 160: k03e, 165: {**k03e, **k04}}.get(count)
+    if expected is None or present != expected.keys() or any(
+            maps.get(i) != key for i, key in expected.items()):
+        raise ValueError("Unknown Kanto publication catalog")
+    return count
+
+
+def published_destinations():
+    return {str(source): slot for slot, source in enumerate(MAPS, 604)}

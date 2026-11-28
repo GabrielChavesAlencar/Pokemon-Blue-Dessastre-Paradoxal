@@ -5,7 +5,7 @@ from tempfile import TemporaryDirectory
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts/regions"))
-from build_k04_gameplay import TRAINERS, center_anchor, clean_trainer_source, trainer_event, trainer_profiles
+from k04_gameplay import TRAINERS, center_anchor, clean_trainer_source, trainer_event, trainer_profiles
 from pbs import trainer_draft
 from pilot import command
 from server.ruby_marshal import RubyObject
