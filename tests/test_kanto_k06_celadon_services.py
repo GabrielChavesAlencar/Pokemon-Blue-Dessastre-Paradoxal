@@ -178,3 +178,22 @@ class CeladonSourceReceiptsTest(unittest.TestCase):
             write_map(path,native,EVENT_CLASSES)
             with self.assertRaisesRegex(ValueError,"event:1"):
                 verify_celadon_map(root,path.name,raw,fields)
+
+    def test_preexisting_celadon_doors_accept_compiler_fade_only_for_explicit_event(self):
+        from k06_windows_services import semantic_map_fields
+        from pilot import EVENT_CLASSES, RubyObject, command, write_map
+
+        with TemporaryDirectory() as directory:
+            path = Path(directory).resolve()/"Map341.rxdata"
+            page = RubyObject("RPG::Event::Page",{"@list":[command(201,0,349,6,18,8,1),command(0)]})
+            event = RubyObject("RPG::Event",{"@x":11,"@y":35,"@pages":[page]})
+            write_map(path,RubyObject("RPG::Map",{"@events":{3:event,4:event}}),EVENT_CLASSES)
+            original = semantic_map_fields(path,legacy_fade_events=(3,20))["@events"]
+            page.attrs["@list"][0].attrs["@parameters"][-1] = 0
+            write_map(path,RubyObject("RPG::Map",{"@events":{3:event,4:event}}),EVENT_CLASSES)
+            updated = semantic_map_fields(path,legacy_fade_events=(3,20))["@events"]
+            self.assertEqual(original["3"],updated["3"])
+            self.assertNotEqual(original["4"],updated["4"])
+            page.attrs["@list"][0].attrs["@parameters"][2] = 8
+            write_map(path,RubyObject("RPG::Map",{"@events":{3:event,4:event}}),EVENT_CLASSES)
+            self.assertNotEqual(original["3"],semantic_map_fields(path,legacy_fade_events=(3,20))["@events"]["3"])

@@ -69,14 +69,23 @@ def asset_paths(game, staged):
     return paths
 
 
-def canonical_door_commands(commands):
+def canonical_door_commands(commands, *, legacy_fade=False):
     """Equate only the exact Essentials simple-transfer compiler expansion.
 
     Essentials 21.1 Compiler::MapsAndEvents adds sound, fade, wait and restore
     around a lone transfer and turns off its built-in fade. Retain every other
     command and transfer operand; a look-alike wrapper is not equivalent.
     """
-    if not isinstance(commands,list) or len(commands)!=6:
+    if not isinstance(commands,list):
+        return commands
+    if legacy_fade and len(commands)==2 and isinstance(commands[0],RubyObject):
+        args = commands[0].attrs.get("@parameters")
+        if (isinstance(args,list) and len(args)==6 and all(type(v) is int for v in args)
+                and args[0]==0 and args[-1]==1 and commands==[command(201,*args),command(0)]):
+            # These intact Gym/Center doors inherited the donor's fade bit.
+            # The compiler replaces it irrespective of the original value.
+            return [command(201,*args[:-1],0),command(0)]
+    if len(commands)!=6:
         return commands
     transfer = commands[3]
     if not isinstance(transfer,RubyObject):
@@ -94,37 +103,38 @@ def canonical_door_commands(commands):
     return [command(201,*args[:-1],0),command(0)]
 
 
-def semantic_map_fields(path):
+def semantic_map_fields(path, *, legacy_fade_events=()):
     """Canonicalize Marshal ordering and the exact native door expansion."""
-    def canonical(value):
+    def canonical(value, legacy_fade=False):
         if isinstance(value,RubyObject):
-            fields = {k:canonical(v) for k,v in sorted(value.attrs.items())}
+            fields = {k:canonical(v,legacy_fade) for k,v in sorted(value.attrs.items())}
             if value.name=="RPG::Event::Page" and "@list" in fields:
                 original = fields["@list"]
-                collapsed = canonical_door_commands(original)
+                collapsed = canonical_door_commands(original,legacy_fade=legacy_fade)
                 if collapsed is not original:
                     fields["@list"] = canonical(collapsed)
             return RubyObject(value.name,fields)
         if isinstance(value,dict):
-            return {k:canonical(v) for k,v in sorted(value.items())}
+            return {k:canonical(v,legacy_fade) for k,v in sorted(value.items())}
         if isinstance(value,list):
-            return [canonical(v) for v in value]
+            return [canonical(v,legacy_fade) for v in value]
         return value
     native = load(path)
     if not isinstance(native,RubyObject) or native.name!="RPG::Map":
         raise ValueError("Objeto nativo de mapa inválido.")
-    def fingerprint(value):
-        return hashlib.sha256(serialize(canonical(value),EVENT_CLASSES)).hexdigest()
+    def fingerprint(value, legacy_fade=False):
+        return hashlib.sha256(serialize(canonical(value,legacy_fade),EVENT_CLASSES)).hexdigest()
     fields = {key:fingerprint(value) for key,value in native.attrs.items() if key!="@events"}
-    fields["@events"] = {str(eid): fingerprint(event) for eid,event in native.attrs["@events"].items()}
+    fields["@events"] = {str(eid): fingerprint(event,eid in legacy_fade_events)
+                        for eid,event in native.attrs["@events"].items()}
     return fields
 
 
-def verify_celadon_map(game, name, raw_hash, fields):
+def verify_celadon_map(game, name, raw_hash, fields, *, legacy_fade_events=()):
     path = checked_file(game,name)
     if journal.digest(path)==raw_hash:
         return
-    got = semantic_map_fields(path)
+    got = semantic_map_fields(path,legacy_fade_events=legacy_fade_events)
     if got!=fields:
         drift = sorted({*got,*fields},key=str)
         drift = [key for key in drift if got.get(key)!=fields.get(key)]
@@ -191,8 +201,10 @@ def verify_services(game, proof=None):
     if set(place)!=owned_maps|added_maps:
         raise ValueError("Recibo de mapas nativos de Celadon incompleto.")
     require_hashes(game, expected-REGISTRY-owned_maps-added_maps, hashes)
+    city = f"Data/Map{base['114']:03}.rxdata"
     for rel in sorted(owned_maps|added_maps):
-        verify_celadon_map(game,rel,hashes[rel],place[rel])
+        verify_celadon_map(game,rel,hashes[rel],place[rel],
+                           legacy_fade_events=(3,20) if rel==city else ())
     return {"maps":182,"stage":STAGE,"kanto_start":[base["7"],25,7]}
 
 
@@ -240,8 +252,11 @@ def install(game):
                    "new_maps":{str(k):v for k,v in CANDIDATES.items()},"verified_paths":sorted(paths),
                    "unchanged_old_map_count":witness["unrelated_maps_byte_identical"]}
         details["native_registry"] = registry_binding(stage, details["new_maps"], proof["maps"]["114"])
-        details["map_fields"] = {rel:semantic_map_fields(checked_file(stage,rel))
-                                 for rel in sorted(old_maps|new_maps)}
+        city = f"Data/Map{proof['maps']['114']:03}.rxdata"
+        details["map_fields"] = {
+            rel:semantic_map_fields(checked_file(stage,rel),legacy_fade_events=(3,20) if rel==city else ())
+            for rel in sorted(old_maps|new_maps)
+        }
         (stage/RECEIPT).write_text(json.dumps(details,sort_keys=True)+"\n",encoding="utf8")
         (stage/COMPILE).write_bytes(b"compile")
         if any(not safe_path(name) for name in paths):
