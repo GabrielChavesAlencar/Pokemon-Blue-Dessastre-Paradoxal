@@ -1,0 +1,143 @@
+name: Kalos KA00 - inventario sem alterar o jogo
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/kalos-ka00-baseline.yml'
+      - 'qa/kalos/**'
+      - 'tests/test_kalos_ka00_baseline.py'
+      - 'docs/kalos/KA00_BASELINE_EXECUCAO.md'
+permissions:
+  contents: read
+concurrency:
+  group: kalos-ka00-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+      - name: Conferir escopo e testar inventário sem fonte externa
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          git diff --check "$BASE" HEAD
+          python - <<'PY'
+          import os, re, subprocess
+          from pathlib import Path
+          base = os.environ["BASE"]
+          head = os.environ["EXPECTED_HEAD"]
+          assert re.fullmatch(r"[a-f0-9]{40}", base) and re.fullmatch(r"[a-f0-9]{40}", head)
+          assert subprocess.check_output(["git", "rev-parse", "HEAD^2"], text=True).strip() == head
+          permitted = {
+              ".github/workflows/kalos-ka00-baseline.yml",
+              "docs/kalos/KA00_BASELINE_EXECUCAO.md",
+              "tests/test_kalos_ka00_baseline.py",
+              "qa/kalos/ka00_baseline.py",
+          }
+          actual = set(subprocess.check_output(["git","diff","--name-only",base,"HEAD"], text=True).splitlines())
+          assert actual and actual <= permitted, actual
+          print(f"PR head {head}; verified merged result for base {base}")
+          PY
+          python -m unittest discover -s tests -p 'test_kalos_ka00_baseline.py' -v
+          mkdir -p .blue-work/kalos-ka00
+          python qa/kalos/ka00_baseline.py static > .blue-work/kalos-ka00/static.json
+          echo KALOS_KA00_STATIC_PROTECTION_OK
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kalos-ka00-static
+          path: .blue-work/kalos-ka00/static.json
+          if-no-files-found: error
+
+  clean-decades:
+    needs: static
+    runs-on: windows-2022
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Ler inventário da base Decades oficial em cópia descartável
+        shell: pwsh
+        run: |
+          $env:KA00_DECADES = Join-Path $env:RUNNER_TEMP 'Kalos-KA00-Decades'
+          @'
+          import os
+          from pathlib import Path
+          from scripts.install_game import ROOT, ensure_base
+          ensure_base(ROOT, Path(os.environ["KA00_DECADES"]))
+          '@ | python -
+          if ($LASTEXITCODE -ne 0) { throw 'KA00 Decades base not available' }
+          New-Item -ItemType Directory -Path '.blue-work/kalos-ka00' -Force | Out-Null
+          python qa/kalos/ka00_baseline.py decades-clean --input "$env:KA00_DECADES" |
+            Set-Content -Encoding utf8 .blue-work/kalos-ka00/clean.json
+          if ($LASTEXITCODE -ne 0) { throw 'KA00 Decades inventory failed' }
+          Write-Host KALOS_KA00_CLEAN_DECADES_OBSERVED_OK
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kalos-ka00-clean
+          path: .blue-work/kalos-ka00/clean.json
+          if-no-files-found: error
+
+  historical-android:
+    needs: static
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Ler instalação Android histórica autorizada, sem extrair
+        run: |
+          set -euo pipefail
+          folder="$RUNNER_TEMP/kalos-ka00"
+          mkdir -p "$folder" .blue-work/kalos-ka00
+          gh release download android-multiregion-247-02732ea -R "$GITHUB_REPOSITORY" \
+            --pattern 'Blue-Android-Decades-Kanto-Hoenn.zip' --dir "$folder"
+          python qa/kalos/ka00_baseline.py android-247-historical \
+            --input "$folder/Blue-Android-Decades-Kanto-Hoenn.zip" > .blue-work/kalos-ka00/historical.json
+          echo KALOS_KA00_HISTORICAL_ANDROID_OBSERVED_OK
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kalos-ka00-historical
+          path: .blue-work/kalos-ka00/historical.json
+          if-no-files-found: error
+
+  baseline:
+    needs: [static, clean-decades, historical-android]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: kalos-ka00-*
+          path: results
+          merge-multiple: true
+      - name: Reconciliar evidência sem liberar MapIDs
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          reports = {item.stem:json.loads(item.read_text("utf-8-sig")) for item in Path("results").glob("*.json")}
+          assert set(reports) == {"static","clean","historical"}
+          assert all(r["phase"] == "KA00" and r["allocation_allowed"] is False for r in reports.values())
+          assert reports["clean"]["source_proof"]["source_revision"] == reports["static"]["decades_pin"]
+          assert reports["historical"]["source_proof"]["source_release"] == "android-multiregion-247-02732ea"
+          for label in ("clean", "historical"):
+              r = reports[label]
+              assert r["file_count"] >= 1 and r["declared_count"] >= 1
+              assert r["mapinfos_sha256"] and r["map_files_inventory_sha256"]
+              assert r["fresh_multiregion_verified"] is False
+              assert r["physical_phone_tested"] is False
+              print(f"{label}: {r['file_count']} physical maps, {r['declared_count']} declared; missing_file={len(r['declared_without_file_ids'])}; orphan_file={len(r['files_absent_from_index_ids'])}")
+          print("KALOS_KA00_BASELINE_OK")
+          print("KALOS_KA02_ALLOCATION_BLOCKED_UNTIL_CURRENT_NATIVE_AND_RESERVATIONS")
+          PY

@@ -22,7 +22,8 @@ module BlueRegionStart
   ].map(&:to_s).sort.freeze
   HOENN_CATALOGS = {
     1 => HOENN_LEGACY_SOURCES,
-    2 => (HOENN_LEGACY_SOURCES + ["15"]).sort.freeze
+    2 => (HOENN_LEGACY_SOURCES + ["15"]).sort.freeze,
+    3 => (HOENN_LEGACY_SOURCES + %w[15 107 109 110]).sort.freeze
   }.freeze
 
   def self.read_hoenn_manifest

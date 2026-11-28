@@ -244,6 +244,44 @@ class HoennMainIntegrationTests(unittest.TestCase):
         self.assertEqual({name: hoenn.optional_bytes(self.game / name) for name in names}, previous)
         self.assertFalse((self.game / hoenn.JOURNAL).exists())
 
+    def test_dewford_migration_rolls_back_maps_and_metadata_together(self):
+        self.install_proof_fixture()
+        owned = {hoenn.map_path(self.maps[str(key)]) for key in hoenn.DEWFORD_EVENT_SOURCES}
+        owned.add(hoenn.MAP_METADATA)
+        names = hoenn.MIGRATION_FILES | owned
+        previous = {name: hoenn.optional_bytes(self.game / name) for name in names}
+        changes = {**previous, **{name: b"updated Dewford data" for name in owned}}
+        with patch.object(hoenn, "ROOT", self.root), \
+             patch.object(hoenn, "verify_installed", side_effect=ValueError("verification failed")):
+            with self.assertRaisesRegex(ValueError, "verification failed"):
+                hoenn.commit_migration(self.game, previous, changes, dewford_layout=True)
+        self.assertEqual({name: hoenn.optional_bytes(self.game / name) for name in names}, previous)
+        self.assertFalse((self.game / hoenn.JOURNAL).exists())
+
+    def test_coast_transaction_removes_new_map_files_and_restores_previous_tables(self):
+        self.install_proof_fixture()
+        destinations = {key: 900 + i for i, key in enumerate(hoenn.COAST_ROUTES)}
+        names = hoenn.MIGRATION_FILES | hoenn.coast_paths(destinations)
+        previous = {name: hoenn.optional_bytes(self.game / name) for name in names}
+        changes = {**previous, **{name: b"coast addition" for name in hoenn.coast_paths(destinations)}}
+        with patch.object(hoenn, "ROOT", self.root), \
+             patch.object(hoenn, "verify_installed", side_effect=ValueError("coast verification failed")):
+            with self.assertRaisesRegex(ValueError, "coast verification"):
+                hoenn.commit_migration(self.game, previous, changes, coast_maps=destinations)
+        self.assertEqual({name: hoenn.optional_bytes(self.game / name) for name in names}, previous)
+        self.assertFalse((self.game / hoenn.JOURNAL).exists())
+
+    def test_dewford_darkness_is_limited_to_audited_maps(self):
+        mapping = {31: 731, 160: 745, 161: 746}
+        before = b"[001]\r\nName = Decades\r\n[731]\r\nName = Brawly\r\n[745]\r\nDarkMap = false\r\n[746]\r\nName = Cave\r\n"
+        after = hoenn.dewford_metadata(before, mapping, apply=True)
+        self.assertEqual(after.count(b"DarkMap = true"), 3)
+        self.assertTrue(after.startswith(b"[001]\r\nName = Decades\r\n"))
+        self.assertEqual(hoenn.dewford_metadata(after, mapping), after)
+        self.assertEqual(hoenn.dewford_metadata(after, mapping, apply=True), after)
+        with self.assertRaisesRegex(ValueError, "duplicado"):
+            hoenn.dewford_metadata(after + b"DarkMap = false\r\n", mapping, apply=True)
+
     def test_oldale_audit_checks_both_return_destinations(self):
         mapping = {12: 704, 15: 899}
         worlds = {mid: hoenn.ruby("RPG::Map", events={}) for mid in mapping.values()}

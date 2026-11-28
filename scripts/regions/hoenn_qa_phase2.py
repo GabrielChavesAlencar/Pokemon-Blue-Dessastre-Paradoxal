@@ -131,8 +131,8 @@ def audit_map(old: int, obj: RubyObject, all_maps: dict[int, RubyObject],
 
 
 def inspect_connections(contents: str, mapping: dict[int, int],
-                        maps: dict[int, RubyObject]) -> dict:
-    """Reconcile exact intended PBS borders with the 199 remapped map IDs."""
+                        maps: dict[int, RubyObject], *, extra_borders=()) -> dict:
+    """Reconcile the pilot borders and any explicitly approved shared additions."""
     actual = set()
     seen = set()
     inverse = {v:k for k,v in mapping.items()}
@@ -174,8 +174,9 @@ def inspect_connections(contents: str, mapping: dict[int, int],
             raise ValueError(f"Conexão Hoenn duplicada em PBS: {row}")
         seen.add(key)
         actual.add(key)
-    expected = set(ALL_BORDERS)
-    if len(expected) != len(ALL_BORDERS):
+    approved = (*ALL_BORDERS, *extra_borders)
+    expected = set(approved)
+    if len(expected) != len(approved):
         raise ValueError("Conexões planejadas Hoenn contêm duplicatas")
     if missing := expected - actual:
         raise ValueError(f"Faltam {len(missing)} conexões PBS de Hoenn: {sorted(missing)[:5]}")
