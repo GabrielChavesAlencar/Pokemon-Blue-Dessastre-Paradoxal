@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2cb6a2b8e26d27d9097b3a00408f16f60a998b1c",
+      "date": "2026-11-28T01:28:15-03:00",
+      "title": "Merge pull request #381 from GabrielChavesAlencar/codex/hoenn-h00",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "40482772ecc995a1a26c1c64734a895dac209340",
+      "date": "2026-11-28T01:12:53-03:00",
+      "title": "Audit the Hoenn H00 baseline on Windows and Android",
+      "category": "Melhorias"
+    },
+    {
       "sha": "02732eadaedf49f3728755edb2bd2654ceae3897",
       "date": "2026-11-28T00:24:28-03:00",
       "title": "K04: publish Rock Tunnel for Windows and Android (#374)",
