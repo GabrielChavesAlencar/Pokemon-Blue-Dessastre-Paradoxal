@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "45f9e0b79fd879db4820fba3bdc034f7bd64a865",
+      "date": "2026-11-28T11:13:49-03:00",
+      "title": "Merge pull request #385 from GabrielChavesAlencar/codex/hoenn-h03-rival-retry",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "65492453d53636926b0128e96ca3db401020e179",
+      "date": "2026-11-28T11:09:57-03:00",
+      "title": "Merge remote-tracking branch 'origin/main' into codex/hoenn-h03-integration",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "782994860fbc316106d353130ab81d7b914165c5",
+      "date": "2026-11-28T11:09:55-03:00",
+      "title": "Integrar H03 e proteger a revanche e as recompensas",
+      "category": "Melhorias"
+    },
+    {
       "sha": "0af0c77daadbfe8f7de9fa72541f988d82666bb3",
       "date": "2026-11-28T11:03:26-03:00",
       "title": "Merge pull request #384 from GabrielChavesAlencar/codex/hoenn-h02-birch-retry",
@@ -311,6 +329,12 @@
       "sha": "3c326fd05777ec383c5405d8bd0db2ab3e402873",
       "date": "2026-11-28T02:47:09-03:00",
       "title": "Audit Lavender portal delta and gate unverified bundled Hoenn redistribution",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "7218759afa6869373fe00423d62cd466a0eda354",
+      "date": "2026-11-28T02:45:28-03:00",
+      "title": "Hoenn H03: gate rival rewards on a victory",
       "category": "Melhorias"
     },
     {
