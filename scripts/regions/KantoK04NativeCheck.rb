@@ -287,6 +287,92 @@ module KantoK04NativeCheck
     end
   end
 
+  def self.trainer_witness(ids,sid,anchor)
+    comp = C.opening_component(ids.fetch(sid),anchor)
+    $game_map.events.each_value do |ev|
+      next unless C.north_event_reachable?(comp,ev)
+      script = ev.list.find { |op| op.code == 355 && op.parameters[0].to_s.start_with?("BlueKantoPilot.battle(") }
+      next unless script
+      m = script.parameters[0].match(/\ABlueKantoPilot\.battle\(:(BLUE_KANTO_\w+), "([A-Za-z]+)", "(KANTO_\d{3}_\d{3})"\)\z/)
+      next unless m
+      require!(m[3] == ("KANTO_%03d_%03d" % [sid,ev.id]), "trainer battle key not native to this event")
+      require!(ev.trigger == 2, "original tunnel trainer lost event-touch trigger")
+      type = m[1].to_sym
+      roster = GameData::Trainer.get(type,m[2],0)
+      require!(roster && !roster.pokemon.empty?, "missing compiled trainer roster")
+      return [ev.id,type,m[2],m[3],roster.pokemon.size]
+    end
+    raise "K04 no reachable trainer from tunnel floor #{sid} at #{anchor.inspect}"
+  end
+
+  def self.trainer_blackout!(ids,lower_landing)
+    require!($PokemonGlobal.pokecenterMapId == ids.fetch(88), "no real Center checkpoint before blackout")
+    first = trainer_witness(ids,90,[24,7])
+    lower = trainer_witness(ids,91,lower_landing)
+    warn_flag = BlueKantoPilot.progress.fetch("regional_pokecenters",{})["KANTO"]
+    require!(warn_flag && warn_flag[0] == ids.fetch(88), "native Center checkpoint wasn't saved for Kanto")
+    checkpoint = BlueRegionalRespawn.checkpoint
+    scene = Scene_Map.new
+    previous = $scene
+    old = TrainerBattle.method(:start)
+    calls = []
+    should_lose = true
+    # Only battle outcome is controlled. Blackout uses the engine, including
+    # the current checkpoint, Scene_Map transfer, stats and the real party.
+    TrainerBattle.define_singleton_method(:start) do |type,name,version=0|
+      GameData::Trainer.get(type,name,version)
+      calls << [type,name,version]
+      if should_lose
+        should_lose = false
+        $player.party.each { |pkmn| pkmn.hp = 0 }
+        pbStartOver(true)
+        false
+      else
+        true
+      end
+    end
+    begin
+      $map_factory.setup(ids.fetch(90))
+      $game_player.moveto(24,7)
+      $scene = scene
+      scene.send(:createSpritesets)
+      eid,type,name,key,_team = first
+      old_blackouts = $stats.blacked_out_count
+      require!(!BlueKantoPilot.battle(type,name,key), "loss recorded as win")
+      require!($stats.blacked_out_count == old_blackouts + 1 &&
+        $game_map.map_id == checkpoint[0] && [$game_player.x,$game_player.y] == checkpoint[1,2],
+        "native blackout did not return to saved Rock Tunnel Center tile")
+      require!($player.party.all? { |pkmn| pkmn.hp == pkmn.totalhp },
+        "native blackout did not heal after defeat")
+      require!(!BlueKantoPilot.progress.fetch("pilot_wins",[]).include?(key) &&
+        !$game_self_switches[[ids.fetch(90),eid,"A"]], "defeat changed trainer completion")
+    ensure
+      scene.send(:disposeSpritesets) if scene.respond_to?(:disposeSpritesets,true)
+      $scene = previous
+    end
+    [[90,[24,7],first],[91,lower_landing,lower]].each do |sid,anchor,(eid,type,name,key,_)|
+      $map_factory.setup(ids.fetch(sid))
+      $game_player.moveto(*anchor)
+      require!(BlueKantoPilot.battle(type,name,key) && BlueKantoPilot.sync_trainer_event(key,name,eid),
+        "native trainer retry did not record victory")
+      require!($game_self_switches[[ids.fetch(sid),eid,"A"]], "native trainer victory switch missing")
+      BlueKantoPilot.battle(type,name,key)
+    end
+    require!(calls.size == 3, "completed trainer fought twice")
+    {"native_blackout"=>true,"checkpoint"=>checkpoint,"rosters"=>[first,lower],"controlled_outcomes"=>true}
+  ensure
+    TrainerBattle.define_singleton_method(:start,old) if old
+  end
+
+  def self.south_boundary!(ids,arrival)
+    comp = C.opening_component(ids.fetch(87),arrival)
+    last_row = $game_map.height - 1
+    approach = comp.keys.select { |_x,y| y == last_row }.sort
+    require!(!approach.empty?, "south Rock Tunnel mouth cannot reach the original Lavender boundary")
+    {"route10"=>ids.fetch(87),"mouth_landing"=>arrival,"south_edge_tiles"=>approach,
+     "lavender_city_installed"=>false,"crossing_deferred_to_k05"=>true}
+  end
+
   def self.save_reload!(ids,flash)
     floor = ids.fetch(90)
     require!($game_map.map_id == floor && [$game_player.x,$game_player.y] == [24,7],
@@ -356,6 +442,11 @@ module KantoK04NativeCheck
     # first, so they can never inherit the route scan's movement timers.
     north = check_area(errors,"TUNNEL_NORTH_TO_SOUTH") { passage(ids,12,17,[13,31]) }
     south = check_area(errors,"TUNNEL_SOUTH_TO_NORTH") { passage(ids,13,1,[8,68]) }
+    boundary = check_area(errors,"LAVENDER_SOUTH_BOUNDARY") { south_boundary!(ids,north.last.fetch("landing")) } if north
+    battles = check_area(errors,"TRAINER_BLACKOUT_RETRY") do
+      lower = north.find { |receipt| receipt.fetch("destination") == ids.fetch(91) }
+      trainer_blackout!(ids,lower.fetch("landing"))
+    end if north
     flash = check_area(errors,"NATIVE_FLASH") { flash!(ids) }
     saved = check_area(errors,"NATIVE_SAVE_RELOAD") { save_reload!(ids,flash) } if flash
     center_path = [39,86,87,88].map { |sid| ids[sid] }
@@ -378,6 +469,7 @@ module KantoK04NativeCheck
     report = {"map_ids"=>ids,"encounters"=>encounters,"center_service"=>center,
       "center_doors"=>entrances,"north_to_south"=>north,"south_to_north"=>south,
       "seams"=>[roads[0].take(2),roads[1].drop(1)],"flash"=>flash,"native_save"=>saved,
+      "south_boundary"=>boundary,"battles"=>battles,
       "manual_playthrough"=>false,"not_a_release"=>true}
     File.write("Data/blue-kanto-k04-proof.txt",report.inspect)
     puts "KANTO_K04_NATIVE_CORRIDOR_FLASH_OK"
