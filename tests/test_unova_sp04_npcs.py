@@ -246,7 +246,7 @@ class UnovaNPCCatalogTests(unittest.TestCase):
         self.assertEqual(code,0)
         report=self.project/sp04.SP04_DIR/("npc-sp04-"+self.archive_sha[:16]+".json")
         self.assertTrue(report.is_file())
-        output=json.loads(report.read_text())
+        output=json.loads(report.read_text(encoding="utf-8"))
         self.assertEqual(self.person(output,"BIANCA")["candidate_count"],1)
         self.assertFalse(output["game_exe_tested"])
 

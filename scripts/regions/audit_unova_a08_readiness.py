@@ -24,6 +24,7 @@ REGION_PROOFS = (
     "blue-johto-main-preview.json",
     "blue-hoenn-install.json",
     "blue-sinnoh-install.json",
+    "blue-sinnoh-shared.json",
     "blue-unova-install.json",
 )
 PLANNING_FILES = (

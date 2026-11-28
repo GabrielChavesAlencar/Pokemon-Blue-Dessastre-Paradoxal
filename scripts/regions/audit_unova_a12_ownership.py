@@ -24,6 +24,7 @@ SOURCE_FILES=(
  "scripts/regions/pilot_hoenn.py",
  "scripts/regions/install_hoenn.py",
  "scripts/regions/install_sinnoh_qa_copy.py",
+ "scripts/regions/sinnoh_shared.py",
 )
 MAX_SOURCE_BYTES=250_000
 MAX_TOTAL_BYTES=850_000
@@ -55,6 +56,26 @@ def has_maps_lookup(tree):
             if isinstance(key,ast.Constant) and key.value=="maps":
                 return True
     return False
+
+def named_map_range(tree, name):
+    """Read a unique top-level literal range without importing the installer."""
+    if tree is None:
+        return None
+    assignments = [
+        node.value for node in tree.body
+        if isinstance(node, ast.Assign)
+        and any(isinstance(target, ast.Name) and target.id == name for target in node.targets)
+    ]
+    if len(assignments) != 1:
+        return None
+    call = assignments[0]
+    if (not isinstance(call, ast.Call) or not isinstance(call.func, ast.Name)
+            or call.func.id != "range" or len(call.args) != 2 or call.keywords
+            or not all(isinstance(arg, ast.Constant) and type(arg.value) is int for arg in call.args)):
+        return None
+    start, stop = (arg.value for arg in call.args)
+    return [start, stop - 1] if 0 < start < stop else None
+
 
 def audit_installer_sources(project):
     """Bounded AST review of bundled repo snapshot, NOT trusted live installer state."""
@@ -91,6 +112,7 @@ def audit_installer_sources(project):
     h="scripts/regions/pilot_hoenn.py"
     ih="scripts/regions/install_hoenn.py"
     s="scripts/regions/install_sinnoh_qa_copy.py"
+    shared="scripts/regions/sinnoh_shared.py"
     root="scripts/install_game.py"
     facts=[
       {"region":"KANTO","claim":"MAPPING_FROM_GENERATED_PILOT_MANIFEST",
@@ -117,7 +139,13 @@ def audit_installer_sources(project):
        "code_paths":[root],"anchor_found":function(root,"install"),
        "known_destination_interval":None,"destination_ids_complete":False},
     ]
-    # Only *verified anchors* support a syntactic lack of overlap for *these bands*.
+    for name, claim in (("SHARED_IDS", "SHARED_LOCAL_MAP_IDS"),
+                        ("ID_RANGE", "SHARED_OVERLAY_VALIDATION_BAND")):
+        span = named_map_range(parsed.get(shared), name)
+        facts.append({"region": "SINNOH", "claim": claim, "code_paths": [shared],
+                      "anchor_found": span is not None and function(shared, "validate_manifest"),
+                      "known_destination_interval": span, "destination_ids_complete": False})
+    # Only *verified anchors* support a syntactic comparison for *these bands*.
     ranges=[]
     for fact in facts:
         span=fact["known_destination_interval"]
@@ -172,6 +200,8 @@ def rehearsal(a04_report,a10_report,a11_report,source_review):
     if not all(type(x) is int for x in manifest|occupied):
         deny("Noninteger native IDs")
     staged=[]
+    installer_bands = [row["range"] for row in source_review["observed_literal_bands"]
+                       if row["intersects_518_599"]]
     for offset,r in enumerate(matrix):
         if not isinstance(r,dict) or r.get("map_id")!=518+offset:
             deny("A11 candidate matrix order mismatch")
@@ -184,6 +214,7 @@ def rehearsal(a04_report,a10_report,a11_report,source_review):
         staged.append({"map_id":mid,"planned_relative_map_path":f"Data/Map{mid:03}.rxdata",
             "observed_native_collision":occ,
             "installer_manifest_claim_observed":claimed,
+            "installer_literal_band_overlap":any(lo <= mid <= hi for lo, hi in installer_bands),
             "source_map_confirmed":False,"reservation_approved":False,
             "write_allowed":False})
     snapshot_conflicts=sum(x["observed_native_collision"] or x["installer_manifest_claim_observed"]
@@ -191,6 +222,7 @@ def rehearsal(a04_report,a10_report,a11_report,source_review):
     return {"mode":"IN_MEMORY_NEGATIVE_GATE_REHEARSAL_ONLY",
         "candidate_count":len(staged),"target_rows":staged,
         "observed_snapshot_conflicts":snapshot_conflicts,
+        "installer_literal_band_overlap_count":sum(x["installer_literal_band_overlap"] for x in staged),
         "clean_snapshot_case":{"native_conflicts":snapshot_conflicts,
             "approved":False,"reason":"FUTURE_CLAIMS_AND_UNOVA_SOURCE_NOT_VERIFIED"},
         "synthetic_cases":[

@@ -19,6 +19,8 @@ Alvo: campanha Pokémon White (BW1), adaptada ao mesmo jogo principal Decades + 
 
 ## 1. Baseline auditada
 
+**Atualização F01:** as faixas de Sinnoh no instalador compartilhado e de Kanto no manifesto Android público cruzam todo o intervalo histórico 518–599. O remap está pendente. [Evidência Windows e Android](UNOVA_F01_BASELINE_WINDOWS_ANDROID.md)
+
 | Indicador | Evidência disponível |
 |---|---|
 | Registro regional | UNOVA = planned; White como base do roteiro |

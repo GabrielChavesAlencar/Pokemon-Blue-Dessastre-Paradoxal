@@ -25,7 +25,10 @@ class SourceInventoryTests(unittest.TestCase):
     def put_zip(self, members):
         with zipfile.ZipFile(self.zip, 'w') as z:
             for name, data in members:
-                z.writestr(name, data)
+                # Keep malformed path bytes intact even on Windows.
+                entry = zipfile.ZipInfo(name)
+                entry.filename = name
+                z.writestr(entry, data)
         return self.zip
 
     def basic(self):

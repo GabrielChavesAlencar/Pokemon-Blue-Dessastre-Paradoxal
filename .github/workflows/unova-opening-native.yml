@@ -1,0 +1,68 @@
+name: Unova - corredor original no Game.exe de QA
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/unova-opening-native.yml'
+      - 'scripts/regions/unova_original_opening.py'
+      - 'scripts/regions/unova_opening_*.py'
+      - 'scripts/regions/UnovaOpeningNativeCheck.rb'
+      - 'tests/test_unova_opening_*.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-windows:
+    name: Portas nativas e save no Windows descartável
+    runs-on: windows-2022
+    timeout-minutes: 25
+    env:
+      GALLIUM_DRIVER: llvmpipe
+      ALSOFT_DRIVERS: 'null'
+      PYTHONUTF8: '1'
+      PYTHONPATH: ${{ github.workspace }}
+      GIT_CONFIG_COUNT: '2'
+      GIT_CONFIG_KEY_0: http.sslBackend
+      GIT_CONFIG_VALUE_0: openssl
+      GIT_CONFIG_KEY_1: core.longpaths
+      GIT_CONFIG_VALUE_1: 'true'
+      GIT_TERMINAL_PROMPT: '0'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verificar overlay e recusas de colisão
+        run: python -m unittest discover -s tests -p 'test_unova_opening_stage.py' -v
+      - name: Instalar base pinada do Blue para QA
+        run: python scripts/install_game.py --apply --skip-kanto --game-dir .blue-work/unova/ci/game
+      - name: Preparar referência pública Android e driver de vídeo
+        shell: pwsh
+        run: |
+          $ProgressPreference = 'SilentlyContinue'
+          $work = (Resolve-Path '.blue-work/unova/ci').Path
+          $manifest = Join-Path $work 'android-update.json'
+          $mesa = Join-Path $env:RUNNER_TEMP 'unova-mesa.7z'
+          $mesaFolder = Join-Path $env:RUNNER_TEMP 'unova-mesa'
+          Invoke-WebRequest -UseBasicParsing 'https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/releases/download/android-multiregion-234-4c21940/Blue-Android-Decades-Kanto-Hoenn.update.json' -OutFile $manifest
+          if ((Get-FileHash -LiteralPath $manifest -Algorithm SHA256).Hash.ToLower() -ne '3b0477bf0d6c37e7b9c79077d37ddda50c87b2f991527631662fb35a82d92170') { throw 'Manifesto Android não confere' }
+          Invoke-WebRequest -UseBasicParsing 'https://github.com/pal1000/mesa-dist-win/releases/download/26.2.6/mesa3d-26.2.6-release-mingw.7z' -OutFile $mesa
+          if ((Get-FileHash -LiteralPath $mesa -Algorithm SHA256).Hash.ToLower() -ne 'da0f71d9181b672c1918f3c342f11118c687f6059a46b16502845160733cc388') { throw 'Driver Mesa não confere' }
+          & "$env:ProgramFiles\7-Zip\7z.exe" x $mesa "-o$mesaFolder" -y | Out-Null
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao extrair Mesa' }
+          Get-ChildItem -LiteralPath $mesaFolder -Recurse -File -Filter '*.dll' |
+            Where-Object { $_.FullName -match '[\\/]x64[\\/]' } |
+            ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $work 'game') }
+      - name: Andar, atravessar portas e recarregar save no Game.exe
+        run: python scripts/regions/unova_opening_native_ci.py --android-manifest .blue-work/unova/ci/android-update.json
+      - name: Preservar recibo de QA do motor
+        uses: actions/upload-artifact@v4
+        with:
+          name: unova-opening-windows-native-receipt
+          path: .blue-work/unova/ci/windows-native-receipt.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14

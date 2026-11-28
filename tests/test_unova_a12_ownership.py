@@ -53,19 +53,25 @@ class A12Tests(unittest.TestCase):
 
     def test_01_all_installer_code_sources_parsed_without_execution(self):
         r=self.check();src=r["installer_source_review"]
-        self.assertEqual(src["sources_expected"],8)
-        self.assertEqual(src["sources_parsed"],8)
+        self.assertEqual(src["sources_expected"],len(a12.SOURCE_FILES))
+        self.assertEqual(src["sources_parsed"],len(a12.SOURCE_FILES))
         self.assertTrue(src["all_source_snapshots_read"])
         self.assertFalse(src["sources_executed"])
         self.assertTrue(all(x["sha256"] for x in src["files"]))
         self.assertTrue(all(x["anchor_found"] for x in src["code_anchors"]))
-    def test_02_correct_literal_regions_do_not_overlap_unova(self):
+    def test_02_shared_sinnoh_bands_overlap_the_historical_unova_interval(self):
         r=self.check()
         bands=r["installer_source_review"]["observed_literal_bands"]
         self.assertIn([600,681],[x["range"] for x in bands])
         self.assertIn([600,699],[x["range"] for x in bands])
         self.assertIn([700,999],[x["range"] for x in bands])
-        self.assertTrue(r["known_literal_bands_do_not_intersect_candidate_interval"])
+        self.assertEqual(
+            {x["claim"]: x["range"] for x in bands if x["intersects_518_599"]},
+            {"SHARED_LOCAL_MAP_IDS": [452, 595], "SHARED_OVERLAY_VALIDATION_BAND": [442, 599]},
+        )
+        self.assertFalse(r["known_literal_bands_do_not_intersect_candidate_interval"])
+        self.assertIn("KNOWN_LITERAL_INSTALLER_BAND_OVERLAP", r["review_flags"])
+        self.assertEqual(r["isolated_install_preparation"]["installer_literal_band_overlap_count"], 82)
         self.assertFalse(r["complete_future_code_and_manifest_ownership_proven"])
     def test_03_kanto_dynamic_mapping_unverified(self):
         r=self.check()
@@ -106,10 +112,22 @@ class A12Tests(unittest.TestCase):
         r=self.check()
         self.assertEqual(r["isolated_install_preparation"]["observed_snapshot_conflicts"],1)
         self.assertFalse(r["isolated_install_preparation"]["target_rows"][-1]["write_allowed"])
+
+    def test_shared_sinnoh_receipt_excludes_ids_even_if_the_files_are_missing(self):
+        (self.data/"blue-sinnoh-shared.json").write_text(
+            '{"map_ids":[517,518,596],"start":[517,519,520]}', encoding="utf-8"
+        )
+        chain = self.chain()
+        self.assertEqual(chain[3]["local_region_manifests"]["observed_candidate_overlaps"], [518,596])
+        self.assertEqual(chain[5]["installer_manifest_analysis"]["candidate_ids"], [518,596])
+        checked = a12.audit(self.game,self.project,*chain)["isolated_install_preparation"]
+        self.assertEqual(checked["observed_snapshot_conflicts"], 2)
+        self.assertTrue(checked["target_rows"][0]["installer_manifest_claim_observed"])
+        self.assertFalse(checked["target_rows"][0]["observed_native_collision"])
     def test_09_missing_installer_source_produces_audit_warning(self):
         (self.project/a12.SOURCE_FILES[2]).unlink()
         r=self.check()
-        self.assertEqual(r["installer_source_review"]["sources_parsed"],7)
+        self.assertEqual(r["installer_source_review"]["sources_parsed"],len(a12.SOURCE_FILES)-1)
         self.assertIn("INSTALLER_SOURCE_SNAPSHOT_INCOMPLETE",r["review_flags"])
     def test_10_invalid_installer_source_never_executed(self):
         p=self.project/a12.SOURCE_FILES[0]
