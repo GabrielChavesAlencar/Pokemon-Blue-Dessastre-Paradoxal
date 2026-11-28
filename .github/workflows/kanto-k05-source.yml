@@ -1,0 +1,44 @@
+name: "Kanto K05: inventário da fonte Lavender"
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/regions/audit_k05_lavender.py'
+      - 'tests/test_kanto_k05_source.py'
+      - '.github/workflows/kanto-k05-source.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: kanto-k05-source-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  audit:
+    runs-on: windows-2022
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validar contrato do inventário
+        shell: powershell
+        run: |
+          python -m unittest discover -s tests -p 'test_kanto_k05_source.py'
+          if($LASTEXITCODE -ne 0){throw 'K05 source contract tests failed'}
+      - name: Auditar cidade, serviços e torre na fonte fixada
+        shell: powershell
+        run: |
+          python scripts/install_game.py --apply --skip-kanto
+          if($LASTEXITCODE -ne 0){throw 'Disposable Decades base unavailable'}
+          python scripts/regions/ensure_source.py
+          if($LASTEXITCODE -ne 0){throw 'Pinned Kanto source unavailable'}
+          python scripts/regions/audit_k05_lavender.py
+          if($LASTEXITCODE -ne 0){throw 'K05 source audit failed'}
+      - name: Guardar recibo sem jogo, scripts de origem ou saves
+        if: always() && hashFiles('.blue-work/kanto-k05-source.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-k05-source-inventory
+          path: .blue-work/kanto-k05-source.json
+          if-no-files-found: error
