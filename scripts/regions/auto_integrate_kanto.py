@@ -24,6 +24,7 @@ KANTO_IMPORTER = "scripts/regions/install_kanto.py"
 KANTO_SOURCE_BOOTSTRAP = "scripts/regions/ensure_source.py"
 K06_APPROACH = "scripts/regions/k06_windows_approach.py"
 K06_RELEASE = Path("data/regions/k06-approach-release.json")
+K06_READY = Path("Data/blue-kanto-k06-approach.json")
 KANTO_MARKER = Path("Data/blue-kanto-start.txt")
 KANTO_MANIFEST = Path("Data/blue-kanto-install.json")
 STATUS_FILE = Path(".blue-work/kanto-install-status.json")
@@ -170,6 +171,7 @@ def integrate(project: Path = ROOT, game: Path | None = None,
         # The seven-map stage is additive. Never route its install errors into
         # a fresh Kanto import or describe a failed overlay as complete.
         if (project/K06_RELEASE).is_file():
+            prior=(game/K06_READY).is_file()
             try:
                 invoke(K06_APPROACH,"--game",str(game))
             except (OSError,ValueError,RuntimeError,subprocess.CalledProcessError) as err:
@@ -177,7 +179,7 @@ def integrate(project: Path = ROOT, game: Path | None = None,
                 print("[KANTO AUTO]",reason,flush=True)
                 return _persist(project,{**info,"status":"manual_k06_migration_required",
                                          "k06_approach":False,"reason":reason})
-            info={**info,"k06_approach":True}
+            info={**info,"k06_approach":True,"changed":bool(info["changed"] or not prior)}
         return _persist(project,info)
 
     state = detect_existing(game)

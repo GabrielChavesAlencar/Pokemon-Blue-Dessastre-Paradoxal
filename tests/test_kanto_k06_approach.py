@@ -8,6 +8,7 @@ import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"scripts/regions"))
 from audit_k06_rocket import audit_conditions, selectors
+from k06_windows_approach import activation_enabled, RELEASE_FLAG
 from k06_approach_migration import require_hashes, sha_bytes, verify_k05_android_predecessor
 from build_k06_approach import APPROACH, EXACT_SEAMS, TEMP_GATES, TRANSFERS, planned_connections, verify_source
 
@@ -74,3 +75,17 @@ class K06ApproachTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError,"verified source-built K05"):
                     verify_k05_android_predecessor(root)
                 self.assertEqual(check.call_count,1)
+
+    def test_windows_product_flag_has_exact_source_maps(self):
+        with TemporaryDirectory() as folder:
+            root=Path(folder).resolve()
+            self.assertFalse(activation_enabled(root))
+            flag=root/RELEASE_FLAG
+            flag.parent.mkdir(parents=True)
+            record={"schema":1,"stage":"K06_APPROACH","source_maps":list(range(107,114))}
+            flag.write_text(json.dumps(record),encoding="utf8")
+            self.assertTrue(activation_enabled(root))
+            record["source_maps"].append(114)
+            flag.write_text(json.dumps(record),encoding="utf8")
+            with self.assertRaisesRegex(ValueError,"revisão autorizada"):
+                activation_enabled(root)
