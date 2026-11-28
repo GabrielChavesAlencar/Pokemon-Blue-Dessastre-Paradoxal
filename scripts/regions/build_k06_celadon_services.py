@@ -26,6 +26,16 @@ FLOORS = tuple(range(117, 122))
 SHOPS = {(118, 5), (118, 6), (120, 5), (121, 5), (121, 6)}
 CABIN = (123, 2)
 DOOR_SOUND = 0
+STAGE_LOCAL = "K06_CELADON_SERVICES_CI"
+PROFILE = "Kanto K06 Celadon Services CI"
+SERVICES = {
+    (122, 2): ("vend", (), False),
+    (122, 6): ("exchange", ("TM16", "TM20", "TM33"), True),
+    (125, 5): ("coin_case", ("COINCASE",), True),
+    (128, 1): ("tea", ("TEA",), True),
+    (128, 23): ("eevee", ("EEVEE",), True),
+}
+DRINKS = (("FRESHWATER", 200), ("SODAPOP", 300), ("LEMONADE", 350))
 
 
 def allocate(infos, files, previous):
@@ -119,6 +129,40 @@ def append_terrain(source, target, donors, original_infos, mapping, infos, tiles
         raise ValueError("Registered foreign tileset changed")
 
 
+def reward_anchors(report, items, species):
+    rows = {}
+    for row in report["services"]:
+        key = row["source"], row["event"]
+        if key in SERVICES:
+            rows.setdefault(key, []).append(row)
+    if rows.keys() != SERVICES.keys() or not {d for d,_ in DRINKS} <= items or "EEVEE" not in species:
+        raise ValueError("Missing source services or installed item/species catalogue")
+    for key, (method, rewards, actor) in SERVICES.items():
+        specs = rows[key]
+        first = specs[0]
+        if (first["page"] != 1 or first["trigger"] != 0 or first["conditions"] or
+                any(row["at"] != first["at"] for row in specs) or
+                [r["item_or_species"] for row in specs for r in row["rewards"]] != list(rewards) or
+                not (set(rewards) - {"EEVEE"}) <= items):
+            raise ValueError(f"Unexpected Celadon reward witness at {key}")
+        if method == "vend":
+            add = [arg["item_or_species"] for arg in first["item_arguments"] if arg["operation"] == "add"]
+            amount_pairs = [(r["operation"], r["operand"]) for r in first["money"] if "operand" in r]
+            expected = [(op, price) for _, price in DRINKS
+                        for op in ("native_gold_condition", "native_gold_change")]
+            if list(dict.fromkeys(add)) != [d for d,_ in DRINKS] or amount_pairs != expected:
+                raise ValueError("Vending source money and drinks no longer match")
+        elif method == "exchange":
+            if [[a["item_or_species"] for a in row["item_arguments"] if a["operation"] == "remove"]
+                    for row in specs] != [[d] for d,_ in DRINKS]:
+                raise ValueError("The three roof exchanges no longer match")
+        elif method == "eevee":
+            if first["item_arguments"] != [{"operation":"pbAddPokemon", "item_or_species":"EEVEE", "quantity":25}]:
+                raise ValueError("Mansion gift level no longer matches")
+        rows[key] = (first["at"], method, actor)
+    return rows
+
+
 def copy_celadon_fixture(baseline, target):
     # Bulk copy never imports any saves. Carry only the byte-exact sentinel
     # from stage_ci so the verifier can detect an accidental write to it.
@@ -161,6 +205,7 @@ def stage_services(source, baseline, target, report):
     for filename, data in (("MapInfos.rxdata", infos), ("Tilesets.rxdata", tiles)):
         write_map(target / "Data" / filename, data)
     items = catalogue(target, "items")
+    rewards = reward_anchors(report, items, catalogue(target, "pokemon"))
     markets = {(r["source"], r["event"]): r for r in report["services"] if r["shops"]}
     if set(markets) != SHOPS:
         raise ValueError("Unexpected native clerk catalog")
@@ -203,6 +248,10 @@ def stage_services(source, baseline, target, report):
                 raise ValueError(f"Store inventory unavailable in target game: {sid}/{eid}")
             call = "pbPokemonMart([" + ", ".join(":" + k for k in stock[0]["items"]) + "])"
             add(eid, row["at"], [command(355, call.encode("ascii"))], 0, actor=True)
+        for (area, eid), (at, method, actor) in rewards.items():
+            if area == sid:
+                add(eid, at, [command(355, f"BlueKantoCeladonServices.{method}".encode("ascii"))],
+                    0, actor=actor and bool(dm["@events"][eid].attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"]))
         if sid == CABIN[0]:
             add(CABIN[1], [0, 2], [command(355, b"BlueKantoCeladonServices.select_floor")], 0)
         if any(m["@events"][eid] != e for eid, e in city_original.items()):
@@ -222,11 +271,32 @@ def stage_services(source, baseline, target, report):
         if before.is_symlink() or after.is_symlink() or not after.is_file() or digest(before) != digest(after):
             raise ValueError(f"Unrelated protected file changed: {rel}")
     verify_native_graph(target)
+    # A native fixture receives the same checked registry format used by
+    # releases. Its stage remains CI-only and cannot reach the updater.
+    stamp.update(maps=mapping, content_stage=STAGE_LOCAL)
+    (target / INSTALL).write_text(json.dumps(stamp,indent=2)+"\n",encoding="utf8")
+    gate = target / "Data/blue-kanto-ready.txt"
+    gate.write_text(f"BLUE_KANTO_READY_V1,182,{mapping[7]}\n",encoding="ascii")
+    meta = target / "PBS/map_metadata_kanto.txt"
+    with meta.open("a",encoding="utf8") as pbs:
+        for sid, label in zip(INTERIORS, ("Celadon Diner","Celadon Hotel","Celadon House","Celadon Mansion"), strict=True):
+            pbs.write(f"\n[{mapping[sid]:03}]\nName = {label}\n")
+    from k06_approach_migration import CI_PROFILE
+    from qa_k04_migration import jsonc, save_namespace_valid
+    cfg = target / "mkxp.json"
+    if not save_namespace_valid(baseline, CI_PROFILE):
+        raise ValueError("Celadon fixture predecessor save isolation missing")
+    config = jsonc(cfg.read_text("utf-8-sig"))
+    cfg.write_text(json.dumps({**config, "dataPathApp": PROFILE}, ensure_ascii=False, indent=2)+"\n", encoding="utf8")
+    if not save_namespace_valid(target, PROFILE):
+        raise ValueError("Celadon fixture save isolation missing")
+    (target / "Data/blue-compile-request.txt").write_text("compile", encoding="ascii")
+    (target / "Data/PluginScripts.rxdata").unlink(missing_ok=True)
     return {"status": "K06_CELADON_PRIVATE_FIXTURE", "candidate_slots": CANDIDATES,
             "unchanged_old_ids": len(previous), "unrelated_maps_byte_identical": len(files)-len(changed),
             "unlocked_city_entrances": sorted(CITY_DOORS), "native_marts": len(markets),
             "deferred": sorted(DEFERRED), "new_slots_verified_on_android": False,
-            "roof_items_and_interior_rewards_complete": False, "publish_allowed": False}
+            "staged_authored_reward_events": len(rewards), "publish_allowed": False}
 
 
 def run():

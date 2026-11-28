@@ -6,6 +6,9 @@ on:
       - 'scripts/regions/audit_k06_celadon_services.py'
       - 'scripts/regions/build_k06_celadon_services.py'
       - 'scripts/regions/KantoK06CeladonServices.rb'
+      - 'scripts/regions/KantoK06CeladonNativeCheck.rb'
+      - 'scripts/regions/native_check.py'
+      - 'scripts/battle_polish/RegionStart.rb'
       - 'tests/test_kanto_k06_celadon_services.py'
       - '.github/workflows/kanto-k06-celadon-services.yml'
   workflow_dispatch:
@@ -37,7 +40,10 @@ jobs:
   windows-private-layout:
     needs: source-evidence
     runs-on: windows-2022
-    timeout-minutes: 22
+    timeout-minutes: 27
+    env:
+      GALLIUM_DRIVER: llvmpipe
+      ALSOFT_DRIVERS: 'null'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -61,8 +67,46 @@ jobs:
         run: |
           python scripts/regions/build_k06_celadon_services.py
           if($LASTEXITCODE -ne 0){throw 'Private Celadon layout validation failed'}
+      - name: Testar portas, elevador e recompensas pelo Game.exe
+        shell: powershell
+        run: |
+          $root = (Resolve-Path '.blue-work/kanto-k06-services-fixture').Path
+          $ProgressPreference = 'SilentlyContinue'
+          $mesa = Join-Path $env:RUNNER_TEMP 'k06-mesa.7z'
+          $dir = Join-Path $env:RUNNER_TEMP 'k06-mesa'
+          Invoke-WebRequest -UseBasicParsing 'https://github.com/pal1000/mesa-dist-win/releases/download/26.2.6/mesa3d-26.2.6-release-mingw.7z' -OutFile $mesa
+          if((Get-FileHash -LiteralPath $mesa -Algorithm SHA256).Hash.ToLowerInvariant() -ne 'da0f71d9181b672c1918f3c342f11118c687f6059a46b16502845160733cc388'){throw 'Mesa checksum failed'}
+          & "$env:ProgramFiles/7-Zip/7z.exe" x $mesa "-o$dir" -y | Out-Null
+          if($LASTEXITCODE -ne 0){throw 'Mesa extract failed'}
+          Get-ChildItem -LiteralPath $dir -Recurse -File -Filter '*.dll' |
+            Where-Object { $_.Directory.Name -eq 'x64' } |
+            ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $root }
+          python scripts/regions/native_check.py $root --k06-services
+          if($LASTEXITCODE -ne 0){throw 'Celadon native test staging failed'}
+          $proof="$root/Data/blue-kanto-k06-celadon-native-proof.txt"
+          $trace="$root/Data/blue-kanto-k06-celadon-trace.txt"
+          $bad="$root/Data/blue-kanto-error.txt"
+          for($attempt=1;$attempt -le 2;$attempt++){
+            $stdout=Join-Path $env:RUNNER_TEMP "celadon-native-out-$attempt.txt"
+            $stderr=Join-Path $env:RUNNER_TEMP "celadon-native-err-$attempt.txt"
+            $p=Start-Process -FilePath "$root/Game.exe" -WorkingDirectory $root -WindowStyle Hidden -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+            $handle=$p.Handle
+            if(-not $p.WaitForExit(240000)){Stop-Process -Id $p.Id; break}
+            if((Test-Path $proof) -or (Test-Path $bad)){break}
+            if($attempt -ne 1 -or -not ((Get-Content $stdout,$stderr -Raw -ErrorAction SilentlyContinue) -match '(?i)compil')){break}
+          }
+          if(!(Test-Path $proof -PathType Leaf) -or (Test-Path $bad -PathType Leaf)){
+            Get-Content $stdout,$stderr,$bad,$trace -ErrorAction SilentlyContinue | Select-Object -Last 100
+            throw 'Celadon native services proof missing'
+          }
+          $save = "$root/saves/K06-SYNTHETIC-SENTINEL.rxdata"
+          if((Get-FileHash -LiteralPath $save -Algorithm SHA256).Hash.ToLowerInvariant() -ne '55e43a0fd9f37b1aae908d480fbb1f09ad754a3e808c11cc8f6ea78941c8f668'){throw 'Native boot changed the synthetic save'}
+          Copy-Item -LiteralPath $proof -Destination 'k06-services-receipts/celadon-native-proof.txt'
+          Write-Host 'KANTO_K06_CELADON_NATIVE_SERVICES_OK'
       - uses: actions/upload-artifact@v4
         with:
           name: k06-celadon-services-fixture-receipt
-          path: k06-services-receipts/celadon-services-fixture.json
+          path: |
+            k06-services-receipts/celadon-services-fixture.json
+            k06-services-receipts/celadon-native-proof.txt
           if-no-files-found: error
