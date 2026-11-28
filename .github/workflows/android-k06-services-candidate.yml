@@ -7,6 +7,8 @@ on:
       - 'scripts/android/k06_services_update.py'
       - 'scripts/android/source_update.py'
       - 'scripts/android/update_client.py'
+      - 'tests/seed_kanto_source_ci.py'
+      - 'tests/test_kanto_ci_source_reuse.py'
       - '.github/workflows/android-k06-services-candidate.yml'
   workflow_dispatch:
 permissions:
@@ -35,16 +37,43 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Conferir contrato do catálogo e preparar a instalação descartável
+      - name: Conferir contratos e obter uma vez a fonte original fixada
         shell: powershell
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           python -m unittest discover -s tests -p 'test_kanto_k06_approach.py'
           if($LASTEXITCODE -ne 0){throw 'K06 offline contract failed'}
           python -m unittest discover -s tests -p 'test_android_k06_handoff.py'
           if($LASTEXITCODE -ne 0){throw 'K06 did not isolate the released K05 cache'}
+          python -m unittest discover -s tests -p 'test_kanto_ci_source_reuse.py'
+          if($LASTEXITCODE -ne 0){throw 'Private FRLG archive reuse contract failed'}
           $fixture=New-Item -ItemType Directory -Path '.blue-work/k06-android-ci'
+          $recipe=Join-Path $fixture.FullName 'k05-recipe'
+          git fetch --no-tags origin refs/tags/android-source-k05-0eaf940
+          if($LASTEXITCODE -ne 0 -or (git rev-parse FETCH_HEAD).Trim() -ne $env:K05_RECIPE){throw 'Android K05 public recipe tag differs'}
+          git worktree add --detach $recipe $env:K05_RECIPE
+          if($LASTEXITCODE -ne 0){throw 'Cannot prepare the published K05 code'}
+          "K05_ROOT=$recipe" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          $approach=Join-Path $fixture.FullName 'k06-public-recipe'
+          git fetch --no-tags origin refs/tags/android-source-k06-approach-791f8c8
+          if($LASTEXITCODE -ne 0 -or (git rev-parse FETCH_HEAD).Trim() -ne $env:K06_RECIPE){throw 'Android K06 public recipe tag differs'}
+          git worktree add --detach $approach $env:K06_RECIPE
+          if($LASTEXITCODE -ne 0){throw 'Cannot prepare the public K06 approach recipe'}
+          "K06_ROOT=$approach" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          Push-Location -LiteralPath $recipe
+          try {
+            python scripts/regions/ensure_source.py
+            if($LASTEXITCODE -ne 0){throw 'Pinned original unavailable; stopping before Android fixture download'}
+          } finally {
+            Pop-Location
+          }
+          python tests/seed_kanto_source_ci.py $recipe $approach
+          if($LASTEXITCODE -ne 0){throw 'Could not reuse the pinned FRLG archive within this runner'}
+      - name: Preparar a instalação Android 247 descartável
+        shell: powershell
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $fixture=Get-Item -LiteralPath '.blue-work/k06-android-ci'
           $zip=Join-Path $fixture.FullName 'Blue-Android-Decades-Kanto-Hoenn.zip'
           gh release download android-multiregion-247-02732ea -R '${{ github.repository }}' --pattern (Split-Path -Leaf $zip) --dir $fixture.FullName
           if($LASTEXITCODE -ne 0){throw 'Published Android 247 fixture unavailable'}
@@ -60,18 +89,6 @@ jobs:
           Set-Content -LiteralPath $sentinel 'Test data, not a real player save'
           "K06_GAME=$game" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
           "K06_SAVE=$((Get-FileHash -LiteralPath $sentinel).Hash)" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
-          $recipe=Join-Path $fixture.FullName 'k05-recipe'
-          git fetch --no-tags origin refs/tags/android-source-k05-0eaf940
-          if($LASTEXITCODE -ne 0 -or (git rev-parse FETCH_HEAD).Trim() -ne $env:K05_RECIPE){throw 'Android K05 public recipe tag differs'}
-          git worktree add --detach $recipe $env:K05_RECIPE
-          if($LASTEXITCODE -ne 0){throw 'Cannot prepare the published K05 code'}
-          "K05_ROOT=$recipe" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
-          $approach=Join-Path $fixture.FullName 'k06-public-recipe'
-          git fetch --no-tags origin refs/tags/android-source-k06-approach-791f8c8
-          if($LASTEXITCODE -ne 0 -or (git rev-parse FETCH_HEAD).Trim() -ne $env:K06_RECIPE){throw 'Android K06 public recipe tag differs'}
-          git worktree add --detach $approach $env:K06_RECIPE
-          if($LASTEXITCODE -ne 0){throw 'Cannot prepare the public K06 approach recipe'}
-          "K06_ROOT=$approach" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
       - name: Compilar K05, passagem K06 e loja de Celadon pela fonte original
         shell: powershell
         run: |

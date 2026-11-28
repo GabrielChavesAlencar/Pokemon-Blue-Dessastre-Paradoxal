@@ -19,9 +19,12 @@ on:
 permissions:
   contents: read
 jobs:
-  source-evidence:
+  windows-private-layout:
     runs-on: windows-2022
-    timeout-minutes: 12
+    timeout-minutes: 44
+    env:
+      GALLIUM_DRIVER: llvmpipe
+      ALSOFT_DRIVERS: 'null'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -41,23 +44,11 @@ jobs:
           name: k06-celadon-services-source-receipt
           path: k06-services-receipts/celadon-services.json
           if-no-files-found: error
-  windows-private-layout:
-    needs: source-evidence
-    runs-on: windows-2022
-    timeout-minutes: 32
-    env:
-      GALLIUM_DRIVER: llvmpipe
-      ALSOFT_DRIVERS: 'null'
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
       - name: Preparar baseline K06 integrado descartável
         shell: powershell
         run: |
-          python scripts/regions/ensure_source.py
-          if($LASTEXITCODE -ne 0){throw 'Pinned Celadon source unavailable'}
+          # Same private checkout as the source audit above; never send the donor
+          # or extracted source to another job or a remote cache.
           python scripts/regions/audit_k06_rocket.py
           if($LASTEXITCODE -ne 0){throw 'Approach source witness unavailable'}
           python scripts/install_game.py --apply --skip-kanto
