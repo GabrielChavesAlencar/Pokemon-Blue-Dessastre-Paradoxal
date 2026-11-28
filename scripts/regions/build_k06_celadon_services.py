@@ -214,7 +214,7 @@ def copy_celadon_fixture(baseline, target):
         stream.write(expected)
 
 
-def stage_services(source, baseline, target, report):
+def stage_services(source, baseline, target, report, *, android_base=None):
     verify_native_graph(baseline)
     stamp = json_file(baseline / INSTALL)
     if stamp.get("content_stage") != "K06_APPROACH":
@@ -231,7 +231,11 @@ def stage_services(source, baseline, target, report):
         if digest(source_files[sid]) != by_source[sid]["sha256"]:
             raise ValueError(f"Celadon pinned source map changed: {sid}")
         donors[sid] = load(source_files[sid])
-    copy_celadon_fixture(baseline, target)
+    if android_base is None:
+        copy_celadon_fixture(baseline, target)
+    else:
+        from scripts.android.source_update import clone_verified_install
+        clone_verified_install(baseline, target, android_base)
     append_terrain(source, target, donors, original_infos, mapping, infos, tiles)
     if any(infos[mid] != info for mid, info in old_info.items()):
         raise ValueError("The existing map registry was changed")
@@ -300,7 +304,8 @@ def stage_services(source, baseline, target, report):
     changed = {mapping[sid] for sid in (114, *STORE)}
     if any(digest(path) != digest(after_paths[mid]) for mid, path in files.items() if mid not in changed):
         raise ValueError("Unrelated map bytes changed")
-    for rel in (SAVE, "Game.ini", "mkxp.json", "PBS/map_connections_kanto.txt"):
+    inert = ("Game.ini", "mkxp.json", "PBS/map_connections_kanto.txt")
+    for rel in (*inert, SAVE) if android_base is None else inert:
         before, after = baseline / rel, target / rel
         if before.is_symlink() or after.is_symlink() or not after.is_file() or digest(before) != digest(after):
             raise ValueError(f"Unrelated protected file changed: {rel}")
@@ -315,21 +320,22 @@ def stage_services(source, baseline, target, report):
     with meta.open("a",encoding="utf8") as pbs:
         for sid, label in zip(INTERIORS, ("Celadon Diner","Celadon Hotel","Celadon House","Celadon Mansion"), strict=True):
             pbs.write(f"\n[{mapping[sid]:03}]\nName = {label}\n")
-    from k06_approach_migration import CI_PROFILE
-    from qa_k04_migration import jsonc, save_namespace_valid
-    cfg = target / "mkxp.json"
-    if not save_namespace_valid(baseline, CI_PROFILE):
-        raise ValueError("Celadon fixture predecessor save isolation missing")
-    config = jsonc(cfg.read_text("utf-8-sig"))
-    cfg.write_text(json.dumps({**config, "dataPathApp": PROFILE}, ensure_ascii=False, indent=2)+"\n", encoding="utf8")
-    if not save_namespace_valid(target, PROFILE):
-        raise ValueError("Celadon fixture save isolation missing")
-    (target / "Data/blue-compile-request.txt").write_text("compile", encoding="ascii")
-    (target / "Data/PluginScripts.rxdata").unlink(missing_ok=True)
+    if android_base is None:
+        from k06_approach_migration import CI_PROFILE
+        from qa_k04_migration import jsonc, save_namespace_valid
+        cfg = target / "mkxp.json"
+        if not save_namespace_valid(baseline, CI_PROFILE):
+            raise ValueError("Celadon fixture predecessor save isolation missing")
+        config = jsonc(cfg.read_text("utf-8-sig"))
+        cfg.write_text(json.dumps({**config, "dataPathApp": PROFILE}, ensure_ascii=False, indent=2)+"\n", encoding="utf8")
+        if not save_namespace_valid(target, PROFILE):
+            raise ValueError("Celadon fixture save isolation missing")
+        (target / "Data/blue-compile-request.txt").write_text("compile", encoding="ascii")
+        (target / "Data/PluginScripts.rxdata").unlink(missing_ok=True)
     return {"status": "K06_CELADON_PRIVATE_FIXTURE", "candidate_slots": CANDIDATES,
             "unchanged_old_ids": len(previous), "unrelated_maps_byte_identical": len(files)-len(changed),
             "unlocked_city_entrances": sorted(CITY_DOORS), "native_marts": len(markets),
-            "deferred": sorted(DEFERRED), "new_slots_verified_on_android": False,
+            "deferred": sorted(DEFERRED), "new_slots_verified_on_android": android_base is not None,
             "staged_authored_reward_events": len(rewards), "defined_inert_tea": tea_defined_locally, "publish_allowed": False}
 
 
