@@ -1,0 +1,193 @@
+name: "Android K05: atualizar pela fonte sem redistribuir"
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/android/source_update.py'
+      - 'scripts/android/update_client.py'
+      - 'scripts/regions/ensure_source.py'
+      - 'tests/test_android_source_update.py'
+      - '.github/workflows/android-k05-source-update.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: android-k05-source-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  disposable-source-update:
+    runs-on: windows-2022
+    timeout-minutes: 35
+    env:
+      GALLIUM_DRIVER: llvmpipe
+      ALSOFT_DRIVERS: 'null'
+      PYTHONUTF8: '1'
+      K05_PRODUCT_REVISION: 0eaf9401b2d9e828e8549f7c7fea28c5de748157
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Provar verificação e rollback com arquivos sintéticos
+        shell: powershell
+        run: |
+          python -m unittest discover -s tests -p 'test_android_source_update.py'
+          if($LASTEXITCODE -ne 0){throw 'Local source-update contracts failed'}
+      - name: Preparar cópia descartável da versão 247
+        shell: powershell
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $fixture=New-Item -ItemType Directory -Path '.blue-work/android-source-ci'
+          $asset='Blue-Android-Decades-Kanto-Hoenn.zip'
+          gh release download android-multiregion-247-02732ea -R '${{ github.repository }}' --pattern $asset --dir $fixture.FullName
+          if($LASTEXITCODE -ne 0){throw 'Pinned Android 247 fixture unavailable'}
+          $zip=Join-Path $fixture.FullName $asset
+          if((Get-Item -LiteralPath $zip).Length -ne 1401504567 -or
+              (Get-FileHash -LiteralPath $zip -Algorithm SHA256).Hash.ToLowerInvariant() -ne '0469d877818490a31f6e0a080d8f2d942f954dc65568d5aec38ef3235606f87b'){
+            throw 'Pinned Android 247 ZIP did not match its published checksum'}
+          & "$env:ProgramFiles/7-Zip/7z.exe" x $zip "-o$($fixture.FullName)" -y | Out-Null
+          if($LASTEXITCODE -ne 0){throw 'Could not unpack pinned Android fixture'}
+          Remove-Item -LiteralPath $zip -Force
+          $game=(Resolve-Path (Join-Path $fixture.FullName 'Pokemon-Blue-Android')).Path
+          Set-Content (Join-Path $game 'K05-SAVE-SYNTHETIC.rxsave') 'Synthetic save data; not an actual save.'
+          $checksum=(Get-FileHash (Join-Path $game 'K05-SAVE-SYNTHETIC.rxsave') -Algorithm SHA256).Hash
+          "ANDROID_247_GAME=$game" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          $other=Get-FileHash (Join-Path $game 'PBS/pokemon_forms_Gen_9_Pack.txt') -Algorithm SHA256
+          "ANDROID_247_UNRELATED_PBS=$($other.Hash)" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          "ANDROID_247_SAVE=$checksum" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+      - name: Obter a fonte de Kanto e montar uma cópia local
+        shell: powershell
+        run: |
+          $work=Join-Path (Resolve-Path '.blue-work').Path 'android-source-update'
+          "ANDROID_SOURCE_WORK=$work" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          python scripts/android/update_client.py --game-dir $env:ANDROID_247_GAME --source --source-work-dir $work --update
+          if($LASTEXITCODE -ne 0){throw 'K05 direct-source updater staging failed'}
+          $stage=(Resolve-Path '.blue-work/android-source-update/02732eadaedf49f3728755edb2bd2654ceae3897/game').Path
+          "ANDROID_SOURCE_STAGE=$stage" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          $marker=Join-Path $env:ANDROID_247_GAME 'Data/blue-update.json'
+          $before=(Get-FileHash -LiteralPath $marker -Algorithm SHA256).Hash
+          $rev=$env:K05_PRODUCT_REVISION
+          $errorFile=Join-Path (Resolve-Path '.blue-work/android-source-ci').Path 'before-compile-error.txt'
+          $negative=Start-Process -FilePath (Get-Command python).Source -ArgumentList @(
+            'scripts/android/source_update.py','--game-dir',('"' + $env:ANDROID_247_GAME + '"'),'--finish',$rev,'--apply-local'
+          ) -Wait -PassThru -NoNewWindow -RedirectStandardError $errorFile
+          if($negative.ExitCode -eq 0 -or (Get-FileHash -LiteralPath $marker -Algorithm SHA256).Hash -ne $before -or
+              (Get-Content -LiteralPath $errorFile -Raw) -notmatch 'ainda n.*o foi compilada'){
+            Get-Content -LiteralPath $errorFile
+            throw 'The pre-compile rejection was not the expected safe result'
+          }
+          Write-Host 'KANTO_K05_ANDROID_REFUSED_UNCOMPILED_OK'
+      - name: Compilar a cópia sem abrir saves do jogador
+        shell: powershell
+        run: |
+          $ProgressPreference='SilentlyContinue'
+          $mesa=Join-Path $env:RUNNER_TEMP 'android-source-mesa.7z'
+          Invoke-WebRequest -UseBasicParsing 'https://github.com/pal1000/mesa-dist-win/releases/download/26.2.6/mesa3d-26.2.6-release-mingw.7z' -OutFile $mesa
+          if((Get-FileHash -LiteralPath $mesa -Algorithm SHA256).Hash.ToLower() -ne 'da0f71d9181b672c1918f3c342f11118c687f6059a46b16502845160733cc388'){throw 'Mesa checksum failed'}
+          $dir=Join-Path $env:RUNNER_TEMP 'android-source-mesa'
+          & "$env:ProgramFiles/7-Zip/7z.exe" x $mesa "-o$dir" -y | Out-Null
+          if($LASTEXITCODE -ne 0){throw 'Mesa extraction failed'}
+          # A short physical working path avoids path-length quirks in the
+          # bundled runtime. Never copy or bring the installed game into it.
+          $stage=$env:ANDROID_SOURCE_STAGE
+          $short=Join-Path $env:RUNNER_TEMP 'k05-compile'
+          if(Test-Path -LiteralPath $short){throw 'Isolated compiler root already exists'}
+          Move-Item -LiteralPath $stage -Destination $short
+          try {
+            Get-ChildItem -LiteralPath $dir -Recurse -File -Filter '*.dll' |
+              Where-Object { $_.Directory.Name -eq 'x64' } |
+              ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $short }
+            $env:K05_COMPILER_ROOT=$short
+            @'
+          import hashlib, json, os, pathlib, subprocess
+          root=pathlib.Path(os.environ["K05_COMPILER_ROOT"]).resolve(strict=True)
+          logs=pathlib.Path(".blue-work/android-source-ci").resolve(strict=True)
+          must=("Game.exe","Game.ini","mkxp.json","Data/Scripts.rxdata","Data/blue-android-build-request.txt")
+          for name in must:
+              asset=root/name
+              print(name,asset.stat().st_size,hashlib.file_digest(asset.open("rb"),"sha256").hexdigest(),flush=True)
+          config=json.loads((root/"mkxp.json").read_text("ascii"))
+          if config["gameFolder"]!="." or config["execName"]!="Game" or config["dataPathApp"]!="Kanto Android Source Build":
+              raise SystemExit("Unexpected compiler root or profile")
+          isolated=root.parent/"k05-profile"
+          isolated.mkdir(exist_ok=False)
+          variables={**os.environ,"APPDATA":str(isolated),"LOCALAPPDATA":str(isolated)}
+          proof=root/"Data/blue-android-compiled.txt"
+          for attempt in (1,2):
+              with (logs/f"native-{attempt}.txt").open("wb") as log:
+                  try:
+                      subprocess.run([str(root/"Game.exe"),"debug"],cwd=root,env=variables,
+                                     stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT,timeout=130)
+                  except subprocess.TimeoutExpired:
+                      print(f"Native compiler timed out, attempt {attempt}",flush=True)
+              raw=(logs/f"native-{attempt}.txt").read_text("utf8",errors="replace")
+              print(raw[-12000:],flush=True)
+              if proof.is_file():
+                  break
+              if (root/"Data/blue-android-error.txt").is_file() or "Could not read Game.ini" in raw:
+                  break
+          if not proof.is_file():
+              for name in ("Data/blue-android-error.txt","Data/blue-android-stage.txt","errorlog.txt"):
+                  path=root/name
+                  if path.is_file():
+                      print(name,path.read_text("utf8",errors="replace")[-12000:],flush=True)
+              raise SystemExit("The disposable update never compiled")
+          '@ | python -
+            if($LASTEXITCODE -ne 0){throw 'Android native compile failed'}
+          } finally {
+            Move-Item -LiteralPath $short -Destination $stage
+          }
+      - name: Instalar somente localmente e conferir 199 mapas e save sentinela
+        shell: powershell
+        run: |
+          $rev=$env:K05_PRODUCT_REVISION
+          @'
+          import os
+          from pathlib import Path
+          from scripts.android import source_update as recipe
+          original=recipe.atomic_file
+          def interrupt(path, blob):
+              original(path,blob)
+              if path.name=="Map609.rxdata" and Path(os.environ["ANDROID_247_GAME"]).resolve() in path.parents:
+                  os._exit(91)
+          recipe.atomic_file=interrupt
+          recipe.source_workflow(Path(os.environ["ANDROID_247_GAME"]),Path(os.environ["ANDROID_SOURCE_WORK"]),True)
+          '@ | python -
+          if($LASTEXITCODE -ne 91 -or !(Test-Path -LiteralPath (Join-Path $env:ANDROID_247_GAME '.blue-k05-recovery.json'))){
+            throw 'Crash fixture did not interrupt a real local file write'
+          }
+          $before=Get-Content (Join-Path $env:ANDROID_247_GAME 'Data/blue-update.json') -Raw | ConvertFrom-Json
+          if($before.revision -ne '02732eadaedf49f3728755edb2bd2654ceae3897'){
+            throw 'Interrupted updater committed a revision before the write set was complete'
+          }
+          python scripts/android/update_client.py --game-dir $env:ANDROID_247_GAME --source --source-work-dir $env:ANDROID_SOURCE_WORK --update
+          if($LASTEXITCODE -ne 0){throw 'Compiled local update could not be applied by the Android updater'}
+          $save=Join-Path $env:ANDROID_247_GAME 'K05-SAVE-SYNTHETIC.rxsave'
+          if((Get-FileHash $save -Algorithm SHA256).Hash -ne $env:ANDROID_247_SAVE){throw 'Source update touched the disposable save'}
+          $installed=Get-Content (Join-Path $env:ANDROID_247_GAME 'Data/blue-update.json') -Raw | ConvertFrom-Json
+          $recipe=(git rev-parse HEAD).Trim()
+          if($installed.revision -ne $rev -or $installed.source_update.product_revision -ne $rev -or
+              $installed.source_update.recipe_revision -ne $recipe -or
+              $installed.source_update.inventory_sha256 -notmatch '^[0-9a-f]{64}$'){
+            throw 'Android source update confused product identity and the recipe revision'
+          }
+          if((Get-FileHash (Join-Path $env:ANDROID_247_GAME 'PBS/pokemon_forms_Gen_9_Pack.txt') -Algorithm SHA256).Hash -ne $env:ANDROID_247_UNRELATED_PBS){
+            throw 'Compiler-only form PBS edit reached the installation'
+          }
+          $updater=Join-Path $env:ANDROID_247_GAME 'ATUALIZAR-ANDROID.py'
+          if((Get-FileHash $updater).Hash -ne (Get-FileHash 'scripts/android/update_client.py').Hash){
+            throw 'The source-aware updater did not install'
+          }
+          $guard=Start-Process -FilePath (Get-Command python).Source -ArgumentList @(
+            ('"' + $updater + '"'),'--game-dir',('"' + $env:ANDROID_247_GAME + '"'),'--update'
+          ) -NoNewWindow -Wait -PassThru
+          if($guard.ExitCode -ne 2){throw 'The installed source-aware updater did not refuse the stock binary workflow'}
+          if(Test-Path -LiteralPath (Join-Path $env:ANDROID_247_GAME '.blue-k05-recovery.json')){
+            throw 'The recovery journal remained after the successful retry'
+          }
+          Write-Host 'KANTO_K05_ANDROID_CRASH_RECOVERY_OK'
+          Write-Host 'KANTO_K05_ANDROID_LOCAL_SOURCE_UPDATE_OK'

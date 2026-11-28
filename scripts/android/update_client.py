@@ -10,6 +10,7 @@ import json
 import os
 from pathlib import Path, PurePosixPath
 import stat
+import subprocess
 import sys
 import tempfile
 import urllib.request
@@ -641,11 +642,37 @@ def main(argv=None):
                         help="Explicit fallback: download full ZIP but replace only changed files, no backup.")
     parser.add_argument("--diagnose-cerulean", action="store_true",
                         help="Read-only audit of Cerulean map files, compiled scripts and local error logs.")
+    parser.add_argument("--source", action="store_true",
+                        help="Use a receita Kanto fixada em vez de um ZIP do jogo.")
+    parser.add_argument("--source-work-dir", type=Path,
+                        help="Pasta separada para compilar com o JoiPlay (somente com --source).")
     args = parser.parse_args(argv)
+    if (args.source and (args.full or args.diagnose_cerulean)) or (args.source_work_dir and not args.source):
+        parser.error("--source não pode ser combinado com ZIP completo ou diagnóstico")
     root = args.game_dir.expanduser().resolve()
     if (root / "Data/blue-sinnoh-shared-qa.txt").is_file():
         raise ValueError("A cópia de QA de Sinnoh não recebe atualizações do canal público.")
     info = read_installed(root)
+    if args.source:
+        if info["channel"] != "multiregion":
+            raise ValueError("A atualização pela fonte é somente para o canal multirregional.")
+        recipe = Path(__file__).resolve().with_name("source_update.py")
+        if not recipe.is_file():
+            recipe = Path.home()/".cache/pokemon-blue-android/k05/scripts/android/source_update.py"
+        if not recipe.is_file():
+            raise ValueError("A receita Kanto não está instalada. Use o código publicado para começar.")
+        command = [sys.executable,str(recipe),"--game-dir",str(root),"--source-workflow"]
+        if args.source_work_dir:
+            command.extend(("--work-dir",str(args.source_work_dir.resolve())))
+        if args.update:
+            command.append("--update")
+        return subprocess.run(command,check=False).returncode
+    if (root/".blue-k05-recovery.json").exists():
+        print("Há uma atualização interrompida. Use --source --update; nenhum ZIP será baixado.")
+        return 2 if args.update else 0
+    if info.get("source_update") is not None:
+        print("A instalação foi construída pela fonte. Use --source com uma receita compatível; nenhum ZIP será baixado.")
+        return 2 if args.update else 0
     release, manifest = remote_update(info)
     verify_forward_revision(info["revision"], manifest["revision"])
     if args.diagnose_cerulean:
