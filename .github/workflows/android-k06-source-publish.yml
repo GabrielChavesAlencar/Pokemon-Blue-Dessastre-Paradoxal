@@ -1,0 +1,103 @@
+name: "Android K06: publicar somente a receita verificada"
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/android-k06-source-publish.yml']
+  workflow_dispatch:
+permissions:
+  actions: read
+  contents: write
+  pull-requests: read
+concurrency:
+  group: android-k06-approach-source-release
+  cancel-in-progress: false
+jobs:
+  source-recipe:
+    if: github.ref == 'refs/heads/main' && github.repository == 'GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      PRODUCT: '791f8c8af9ecfba4e97a14c5535ca5957a9702e6'
+      RECIPE: '8e35c46091f17a5c93e11d7d9b8d6cc8698c179d'
+      VERIFIED_RUN: '46132894747'
+      RECIPE_PR: '393'
+      WINDOWS_TAG: 'battle-hub-1636-791f8c8'
+    steps:
+      - name: Conferir publicação Windows e recibo Android exato
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$PRODUCT" =~ ^[0-9a-f]{40}$ && "$RECIPE" =~ ^[0-9a-f]{40}$ && "$PRODUCT" != "$RECIPE" ]]
+          [[ "$VERIFIED_RUN" =~ ^[0-9]+$ && "$RECIPE_PR" =~ ^[0-9]+$ && "$WINDOWS_TAG" =~ ^battle-hub-[0-9]+-[0-9a-f]+$ ]]
+          windows=$(gh api "repos/$GH_REPO/releases/tags/$WINDOWS_TAG" --jq '[.target_commitish,.draft,([.assets[] | select(.name=="Blue-Story.exe" and .state=="uploaded" and .size>0)] | length)] | @tsv')
+          [[ "$windows" == "$(printf '%s\tfalse\t1' "$PRODUCT")" ]]
+          pr=$(gh api "repos/$GH_REPO/pulls/$RECIPE_PR" --jq '[.merged,.head.sha,.base.ref] | @tsv')
+          [[ "$pr" == "$(printf 'true\t%s\tmain' "$RECIPE")" ]]
+          run=$(gh api "repos/$GH_REPO/actions/runs/$VERIFIED_RUN" --jq '[.head_sha,.conclusion,(.path | split("@")[0]),.event] | @tsv')
+          [[ "$run" == "$(printf '%s\tsuccess\t.github/workflows/android-k06-source-release.yml\tpull_request' "$RECIPE")" ]]
+          job=$(gh api "repos/$GH_REPO/actions/runs/$VERIFIED_RUN/jobs" --jq '.jobs[] | select(.name=="candidate" and .conclusion=="success") | .id')
+          [[ "$job" =~ ^[0-9]+$ ]]
+          # Never emit or evaluate the CI log text. Only check exact markers.
+          gh api --allow-escape-sequences "repos/$GH_REPO/actions/jobs/$job/logs" > "$RUNNER_TEMP/k06-proof.log"
+          grep -Eq 'Z KANTO_K06_ANDROID_PRODUCTION_WAIT_OK[[:space:]]*$' "$RUNNER_TEMP/k06-proof.log"
+          grep -Eq 'Z KANTO_K06_ANDROID_PRODUCTION_RECIPE_OK[[:space:]]*$' "$RUNNER_TEMP/k06-proof.log"
+      - name: Publicar sem anexar arquivos do jogo
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="android-source-k06-approach-${PRODUCT:0:7}"
+          if ! gh release view "$tag" --repo "$GH_REPO" --json tagName > /dev/null; then
+            notes="$RUNNER_TEMP/k06-release.md"
+            printf '%s\n\n' 'K06, primeiro lote: Lavender ⇄ Rota 8 ⇄ Passagem Subterrânea ⇄ Rota 7 ⇄ Celadon. As portarias de Saffron continuam fechadas.' > "$notes"
+            printf -- '- Revisão funcional: `%s` ([Windows](https://github.com/%s/releases/tag/%s)).\n' "$PRODUCT" "$GH_REPO" "$WINDOWS_TAG" >> "$notes"
+            printf -- '- Receita fixada: `%s`. Nenhum ZIP ou patch do jogo foi anexado.\n' "$RECIPE" >> "$notes"
+            printf -- '- [Prova automatizada](https://github.com/%s/actions/runs/%s). Teste em aparelho Android ainda pendente.\n\n' "$GH_REPO" "$VERIFIED_RUN" >> "$notes"
+            printf '%s\n' 'Para obter o código exato no Termux:' '```sh' >> "$notes"
+            printf '%s\n' 'mkdir -p "$HOME/.cache/pokemon-blue-android"' >> "$notes"
+            printf 'git clone --depth 40 --branch %s https://github.com/%s.git "$HOME/.cache/pokemon-blue-android/k06"\n' "$tag" "$GH_REPO" >> "$notes"
+            printf '%s\n\n' 'git -C "$HOME/.cache/pokemon-blue-android/k06" rev-parse HEAD' '```' >> "$notes"
+            printf 'Confirme o SHA da receita acima e siga os [passos do atualizador](https://github.com/%s/blob/%s/docs/ANDROID_K06_ATUALIZACAO_PELA_FONTE.md). Use um cache K06 novo; não substitua o K05.\n' "$GH_REPO" "$RECIPE" >> "$notes"
+            gh release create "$tag" --repo "$GH_REPO" --target "$RECIPE" --title 'Android K06: passagem para Celadon pela fonte original' --notes-file "$notes" --prerelease --latest=false
+          fi
+          sha=$(gh api "repos/$GH_REPO/git/ref/tags/$tag" --jq '.object.sha')
+          [[ "$sha" == "$RECIPE" ]]
+          result=$(gh release view "$tag" --repo "$GH_REPO" --json isDraft,isPrerelease,assets --jq '[.isDraft,.isPrerelease,(.assets | length)] | @tsv')
+          [[ "$result" == "$(printf 'false\ttrue\t0')" ]]
+          echo "ANDROID_K06_APPROACH_RECIPE_RELEASE_OK"
+      - name: Distinguir os canais nas notas Windows 1636
+        shell: bash
+        run: |
+          set -euo pipefail
+          android_tag="android-source-k06-approach-${PRODUCT:0:7}"
+          android_url="https://github.com/$GH_REPO/releases/tag/$android_tag"
+          notes="$RUNNER_TEMP/k06-windows-notes.md"
+          gh release view "$WINDOWS_TAG" --repo "$GH_REPO" --json body --jq .body > "$notes"
+          python - "$notes" "$android_url" <<'PYNOTES'
+          from pathlib import Path
+          import sys
+          file, url = Path(sys.argv[1]), sys.argv[2]
+          body = file.read_text(encoding="utf8")
+          caution=(
+              "**Android Kanto multirregional: [atualização K06 pela fonte original](" + url + ").** "
+              "O ZIP Decades abaixo é de outro canal e não deve substituir a instalação multirregional.\n\n"
+          )
+          old="Baixe **Blue-Android-JoiPlay.zip**"
+          new="**Somente Decades, sem a edição multirregional:** baixe **Blue-Android-JoiPlay.zip**"
+          body=body.replace("pacote atual com 142 mapas catalogados",
+                            "catálogo regional com 178 MapIDs (K05/K06)")
+          body=body.replace(old,new)
+          if url not in body:
+              heading="## Android experimental\n\n"
+              if heading in body:
+                  body=body.replace(heading,heading+caution,1)
+              else:
+                  body=body.rstrip()+"\n\n"+caution
+          file.write_text(body,encoding="utf8")
+          PYNOTES
+          gh release edit "$WINDOWS_TAG" --repo "$GH_REPO" --notes-file "$notes"
+          gh release view "$WINDOWS_TAG" --repo "$GH_REPO" --json body --jq .body > "$notes"
+          grep -Fq "$android_url" "$notes"
+          ! grep -Fq 'pacote atual com 142 mapas catalogados' "$notes"
+          echo "WINDOWS_K06_ANDROID_CHANNEL_LINK_OK"
