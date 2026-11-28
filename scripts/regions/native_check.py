@@ -12,10 +12,23 @@ sys.path.insert(0, str(ROOT / "scripts/official_rules"))
 from prepare_restore import Marshal, RubyString, dump
 
 
-def prepare(game, integrated=False, k03e=False, k04=False):
+def prepare(game, integrated=False, k03e=False, k04=False, k05_city=False):
     game = game.resolve()
-    if sum((integrated, k03e, k04)) > 1:
+    if sum((integrated, k03e, k04, k05_city)) > 1:
         raise ValueError("Choose one native proof")
+    if k05_city:
+        from audit import json_file
+        from build_k05_city import CITY_SLOTS, SAVE_APP
+        from qa_k04_migration import save_namespace_valid
+        stage = (ROOT / ".blue-work/kanto-k05-city").resolve()
+        if os.getenv("GITHUB_ACTIONS") != "true" or game != stage:
+            raise ValueError("K05 requires its disposable fixture only")
+        marker = json_file(game / PILOT_META)
+        if (not save_namespace_valid(game, SAVE_APP) or len(marker["maps"]) != 171
+                or marker.get("save_app") != SAVE_APP
+                or marker.get("k05_city_fixture_only") is not True
+                or any(marker["maps"].get(str(k)) != mid for k, mid in CITY_SLOTS.items())):
+            raise ValueError("K05 fixture identity or save isolation is missing")
     if k04:
         from audit import json_file
         standalone = game == (ROOT / ".blue-work/kanto-k04-gameplay").resolve()
@@ -51,9 +64,9 @@ def prepare(game, integrated=False, k03e=False, k04=False):
             raise ValueError("Integrated Main injection is allowed only on a CI copy of game/")
         if not (game / "Data/blue-kanto-start.txt").is_file():
             raise ValueError("The CI game has no installed Kanto marker")
-    elif not (k03e or k04) and (not game.is_relative_to((ROOT / ".blue-work").resolve()) or not (game / PILOT_META).is_file()):
+    elif not (k03e or k04 or k05_city) and (not game.is_relative_to((ROOT / ".blue-work").resolve()) or not (game / PILOT_META).is_file()):
         raise ValueError("Native proof requires a dedicated Kanto build under .blue-work.")
-    if not (integrated or k03e or k04):
+    if not (integrated or k03e or k04 or k05_city):
         # Stage-16 preflight runs on the exact compiled, disposable Kanto pilot
         # in CI, not against an ordinary player's save or Game.exe.
         from release_gate import inspect as release_inspect
@@ -82,9 +95,12 @@ def prepare(game, integrated=False, k03e=False, k04=False):
         if k04:
             proof_file = "Data/blue-kanto-k04-check.rb"
             klass = "KantoK04NativeCheck"
+        if k05_city:
+            proof_file = "Data/blue-kanto-k05-city-check.rb"
+            klass = "KantoK05CityNativeCheck"
         failure = "Data/blue-kanto-integrated-error.txt" if integrated else "Data/blue-kanto-error.txt"
-        prerequisite = 'load "Data/blue-kanto-proof.rb"' if k03e or k04 else ""
-        if k04:
+        prerequisite = 'load "Data/blue-kanto-proof.rb"' if k03e or k04 or k05_city else ""
+        if k04 or k05_city:
             prerequisite += '\n      load "Data/blue-kanto-k03e-check.rb"'
         proof = f"""    begin
       {prerequisite}
@@ -119,6 +135,11 @@ def prepare(game, integrated=False, k03e=False, k04=False):
                          ("blue-kanto-k03e-check.rb", "KantoK03ENativeCheck.rb"),
                          ("blue-kanto-k04-check.rb", "KantoK04NativeCheck.rb")):
             (game / "Data" / dst).write_bytes((ROOT / "scripts/regions" / src).read_bytes())
+    if k05_city:
+        for dst, src in (("blue-kanto-proof.rb", "KantoNativeCheck.rb"),
+                         ("blue-kanto-k03e-check.rb", "KantoK03ENativeCheck.rb"),
+                         ("blue-kanto-k05-city-check.rb", "KantoK05CityNativeCheck.rb")):
+            (game / "Data" / dst).write_bytes((ROOT / "scripts/regions" / src).read_bytes())
     if not integrated:
         # One-shot native test only; not distributed as a gameplay plugin.
         (game / "Data/blue-kanto-walk-check.rb").write_bytes(
@@ -132,5 +153,6 @@ if __name__ == "__main__":
     parser.add_argument("--integrated", action="store_true", help="CI only: probe initial region in disposable main game")
     parser.add_argument("--k03e", action="store_true", help="CI only: functional 160-map candidate")
     parser.add_argument("--k04", action="store_true", help="CI only: isolated Rock Tunnel")
+    parser.add_argument("--k05-city", action="store_true", help="CI only: isolated Lavender city")
     args = parser.parse_args()
-    prepare(args.game, args.integrated, args.k03e, args.k04)
+    prepare(args.game, args.integrated, args.k03e, args.k04, args.k05_city)

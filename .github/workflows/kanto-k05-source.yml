@@ -5,6 +5,8 @@ on:
     paths:
       - 'scripts/regions/audit_k05_lavender.py'
       - 'scripts/regions/build_k05_city.py'
+      - 'scripts/regions/KantoK05CityNativeCheck.rb'
+      - 'scripts/regions/native_check.py'
       - 'tests/test_kanto_k05_city.py'
       - 'tests/test_kanto_k05_source.py'
       - '.github/workflows/kanto-k05-source.yml'
@@ -17,7 +19,10 @@ concurrency:
 jobs:
   audit:
     runs-on: windows-2022
-    timeout-minutes: 20
+    timeout-minutes: 25
+    env:
+      GALLIUM_DRIVER: llvmpipe
+      ALSOFT_DRIVERS: 'null'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -44,6 +49,43 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Cannot build published 165-map K04 baseline'}
           python scripts/regions/build_k05_city.py
           if($LASTEXITCODE -ne 0){throw 'K05 city adapter failed'}
+      - name: Provar fronteira, portas e serviços na engine Windows
+        shell: powershell
+        run: |
+          $root=(Resolve-Path .blue-work/kanto-k05-city).Path
+          python scripts/regions/native_check.py $root --k05-city
+          if($LASTEXITCODE -ne 0){throw 'K05 native injection failed'}
+          $ProgressPreference='SilentlyContinue'
+          $mesa=Join-Path $env:RUNNER_TEMP 'k05-mesa.7z'
+          Invoke-WebRequest -UseBasicParsing 'https://github.com/pal1000/mesa-dist-win/releases/download/26.2.6/mesa3d-26.2.6-release-mingw.7z' -OutFile $mesa
+          if((Get-FileHash -LiteralPath $mesa -Algorithm SHA256).Hash.ToLower() -ne 'da0f71d9181b672c1918f3c342f11118c687f6059a46b16502845160733cc388'){throw 'Mesa checksum failed'}
+          $mesaFolder=Join-Path $env:RUNNER_TEMP 'k05-mesa'
+          & "$env:ProgramFiles/7-Zip/7z.exe" x $mesa "-o$mesaFolder" -y | Out-Null
+          if($LASTEXITCODE -ne 0){throw 'Mesa extraction failed'}
+          Get-ChildItem -LiteralPath $mesaFolder -Recurse -File -Filter '*.dll' |
+            Where-Object { $_.Directory.Name -eq 'x64' } |
+            ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $root }
+          $proof="$root/Data/blue-kanto-k05-city-proof.txt"
+          $errorFile="$root/Data/blue-kanto-error.txt"
+          for($attempt=1;$attempt -le 2;$attempt++){
+            $stdout=".blue-work/kanto-k05-city-out-$attempt.txt"
+            $stderr=".blue-work/kanto-k05-city-err-$attempt.txt"
+            $proc=Start-Process -FilePath "$root/Game.exe" -WorkingDirectory $root -WindowStyle Hidden -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+            $handle=$proc.Handle
+            if(-not $proc.WaitForExit(180000)){
+              Stop-Process -Id $proc.Id -ErrorAction SilentlyContinue
+              break
+            }
+            if((Test-Path $proof) -or (Test-Path $errorFile)){break}
+            if($attempt -ne 1 -or -not ((Get-Content $stdout,$stderr -Raw -ErrorAction SilentlyContinue) -match '(?i)compil')){break}
+            Write-Host 'KANTO_K05_FIRST_COMPILE_BOOT_RESTART'
+          }
+          if(!(Test-Path $proof -PathType Leaf) -or (Test-Path $errorFile -PathType Leaf)){
+            Get-Content $stdout,$stderr,"$root/Data/blue-kanto-k05-city-stage.txt","$root/Data/blue-kanto-k01b-route-trace.txt",$errorFile,"$root/errorlog.txt" -ErrorAction SilentlyContinue | Select-Object -Last 140
+            throw 'K05 native Lavender proof missing'
+          }
+          Write-Host ("KANTO_K05_CITY_NATIVE_REPORT:"+(Get-Content $proof -Raw).Trim())
+          Write-Host 'KANTO_K05_CITY_NATIVE_OK'
       - name: Guardar recibo sem jogo, scripts de origem ou saves
         if: always() && hashFiles('.blue-work/kanto-k05-source.json') != ''
         uses: actions/upload-artifact@v4
@@ -52,4 +94,9 @@ jobs:
           path: |
             .blue-work/kanto-k05-source.json
             .blue-work/kanto-k05-city-stage.json
+            .blue-work/kanto-k05-city/Data/blue-kanto-k05-city-proof.txt
+            .blue-work/kanto-k05-city/Data/blue-kanto-k05-city-stage.txt
+            .blue-work/kanto-k05-city/Data/blue-kanto-error.txt
+            .blue-work/kanto-k05-city-out-*.txt
+            .blue-work/kanto-k05-city-err-*.txt
           if-no-files-found: error
