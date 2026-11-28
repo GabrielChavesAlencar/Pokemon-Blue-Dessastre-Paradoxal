@@ -34,7 +34,7 @@ ENGINE_FILES = {
 EXTRA_DATA = {
     "blue-trainer-album.dat", "blue-hub-presets.dat", "blue-pt-br.dat",
     "blue-music.rxdata", "blue-music-categories.rxdata", "blue-official-rules.dat",
-    "blue-radical-ai.dat", "blue-kanto-k06-approach.json",
+    "blue-radical-ai.dat", "blue-kanto-k06-approach.json", "blue-kanto-k06-services.json",
 }
 
 
@@ -120,7 +120,16 @@ def assemble(root, staged, previous):
         clone_verified_install(root, game, previous)
         # The registered installation already contains the official rules.
         put_json(state, {"game": str(game), "officialRules": True})
-    install(ROOT, game, install_windows_editor=False)
+    guard = "BLUE_KANTO_WORLD_TARGET"
+    previous_guard = os.environ.get(guard)
+    os.environ[guard] = str(root)
+    try:
+        install(ROOT, game, install_windows_editor=False)
+    finally:
+        if previous_guard is None:
+            os.environ.pop(guard, None)
+        else:
+            os.environ[guard] = previous_guard
     from install_kanto import verify_installed as kanto
     from install_hoenn import verify_installed as hoenn
     kanto(game)
@@ -165,7 +174,7 @@ def finish(root, holder, identity, previous):
         return False
     if (game / "Data/blue-android-build-request.txt").exists():
         raise ValueError("A compilação ainda está ativa.")
-    package.verify_regions(game)
+    package.verify_regions(game,allow_celadon=True)
     native_cache = (game / "Data/PluginScripts.rxdata").read_bytes()
     mobile = package.compiled_mobile(native_cache, (game / package.MOBILE).read_bytes())
     build = ("Compatibility: 2\nRevision: " + identity["revision"] + "\nBuild-UTC: " +
@@ -202,7 +211,7 @@ def finish(root, holder, identity, previous):
         if read_installed(root) != previous:
             raise ValueError("O jogo mudou durante a compilação.")
         commit_local(root, game, changed, json.dumps(planned, sort_keys=True).encode("utf8"),
-                     holder / "backup", verify=package.verify_regions, before_marker=before,
+                     holder / "backup", verify=lambda path:package.verify_regions(path,allow_celadon=True), before_marker=before,
                      baseline=previous["revision"], removed=removed)
     return True
 

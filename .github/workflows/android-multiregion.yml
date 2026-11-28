@@ -96,8 +96,24 @@ jobs:
       - name: Integrar Kanto e Hoenn na base principal
         shell: powershell
         run: |
-          python scripts/install_game.py --apply
-          if($LASTEXITCODE -ne 0){throw 'Falha ao instalar Blue.'}
+          # This is a historical binary contract, not the Celadon source release.
+          $services='data/regions/k06-services-release.json'
+          $held=Join-Path $env:RUNNER_TEMP 'celadon-source-held-for-binary.json'
+          $hold=Test-Path -LiteralPath $services -PathType Leaf
+          if($hold){
+            if(Test-Path -LiteralPath $held){throw 'Stale historical binary flag hold'}
+            Move-Item -LiteralPath $services -Destination $held
+          }
+          try {
+            python scripts/install_game.py --apply
+            if($LASTEXITCODE -ne 0){throw 'Falha ao instalar Blue.'}
+          } finally {
+            if($hold){Move-Item -LiteralPath $held -Destination $services}
+          }
+          $kanto=Get-Content -LiteralPath 'game/Data/blue-kanto-install.json' -Raw | ConvertFrom-Json
+          if($hold -and ($kanto.content_stage -ne 'K06_APPROACH' -or @($kanto.maps.PSObject.Properties).Count -ne 178)){
+            throw 'O ZIP histórico não pode incluir o lote Celadon pela fonte.'
+          }
           python scripts/regions/install_kanto.py --game game --verify-installed
           if($LASTEXITCODE -ne 0){throw 'Kanto nao possui instalacao completa.'}
           python scripts/regions/install_hoenn.py --game game --verify-installed

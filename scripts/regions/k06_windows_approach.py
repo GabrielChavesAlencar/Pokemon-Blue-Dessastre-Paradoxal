@@ -11,7 +11,7 @@ from tempfile import TemporaryDirectory
 from audit import KANTO, ROOT, json_file
 from audit_k06_rocket import summarize
 from ensure_source import prepare
-from k06_approach_migration import APPROACH, CI_PATH, INSTALL, READY, plan, verify_native_graph
+from k06_approach_migration import APPROACH, CI_PATH, INSTALL, READY, managed_world_assembly, plan, verify_native_graph
 
 sys.path.insert(0,str(ROOT))
 from scripts.android import source_update as journal
@@ -39,7 +39,8 @@ def install(game, *, ci=False):
     if ci:
         confirmed=os.getenv("GITHUB_ACTIONS")=="true" and os.name=="nt" and game==(ROOT/CI_PATH).resolve()
     else:
-        confirmed=os.name=="nt" and game==(ROOT/"game").resolve() and activation_enabled(ROOT)
+        confirmed=(game==(ROOT/"game").resolve() and activation_enabled(ROOT)
+                   and (os.name=="nt" or managed_world_assembly(ROOT,game)))
     if not confirmed:
         raise ValueError("Windows K06 is not active on this managed installation.")
     backup_base=ROOT/".blue-backups/k06-approach"

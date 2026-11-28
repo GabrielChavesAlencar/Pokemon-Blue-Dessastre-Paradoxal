@@ -1,0 +1,187 @@
+name: "Kanto K06: fontes da loja e interiores de Celadon"
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/regions/audit_k06_celadon_services.py'
+      - 'scripts/regions/build_k06_celadon_services.py'
+      - 'scripts/regions/k06_windows_services.py'
+      - 'scripts/regions/auto_integrate_kanto.py'
+      - 'data/regions/k06-services-release.json'
+      - 'scripts/regions/KantoK06CeladonServices.rb'
+      - 'scripts/regions/KantoK06CeladonNativeCheck.rb'
+      - 'scripts/regions/native_check.py'
+      - 'scripts/battle_polish/RegionStart.rb'
+      - 'tests/test_kanto_k06_celadon_services.py'
+      - 'tests/k06_compile_diff.py'
+      - '.github/workflows/kanto-k06-celadon-services.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  windows-private-layout:
+    runs-on: windows-2022
+    timeout-minutes: 44
+    env:
+      GALLIUM_DRIVER: llvmpipe
+      ALSOFT_DRIVERS: 'null'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - shell: powershell
+        name: Conferir contratos de eventos sem copiar código
+        run: |
+          python -m unittest discover -s tests -p 'test_kanto_k06_celadon_services.py'
+          if($LASTEXITCODE -ne 0){throw 'Celadon services audit contract failed'}
+          python scripts/regions/ensure_source.py
+          if($LASTEXITCODE -ne 0){throw 'Pinned Celadon source unavailable'}
+          python scripts/regions/audit_k06_celadon_services.py
+          if($LASTEXITCODE -ne 0){throw 'Celadon department store evidence failed'}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: k06-celadon-services-source-receipt
+          path: k06-services-receipts/celadon-services.json
+          if-no-files-found: error
+      - name: Preparar baseline K06 integrado descartável
+        shell: powershell
+        run: |
+          # Same private checkout as the source audit above; never send the donor
+          # or extracted source to another job or a remote cache.
+          python scripts/regions/audit_k06_rocket.py
+          if($LASTEXITCODE -ne 0){throw 'Approach source witness unavailable'}
+          python scripts/install_game.py --apply --skip-kanto
+          if($LASTEXITCODE -ne 0){throw 'Could not prepare private Decades baseline'}
+          python scripts/regions/pilot.py --output .blue-work/kanto-k06-baseline
+          if($LASTEXITCODE -ne 0){throw 'K05 baseline assembly failed'}
+          python scripts/regions/k06_approach_migration.py
+          if($LASTEXITCODE -ne 0){throw 'Could not build delivered K06 approach'}
+      - name: Verificar colisões, geometria, portas e balcões
+        shell: powershell
+        run: |
+          python scripts/regions/build_k06_celadon_services.py
+          if($LASTEXITCODE -ne 0){throw 'Private Celadon layout validation failed'}
+      - name: Testar portas, elevador e recompensas pelo Game.exe
+        shell: powershell
+        run: |
+          $root = (Resolve-Path '.blue-work/kanto-k06-services-fixture').Path
+          $ProgressPreference = 'SilentlyContinue'
+          $mesa = Join-Path $env:RUNNER_TEMP 'k06-mesa.7z'
+          $dir = Join-Path $env:RUNNER_TEMP 'k06-mesa'
+          Invoke-WebRequest -UseBasicParsing 'https://github.com/pal1000/mesa-dist-win/releases/download/26.2.6/mesa3d-26.2.6-release-mingw.7z' -OutFile $mesa
+          if((Get-FileHash -LiteralPath $mesa -Algorithm SHA256).Hash.ToLowerInvariant() -ne 'da0f71d9181b672c1918f3c342f11118c687f6059a46b16502845160733cc388'){throw 'Mesa checksum failed'}
+          & "$env:ProgramFiles/7-Zip/7z.exe" x $mesa "-o$dir" -y | Out-Null
+          if($LASTEXITCODE -ne 0){throw 'Mesa extract failed'}
+          Get-ChildItem -LiteralPath $dir -Recurse -File -Filter '*.dll' |
+            Where-Object { $_.Directory.Name -eq 'x64' } |
+            ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $root }
+          python scripts/regions/native_check.py $root --k06-services
+          if($LASTEXITCODE -ne 0){throw 'Celadon native test staging failed'}
+          $proof="$root/Data/blue-kanto-k06-celadon-native-proof.txt"
+          $trace="$root/Data/blue-kanto-k06-celadon-trace.txt"
+          $bad="$root/Data/blue-kanto-error.txt"
+          for($attempt=1;$attempt -le 2;$attempt++){
+            $stdout=Join-Path $env:RUNNER_TEMP "celadon-native-out-$attempt.txt"
+            $stderr=Join-Path $env:RUNNER_TEMP "celadon-native-err-$attempt.txt"
+            $p=Start-Process -FilePath "$root/Game.exe" -WorkingDirectory $root -WindowStyle Hidden -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+            $handle=$p.Handle
+            if(-not $p.WaitForExit(240000)){Stop-Process -Id $p.Id; break}
+            if((Test-Path $proof) -or (Test-Path $bad)){break}
+            if($attempt -ne 1 -or -not ((Get-Content $stdout,$stderr -Raw -ErrorAction SilentlyContinue) -match '(?i)compil')){break}
+          }
+          if(!(Test-Path $proof -PathType Leaf) -or (Test-Path $bad -PathType Leaf)){
+            Get-Content $stdout,$stderr,$bad,$trace -ErrorAction SilentlyContinue | Select-Object -Last 100
+            throw 'Celadon native services proof missing'
+          }
+          $save = "$root/saves/K06-SYNTHETIC-SENTINEL.rxdata"
+          if((Get-FileHash -LiteralPath $save -Algorithm SHA256).Hash.ToLowerInvariant() -ne '55e43a0fd9f37b1aae908d480fbb1f09ad754a3e808c11cc8f6ea78941c8f668'){throw 'Native boot changed the synthetic save'}
+          Copy-Item -LiteralPath $proof -Destination 'k06-services-receipts/celadon-native-proof.txt'
+          Write-Host 'KANTO_K06_CELADON_NATIVE_SERVICES_OK'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: k06-celadon-services-fixture-receipt
+          path: |
+            k06-services-receipts/celadon-services-fixture.json
+            k06-services-receipts/celadon-native-proof.txt
+          if-no-files-found: error
+      - name: Usar instalador normal do Blue-Story em K06 existente e em instalação nova
+        shell: powershell
+        run: |
+          $flag='data/regions/k06-services-release.json'
+          if(!(Test-Path -LiteralPath $flag)){
+            Set-Content -LiteralPath $flag -Encoding ascii -Value '{"schema":1,"stage":"K06_CELADON_SERVICES","source_maps":[125,126,127,128]}'
+          }
+          Move-Item -LiteralPath 'game' -Destination '.blue-work/k06-clean-decades'
+          Move-Item -LiteralPath '.blue-work/kanto-k06-integrated' -Destination 'game'
+          $save='game/saves/K06-SYNTHETIC-SENTINEL.rxdata'
+          $hash=(Get-FileHash -LiteralPath $save).Hash
+          $config=(Get-FileHash -LiteralPath 'game/mkxp.json').Hash
+          function Assert-Celadon([boolean]$hasChanged){
+            python scripts/regions/auto_integrate_kanto.py
+            if($LASTEXITCODE -ne 0){throw 'Normal Blue-Story updater failed for Celadon'}
+            $s=Get-Content '.blue-work/kanto-install-status.json' -Raw | ConvertFrom-Json
+            if(!$s.ready -or !$s.k06_approach -or !$s.k06_services -or $s.changed -ne $hasChanged){
+              throw 'Celadon canonical launcher status is incorrect'
+            }
+            python scripts/regions/install_kanto.py --game game --verify-installed
+            if($LASTEXITCODE -ne 0){throw 'Normal importer rejected the verified Windows stage'}
+            $proof=Get-Content 'game/Data/blue-kanto-install.json' -Raw | ConvertFrom-Json
+            if($proof.content_stage -ne 'K06_CELADON_SERVICES' -or @($proof.maps.PSObject.Properties).Count -ne 182){
+              throw 'Celadon Windows registry is not the expected 182-map stage'
+            }
+          }
+          Assert-Celadon $true
+          Assert-Celadon $false
+          if((Get-FileHash -LiteralPath $save).Hash -ne $hash -or (Get-FileHash -LiteralPath 'game/mkxp.json').Hash -ne $config){
+            throw 'Canonical updater touched the synthetic save or runtime configuration'
+          }
+          Write-Host 'KANTO_K06_WINDOWS_CELADON_EXISTING_AND_REPEAT_OK'
+          Move-Item -LiteralPath 'game' -Destination '.blue-work/k06-celadon-native-product'
+          $root=(Resolve-Path -LiteralPath '.blue-work/k06-celadon-native-product').Path
+          $snapshot=Join-Path $env:RUNNER_TEMP 'celadon-precompile-map-diff'
+          New-Item -ItemType Directory -Path $snapshot | Out-Null
+          $mapScope=Get-Content -LiteralPath "$root/Data/blue-kanto-k06-services.json" -Raw | ConvertFrom-Json
+          foreach($entry in $mapScope.map_fields.PSObject.Properties){
+            Copy-Item -LiteralPath (Join-Path $root $entry.Name) -Destination $snapshot
+          }
+          $scripts="$root/Data/Scripts.rxdata"
+          $original=Join-Path $env:RUNNER_TEMP 'k06-celadon-normal-scripts.rxdata'
+          Copy-Item -LiteralPath $scripts -Destination $original
+          $dir=Join-Path $env:RUNNER_TEMP 'k06-mesa'
+          Get-ChildItem -LiteralPath $dir -Recurse -File -Filter '*.dll' |
+            Where-Object { $_.Directory.Name -eq 'x64' } |
+            ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $root }
+          python scripts/regions/native_check.py $root --k06-services
+          if($LASTEXITCODE -ne 0){throw 'Canonical native test staging failed'}
+          $proof="$root/Data/blue-kanto-k06-celadon-native-proof.txt"
+          $bad="$root/Data/blue-kanto-error.txt"
+          try {
+            for($attempt=1;$attempt -le 2;$attempt++){
+              $stdout=Join-Path $env:RUNNER_TEMP "celadon-canonical-out-$attempt.txt"
+              $stderr=Join-Path $env:RUNNER_TEMP "celadon-canonical-err-$attempt.txt"
+              $proc=Start-Process -FilePath "$root/Game.exe" -WorkingDirectory $root -WindowStyle Hidden -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+              $handle=$proc.Handle
+              if(-not $proc.WaitForExit(240000)){Stop-Process -Id $proc.Id; break}
+              if((Test-Path $proof) -or (Test-Path $bad)){break}
+              if($attempt -ne 1 -or -not ((Get-Content $stdout,$stderr -Raw -ErrorAction SilentlyContinue) -match '(?i)compil')){break}
+            }
+            if(!(Test-Path $proof) -or (Test-Path $bad)){
+              Get-Content $stdout,$stderr,$bad,"$root/Data/blue-kanto-k06-celadon-trace.txt" -ErrorAction SilentlyContinue | Select-Object -Last 100
+              throw 'Canonical Windows native proof missing'
+            }
+          } finally {
+            Copy-Item -LiteralPath $original -Destination $scripts -Force
+            Move-Item -LiteralPath $root -Destination 'game'
+          }
+          python tests/k06_compile_diff.py $snapshot game
+          if($LASTEXITCODE -ne 0){throw 'Could not compare native compiler map fields'}
+          Assert-Celadon $false
+          if((Get-FileHash -LiteralPath $save).Hash -ne $hash){throw 'Canonical native boot touched the synthetic save'}
+          Write-Host 'KANTO_K06_WINDOWS_CELADON_CANONICAL_NATIVE_REOPEN_OK'
+          Move-Item -LiteralPath 'game' -Destination '.blue-work/k06-celadon-updated'
+          Move-Item -LiteralPath '.blue-work/k06-clean-decades' -Destination 'game'
+          Move-Item -LiteralPath '.blue-work/kanto-k06-baseline' -Destination '.blue-work/kanto-pilot'
+          Assert-Celadon $true
+          Assert-Celadon $false
+          Write-Host 'KANTO_K06_WINDOWS_CELADON_FRESH_AND_REPEAT_OK'

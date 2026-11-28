@@ -401,7 +401,8 @@ def recover_source_install(root,work,apply):
     return result
 
 
-def commit_local(root,staged,changed,new_manifest,backup,verify=None,before_marker=None,baseline=None,*,record_marker=MARKER,removed=()):
+def commit_local(root,staged,changed,new_manifest,backup,verify=None,before_marker=None,baseline=None,
+                 *,record_marker=MARKER,before_files=None,removed=()):
     """Persist backups and hashes before touching files; commit revision last."""
     if record_marker not in {MARKER,"Data/blue-kanto-install.json"}:
         raise ValueError("Marcador local de instalação não autorizado.")
@@ -411,10 +412,14 @@ def commit_local(root,staged,changed,new_manifest,backup,verify=None,before_mark
             raise ValueError("Recupere a atualização anterior antes de gravar novos arquivos.")
         if before_marker is not None and (root/record_marker).read_bytes()!=before_marker:
             raise ValueError("O inventário mudou desde a conferência da instalação.")
-        saved=Path(tempfile.mkdtemp(prefix=backup.name+"-",dir=backup.parent)).resolve()
         removed=set(removed)
         if removed.intersection(changed) or record_marker in removed:
             raise ValueError("O registro deve gravar ou remover cada arquivo uma única vez.")
+        if before_files is not None:
+            if set(before_files)!=(set(changed)|removed) or any(
+                    not safe_path(name) or checked_row(root/name)!=row for name,row in before_files.items()):
+                raise ValueError("Os arquivos locais mudaram desde a conferência da atualização.")
+        saved=Path(tempfile.mkdtemp(prefix=backup.name+"-",dir=backup.parent)).resolve()
         paths={}
         for name in (*changed,*sorted(removed),record_marker):
             if name!=record_marker and not safe_path(name):

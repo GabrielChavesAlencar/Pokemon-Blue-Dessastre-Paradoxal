@@ -31,3 +31,25 @@ class AndroidLavenderPackageTests(unittest.TestCase):
         files["Data/Map621.rxdata"]=b""
         with self.assertRaises(ValueError):
             self.verify(maps,files)
+
+    def test_celadon_world_extension_does_not_change_binary_contract(self):
+        from scripts.android.k05_package_contract import CELADON
+
+        maps, files = self.fixture()
+        maps.update(CELADON)
+        files.update({f"Data/Map{mid:03d}.rxdata": b"\x04\x08dummy" for mid in CELADON.values()})
+        files["Data/blue-kanto-ready.txt"] = b"BLUE_KANTO_READY_V1,182,499\n"
+        marker = "Data/blue-kanto-install.json"
+        def write():
+            files[marker] = json.dumps({"maps":maps,"content_stage":"K06_CELADON_SERVICES"}).encode()
+        write()
+        self.assertTrue(verify_registry(files.__getitem__,allow_celadon=True))
+        with self.assertRaisesRegex(ValueError,"historical binary"):
+            verify_registry(files.__getitem__)
+        for sid, invalid in (("125",622),("105",619)):
+            actual = maps[sid]
+            maps[sid] = invalid
+            write()
+            with self.assertRaises(ValueError):
+                verify_registry(files.__getitem__,allow_celadon=True)
+            maps[sid] = actual

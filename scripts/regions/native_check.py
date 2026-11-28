@@ -12,10 +12,24 @@ sys.path.insert(0, str(ROOT / "scripts/official_rules"))
 from prepare_restore import Marshal, RubyString, dump
 
 
-def prepare(game, integrated=False, k03e=False, k04=False, k05_city=False, k05_tower=False, k06_approach=False):
+def prepare(game, integrated=False, k03e=False, k04=False, k05_city=False, k05_tower=False, k06_approach=False, k06_services=False):
     game = game.resolve()
-    if sum((integrated, k03e, k04, k05_city, k05_tower, k06_approach)) > 1:
+    if sum((integrated, k03e, k04, k05_city, k05_tower, k06_approach, k06_services)) > 1:
         raise ValueError("Choose one native proof")
+    if k06_services:
+        from audit import json_file
+        from build_k06_celadon_services import CANDIDATES, OUTPUT, PROFILE, STAGE_LOCAL
+        from k06_approach_migration import CI_PROFILE, INSTALL
+        from qa_k04_migration import save_namespace_valid
+        product = (ROOT / ".blue-work/k06-celadon-native-product").resolve()
+        if os.getenv("GITHUB_ACTIONS") != "true" or game not in {(ROOT / OUTPUT).resolve(), product}:
+            raise ValueError("Celadon native proof must remain in the disposable CI installation")
+        marker = json_file(game / INSTALL)
+        stage, profile = ("K06_CELADON_SERVICES", CI_PROFILE) if game==product else (STAGE_LOCAL, PROFILE)
+        if (marker.get("content_stage") != stage or len(marker["maps"]) != 182
+                or any(marker["maps"].get(str(sid)) != mid for sid,mid in CANDIDATES.items())
+                or not save_namespace_valid(game, profile) or (game / PILOT_META).exists()):
+            raise ValueError("Celadon native proof lost exact registry or save isolation")
     if k06_approach:
         from audit import json_file
         from build_k06_approach import MAP_DIR, PROOF, SAVE_APP, APPROACH
@@ -107,9 +121,9 @@ def prepare(game, integrated=False, k03e=False, k04=False, k05_city=False, k05_t
             raise ValueError("Integrated Main injection is allowed only on a CI copy of game/")
         if not (game / "Data/blue-kanto-start.txt").is_file():
             raise ValueError("The CI game has no installed Kanto marker")
-    elif not (k03e or k04 or k05_city or k05_tower or k06_approach) and (not game.is_relative_to((ROOT / ".blue-work").resolve()) or not (game / PILOT_META).is_file()):
+    elif not (k03e or k04 or k05_city or k05_tower or k06_approach or k06_services) and (not game.is_relative_to((ROOT / ".blue-work").resolve()) or not (game / PILOT_META).is_file()):
         raise ValueError("Native proof requires a dedicated Kanto build under .blue-work.")
-    if not (integrated or k03e or k04 or k05_city or k05_tower or k06_approach):
+    if not (integrated or k03e or k04 or k05_city or k05_tower or k06_approach or k06_services):
         # Stage-16 preflight runs on the exact compiled, disposable Kanto pilot
         # in CI, not against an ordinary player's save or Game.exe.
         from release_gate import inspect as release_inspect
@@ -147,11 +161,14 @@ def prepare(game, integrated=False, k03e=False, k04=False, k05_city=False, k05_t
         if k06_approach:
             proof_file = "Data/blue-kanto-k06-approach-check.rb"
             klass = "KantoK06ApproachNativeCheck"
+        if k06_services:
+            proof_file = "Data/blue-kanto-k06-celadon-check.rb"
+            klass = "KantoK06CeladonNativeCheck"
         failure = "Data/blue-kanto-integrated-error.txt" if integrated else "Data/blue-kanto-error.txt"
-        prerequisite = 'load "Data/blue-kanto-proof.rb"' if k03e or k04 or k05_city or k05_tower or k06_approach else ""
-        if k04 or k05_city or k05_tower or k06_approach:
+        prerequisite = 'load "Data/blue-kanto-proof.rb"' if k03e or k04 or k05_city or k05_tower or k06_approach or k06_services else ""
+        if k04 or k05_city or k05_tower or k06_approach or k06_services:
             prerequisite += '\n      load "Data/blue-kanto-k03e-check.rb"'
-        if k05_tower or k06_approach:
+        if k05_tower or k06_approach or k06_services:
             prerequisite += '\n      load "Data/blue-kanto-k05-city-check.rb"'
         proof = f"""    begin
       {prerequisite}
@@ -186,7 +203,7 @@ def prepare(game, integrated=False, k03e=False, k04=False, k05_city=False, k05_t
                          ("blue-kanto-k03e-check.rb", "KantoK03ENativeCheck.rb"),
                          ("blue-kanto-k04-check.rb", "KantoK04NativeCheck.rb")):
             (game / "Data" / dst).write_bytes((ROOT / "scripts/regions" / src).read_bytes())
-    if k05_city or k05_tower or k06_approach:
+    if k05_city or k05_tower or k06_approach or k06_services:
         for dst, src in (("blue-kanto-proof.rb", "KantoNativeCheck.rb"),
                          ("blue-kanto-k03e-check.rb", "KantoK03ENativeCheck.rb"),
                          ("blue-kanto-k05-city-check.rb", "KantoK05CityNativeCheck.rb")):
@@ -195,6 +212,8 @@ def prepare(game, integrated=False, k03e=False, k04=False, k05_city=False, k05_t
         (game / proof_file).write_bytes((ROOT / "scripts/regions/KantoK05TowerNativeCheck.rb").read_bytes())
     if k06_approach:
         (game / proof_file).write_bytes((ROOT / "scripts/regions/KantoK06ApproachNativeCheck.rb").read_bytes())
+    if k06_services:
+        (game / proof_file).write_bytes((ROOT / "scripts/regions/KantoK06CeladonNativeCheck.rb").read_bytes())
     if not integrated:
         # One-shot native test only; not distributed as a gameplay plugin.
         (game / "Data/blue-kanto-walk-check.rb").write_bytes(
@@ -211,5 +230,6 @@ if __name__ == "__main__":
     parser.add_argument("--k05-city", action="store_true", help="CI only: isolated Lavender city")
     parser.add_argument("--k05-tower", action="store_true", help="CI only: isolated Pokémon Tower")
     parser.add_argument("--k06-approach", action="store_true", help="CI only: disposable Celadon approach")
+    parser.add_argument("--k06-services", action="store_true", help="CI only: disposable Celadon department store and interiors")
     args = parser.parse_args()
-    prepare(args.game, args.integrated, args.k03e, args.k04, args.k05_city, args.k05_tower, args.k06_approach)
+    prepare(args.game, args.integrated, args.k03e, args.k04, args.k05_city, args.k05_tower, args.k06_approach, args.k06_services)

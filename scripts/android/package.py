@@ -48,7 +48,7 @@ def compiled_region(cache, name, source):
                 return hashlib.sha256(expected).hexdigest()
     raise ValueError('Regional script is missing or stale in Android plugin cache: '+str(name))
 
-def verify_regions(game):
+def verify_regions(game, *, allow_celadon=False):
     # install_hoenn.safe_file validates absolute paths; the Android CLI
     # normally passes --game-dir game (relative to the checkout).
     game = Path(game).resolve()
@@ -65,7 +65,7 @@ def verify_regions(game):
         p = game / name
         if not p.is_file() or p.is_symlink() or p.stat().st_size == 0:
             raise ValueError('Missing mandatory Android shared region file: '+name)
-    verify_k05_registry(lambda rel: (game/rel).read_bytes())
+    verify_k05_registry(lambda rel: (game/rel).read_bytes(),allow_celadon=allow_celadon)
     compiled = (game/'Data/PluginScripts.rxdata').read_bytes()
     # Regression for the real Android crash: the package must contain the
     # updated RegionStart.rb in BOTH the files and compiled plugin scripts.

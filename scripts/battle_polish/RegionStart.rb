@@ -317,7 +317,7 @@ module BlueRegionStart
     return false unless spawn && File.file?(path) && !File.symlink?(path)
     fields = File.read(path, 128).strip.split(",")
     fields.length == 3 && fields[0] == "BLUE_KANTO_READY_V1" &&
-      ["142", "145", "151", "152", "156", "160", "165", "178"].include?(fields[1]) && fields[2] == spawn[0].to_s
+      ["142", "145", "151", "152", "156", "160", "165", "178", "182"].include?(fields[1]) && fields[2] == spawn[0].to_s
   rescue StandardError
     false
   end
@@ -342,7 +342,7 @@ module BlueRegionStart
     # MUST agree; random or partial archives remain fail-closed.
     gate = File.read("Data/blue-kanto-ready.txt", 128).strip.split(",")
     expected_count = Integer(gate[1], 10)
-    return nil unless [142, 145, 151, 152, 156, 160, 165, 178].include?(expected_count)
+    return nil unless [142, 145, 151, 152, 156, 160, 165, 178, 182].include?(expected_count)
     return nil unless rest.empty? && pairs.length == expected_count
     maps = {}
     pairs.each do |src, dst|
@@ -374,9 +374,13 @@ module BlueRegionStart
       return nil unless rock_slots.all? { |source, id| maps[source] == id }
     end
     lavender = ((93..98).to_a + (100..106).to_a).each_with_index.to_h { |sid, index| [sid.to_s,609+index] }
-    if expected_count == 178
+    if expected_count >= 178
       return nil unless lavender.all? { |source,id| maps[source]==id }
-
+    end
+    if expected_count == 182
+      celadon = {"125"=>276, "126"=>277, "127"=>278, "128"=>279}
+      return nil unless celadon.all? { |source,id| maps[source] == id }
+      return nil unless raw.match?(/"content_stage"\s*:\s*"K06_CELADON_SERVICES(?:_CI)?"/)
     end
     return nil unless maps.values.all? { |id|
       pbRgssExists?(sprintf("Data/Map%03d.rxdata", id))

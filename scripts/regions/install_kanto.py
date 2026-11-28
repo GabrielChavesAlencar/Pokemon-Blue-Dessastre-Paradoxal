@@ -641,6 +641,10 @@ def verify_installed(game, *, candidate=False):
     if not marker.is_file() or not proof_file.is_file():
         raise ValueError("Kanto not installed in the main Decades game.")
     proof = json.loads(proof_file.read_text(encoding="utf-8"))
+    if not candidate and proof.get("content_stage") == "K06_CELADON_SERVICES":
+        from k06_windows_services import verify_services
+        return {"status":"integrated_files_ready_for_native_QA",
+                **verify_services(game,proof), "decades_save_modified":False,"game_exe_tested":False}
     mapping = proof.get("maps")
     catalog = install_catalogue(game, candidate)
     expected = len(catalog["maps"])
@@ -692,6 +696,8 @@ def sync_runtime(game, commit=False):
     update instead of being replaced silently.
     """
     verified = verify_installed(game)
+    if verified.get("stage") == "K06_CELADON_SERVICES":
+        return {"status":"runtime_current","changed":False}
     # The native engine may not include Ruby's JSON gem. Add the plain-text
     # gate for older *verified* Kanto installs; never overwrite a foreign or
     # divergent marker. This operation does not touch maps or saves.

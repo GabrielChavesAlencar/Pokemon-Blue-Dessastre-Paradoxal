@@ -182,11 +182,12 @@ Dir.mktmpdir("blue-joiplay-no-json") do |directory|
     (143..156).each { |source| expanded[source.to_s] = 600 + source - 143 }
     (68..71).each { |source| expanded[source.to_s] = 596 + source - 68 }
     check(expanded.size == 156,"bad expanded fixture")
-    write_kanto_registry = proc do |registry,count|
+    write_kanto_registry = proc do |registry,count,stage|
       File.write("Data/blue-kanto-install.json",
                  '{"schema":1,"maps":{' +
                  registry.map { |key,value| %("#{key}":#{value}) }.join(",") +
-                 '},"source":"Essentials FRLG 21.1"}')
+                 '},"source":"Essentials FRLG 21.1"' +
+                 (stage ? %Q(,"content_stage":"#{stage}") : '') + '}')
       File.write("Data/blue-kanto-ready.txt",
                  "BLUE_KANTO_READY_V1,#{count},#{kanto_home[0]}\n")
     end
@@ -263,6 +264,24 @@ Dir.mktmpdir("blue-joiplay-no-json") do |directory|
     check(BlueRegionStart.kanto_integrated? && BlueRegionStart.hoenn_integrated?,
           "K05 readiness checks affected Hoenn")
     puts "KANTO_K05_178_READY_GATE_NO_JSON_OK"
+
+    celadon = {"125"=>276,"126"=>277,"127"=>278,"128"=>279}
+    # The 142-map fake catalog uses 1..142, unlike the real predecessor.
+    before_celadon = k05_maps.to_h { |sid,id| [celadon.key?(sid) ? (sid.to_i + 400).to_s : sid,id] }
+    full_celadon = before_celadon.merge(celadon)
+    celadon.values.each { |id| File.write(sprintf("Data/Map%03d.rxdata",id),"kanto") }
+    write_kanto_registry.call(full_celadon,182)
+    check(!BlueRegionStart.kanto_integrated?, "182-map Kanto accepted an unknown stage")
+    write_kanto_registry.call(full_celadon,182,"K06_CELADON_SERVICES")
+    check(BlueRegionStart.kanto_compact_maps(kanto_home)==full_celadon && BlueRegionStart.hoenn_integrated?,
+          "182-map Celadon rejected without JSON or affected Hoenn")
+    write_kanto_registry.call(full_celadon.merge("125"=>277,"126"=>276),182,"K06_CELADON_SERVICES")
+    check(!BlueRegionStart.kanto_integrated?, "182-map readiness accepted swapped interiors")
+    write_kanto_registry.call(full_celadon,182,"K06_CELADON_SERVICES")
+    File.delete("Data/Map279.rxdata")
+    check(!BlueRegionStart.kanto_integrated?, "182-map readiness ignored missing mansion")
+    write_kanto_registry.call(k05_maps,178)
+    puts "KANTO_K06_CELADON_182_READY_GATE_NO_JSON_OK"
 
 
     check(BlueRegionStart.request_initial("DECADES"),
