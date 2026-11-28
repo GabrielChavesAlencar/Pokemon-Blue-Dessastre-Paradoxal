@@ -1,0 +1,34 @@
+name: "Kanto K06: fontes da loja e interiores de Celadon"
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/regions/audit_k06_celadon_services.py'
+      - 'tests/test_kanto_k06_celadon_services.py'
+      - '.github/workflows/kanto-k06-celadon-services.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-evidence:
+    runs-on: windows-2022
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - shell: powershell
+        name: Conferir contratos de eventos sem copiar código
+        run: |
+          python -m unittest discover -s tests -p 'test_kanto_k06_celadon_services.py'
+          if($LASTEXITCODE -ne 0){throw 'Celadon services audit contract failed'}
+          python scripts/regions/ensure_source.py
+          if($LASTEXITCODE -ne 0){throw 'Pinned Celadon source unavailable'}
+          python scripts/regions/audit_k06_celadon_services.py
+          if($LASTEXITCODE -ne 0){throw 'Celadon department store evidence failed'}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: k06-celadon-services-source-receipt
+          path: k06-services-receipts/celadon-services.json
+          if-no-files-found: error
