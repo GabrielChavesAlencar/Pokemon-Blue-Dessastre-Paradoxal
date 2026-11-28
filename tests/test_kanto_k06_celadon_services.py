@@ -113,3 +113,25 @@ class CeladonSourceReceiptsTest(unittest.TestCase):
             check_approach_stamp({}, android_base={"source_update":None})
         with self.assertRaises(ValueError):
             check_approach_stamp({"content_stage":"OTHER"}, android_base=source)
+
+    def test_map_marshal_reencoding_keeps_strict_native_fields(self):
+        from k06_windows_services import semantic_map_fields, verify_celadon_map
+        from pilot import EVENT_CLASSES, RubyObject, command, write_map
+        from hashlib import sha256
+
+        with TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            path = root/"Map277.rxdata"
+            events = {1: RubyObject("RPG::Event", {"@x":4, "@y":10,
+                      "@list":[command(201,0,379,49,35,0,0)]})}
+            fields = {"@width":20, "@height":15, "@events":events}
+            write_map(path,RubyObject("RPG::Map",fields),EVENT_CLASSES)
+            old = sha256(path.read_bytes()).hexdigest()
+            semantic = semantic_map_fields(path)
+            write_map(path,RubyObject("RPG::Map",dict(reversed(list(fields.items())))),EVENT_CLASSES)
+            self.assertNotEqual(sha256(path.read_bytes()).hexdigest(),old)
+            verify_celadon_map(root,path.name,old,semantic)
+            events[1].attrs["@x"] = 5
+            write_map(path,RubyObject("RPG::Map",fields),EVENT_CLASSES)
+            with self.assertRaisesRegex(ValueError,"event:1"):
+                verify_celadon_map(root,path.name,old,semantic)

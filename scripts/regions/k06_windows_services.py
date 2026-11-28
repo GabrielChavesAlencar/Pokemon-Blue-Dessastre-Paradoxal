@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import tempfile
@@ -13,6 +14,9 @@ from build_k06_celadon_services import CANDIDATES, STORE, stage_services
 from ensure_source import prepare
 from install_kanto import recorded_hashes, verify_installed
 from k06_approach_migration import INSTALL, checked_file, require_hashes, verify_native_graph
+from pilot import EVENT_CLASSES
+from stage import serialize
+from server.ruby_marshal import RubyObject
 from scripts.android import source_update as journal
 from scripts.android.update_client import safe_path
 
@@ -62,6 +66,40 @@ def asset_paths(game, staged):
             elif after != prior:
                 raise ValueError("O novo lote sobrescreveria um gráfico existente.")
     return paths
+
+
+def semantic_map_fields(path):
+    """Canonicalize Marshal ordering without ignoring terrain, doors or scripts."""
+    def canonical(value):
+        if isinstance(value,RubyObject):
+            return RubyObject(value.name,{k:canonical(v) for k,v in sorted(value.attrs.items())})
+        if isinstance(value,dict):
+            return {k:canonical(v) for k,v in sorted(value.items())}
+        if isinstance(value,list):
+            return [canonical(v) for v in value]
+        return value
+    native = load(path)
+    if not isinstance(native,RubyObject) or native.name!="RPG::Map":
+        raise ValueError("Objeto nativo de mapa inválido.")
+    def fingerprint(value):
+        return hashlib.sha256(serialize(canonical(value),EVENT_CLASSES)).hexdigest()
+    fields = {key:fingerprint(value) for key,value in native.attrs.items() if key!="@events"}
+    fields["@events"] = {str(eid): fingerprint(event) for eid,event in native.attrs["@events"].items()}
+    return fields
+
+
+def verify_celadon_map(game, name, raw_hash, fields):
+    path = checked_file(game,name)
+    if journal.digest(path)==raw_hash:
+        return
+    got = semantic_map_fields(path)
+    if got!=fields:
+        drift = sorted({*got,*fields},key=str)
+        drift = [key for key in drift if got.get(key)!=fields.get(key)]
+        if "@events" in drift:
+            old,new = fields.get("@events",{}),got.get("@events",{})
+            drift += [f"event:{eid}" for eid in sorted(old.keys()|new.keys()) if old.get(eid)!=new.get(eid)]
+        raise ValueError(f"Campos nativos de Celadon não conferem: {name} ({', '.join(drift)})")
 
 
 def registry_binding(game, extras, parent):
@@ -117,7 +155,12 @@ def verify_services(game, proof=None):
     if not (OWNED | owned_maps | added_maps | {REGION,READY}) <= expected or any(
             not safe_path(name) or name not in hashes for name in expected):
         raise ValueError("Escopo de verificação final inválido.")
-    require_hashes(game, expected-REGISTRY, hashes)
+    place = details.get("map_fields",{})
+    if set(place)!=owned_maps|added_maps:
+        raise ValueError("Recibo de mapas nativos de Celadon incompleto.")
+    require_hashes(game, expected-REGISTRY-owned_maps-added_maps, hashes)
+    for rel in sorted(owned_maps|added_maps):
+        verify_celadon_map(game,rel,hashes[rel],place[rel])
     return {"maps":182,"stage":STAGE,"kanto_start":[base["7"],25,7]}
 
 
@@ -165,6 +208,8 @@ def install(game):
                    "new_maps":{str(k):v for k,v in CANDIDATES.items()},"verified_paths":sorted(paths),
                    "unchanged_old_map_count":witness["unrelated_maps_byte_identical"]}
         details["native_registry"] = registry_binding(stage, details["new_maps"], proof["maps"]["114"])
+        details["map_fields"] = {rel:semantic_map_fields(checked_file(stage,rel))
+                                 for rel in sorted(old_maps|new_maps)}
         (stage/RECEIPT).write_text(json.dumps(details,sort_keys=True)+"\n",encoding="utf8")
         (stage/COMPILE).write_bytes(b"compile")
         if any(not safe_path(name) for name in paths):
