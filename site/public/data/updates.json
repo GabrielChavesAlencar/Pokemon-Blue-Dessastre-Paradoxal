@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f4c4b6f5b147eba7b1d7bbd13180440ce7720624",
+      "date": "2026-11-28T10:51:05-03:00",
+      "title": "Merge pull request #399 from GabrielChavesAlencar/codex/hoenn-h00-inventory",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "a97b790606d3de745425039fe5242a56957c7c66",
+      "date": "2026-11-28T10:49:20-03:00",
+      "title": "Classificar os 373 mapas de Hoenn e verificar a propriedade regional",
+      "category": "Melhorias"
+    },
+    {
       "sha": "1222d318cd6887f34936891298ca0f9cef4ac697",
       "date": "2026-11-28T10:44:44-03:00",
       "title": "Merge pull request #383 from GabrielChavesAlencar/codex/hoenn-h01-versioned-catalog",
