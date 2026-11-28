@@ -86,6 +86,9 @@ class Hoenn5Avatar
   def initialize; @x,@y,@direction = 11,6,2;end
   def moveto(x,y);@x,@y=x,y;end
 end
+class PokemonMapFactory
+  def isPassableFromEdge?(_x, _y); true; end
+end
 class Hoenn5Map
   attr_accessor :map_id
   def initialize; @map_id = 705;end
@@ -124,7 +127,7 @@ def check(cond,msg);raise "[HOENN_STAGE5] #{msg}" unless cond;end
 
 require File.expand_path(ARGV.fetch(0))
 BlueHoennPilot.define_singleton_method(:metadata) do
-  [[708,25,6], {105=>705,28=>728,111=>711}]
+  [[708,25,6], {105=>705,28=>728,32=>732,111=>711}]
 end
 $PokemonGlobal=Hoenn5Global.new
 $PokemonGlobal.blue_regions={"current"=>"DECADES"}
@@ -242,6 +245,20 @@ check(BlueHoennPilot.museum_entry,"Return to museum denied")
 check($player.money==50,"Museum charged entrance twice")
 check(!BlueHoennPilot.stern,"Stern bypassed Aqua")
 
+battles_before=TrainerBattle.history.length
+check(!BlueHoennPilot.museum_aqua(2),"Second Aqua challenged before first")
+check(TrainerBattle.history.length==battles_before && !flags["museum_aqua_2_defeated"],
+      "Out of order challenge changed the save or started a battle")
+current_map=$game_map.map_id
+$game_map.map_id=732
+factory=PokemonMapFactory.new
+[15,16,17,18,19,36].each do |x|
+  check(!factory.isPassableFromEdge?(x,-1),"Slateport alternate north exit #{x} bypassed Stern")
+end
+check(factory.isPassableFromEdge?(18,60),"Slateport south exit was blocked before Stern")
+$game_map.map_id=current_map
+check(factory.isPassableFromEdge?(18,-1),"Slateport gate affected another map")
+
 TrainerBattle.result=false
 check(!BlueHoennPilot.museum_aqua(1),"Aqua loss was recorded")
 check(!flags["museum_aqua_1_defeated"],"Aqua flag granted on loss")
@@ -252,6 +269,11 @@ check(BlueHoennPilot.museum_aqua(2),"Second Aqua win missing")
 check(!BlueHoennPilot.museum_aqua(2),"Second Aqua replayed")
 check(BlueHoennPilot.stern,"Stern did not accept package after battles")
 check(flags["stern_package_delivered"],"Stern flag not persisted")
+$game_map.map_id=732
+[15,16,17,18,19,36].each do |x|
+  check(factory.isPassableFromEdge?(x,-1),"Slateport kept north exit #{x} closed after Stern")
+end
+$game_map.map_id=current_map
 check(BlueHoennPilot.stern,"Stern repeat dialog missing")
 check(TrainerBattle.history.count([:BLUE_HOENN_AQUA,"Recruta",540])==1,
       "Second Aqua battled twice")

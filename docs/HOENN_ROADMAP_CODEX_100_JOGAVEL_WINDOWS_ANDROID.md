@@ -221,12 +221,17 @@ O catálogo compartilhado revisão 3 acrescenta os MapKeys 107, 109 e 110, total
 | R107–R108 | 109 Leste 0 → 110 Oeste 0 | (59, 3) → (0, 3) |
 | R108–R109 | 110 Leste 0 → 111 Oeste 40 | (59, 3) → (0, 43) |
 
-O `Game.exe` no Windows compilou e abriu o catálogo de 203 mapas. Em cenários isolados, foram percorridas as 28 transferências de portas e escadas de Dewford e Granite Cave e as oito travessias costeiras em ambos os sentidos. O ensaio confirmou o embarque e o retorno de Briney, a pesca, a iluminação do ginásio, Flash após consumir a TM70, a entrega a Steven e o carregamento de saves na caverna e na costa. Foram simulados os resultados das batalhas. Ainda faltam o percurso contínuo de H05 em Windows e a validação física no Android.
+O `Game.exe` no Windows compilou e abriu o catálogo de 203 mapas. Em cenários isolados, foram percorridas as 28 transferências de portas e escadas de Dewford e Granite Cave e as oito travessias costeiras em ambos os sentidos. O ensaio confirmou o embarque e o retorno de Briney, a pesca, a iluminação do ginásio, Flash após consumir a TM70, a entrega a Steven e o carregamento de saves na caverna e na costa. Os resultados das batalhas desse ensaio isolado foram simulados.
+
+No percurso contínuo em Windows, uma parede isolava o corredor de Steven. A migração abre a célula (14, 14) do MapKey 159, preserva os 203 MapIDs e mantém o acesso ao corredor pela saída alta de B1F. O ensaio partiu de um checkpoint pós-H04 na Rota 104. Percorreu 706 passos com os controles automatizados, sete vitórias decididas pelo motor, pesca, ensino e uso de Flash, itens de B1F e B2F e entrega a Steven. Depois de voltar por Granite Cave, o mesmo save foi reaberto na praia de Slateport. Recibo Windows `HOENN_H05_BRINEY_BRAWLY_STEVEN_OK`.
 
 ### H06 — Slateport e Capitão Stern
 - Embarque a Slateport, R109 e casa de praia, mercado, Fan Club, centro/mart, estaleiro, porto, Battle Tent (sistema opcional H19). Museu Oceanic: entrada/taxa conforme referência, grunts Aqua em ordem, entrega Devon Goods, flags e retorno.
 - R110 acessível por percurso físico após missão. Todos os estabelecimentos devem ter porta e saída funcionais. Não manter texto provisório em evento alcançável.
 - Gate HOENN_H06_STERN_MUSEUM_ACCESS_OK.
+- O segundo recruta Aqua só batalha depois da primeira vitória. Toda a borda norte de Slateport fica fechada até Stern registrar a entrega. O retorno à Rota 109 continua disponível.
+- O ensaio Windows partiu do save do H05 na Rota 109. Em 556 passos foram verificadas as portas da praia e da cidade, a taxa única de ₽50, as duas vitórias Aqua, a entrega a Stern e a travessia de ida e volta na Rota 110. O save reabriu na rota com a entrega registrada. Recibo Windows `HOENN_H06_STERN_MUSEUM_ACCESS_OK`.
+- Restam os serviços do mercado e do porto. As regras da Battle Tent seguem no H19.
 
 ### H07 — Mauville, rival e Wattson
 - R110, Cycling Road e portarias, rival_110 variantes, Itemfinder, acesso normal e de bicicleta. Rydel: Mach/Acro, troca sem duplicar itens, controles no Android, queda/obstáculos. Wally no ginásio, batalha/retry, tio.

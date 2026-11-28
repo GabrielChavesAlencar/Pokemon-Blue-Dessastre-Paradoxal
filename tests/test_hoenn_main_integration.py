@@ -5,6 +5,7 @@ No donor archive, native Game.exe or user save is read or written.
 import hashlib
 import io
 import json
+import struct
 import sys
 import tempfile
 import unittest
@@ -256,6 +257,36 @@ class HoennMainIntegrationTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "verification failed"):
                 hoenn.commit_migration(self.game, previous, changes, dewford_layout=True)
         self.assertEqual({name: hoenn.optional_bytes(self.game / name) for name in names}, previous)
+        self.assertFalse((self.game / hoenn.JOURNAL).exists())
+
+    def test_granite_passage_opens_only_the_audited_wall(self):
+        cells = bytearray(struct.pack("<5I", 3, 52, 22, 3, 52 * 22 * 3) + b"\0" * (2 * 52 * 22 * 3))
+        floor = 20 + 2 * (14 + 52 * 14)
+        wall = floor + 2 * 52 * 22
+        struct.pack_into("<H", cells, floor, 441)
+        struct.pack_into("<H", cells, wall, 434)
+        fixture = hoenn.ruby("RPG::Map", width=52, height=22, events={},
+                             data=hoenn.RubyData("Table", bytes(cells)))
+        raw = hoenn.serialize(fixture, hoenn.EVENT_CLASSES)
+        with self.assertRaisesRegex(ValueError, "Passagem de Steven"):
+            hoenn.granite_passage(raw)
+        fixed = hoenn.granite_passage(raw, apply=True)
+        self.assertEqual(hoenn.granite_passage(fixed), fixed)
+        self.assertEqual(hoenn.granite_passage(fixed, apply=True), fixed)
+        self.assertEqual(hoenn.loads(fixed).attrs["@data"].data,
+                         cells[:wall] + b"\0\0" + cells[wall + 2:])
+
+    def test_granite_migration_recovers_exact_previous_map(self):
+        self.install_proof_fixture()
+        name = hoenn.map_path(self.maps[str(hoenn.GRANITE_PASSAGE_SOURCE)])
+        paths = hoenn.MIGRATION_FILES | {name}
+        previous = {rel: hoenn.optional_bytes(self.game / rel) for rel in paths}
+        changes = {**previous, name: b"only the granite wall changed"}
+        with patch.object(hoenn, "ROOT", self.root), \
+             patch.object(hoenn, "verify_installed", side_effect=ValueError("verification failed")):
+            with self.assertRaisesRegex(ValueError, "verification failed"):
+                hoenn.commit_migration(self.game, previous, changes, granite_1f=True)
+        self.assertEqual({rel: hoenn.optional_bytes(self.game / rel) for rel in paths}, previous)
         self.assertFalse((self.game / hoenn.JOURNAL).exists())
 
     def test_coast_transaction_removes_new_map_files_and_restores_previous_tables(self):
