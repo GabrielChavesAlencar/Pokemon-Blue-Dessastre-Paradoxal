@@ -137,6 +137,23 @@ A atualização de Hoenn já instalado reconhece o conjunto de bordas anterior, 
 
 O bloqueio geométrico de H00 foi corrigido. O teste físico de abertura, travessia e atualização no JoiPlay segue pendente, assim como a autorização de redistribuição e a publicação pareada. As rotas 105, 107, 108, 115 e 123 continuam no backlog. H01 depende também da confirmação de propriedade dos IDs em conflito com Johto.
 
+### Classificação e conferência do catálogo H00
+
+A conferência de 28/11/2026 verificou byte a byte os 373 RXDATA da fonte pelo hash de cada blob e classificou todos com base na hierarquia, no terreno e nos eventos. O catálogo compartilhado cobre 199 MapKeys. A auditoria mantém a decisão de incluir um mapa separada de sua classificação.
+
+| Grupo de referência | Mapas |
+|---|---:|
+| Rotas com numeração confirmada | 34 |
+| Locais de história e dungeons da campanha | 100 |
+| Interiores, serviços urbanos e anexos de rota | 76 |
+| Locais opcionais e referências subaquáticas | 47 |
+| Áreas de pós-Liga candidatas | 35 |
+| Áreas de eventos externos | 5 |
+| Variantes e filler da fonte | 41 |
+| Hierarquia vazia, cenas e apoio à integração | 35 |
+
+Sete entradas não vazias têm RXDATA idêntico ao do MapID fonte 271. O inventário preserva suas identidades para revisão. A instalação compartilhada recompilada no Windows apresentou 44 bordas de Hoenn com sobreposição, 81 mapas de encontros e 199 MapIDs de Hoenn sem sobreposição com os 178 de Kanto. O auditor também verifica os registros compartilhados de Johto e Sinnoh quando presentes.
+
 ## 4. H01: migração aditiva 199 → N, antes de qualquer expansão
 
 P0: retirar dependência de igualdade rígida com 199 **sem reduzir garantia de conteúdo**. N é derivado do conjunto completo de MapKeys aprovado para aquela revisão, não um mínimo permissivo.
