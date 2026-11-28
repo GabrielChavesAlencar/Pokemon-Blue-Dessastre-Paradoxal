@@ -218,7 +218,8 @@ class KantoInstallerTest(unittest.TestCase):
 
     def test_only_exact_published_catalogs_can_migrate_to_151(self):
         from audit import KANTO, json_file
-        base = set(json_file(KANTO)["maps"]) - {"23","43","44","45","46","47","48","58","68","69","70","71","79","81","82","86","87","88","90","91"}
+        from scripts.regions.k05_contract import MAPS as lavender
+        base = set(json_file(KANTO)["maps"]) - {str(i) for i in lavender} - {"23","43","44","45","46","47","48","58","68","69","70","71","79","81","82","86","87","88","90","91"}
         extra = {"43", "44", "45", "46", "47", "48"}
         north = {"53", "54", "55"}
         self.assertEqual(len(base), 145)

@@ -45,6 +45,16 @@ PILOT_INPUTS = (
     "scripts/regions/k04_promotion.py",
     "scripts/regions/k04_flash.py",
     "scripts/regions/KantoK04Field.rb",
+    "scripts/regions/build_k05_product.py",
+    "scripts/regions/build_k05_city.py",
+    "scripts/regions/build_k05_tower.py",
+    "scripts/regions/audit_k05_lavender.py",
+    "scripts/regions/k05_contract.py",
+    "scripts/regions/k05_promotion.py",
+    "scripts/regions/k05_lavender_services.py",
+    "scripts/regions/k05_tower_actors.py",
+    "scripts/regions/KantoK05City.rb",
+    "scripts/regions/KantoK05Tower.rb",
     "scripts/regions/pbs.py",
     "scripts/regions/kanto_full_power.py",
     "data/kanto-full-power.json",
@@ -1943,8 +1953,8 @@ def install_pbs(preview, target, mapping, manifest=None):
     (pbs / "map_metadata_kanto.txt").write_text("\n".join(metadata), encoding="utf8")
 
 
-def install_runtime(target, mapping, game, manifest=None):
-    isolated_manifest = manifest
+def install_runtime(target, mapping, game, manifest=None, *, k05_base=False):
+    isolated_manifest = None if k05_base else manifest
     manifest = json_file(KANTO) if manifest is None else manifest
     names = LOCATION_NAMES
     save_app = SAVE_APP
@@ -2091,13 +2101,17 @@ def install_runtime(target, mapping, game, manifest=None):
     music = target / "Plugins/ZZZZ Blue Music/BlueMusic.rb"
     if music.is_file():
         shutil.copyfile(ROOT / "scripts/music/BlueMusic.rb", music)
-    compiled, _ = compile_bytes(ROOT, target, mapping, candidate_manifest=isolated_manifest)
+    compiled, _ = compile_bytes(ROOT,target,mapping,candidate_manifest=isolated_manifest,k05_base=k05_base)
     (data / "blue-kanto-music.txt").write_bytes(compiled)
 
 
-def build(source, game, output, existing=None, *, manifest=None):
+def build(source, game, output, existing=None, *, manifest=None, _k05_base=False):
     output = output.resolve()
-    if manifest is not None:
+    if _k05_base:
+        from k05_contract import baseline_manifest
+        if manifest!=baseline_manifest(json_file(KANTO)) or not output.parent.name.startswith(".k05-active-"):
+            raise ValueError("K05 historic generation requires a private baseline path")
+    elif manifest is not None:
         from k03e_contract import candidate_manifest, migration_game, migration_pilot
         isolated = (output == (ROOT / ".blue-work/kanto-k03e-functional").resolve()
                     and game.resolve() == (ROOT / "game").resolve())
@@ -2115,6 +2129,17 @@ def build(source, game, output, existing=None, *, manifest=None):
     if not (source / "Data/MapInfos.rxdata").is_file():
         raise ValueError("The editable Essentials FRLG 1.1 project was not found. See docs/CIRCUITO_REGIONAL.md.")
     output.parent.mkdir(parents=True, exist_ok=True)
+    if manifest is None:
+        current=json_file(KANTO)
+        if len(current["maps"])==178:
+            from build_k05_product import compose
+            from k05_contract import baseline_manifest
+            with tempfile.TemporaryDirectory(prefix=".k05-active-",dir=output.parent) as temp:
+                baseline=Path(temp)/"baseline"
+                build(source,game,baseline,existing=existing,
+                      manifest=baseline_manifest(current),_k05_base=True)
+                compose(source,baseline,output,current)
+            return output
     with tempfile.TemporaryDirectory(prefix=".kanto-build-", dir=output.parent) as tmp:
         preview, target = Path(tmp) / "preview", Path(tmp) / "game"
         plan = stage(ROOT, source, game, preview, existing=existing, manifest=manifest)
@@ -2136,7 +2161,7 @@ def build(source, game, output, existing=None, *, manifest=None):
         from scripts.music.compile_kanto_music import approved_audio_track_numbers
         from scripts.music.install_kanto_music import install as install_kanto_audio
         install_kanto_audio(target, apply=True, numbers=approved_audio_track_numbers(ROOT))
-        install_runtime(target, mapping, game, manifest)
+        install_runtime(target, mapping, game, manifest, k05_base=_k05_base)
         if k04:
             from k04_promotion import install
             install(source, target, Path(tmp), mapping, plan)

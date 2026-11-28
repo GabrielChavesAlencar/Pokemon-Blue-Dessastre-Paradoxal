@@ -399,6 +399,15 @@ class HoennVerifiedPublicDownloaderTests(unittest.TestCase):
         self.assertTrue(all(item.startswith("Graphics/Characters/") for item in
                             downloader.obstacle_character_paths(world)))
 
+    def test_public_installer_uses_local_pinned_metadata(self):
+        from hoenn_qa_phase1 import check_tree, load_tree
+
+        tree = load_tree(downloader.INVENTORY, offline=True)
+        self.assertEqual(tree["scope"], "verified_shared_install_assets")
+        self.assertEqual(check_tree(tree)["source_maps"], len(downloader.SOURCE_MAPS))
+        self.assertTrue(all(row["path"].split("/")[0] in ("Data", "PBS", "Audio", "Graphics")
+                            and row["size"] > 0 for row in tree["tree"]))
+
     def test_fixed_revision_and_upstream_raw_url(self):
         self.assertEqual(downloader.UPSTREAM, hoenn.UPSTREAM)
         self.assertEqual(downloader.PINNED_TREE,

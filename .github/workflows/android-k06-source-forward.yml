@@ -1,0 +1,158 @@
+name: "Android K06: caminho a partir da receita K05 publicada"
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/android/k06_source_candidate.py'
+      - 'scripts/android/update_client.py'
+      - 'tests/test_android_k06_handoff.py'
+      - 'scripts/regions/k06_approach_migration.py'
+      - '.github/workflows/android-k06-source-forward.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: android-k06-source-forward-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  candidate:
+    runs-on: windows-2022
+    timeout-minutes: 25
+    env:
+      GALLIUM_DRIVER: llvmpipe
+      ALSOFT_DRIVERS: 'null'
+      PYTHONUTF8: '1'
+      K05_BASE: 02732eadaedf49f3728755edb2bd2654ceae3897
+      K05_VERSION: 0eaf9401b2d9e828e8549f7c7fea28c5de748157
+      K05_RECIPE: 4bda388e0f6d07763c95cfd9877ce337e61f9cb9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Conferir contrato do catálogo e preparar a instalação descartável
+        shell: powershell
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -m unittest discover -s tests -p 'test_kanto_k06_approach.py'
+          if($LASTEXITCODE -ne 0){throw 'K06 offline contract failed'}
+          python -m unittest discover -s tests -p 'test_android_k06_handoff.py'
+          if($LASTEXITCODE -ne 0){throw 'K06 did not isolate the released K05 cache'}
+          $fixture=New-Item -ItemType Directory -Path '.blue-work/k06-android-ci'
+          $zip=Join-Path $fixture.FullName 'Blue-Android-Decades-Kanto-Hoenn.zip'
+          gh release download android-multiregion-247-02732ea -R '${{ github.repository }}' --pattern (Split-Path -Leaf $zip) --dir $fixture.FullName
+          if($LASTEXITCODE -ne 0){throw 'Published Android 247 fixture unavailable'}
+          if((Get-Item -LiteralPath $zip).Length -ne 1401504567 -or
+               (Get-FileHash -LiteralPath $zip -Algorithm SHA256).Hash.ToLowerInvariant() -ne '0469d877818490a31f6e0a080d8f2d942f954dc65568d5aec38ef3235606f87b'){
+            throw 'Pinned Android 247 ZIP checksum differs'
+          }
+          & "$env:ProgramFiles/7-Zip/7z.exe" x $zip "-o$($fixture.FullName)" -y | Out-Null
+          if($LASTEXITCODE -ne 0){throw 'Could not unpack pinned Android 247'}
+          Remove-Item -LiteralPath $zip -Force
+          $game=(Resolve-Path (Join-Path $fixture.FullName 'Pokemon-Blue-Android')).Path
+          $sentinel=Join-Path $game 'K06-SAVE-SYNTHETIC.rxsave'
+          Set-Content -LiteralPath $sentinel 'Test data, not a real player save'
+          "K06_GAME=$game" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          "K06_SAVE=$((Get-FileHash -LiteralPath $sentinel).Hash)" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          $recipe=Join-Path $fixture.FullName 'k05-recipe'
+          git fetch --no-tags origin refs/tags/android-source-k05-0eaf940
+          if($LASTEXITCODE -ne 0 -or (git rev-parse FETCH_HEAD).Trim() -ne $env:K05_RECIPE){throw 'Android K05 public recipe tag differs'}
+          git worktree add --detach $recipe $env:K05_RECIPE
+          if($LASTEXITCODE -ne 0){throw 'Cannot prepare the published K05 code'}
+          "K05_ROOT=$recipe" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+      - name: Instalar K05 pela fonte pública e avançar para K06 apenas nesta cópia
+        shell: powershell
+        run: |
+          $ProgressPreference='SilentlyContinue'
+          $mesa=Join-Path $env:RUNNER_TEMP 'k06-source-mesa.7z'
+          Invoke-WebRequest -UseBasicParsing 'https://github.com/pal1000/mesa-dist-win/releases/download/26.2.6/mesa3d-26.2.6-release-mingw.7z' -OutFile $mesa
+          if((Get-FileHash -LiteralPath $mesa -Algorithm SHA256).Hash.ToLowerInvariant() -ne 'da0f71d9181b672c1918f3c342f11118c687f6059a46b16502845160733cc388'){
+            throw 'Mesa checksum failed'
+          }
+          $dir=Join-Path $env:RUNNER_TEMP 'k06-source-mesa'
+          & "$env:ProgramFiles/7-Zip/7z.exe" x $mesa "-o$dir" -y | Out-Null
+          if($LASTEXITCODE -ne 0){throw 'Mesa extraction failed'}
+
+          function Compile-Clone([string]$stage,[string]$key,[string]$expectedProfile){
+            $stage=(Resolve-Path -LiteralPath $stage).Path
+            $short=Join-Path $env:RUNNER_TEMP "$key-compile"
+            $env:K06_COMPILE_SHORT=$short
+            $env:K06_COMPILE_PROFILE=$expectedProfile
+            $env:K06_COMPILE_KEY=$key
+            if(Test-Path -LiteralPath $short){throw 'Isolated compiler directory already exists'}
+            Move-Item -LiteralPath $stage -Destination $short
+            try{
+              Get-ChildItem -LiteralPath $dir -Recurse -File -Filter '*.dll' |
+                Where-Object { $_.Directory.Name -eq 'x64' } |
+                ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $short }
+              @'
+          import json, os, pathlib, subprocess
+          root=pathlib.Path(os.environ["K06_COMPILE_SHORT"]).resolve(strict=True)
+          config=json.loads((root/"mkxp.json").read_text("ascii"))
+          if ((config["gameFolder"],config["execName"],config["dataPathApp"]) !=
+              (".","Game",os.environ["K06_COMPILE_PROFILE"])):
+              raise SystemExit("Unexpected compiler configuration")
+          private=root.parent/(os.environ["K06_COMPILE_KEY"]+"-profile")
+          private.mkdir(exist_ok=False)
+          env={**os.environ,"APPDATA":str(private),"LOCALAPPDATA":str(private)}
+          proof=root/"Data/blue-android-compiled.txt"
+          for i in range(2):
+              output=private/f"log-{i}.txt"
+              with output.open("wb") as log:
+                  try:
+                      subprocess.run([str(root/"Game.exe"),"debug"],cwd=root,env=env,
+                                     stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT,timeout=140)
+                  except subprocess.TimeoutExpired:
+                      print("Native compiler timed out",flush=True)
+              if proof.is_file():
+                  break
+              print(output.read_text("utf8",errors="replace")[-5000:],flush=True)
+          if not proof.is_file():
+              for name in ("Data/blue-android-error.txt","Data/blue-android-stage.txt","errorlog.txt"):
+                  file=root/name
+                  if file.is_file():
+                      print(file.read_text("utf8",errors="replace")[-5000:],flush=True)
+              raise SystemExit("Native compiler did not provide proof")
+          '@ | python -
+              if($LASTEXITCODE -ne 0){throw "Native $key compile failed"}
+            } finally {
+              Move-Item -LiteralPath $short -Destination $stage
+            }
+          }
+
+          $work=Join-Path $env:K05_ROOT '.blue-work/android-source-update'
+          $updater=Join-Path $env:K05_ROOT 'scripts/android/update_client.py'
+          python $updater --game-dir $env:K06_GAME --source --source-work-dir $work --update
+          if($LASTEXITCODE -ne 0){throw 'Released K05 updater could not stage'}
+          Compile-Clone (Join-Path $work "$env:K05_BASE/game") 'k06-k05-baseline' 'Kanto Android Source Build'
+          python $updater --game-dir $env:K06_GAME --source --source-work-dir $work --update
+          if($LASTEXITCODE -ne 0){throw 'Released K05 updater could not finish'}
+          Write-Host 'KANTO_K06_ACTUAL_K05_SOURCE_BASELINE_OK'
+          python scripts/android/update_client.py --game-dir $env:K06_GAME --source --source-stage k06 --source-ci --update
+          if($LASTEXITCODE -ne 0){throw 'K06 local candidate staging failed'}
+          $marker=Join-Path $env:K06_GAME 'Data/blue-update.json'
+          $before=(Get-FileHash -LiteralPath $marker).Hash
+          $errorFile=Join-Path $env:RUNNER_TEMP 'k06-uncompiled-check.txt'
+          $negative=Start-Process -FilePath (Get-Command python).Source -ArgumentList @('scripts/android/k06_source_candidate.py','finish') -NoNewWindow -Wait -PassThru -RedirectStandardError $errorFile
+          if($negative.ExitCode -eq 0 -or (Get-FileHash -LiteralPath $marker).Hash -ne $before -or
+               (Get-Content -LiteralPath $errorFile -Raw) -notmatch 'candidate has not been compiled'){
+            Get-Content -LiteralPath $errorFile
+            throw 'K06 did not safely reject uncompiled installation'
+          }
+          Write-Host 'KANTO_K06_ANDROID_REFUSED_UNCOMPILED_OK'
+
+          Compile-Clone ".blue-work/k06-android-ci/k06-overlay/$env:K05_VERSION/game" 'k06-approach' 'Kanto K06 Android Candidate CI'
+          python scripts/android/update_client.py --game-dir $env:K06_GAME --source --source-stage k06 --source-ci --update
+          if($LASTEXITCODE -ne 0){throw 'K06 could not install compiled files without redistribution'}
+          if((Get-FileHash -LiteralPath (Join-Path $env:K06_GAME 'K06-SAVE-SYNTHETIC.rxsave')).Hash -ne $env:K06_SAVE){
+            throw 'The Android save witness changed during this workflow'
+          }
+          $installedUpdater=Join-Path $env:K06_GAME 'ATUALIZAR-ANDROID.py'
+          if((Get-FileHash -LiteralPath $installedUpdater).Hash -ne (Get-FileHash 'scripts/android/update_client.py').Hash){
+            throw 'The K06 handoff updater was not committed'
+          }
+          Write-Host 'KANTO_K06_ANDROID_SOURCE_FORWARD_OK'
