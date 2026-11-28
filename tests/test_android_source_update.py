@@ -59,7 +59,7 @@ class AndroidPinnedSourceUpdateTests(unittest.TestCase):
 
     def test_clone_only_verified_runtime_and_rolls_back_bad_copy(self):
         with TemporaryDirectory() as folder:
-            parent=Path(folder)
+            parent=Path(folder).resolve()
             root=parent/"installed"
             root.mkdir()
             save=self.make(root)
@@ -81,7 +81,7 @@ class AndroidPinnedSourceUpdateTests(unittest.TestCase):
 
     def test_apply_fault_rolls_back_and_leaves_revision_unchanged(self):
         with TemporaryDirectory() as folder:
-            parent=Path(folder)
+            parent=Path(folder).resolve()
             root,stage=parent/"installed",parent/"stage"
             root.mkdir()
             save=self.make(root)

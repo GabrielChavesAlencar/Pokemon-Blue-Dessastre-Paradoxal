@@ -91,6 +91,7 @@ def preflight(root):
 def clone_verified_install(root,stage,installed):
     """Copy only verified package files and never browse/copy any save folder."""
     old=root.resolve()
+    stage=stage.resolve()
     files={**installed["files"],**installed.get("immutable",{})}
     if stage.exists() or stage.is_relative_to(old) or old.is_relative_to(stage):
         raise ValueError("Escolha uma pasta separada e vazia para a compilação.")
@@ -216,6 +217,7 @@ def atomic_file(path, data):
 
 def commit_local(root,staged,changed,new_manifest,backup):
     """Apply only already-verified files. Hold a local lock and commit version last."""
+    root,staged,backup=root.resolve(),staged.resolve(),backup.resolve()
     lock=root/".blue-k05-local-update"
     lock.mkdir(exist_ok=False)
     backups={}
