@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "phase": "KA01",
+  "policy": "ORIGINAL_GEOMETRY_EXISTING_KANTO_STYLE",
+  "external_install_permissions": [],
+  "external_redistribution_permissions": [],
+  "fire_ash_index": {
+    "repository": "Luc-ker/fire-ash-public",
+    "ref": "078d41222a30fafeee7cc0a65b7a11bd2f19b2f4",
+    "path": "Data/MapInfos.rxdata",
+    "bytes": 56722,
+    "sha256": "96d3ad8327fc27f2e0c00ff33ce845404475b921767043d731c05a74aed0bbe9",
+    "catalog_entries": 996
+  },
+  "other_candidates": {
+    "VIRTUALIZATION": "NO_GRANTED_USE_OR_VERIFIED_XY_GEOMETRY",
+    "WORLD_PROJECT": "NO_APPROVED_KALOS_COVERAGE",
+    "POKEX": "INCOMPATIBLE_ENGINE"
+  },
+  "opening_spine": [
+    ["VANIVILLE_HOME_UPPER", null], ["VANIVILLE_HOME_LOWER", null],
+    ["VANIVILLE_TOWN", "C01"], ["ROUTE_01", "R01"], ["AQUACORDE_TOWN", "C02"],
+    ["ROUTE_02", "R02"], ["SANTALUNE_FOREST", null], ["ROUTE_03", "R03"],
+    ["SANTALUNE_CITY", "C03"], ["SANTALUNE_GYM", null]
+  ],
+  "opening_branches": [["SANTALUNE_CITY", "SANTALUNE_CENTER"]],
+  "tiles": "LOCAL_EXISTING_ART_REFERENCE_VERIFY_PER_COMPONENT_IN_KA03",
+  "destination_mapids": [],
+  "game_files_written": false
+}
