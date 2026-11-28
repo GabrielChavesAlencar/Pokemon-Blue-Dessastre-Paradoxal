@@ -64,6 +64,9 @@ jobs:
           print(f"{report['maps_inertly_parsed']} mapas, {report['pbs_connection_lines_seen']} conexões PBS; {report['transfer_201_dynamic_count_not_resolved']} transferências variáveis exigem revisão.")
           h = report["historical_script_heuristics"]
           print(f"{h.get('script_sections_examined',0)} seções Ruby examinadas sem execução, {h.get('common_events_examined',0)} eventos comuns, {h.get('compiled_script_entries_examined',0)} entradas de Scripts, {h.get('script_transfer_unresolved',0)} destinos em scripts continuam sem resolução.")
+          locators = report["historical_unresolved_script_locations"]
+          assert len(locators) + h.get("script_locators_truncated",0) == h.get("script_transfer_unresolved",0)
+          print(f"{len(locators)} localizadores numéricos sanitizados; nenhum trecho de código exportado.")
           print("KALOS_KA02_HISTORICAL_MAPID_GUARD_OK")
           print("KALOS_KA02_CURRENT_NATIVE_APPROVAL_PENDING")
           PY

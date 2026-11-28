@@ -1,4 +1,5 @@
 import unittest
+from collections import Counter
 from qa.kalos_mapids import ka02_candidates as audit
 
 class MapIDConflictGuardTests(unittest.TestCase):
@@ -39,6 +40,14 @@ class MapIDConflictGuardTests(unittest.TestCase):
         )
         self.assertEqual(ids, {123,276})
         self.assertEqual(unresolved, 1)
+
+    def test_locator_contains_only_enum_and_numeric_origin(self):
+        c, ids, found = Counter(), set(), []
+        audit.remember_script("pbTransferPlayer(SECRET_LOC, x, y)", c, ids, found,
+                              {"origin":"map_event","map_id":1,"event_id":2,"page_1_based":3})
+        self.assertEqual(found, [{"origin":"map_event","map_id":1,"event_id":2,"page_1_based":3,
+                                  "mode":"call","category":"identifier","script_line_1_based":1}])
+        self.assertNotIn("SECRET_LOC", str(found))
 
     def test_connection_validation(self):
         self.assertEqual(audit.connection_ids(b"# comment\n19,North,0,20,South,-2\n"),({19,20},1))
