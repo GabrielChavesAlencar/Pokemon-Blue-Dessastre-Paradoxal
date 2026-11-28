@@ -2,6 +2,30 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0af0c77daadbfe8f7de9fa72541f988d82666bb3",
+      "date": "2026-11-28T11:03:26-03:00",
+      "title": "Merge pull request #384 from GabrielChavesAlencar/codex/hoenn-h02-birch-retry",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "94cc16cc7604922076e823d56f1e1c5789e4f569",
+      "date": "2026-11-28T10:55:35-03:00",
+      "title": "Aplicar a passagem de Oldale apenas na borda da Rota 101",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "46e04474307ae99aabc0012cbd5d44f55cd1d8b5",
+      "date": "2026-11-28T10:55:33-03:00",
+      "title": "Merge remote-tracking branch 'origin/main' into codex/hoenn-h02-integration",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "4db601e33e0644f1c476216622fe155b44565161",
+      "date": "2026-11-28T10:53:30-03:00",
+      "title": "Atualizar H02 e proteger a saída para Oldale durante o resgate",
+      "category": "Melhorias"
+    },
+    {
       "sha": "f4c4b6f5b147eba7b1d7bbd13180440ce7720624",
       "date": "2026-11-28T10:51:05-03:00",
       "title": "Merge pull request #399 from GabrielChavesAlencar/codex/hoenn-h00-inventory",
@@ -287,6 +311,12 @@
       "sha": "3c326fd05777ec383c5405d8bd0db2ab3e402873",
       "date": "2026-11-28T02:47:09-03:00",
       "title": "Audit Lavender portal delta and gate unverified bundled Hoenn redistribution",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "d5220f8fce116313b0f2f2e04c8076e7a260f587",
+      "date": "2026-11-28T02:45:28-03:00",
+      "title": "Hoenn H02: retry Birch rescue after defeat",
       "category": "Melhorias"
     },
     {
