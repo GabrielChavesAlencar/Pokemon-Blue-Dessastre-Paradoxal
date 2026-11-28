@@ -28,14 +28,14 @@ def ensure_base(project,game):
     run([git,'-C',game,'checkout','--detach',BASE_COMMIT],project)
     if not (game/'Game.exe').is_file():raise RuntimeError('O download da base nao contem Game.exe.')
 
-def install(project,game,hub_only=False,allow_kanto_missing=False,skip_kanto=False):
+def install(project,game,hub_only=False,allow_kanto_missing=False,skip_kanto=False,*,install_windows_editor=True):
     # CH04: do not modify a shared game containing standalone Sinnoh boot files.
     game=Path(game).resolve()
     assert_no_legacy_sinnoh_shared(game)
     # Even an older self-updating Blue-Story.exe downloads this Python entry
     # point from main. Install the editor shortcuts into the managed project
     # before game preparation (which can fail for unrelated region sources).
-    if not hub_only:
+    if install_windows_editor and not hub_only and os.name == 'nt':
         # O Blue-Story prepara a publicacao sem pedir PowerShell, BAT de login ou Git.
         # Falha de rede nao deve impedir de jogar/editar mapas localmente.
         try:

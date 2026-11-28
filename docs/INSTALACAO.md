@@ -43,7 +43,9 @@ As escolhas ficam salvas separadamente dos saves em `blue-keyboard-controls.txt`
 
 ## Android experimental
 
-**Kanto/Hoenn multirregional:** use o [atualizador pela fonte original](ANDROID_K06_ATUALIZACAO_PELA_FONTE.md) da receita Kanto publicada. Não instale o ZIP de Decades por cima da edição multirregional. A compilação é local e a receita não redistribui os arquivos do jogo.
+**Instalação nova com Decades, Kanto e Hoenn:** baixe **Blue-Android-Instalador-Fontes.zip** no [canal Android pelas fontes](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/releases?q=android-source-world). Extraia o ZIP e execute o atualizador no Termux. Ele obtém o jogo das fontes originais e procura novas versões sempre que for executado. Siga o [guia de instalação e atualização no JoiPlay](ANDROID_INSTALACAO_PELAS_FONTES.md).
+
+**Instalações multirregionais K05/K06 existentes:** use o [atualizador pela fonte original](ANDROID_K06_ATUALIZACAO_PELA_FONTE.md) da receita Kanto publicada. Não instale o ZIP de Decades por cima da edição multirregional. A compilação é local e a receita não redistribui os arquivos do jogo.
 
 **Decades, sem a edição multirregional:** baixe **Blue-Android-JoiPlay.zip**, instale JoiPlay e RPG Maker Plugin pelos [downloads oficiais](https://www.joiplay.net/), extraia o ZIP inteiro e adicione `Pokemon-Blue-Android/Game.exe` ao JoiPlay. Na abertura, escolha História ou Hub offline. O pacote já contém os dados compilados e as músicas.
 

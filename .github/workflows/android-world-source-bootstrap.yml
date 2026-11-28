@@ -1,0 +1,134 @@
+name: Android pelas fontes originais
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/**'
+      - 'data/**'
+      - 'tests/test_android_world_sources.py'
+      - 'docs/ANDROID_INSTALACAO_PELAS_FONTES.md'
+      - '.github/workflows/android-world-source-bootstrap.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/**'
+      - 'server/**'
+      - 'assets/**'
+      - 'data/**'
+      - 'tests/test_android_world_sources.py'
+      - 'docs/ANDROID_INSTALACAO_PELAS_FONTES.md'
+      - '.github/workflows/android-world-source-bootstrap.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 35
+    env:
+      PYTHONUTF8: '1'
+      GALLIUM_DRIVER: llvmpipe
+      ALSOFT_DRIVERS: 'null'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verificar o ZIP e os contratos
+        run: |
+          python -m unittest discover -s tests -p test_android_world_sources.py
+          if ($LASTEXITCODE -ne 0) { throw 'Falha nos testes do instalador pela fonte.' }
+          python -m unittest discover -s tests -p test_android_source_update.py
+          if ($LASTEXITCODE -ne 0) { throw 'Regressão no atualizador pela fonte.' }
+      - name: Preparar o jogo localmente com as fontes originais
+        run: |
+          $root = Join-Path $env:RUNNER_TEMP 'BlueFontes'
+          python scripts/android/world_source_update.py $root $env:GITHUB_RUN_NUMBER $env:GITHUB_SHA
+          if ($LASTEXITCODE -ne 0 -or (Test-Path -LiteralPath $root)) { throw 'A compilação limpa não foi preparada.' }
+          "BLUE_QA_ROOT=$root" >> $env:GITHUB_ENV
+      - name: Compilar no Game.exe com perfil isolado
+        run: |
+          $ProgressPreference = 'SilentlyContinue'
+          $mesa = Join-Path $env:RUNNER_TEMP 'world-source-mesa.7z'
+          Invoke-WebRequest 'https://github.com/pal1000/mesa-dist-win/releases/download/26.2.6/mesa3d-26.2.6-release-mingw.7z' -OutFile $mesa
+          if ((Get-FileHash -LiteralPath $mesa).Hash.ToLowerInvariant() -ne 'da0f71d9181b672c1918f3c342f11118c687f6059a46b16502845160733cc388') {
+            throw 'A soma do Mesa não confere.'
+          }
+          $driver = Join-Path $env:RUNNER_TEMP 'world-source-mesa'
+          & "$env:ProgramFiles/7-Zip/7z.exe" x $mesa "-o$driver" -y | Out-Null
+          if ($LASTEXITCODE -ne 0) { throw 'Falha na extração do Mesa.' }
+          $env:BLUE_QA_STAGE = "$env:BLUE_QA_ROOT-Compilar-Fontes/game"
+          Get-ChildItem -LiteralPath $driver -Recurse -File -Filter '*.dll' |
+            Where-Object { $_.Directory.Name -eq 'x64' } |
+            ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $env:BLUE_QA_STAGE }
+          @'
+          import os
+          from pathlib import Path
+          import subprocess
+
+          stage = Path(os.environ["BLUE_QA_STAGE"]).resolve(strict=True)
+          profile = stage.parent / "native-qa-profile"
+          profile.mkdir()
+          env = {**os.environ, "APPDATA": str(profile), "LOCALAPPDATA": str(profile)}
+          proof = stage / "Data/blue-android-compiled.txt"
+          with (profile / "engine.txt").open("wb") as log:
+              try:
+                  subprocess.run([str(stage / "Game.exe"), "debug"], cwd=stage, env=env,
+                                 stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT, timeout=170)
+              except subprocess.TimeoutExpired:
+                  print("Tempo limite do Game.exe excedido.", flush=True)
+          if not proof.is_file():
+              for file in (profile / "engine.txt", stage / "Data/blue-android-stage.txt",
+                           stage / "Data/blue-android-error.txt", stage / "errorlog.txt"):
+                  if file.is_file():
+                      print(file.read_text("utf8", errors="replace")[-5000:])
+              raise SystemExit("Game.exe não produziu o recibo de compilação.")
+          '@ | python -
+          if ($LASTEXITCODE -ne 0) { throw 'Falha na compilação nativa.' }
+          Get-ChildItem -LiteralPath $driver -Recurse -File -Filter '*.dll' |
+            Where-Object { $_.Directory.Name -eq 'x64' } |
+            ForEach-Object { Remove-Item -LiteralPath (Join-Path $env:BLUE_QA_STAGE $_.Name) }
+      - name: Verificar e finalizar instalação
+        run: |
+          python scripts/android/world_source_update.py $env:BLUE_QA_ROOT $env:GITHUB_RUN_NUMBER $env:GITHUB_SHA
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao concluir a instalação.' }
+          @'
+          import os
+          from pathlib import Path
+          from scripts.android.package import verify_regions
+          from scripts.android.world_source_update import current_install
+
+          root = Path(os.environ["BLUE_QA_ROOT"]).resolve(strict=True)
+          assert current_install(root)["revision"] == os.environ["GITHUB_SHA"]
+          assert verify_regions(root)[1]["maps"] == 199
+          assert (root/"ATUALIZAR-ANDROID.py").is_file()
+          '@ | python -
+          if ($LASTEXITCODE -ne 0) { throw 'Mapas ou inventário da instalação não conferem.' }
+          python scripts/android/world_source_update.py $env:BLUE_QA_ROOT $env:GITHUB_RUN_NUMBER $env:GITHUB_SHA
+          if ($LASTEXITCODE -ne 0) { throw 'A mesma revisão precisa poder ser consultada novamente.' }
+
+  publish:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: windows
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publicar o instalador e seu checksum
+        shell: bash
+        run: |
+          tag="android-source-world-$GITHUB_RUN_NUMBER-${GITHUB_SHA:0:7}"
+          zip="$RUNNER_TEMP/Blue-Android-Instalador-Fontes.zip"
+          python3 scripts/android/build_source_bootstrap.py --output "$zip"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            exit 0
+          fi
+          gh release create "$tag" "$zip" "$zip.sha256" \
+            --target "$GITHUB_SHA" --latest=false --prerelease \
+            --title "Android pelas fontes originais ($GITHUB_RUN_NUMBER)" \
+            --notes "Extraia e execute ATUALIZAR-ANDROID.py no Termux. O ZIP contém o atualizador e o guia. A receita baixa Decades, Kanto e Hoenn das fontes originais. Compilação verificada no Windows."
