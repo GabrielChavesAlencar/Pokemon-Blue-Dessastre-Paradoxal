@@ -24,7 +24,7 @@ class SourceZipFixture:
         # Keep the old 142-map incremental hotfix supported even though the
         # *new* full Kanto manifest contains 152 maps.
         legacy = {k: v for k, v in SOURCE["maps"].items()
-                  if k not in ("23","79","81","82","43","44","45","46","47","48","53", "54", "55", "58", "68", "69", "70", "71")}
+                  if k not in ("23","79","81","82","43","44","45","46","47","48","53", "54", "55", "58", "68", "69", "70", "71", "86", "87", "88", "90", "91")}
         self.mapping = {k: 700 + i for i, k in enumerate(legacy)}
         preview = set(SOURCE["preview_only"])
         self.lines = ["BLUE_KANTO_MUSIC_V1\tKANTO\t" + "a" * 64]

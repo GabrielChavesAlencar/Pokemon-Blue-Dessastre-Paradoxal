@@ -14,16 +14,15 @@ from pathlib import Path
 
 if __package__:
     from . import install_kanto_music
-    from .compile_kanto_music import MAPS as K03E_MAPS
+    from .compile_kanto_music import publication_catalog
 else:
     import install_kanto_music
-    from compile_kanto_music import MAPS as K03E_MAPS
+    from compile_kanto_music import publication_catalog
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "data/regions/kanto-source.json"
 RUNTIME = ROOT / "scripts/music/BlueMusic.rb"
 PLANNED = ROOT / "docs/KANTO_PLANO_APLICAR_MUSICAS.md"
-TOTAL_MAPS = 156
 PREVIEW_MAPS = 35
 
 # Strictly real names from the pinned source: never use these FRLG source
@@ -35,6 +34,7 @@ CANDIDATE_MAP_GROUPS = {
     "pewter": ("PEWTER_CITY",),
     "mt_moon": ("MT_MOON_1F", "MT_MOON_B1F", "MT_MOON_B2F"),
     "route_4": ("ROUTE_4",),
+    "rock_tunnel": ("ROUTE_9", "ROUTE_10", "ROCK_TUNNEL_*"),
     "pokemon_centers": ("*_CENTER",),
     "gyms": ("*_GYM",),
     "vermilion": ("VERMILION_CITY",),
@@ -177,12 +177,9 @@ def inspect(root: Path = ROOT, game: Path | None = None,
         encoding="utf-8"))
     maps = source["maps"]
     preview = set(source["preview_only"])
-    new_maps = {str(i): label for i,label in K03E_MAPS.items()}
-    promoted = bool(new_maps.keys() & maps.keys())
-    expected = TOTAL_MAPS + (len(new_maps) if promoted else 0)
-    if (len(maps) != expected or len(preview) != PREVIEW_MAPS or
-            (promoted and any(maps.get(i) != label for i,label in new_maps.items()))):
-        raise ValueError(f"Regressão: Kanto deveria ter {expected} mapas auditados e 35 previews")
+    publication_catalog(maps)
+    if len(preview) != PREVIEW_MAPS:
+        raise ValueError("Regressão: Kanto deveria manter 35 previews")
     if not preview.issubset({int(k) for k in maps}):
         raise ValueError("Preview aponta para mapa inexistente")
     plugin = (root / "scripts/music/BlueMusic.rb").read_text(encoding="utf-8")

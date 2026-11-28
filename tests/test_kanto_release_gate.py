@@ -36,12 +36,12 @@ class KantoReleaseGateTests(unittest.TestCase):
     def test_current_catalog_is_safe_prototype_not_final_acceptance(self):
         result=release_gate.inspect(ROOT)
         self.assertTrue(result["ci_preflight_passed"])
-        self.assertEqual(result["map_count"],160)
+        self.assertEqual(result["map_count"],165)
         self.assertEqual(result["preview_maps"],35)
-        self.assertEqual(result["trainers"],173)
-        self.assertEqual(result["wild_locations"],30)
-        self.assertEqual(result["wild_methods"],107)
-        self.assertEqual(result["wild_species"],71)
+        self.assertEqual(result["trainers"],202)
+        self.assertEqual(result["wild_locations"],34)
+        self.assertEqual(result["wild_methods"],119)
+        self.assertEqual(result["wild_species"],72)
         self.assertEqual(result["encounter_review_maps"],[209])
         self.assertFalse(result["declared_playable"])
         self.assertFalse(result["accepted_integrally"])
@@ -53,7 +53,7 @@ class KantoReleaseGateTests(unittest.TestCase):
             self.clone(root)
             self.patch_json(root,"data/regions/kanto-source.json",
                             lambda d:d["maps"].pop("48"))
-            with self.assertRaisesRegex(ValueError,"exact four corridor identities|audited stable map identities"):
+            with self.assertRaisesRegex(ValueError,"Unknown Kanto publication catalog"):
                 release_gate.inspect(root)
 
     def test_daycare_identity_cannot_pass_release_gate_if_wrong(self):
@@ -71,7 +71,7 @@ class KantoReleaseGateTests(unittest.TestCase):
             self.clone(root)
             self.patch_json(root,"site/public/data/kanto.json",
                             lambda d:d["locations"].pop())
-            with self.assertRaisesRegex(ValueError,"160 maps/173 grouped trainers"):
+            with self.assertRaisesRegex(ValueError,"165 maps/202 grouped trainers"):
                 release_gate.inspect(root)
 
     def test_ship_rival_wrong_team_rejected_even_with_correct_count(self):

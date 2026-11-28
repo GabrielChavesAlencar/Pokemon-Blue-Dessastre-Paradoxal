@@ -18,7 +18,7 @@ class PhaseZeroMusicTests(unittest.TestCase):
         return {"files": 64, "BGM": 50, "ME": 14,
                 "bytes": 135_768_381}
 
-    def test_active_catalog_has_160_source_maps_35_previews(self):
+    def test_active_catalog_has_165_source_maps_35_previews(self):
         # Avoid rereading all 135 MB in each unit test; the workflow separately
         # runs the real CLI with hashes verified for ALL 64 assets.
         with patch.object(phase0.install_kanto_music, "audit",
@@ -29,7 +29,7 @@ class PhaseZeroMusicTests(unittest.TestCase):
         self.assertEqual(report["audio_catalog"]["tracks_verified_by_git_blob_sha"], 64)
         self.assertEqual(report["audio_catalog"]["BGM"], 50)
         self.assertEqual(report["audio_catalog"]["ME"], 14)
-        self.assertEqual(report["source_maps"]["source_count"], 160)
+        self.assertEqual(report["source_maps"]["source_count"], 165)
         self.assertEqual(report["source_maps"]["preview_only"], 35)
         self.assertFalse(report["source_maps"]["compiled_map_ids_audited"])
         self.assertEqual(report["integration"]["map_music_bindings_added"], 0)
@@ -47,6 +47,7 @@ class PhaseZeroMusicTests(unittest.TestCase):
         self.assertEqual(group["mt_moon"]["source_count"], 3)
         self.assertEqual(group["silph"]["source_count"], 12)
         self.assertGreaterEqual(group["gyms"]["source_count"], 8)
+        self.assertEqual(group["rock_tunnel"]["source_count"], 5)
         self.assertEqual(group["lavender"]["source_count"], 0)
         self.assertEqual(group["lavender"]["status"], "absent_from_pilot_manifest")
         self.assertEqual(group["sevii"]["source_count"], 0)
@@ -84,7 +85,7 @@ class PhaseZeroMusicTests(unittest.TestCase):
             data=json.loads(manifest.read_text(encoding="utf-8"))
             del data["maps"]["5"]
             manifest.write_text(json.dumps(data),encoding="utf-8")
-            with self.assertRaisesRegex(ValueError,"160 mapas"):
+            with self.assertRaisesRegex(ValueError,"Unknown Kanto publication catalog"):
                 phase0.inspect(root,check_audio_bytes=False)
 
     def test_game_scan_is_read_only_and_distinguishes_missing(self):

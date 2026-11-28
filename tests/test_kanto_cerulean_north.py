@@ -37,9 +37,10 @@ class CeruleanNorthContract(unittest.TestCase):
     def test_01_legacy_map_ids_cannot_shift(self):
         corridor = {23,79,81,82}
         active = bool(self.ids & corridor)
-        prior = self.ids - corridor - {43,44,45,46,47,48,53,54,55,58,68,69,70,71}
+        rock = {86,87,88,90,91} & self.ids
+        prior = self.ids - corridor - rock - {43,44,45,46,47,48,53,54,55,58,68,69,70,71}
         self.assertEqual(len(prior), 142)
-        self.assertEqual(len(self.ids), 160 if active else 156)
+        self.assertEqual(len(self.ids), (160 if active else 156) + len(rock))
         old_order = stable_source_order(prior)
         upgraded = stable_source_order(self.ids)
         self.assertEqual(upgraded[:142], old_order)
@@ -47,14 +48,16 @@ class CeruleanNorthContract(unittest.TestCase):
         self.assertEqual(upgraded[145:151], [43,44,45,46,47,48])
         self.assertEqual(upgraded[151:152], [58])
         self.assertEqual(upgraded[152:156], [68,69,70,71])
-        self.assertEqual(upgraded[156:], sorted(corridor) if active else [])
+        self.assertEqual(upgraded[156:160], sorted(corridor) if active else [])
+        self.assertEqual(upgraded[160:], sorted(rock))
+        self.assertIn(rock, (set(), {86,87,88,90,91}))
         self.assertEqual(self.manifest["maps"]["53"], "ROUTE_24")
         self.assertEqual(self.manifest["maps"]["54"], "ROUTE_25")
         self.assertEqual(self.manifest["maps"]["55"], "BILL_COTTAGE")
 
     def test_cerulean_interiors_append_without_shifting_145_existing_slots(self):
         extra = {43, 44, 45, 46, 47, 48}
-        historical = self.ids - {23,58,68,69,70,71,79,81,82}
+        historical = self.ids - {23,58,68,69,70,71,79,81,82,86,87,88,90,91}
         before = stable_source_order(historical - extra)
         expanded = stable_source_order(historical)
         self.assertEqual(expanded[:145], before)
@@ -208,9 +211,10 @@ puts "KANTO_K02C_MESSAGE_PREPEND_RESTORE_OK"
 
     def test_04_android_ready_gate_accepts_only_verified_old_and_new_registry(self):
         source = (ROOT / "scripts/battle_polish/RegionStart.rb").read_text("utf-8")
-        self.assertIn('["142", "145", "151", "152", "156", "160"].include?(fields[1])', source)
-        self.assertIn('[142, 145, 151, 152, 156, 160].include?(expected_count)', source)
-        self.assertIn('if expected_count == 160', source)
+        self.assertIn('["142", "145", "151", "152", "156", "160", "165"].include?(fields[1])', source)
+        self.assertIn('[142, 145, 151, 152, 156, 160, 165].include?(expected_count)', source)
+        self.assertIn('if expected_count >= 160', source)
+        self.assertIn('rock_slots.all? { |source, id| maps[source] == id }', source)
         self.assertIn('["23","79","81","82"].all?', source)
         self.assertIn('maps[source].is_a?(Integer) && !(452..595).include?(maps[source])', source)
         self.assertIn('pairs.length == expected_count', source)
