@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - 'scripts/android/k06_source_candidate.py'
+      - 'scripts/android/update_client.py'
+      - 'tests/test_android_k06_handoff.py'
       - 'scripts/regions/k06_approach_migration.py'
       - '.github/workflows/android-k06-source-forward.yml'
   workflow_dispatch:
@@ -38,6 +40,8 @@ jobs:
         run: |
           python -m unittest discover -s tests -p 'test_kanto_k06_approach.py'
           if($LASTEXITCODE -ne 0){throw 'K06 offline contract failed'}
+          python -m unittest discover -s tests -p 'test_android_k06_handoff.py'
+          if($LASTEXITCODE -ne 0){throw 'K06 did not isolate the released K05 cache'}
           $fixture=New-Item -ItemType Directory -Path '.blue-work/k06-android-ci'
           $zip=Join-Path $fixture.FullName 'Blue-Android-Decades-Kanto-Hoenn.zip'
           gh release download android-multiregion-247-02732ea -R '${{ github.repository }}' --pattern (Split-Path -Leaf $zip) --dir $fixture.FullName
@@ -128,7 +132,7 @@ jobs:
           python $updater --game-dir $env:K06_GAME --source --source-work-dir $work --update
           if($LASTEXITCODE -ne 0){throw 'Released K05 updater could not finish'}
           Write-Host 'KANTO_K06_ACTUAL_K05_SOURCE_BASELINE_OK'
-          python scripts/android/k06_source_candidate.py stage
+          python scripts/android/update_client.py --game-dir $env:K06_GAME --source --source-stage k06 --source-ci --update
           if($LASTEXITCODE -ne 0){throw 'K06 local candidate staging failed'}
           $marker=Join-Path $env:K06_GAME 'Data/blue-update.json'
           $before=(Get-FileHash -LiteralPath $marker).Hash
@@ -142,9 +146,13 @@ jobs:
           Write-Host 'KANTO_K06_ANDROID_REFUSED_UNCOMPILED_OK'
 
           Compile-Clone ".blue-work/k06-android-ci/k06-overlay/$env:K05_VERSION/game" 'k06-approach' 'Kanto K06 Android Candidate CI'
-          python scripts/android/k06_source_candidate.py finish
+          python scripts/android/update_client.py --game-dir $env:K06_GAME --source --source-stage k06 --source-ci --update
           if($LASTEXITCODE -ne 0){throw 'K06 could not install compiled files without redistribution'}
           if((Get-FileHash -LiteralPath (Join-Path $env:K06_GAME 'K06-SAVE-SYNTHETIC.rxsave')).Hash -ne $env:K06_SAVE){
             throw 'The Android save witness changed during this workflow'
+          }
+          $installedUpdater=Join-Path $env:K06_GAME 'ATUALIZAR-ANDROID.py'
+          if((Get-FileHash -LiteralPath $installedUpdater).Hash -ne (Get-FileHash 'scripts/android/update_client.py').Hash){
+            throw 'The K06 handoff updater was not committed'
           }
           Write-Host 'KANTO_K06_ANDROID_SOURCE_FORWARD_OK'
