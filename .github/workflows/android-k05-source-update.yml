@@ -59,8 +59,19 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'K05 direct-source staging failed'}
           $stage=(Resolve-Path '.blue-work/android-source-update/02732eadaedf49f3728755edb2bd2654ceae3897/game').Path
           "ANDROID_SOURCE_STAGE=$stage" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
-          python scripts/android/source_update.py --game-dir $env:ANDROID_247_GAME --finish (git rev-parse HEAD) --apply-local
-          if($LASTEXITCODE -eq 0){throw 'The source updater applied an uncompiled copy'}
+          $marker=Join-Path $env:ANDROID_247_GAME 'Data/blue-update.json'
+          $before=(Get-FileHash -LiteralPath $marker -Algorithm SHA256).Hash
+          $rev=(git rev-parse HEAD).Trim()
+          $errorFile=Join-Path (Resolve-Path '.blue-work/android-source-ci').Path 'before-compile-error.txt'
+          $negative=Start-Process -FilePath (Get-Command python).Source -ArgumentList @(
+            'scripts/android/source_update.py','--game-dir',('"' + $env:ANDROID_247_GAME + '"'),'--finish',$rev,'--apply-local'
+          ) -Wait -PassThru -NoNewWindow -RedirectStandardError $errorFile
+          if($negative.ExitCode -eq 0 -or (Get-FileHash -LiteralPath $marker -Algorithm SHA256).Hash -ne $before -or
+              (Get-Content -LiteralPath $errorFile -Raw) -notmatch 'ainda n.*o foi compilada'){
+            Get-Content -LiteralPath $errorFile
+            throw 'The pre-compile rejection was not the expected safe result'
+          }
+          Write-Host 'KANTO_K05_ANDROID_REFUSED_UNCOMPILED_OK'
       - name: Compilar a cópia sem abrir saves do jogador
         shell: powershell
         run: |
