@@ -1,0 +1,73 @@
+name: "Android K05: publicar somente a receita"
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/android-k05-source-release.yml']
+  workflow_dispatch:
+permissions:
+  actions: read
+  contents: write
+  pull-requests: read
+concurrency:
+  group: android-k05-source-release
+  cancel-in-progress: false
+jobs:
+  source-recipe:
+    if: github.ref == 'refs/heads/main' && github.repository == 'GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      PRODUCT: 0eaf9401b2d9e828e8549f7c7fea28c5de748157
+      RECIPE: 4bda388e0f6d07763c95cfd9877ce337e61f9cb9
+      VERIFIED_RUN: '46124410475'
+      TAG: android-source-k05-0eaf940
+    steps:
+      - name: Confirmar revisão, PR integrado e teste exato
+        shell: bash
+        run: |
+          set -euo pipefail
+          pr=$(gh api "repos/$GH_REPO/pulls/389" --jq '[.merged, .head.sha, .base.ref] | @tsv')
+          [[ "$pr" == "$(printf 'true\t%s\tmain' "$RECIPE")" ]]
+          run=$(gh api "repos/$GH_REPO/actions/runs/$VERIFIED_RUN" --jq '[.head_sha, .conclusion, (.path | sub("@refs/pull/389/merge$"; "")), .event] | @tsv')
+          [[ "$run" == "$(printf '%s\tsuccess\t%s\tpull_request' "$RECIPE" '.github/workflows/android-k05-source-update.yml')" ]]
+          job=$(gh api "repos/$GH_REPO/actions/runs/$VERIFIED_RUN/jobs" --jq '.jobs[] | select(.name=="disposable-source-update" and .conclusion=="success") | .id')
+          [[ "$job" =~ ^[0-9]+$ ]]
+          gh api "repos/$GH_REPO/actions/jobs/$job/logs" > "$RUNNER_TEMP/k05-source-proof.log"
+          grep -Eq 'Z KANTO_K05_ANDROID_CRASH_RECOVERY_OK[[:space:]]*$' "$RUNNER_TEMP/k05-source-proof.log"
+          grep -Eq 'Z KANTO_K05_ANDROID_LOCAL_SOURCE_UPDATE_OK[[:space:]]*$' "$RUNNER_TEMP/k05-source-proof.log"
+
+      - name: Publicar referência exata (sem arquivos do jogo)
+        shell: bash
+        run: |
+          set -euo pipefail
+          recipe_doc="https://github.com/$GH_REPO/blob/$RECIPE/docs/ANDROID_KANTO_ATUALIZACAO_PELA_FONTE.md"
+          proof_link="https://github.com/$GH_REPO/actions/runs/$VERIFIED_RUN"
+          if ! gh release view "$TAG" --repo "$GH_REPO" --json tagName > /dev/null; then
+            cat > "$RUNNER_TEMP/android-k05-notes.md" <<NOTES
+          Atualização da edição Android multirregional 247 para **K05: Lavender / primeira visita à Torre Pokémon**.
+
+          - Revisão funcional: \`$PRODUCT\`, a mesma de Windows 1634.
+          - Revisão exata da receita: \`$RECIPE\`.
+          - O atualizador baixa a fonte diretamente do autor, confere o SHA-256 e compila em uma cópia local. Não há ZIP do jogo, patch misto, fonte de terceiros, runtime ou saves anexados.
+          - [Teste automatizado da instalação, recuperação após interrupção e preservação dos 199 mapas de Hoenn e save sintético]($proof_link). Teste no aparelho Android ainda pendente.
+
+          ### Quando for testar
+          No Termux, com acesso à pasta do jogo, instale \`python\`, \`git\` e \`bsdtar\`. Use um cache novo, sem substituir uma cópia anterior:
+
+          \`\`\`sh
+          mkdir -p "\$HOME/.cache/pokemon-blue-android"
+          git clone --depth 40 --branch $TAG https://github.com/$GH_REPO.git "\$HOME/.cache/pokemon-blue-android/k05"
+          git -C "\$HOME/.cache/pokemon-blue-android/k05" rev-parse HEAD
+          \`\`\`
+
+          Confira que o SHA é o da receita acima. [Passos para rodar o atualizador e abrir apenas a cópia isolada no JoiPlay]($recipe_doc).
+          NOTES
+            gh release create "$TAG" --repo "$GH_REPO" --target "$RECIPE" --title 'Android K05: Lavender pela fonte original' --notes-file "$RUNNER_TEMP/android-k05-notes.md" --prerelease --latest=false
+          fi
+          sha=$(gh api "repos/$GH_REPO/git/ref/tags/$TAG" --jq '.object.sha')
+          [[ "$sha" == "$RECIPE" ]]
+          result=$(gh release view "$TAG" --repo "$GH_REPO" --json isDraft,isPrerelease,assets --jq '[.isDraft,.isPrerelease,(.assets | length)] | @tsv')
+          [[ "$result" == "$(printf 'false\ttrue\t0')" ]]
+          echo "ANDROID_K05_RECIPE_RELEASE_OK"
