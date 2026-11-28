@@ -2,6 +2,30 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e800600b860670208271322c32b601bfc9fe737d",
+      "date": "2026-11-28T13:41:08-03:00",
+      "title": "Hoenn H05: integra Dewford, Granite Cave e costa (#409)",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "ccbe3fec140b200bcef1b80f1481ae74551faaec",
+      "date": "2026-11-28T13:38:46-03:00",
+      "title": "Kalos KA01: fontes verificadas e recorte autoral [skip ci]",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "50362e121619105e9476f93f05b07f9595347b39",
+      "date": "2026-11-28T13:27:57-03:00",
+      "title": "Kalos KA00: auditoria de baseline e reservas sem alterar o jogo [skip ci]",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "665f0b828ddf5f22bbca6a238a8bfb2cd82d33b9",
+      "date": "2026-11-28T13:00:23-03:00",
+      "title": "Paldea: pesquisa, planejamento e atlas visual [skip ci]",
+      "category": "Melhorias"
+    },
+    {
       "sha": "d58101eed9bf3d7f8f2c30a07d627ab351370f0d",
       "date": "2026-11-28T12:51:25-03:00",
       "title": "Merge pull request #386 from GabrielChavesAlencar/codex/hoenn-h04-local-cut",
